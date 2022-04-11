@@ -9,6 +9,7 @@
     "prettier"
   ],
   "rules": {
-    "prettier/prettier": 2
+    "prettier/prettier": 2,
+    "linebreak-style": ["error", "unix"]
   }
 }
