@@ -13,3 +13,20 @@ In the apph-back directory, you can run to test the api:
 We use Sonarlint to find and fix bugs, vulnerabilities and code smells. To install the InteliJ plugin go to : 
 file > Settings > Plugins > Marketplace and shearch for 'Sonarlint'
 After restarting you IDE, sonarlint show warnings and you can analyse a file with Ctrl+Maj+s
+
+## WebSecurityConfig Configuration 
+
+Give access to API given in the function `antMachers()`.
+
+Example:
+
+```java
+protected void configure(HttpSecurity http) throws Exception {
+        http.cors().and()
+                .authorizeRequests()
+                .antMatchers("/api/test/").permitAll()
+                .antMatchers("/api/admin/**").hasAuthority("ADMIN")
+                .antMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+                .anyRequest().authenticated();
+    }
+```
