@@ -2,6 +2,18 @@
 
 Using springboot and maven.
 
+## AWS S3 Setting
+
+In your application-local.properties, add the following settings:
+
+```properties
+accessKey=YourAccessKey
+secretKey=YourSecretKey
+bucketName=BucketName
+region=region
+user=${your_name}/
+```
+
 ## Run project
 
 In the apph-back directory, you can run to test the api:
