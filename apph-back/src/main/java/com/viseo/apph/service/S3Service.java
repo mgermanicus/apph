@@ -1,4 +1,4 @@
-package com.example.apphback.service;
+package com.viseo.apph.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;

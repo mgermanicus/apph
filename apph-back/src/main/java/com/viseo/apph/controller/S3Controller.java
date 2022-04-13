@@ -1,6 +1,6 @@
-package com.example.apphback.controller;
+package com.viseo.apph.controller;
 
-import com.example.apphback.service.S3Service;
+import com.viseo.apph.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

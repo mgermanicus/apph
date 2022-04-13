@@ -1,4 +1,4 @@
-package com.example.apphback;
+package com.viseo.apph;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

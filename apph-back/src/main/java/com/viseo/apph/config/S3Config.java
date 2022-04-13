@@ -1,4 +1,4 @@
-package com.example.apphback.config;
+package com.viseo.apph.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;

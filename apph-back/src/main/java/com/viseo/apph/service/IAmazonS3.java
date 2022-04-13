@@ -1,4 +1,4 @@
-package com.example.apphback.service;
+package com.viseo.apph.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
