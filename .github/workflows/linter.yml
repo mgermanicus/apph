@@ -16,7 +16,5 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
       - name: Install modules
         run: npm install
-      - name: Run eslint
-        run: npm run lint --fix
       - name: Run prettier
         run: npm run prettier
