@@ -21,7 +21,6 @@ public class UserService {
       userDAO.createUser(newUser);
     }
 
-    @Transactional
     public User login(String login, String password) throws IllegalArgumentException{
         User user = userDAO.getUserByLogin(login);
         if(encoder.matches(password,user.getPassword()))
