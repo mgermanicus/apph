@@ -1,14 +1,16 @@
 import React from 'react';
-import reportWebVitals from './reportWebVitals';
-import { SignIn } from './static/components/SignIn';
 import { createRoot } from 'react-dom/client';
+import reportWebVitals from './reportWebVitals';
+import { App } from './App';
 
-const container = document.getElementById('root');
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const root = createRoot(container!);
+const el = document.getElementById('root');
+if (el === null) throw new Error('Root container missing in index.html');
+
+const root = createRoot(el);
 root.render(
   <React.StrictMode>
-    <SignIn />
+    <App />
   </React.StrictMode>
 );
+
 reportWebVitals();
