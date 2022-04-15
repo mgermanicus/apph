@@ -1,19 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import UploadPageComponent from './components/UploadPageComponent';
+import UploadImageContainer from './static/containers/UploadImageContainer';
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/upload" element={<UploadPageComponent />} />
-      </Routes>
-    </BrowserRouter>
+    <UploadImageContainer />
   </React.StrictMode>,
   document.getElementById('root')
 );
