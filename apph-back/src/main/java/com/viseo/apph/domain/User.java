@@ -9,6 +9,9 @@ public class User extends BaseEntity {
     private static final long serialVersionUID = 1L;
     String login;
     String password;
+    String firstname;
+    String lastname;
+    String email;
 
     public User() {
         super();
@@ -29,6 +32,33 @@ public class User extends BaseEntity {
 
     public User setPassword(String password) {
         this.password = password;
+        return this;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public User setFirstname(String firstname) {
+        this.firstname = firstname;
+        return this;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public User setLastname(String lastname) {
+        this.lastname = lastname;
+        return this;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public User setEmail(String email) {
+        this.email = email;
         return this;
     }
 }
