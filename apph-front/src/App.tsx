@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, createTheme, ThemeProvider } from '@mui/material';
-import { UserProfileContainer } from './static/containers/UserProfileContainer';
 import { makeStyles } from '@mui/styles';
-import { HeaderContainer } from './static/containers/HeaderContainer';
+import { PrivateRoutes } from './privateRoutes';
+import { BrowserRouter } from 'react-router-dom';
 
 const useStyles = makeStyles({
   textAlignCenter: {
@@ -22,10 +22,11 @@ export const App = () => {
   const classes = useStyles();
   return (
     <ThemeProvider theme={theme}>
-      <Box className={classes.textAlignCenter}>
-        <HeaderContainer />
-        <UserProfileContainer />
-      </Box>
+      <BrowserRouter>
+        <Box className={classes.textAlignCenter}>
+          <PrivateRoutes />
+        </Box>
+      </BrowserRouter>
     </ThemeProvider>
   );
 };
