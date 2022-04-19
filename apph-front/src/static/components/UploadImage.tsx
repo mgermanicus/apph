@@ -5,6 +5,7 @@ import {
   Container,
   CssBaseline,
   Input,
+  LinearProgress,
   Stack,
   TextField,
   Typography
@@ -16,14 +17,18 @@ import ImageService from '../../services/ImageService';
 
 export default function UploadImage(): JSX.Element {
   const [title, setTitle] = React.useState('');
+  const [isInProgress, setIsInProgress] = React.useState(false);
   const fileInput = React.createRef<HTMLInputElement>();
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const imageFiles = fileInput.current?.files;
     if (imageFiles) {
-      // TODO
-      ImageService.uploadImage(title, imageFiles[0]);
+      setIsInProgress(true);
+      ImageService.uploadImage(title, imageFiles[0])?.then(() => {
+        // TODO error handling
+        setIsInProgress(false);
+      });
     } else {
       // TODO
       throw Error;
@@ -85,7 +90,13 @@ export default function UploadImage(): JSX.Element {
                 }}
                 id="fileInput"
               />
-              <Button type="submit" fullWidth variant="contained">
+              {isInProgress && <LinearProgress />}
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                disabled={isInProgress}
+              >
                 Ajouter
               </Button>
             </Stack>
