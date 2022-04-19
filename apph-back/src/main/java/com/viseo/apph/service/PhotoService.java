@@ -9,7 +9,7 @@ import java.io.IOException;
 @Service
 public class PhotoService {
 
-    public void addPhoto(MultipartFile filePhoto) throws IOException {
+    public String addPhoto(MultipartFile filePhoto) throws IOException {
         String filePath = "photos";
         File dirPhoto = new File(filePath);
         if(!dirPhoto.exists()){
@@ -21,5 +21,6 @@ public class PhotoService {
         if ( (fileName = filePhoto.getOriginalFilename())!=null){
             filePhoto.transferTo(new File(dirPhoto.getAbsolutePath() + fileName));
         }
+        return fileName;
     }
 }

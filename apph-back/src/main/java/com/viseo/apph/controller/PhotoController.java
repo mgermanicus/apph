@@ -2,6 +2,7 @@ package com.viseo.apph.controller;
 
 import com.viseo.apph.service.PhotoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,7 @@ public class PhotoController {
     PhotoService photoService;
 
     @PostMapping("/upload")
-    public void upload(MultipartFile filePhoto) throws IOException {
-        photoService.addPhoto(filePhoto);
+    public ResponseEntity<?> upload(MultipartFile file) throws IOException {
+        return ResponseEntity.ok(photoService.addPhoto(file));
     }
 }
