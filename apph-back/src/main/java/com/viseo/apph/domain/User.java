@@ -3,9 +3,8 @@ package com.viseo.apph.domain;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User extends BaseEntity {
     private static final long serialVersionUID = 1L;
     String login;
@@ -14,7 +13,6 @@ public class User extends BaseEntity {
     public User() {
         super();
     }
-
 
     public String getLogin() {
         return login;
@@ -33,6 +31,4 @@ public class User extends BaseEntity {
         this.password = password;
         return this;
     }
-
-
 }
