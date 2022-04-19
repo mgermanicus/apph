@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { SxProps } from '@mui/material';
+import UserService from '../../services/UserService';
 
 function Copyright(props: { sx: SxProps }) {
   return (
@@ -37,10 +38,17 @@ export default function SignIn() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password')
-    });
+    const email = data.get('email')?.toString();
+    const password = data.get('password')?.toString();
+    if (email && password) {
+      UserService.signIn(email, password).then((res) => {
+        if (!res) {
+          console.log('Réponse nulle !');
+        } else {
+          console.log('Connexion établie');
+        }
+      });
+    }
   };
 
   return (
@@ -61,12 +69,7 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Connexion
           </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 1 }}
-          >
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
