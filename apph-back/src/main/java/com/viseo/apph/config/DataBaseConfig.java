@@ -70,22 +70,22 @@ public class DataBaseConfig {
         em.persist(yunan);
         em.persist(manon);
         //Elie's folders
-        Folder Elie_root = new Folder().setName("Elie_root").setParentFolderId(null).setUser(elie);
-        em.persist(Elie_root);
-        Folder Elie_child_1 = new Folder().setName("Elie_child_1").setParentFolderId(Elie_root.getId()).setUser(elie);
-        Folder Elie_child_2 = new Folder().setName("Elie_child_2").setParentFolderId(Elie_root.getId()).setUser(elie);
-        em.persist(Elie_child_1);
-        em.persist(Elie_child_2);
-        Folder Elie_grandchild_of_1 = new Folder().setName("Elie_grandchild_of_1").setParentFolderId(Elie_child_1.getId()).setUser(elie);
-        Folder Elie_grandchild_of_2 = new Folder().setName("Elie_grandchild_of_2").setParentFolderId(Elie_child_2.getId()).setUser(elie);
-        em.persist(Elie_grandchild_of_1);
-        em.persist(Elie_grandchild_of_2);
+        Folder elieRoot = new Folder().setName("Elie_root").setParentFolderId(null).setUser(elie);
+        em.persist(elieRoot);
+        Folder elieChild1 = new Folder().setName("Elie_child_1").setParentFolderId(elieRoot.getId()).setUser(elie);
+        Folder elieChild2 = new Folder().setName("Elie_child_2").setParentFolderId(elieRoot.getId()).setUser(elie);
+        em.persist(elieChild1);
+        em.persist(elieChild2);
+        Folder elieGrandchildOf1 = new Folder().setName("Elie_grandchild_of_1").setParentFolderId(elieChild1.getId()).setUser(elie);
+        Folder elieGrandchildOf2 = new Folder().setName("Elie_grandchild_of_2").setParentFolderId(elieChild2.getId()).setUser(elie);
+        em.persist(elieGrandchildOf1);
+        em.persist(elieGrandchildOf2);
         //Yunan's folders
-        Folder Yunan_root = new Folder().setName("Yunan_root").setParentFolderId(null).setUser(yunan);
-        em.persist(Yunan_root);
-        Folder Yunan_child_1 = new Folder().setName("Yunan_child_1").setParentFolderId(Yunan_root.getId()).setUser(yunan);
-        Folder Yunan_child_2 = new Folder().setName("Yunan_child_2").setParentFolderId(Yunan_root.getId()).setUser(yunan);
-        em.persist(Yunan_child_1);
-        em.persist(Yunan_child_2);
+        Folder yunanRoot = new Folder().setName("Yunan_root").setParentFolderId(null).setUser(yunan);
+        em.persist(yunanRoot);
+        Folder yunanChild1 = new Folder().setName("Yunan_child_1").setParentFolderId(yunanRoot.getId()).setUser(yunan);
+        Folder yunanChild2 = new Folder().setName("Yunan_child_2").setParentFolderId(yunanRoot.getId()).setUser(yunan);
+        em.persist(yunanChild1);
+        em.persist(yunanChild2);
     }
 }
