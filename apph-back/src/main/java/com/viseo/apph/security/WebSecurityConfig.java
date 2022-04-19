@@ -13,6 +13,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and()
                 .antMatcher("/s3/**")
                 .authorizeRequests()
+                .antMatchers("/folder/**").permitAll()
                 .anyRequest().authenticated();
     }
 }

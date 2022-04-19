@@ -21,4 +21,8 @@ public class UserDAO {
                 .setParameter("login", login)
                 .getSingleResult();
     }
+
+    public User getUserById(long userId) {
+        return em.find(User.class, userId);
+    }
 }
