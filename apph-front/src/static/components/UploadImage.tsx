@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Avatar,
   Box,
@@ -10,11 +9,25 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import { PhotoCamera } from '@mui/icons-material';
+
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import React from 'react';
+import ImageService from '../../services/ImageService';
 
 export default function UploadImage(): JSX.Element {
-  function handleSubmit() {
-    // TODO
+  const [title, setTitle] = React.useState('');
+  const fileInput = React.createRef<HTMLInputElement>();
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const imageFiles = fileInput.current?.files;
+    if (imageFiles) {
+      // TODO
+      ImageService.uploadImage(title, imageFiles[0]);
+    } else {
+      // TODO
+      throw Error;
+    }
   }
 
   return (
@@ -55,6 +68,8 @@ export default function UploadImage(): JSX.Element {
               <TextField
                 required
                 fullWidth
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
                 id="title"
                 label="Titre de la photo"
                 name="title"
@@ -63,7 +78,11 @@ export default function UploadImage(): JSX.Element {
               />
               <Input
                 fullWidth
-                inputProps={{ type: 'file', accept: 'image/*' }}
+                inputRef={fileInput}
+                inputProps={{
+                  type: 'file',
+                  accept: 'image/*'
+                }}
                 id="fileInput"
               />
               <Button type="submit" fullWidth variant="contained">
