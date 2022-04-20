@@ -1,15 +1,11 @@
 import cryptoJS from 'crypto-js';
+import jwtDecode from 'jwt-decode';
+import Cookies from 'universal-cookie';
 
 const API_URL = process.env['REACT_APP_API_URL'];
+const cookies = new Cookies();
 
 class UserService {
-  private static handleResponse(res: Response) {
-    if (!res.ok) {
-      throw new Error(`HTTP status code: ${res.status}`);
-    }
-    return res.json();
-  }
-
   static async signIn(email: string, password: string) {
     const requestOptions = {
       method: 'POST',
@@ -22,12 +18,21 @@ class UserService {
       })
     };
     try {
-      return await fetch(`${API_URL}/auth/signIn`, requestOptions).then((res) =>
-        this.handleResponse(res)
-      );
+      return await fetch(`${API_URL}/auth/signIn`, requestOptions)
+        .then(async (response) => {
+          if (response.ok) {
+            return response.text();
+          }
+          throw new Error(await response.text());
+        })
+        .then((jws) => {
+          const decodedToken = jwtDecode(jws);
+          if (decodedToken !== null && typeof decodedToken === 'object') {
+            cookies.set('user', { ...decodedToken, token: jws });
+          }
+        });
     } catch (e) {
-      console.log('Erreur lors de la connexion au serveur');
-      return null;
+      await Promise.reject(e);
     }
   }
 }

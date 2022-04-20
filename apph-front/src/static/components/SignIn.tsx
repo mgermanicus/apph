@@ -11,8 +11,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { SxProps } from '@mui/material';
+import { Alert, Collapse, IconButton, SxProps } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import UserService from '../../services/UserService';
+import { useState } from 'react';
 
 function Copyright(props: { sx: SxProps }) {
   return (
@@ -35,19 +37,22 @@ function Copyright(props: { sx: SxProps }) {
 const theme = createTheme();
 
 export default function SignIn() {
+  const [errorMessage, setErrorMessage] = useState('');
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get('email')?.toString();
     const password = data.get('password')?.toString();
     if (email && password) {
-      UserService.signIn(email, password).then((res) => {
-        if (!res) {
-          console.log('Réponse nulle !');
-        } else {
-          console.log('Connexion établie');
+      UserService.signIn(email, password).then(
+        () => {
+          console.log('Connexion réussie, token stocké dans les cookies'); //TODO redirection vers "mes photos"
+        },
+        (reason) => {
+          setErrorMessage(reason.message);
         }
-      });
+      );
     }
   };
 
@@ -113,6 +118,26 @@ export default function SignIn() {
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
+        <Collapse in={errorMessage !== ''}>
+          <Alert
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setErrorMessage('');
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            sx={{ mb: 2 }}
+            severity="error"
+          >
+            {errorMessage}
+          </Alert>
+        </Collapse>
       </Container>
     </ThemeProvider>
   );
