@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.Assert.assertThrows;
 
 // Test class added to cover main() invocation
-@SpringBootTest
+@SpringBootTest(classes = ApphBackApplicationTests.class)
 class ApphBackApplicationTests {
 
     @Test
