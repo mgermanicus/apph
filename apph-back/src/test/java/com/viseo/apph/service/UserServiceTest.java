@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 public class UserServiceTest {
     @Mock
     EntityManager em;
+    UserService userService;
 
     private void createUserService() {
         UserDAO userDAO = new UserDAO();
@@ -36,8 +37,6 @@ public class UserServiceTest {
             e.printStackTrace();
         }
     }
-
-    UserService userService;
 
     @Test
     public void testUserCreation(){

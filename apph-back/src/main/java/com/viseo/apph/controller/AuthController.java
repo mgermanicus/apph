@@ -1,6 +1,7 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +12,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
+import java.util.Date;
 import javax.persistence.NoResultException;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
 @RequestMapping("/auth")
-public class UserController {
+public class AuthController {
 
     @Autowired
     UserService userService;
@@ -26,10 +28,10 @@ public class UserController {
     {
         try
         {
-            User user = userService.login(userRequest.login,userRequest.password);
+            System.out.println("test");
+            User user = userService.login(userRequest.getLogin(),userRequest.getPassword());
             Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-
-            String jws = Jwts.builder().claim("login",user.getLogin()).signWith(key).compact();
+            String jws = Jwts.builder().claim("login",user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 7_200_000)).signWith(key).compact();
             return ResponseEntity.ok(jws);
         }
         catch(IllegalArgumentException | NoResultException e)
@@ -38,7 +40,4 @@ public class UserController {
         }
 
     }
-
-
-
 }
