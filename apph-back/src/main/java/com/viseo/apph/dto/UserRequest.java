@@ -12,14 +12,6 @@ public class UserRequest {
     @JsonProperty("password")
     String password;
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public String getLogin() {
         return login;
     }

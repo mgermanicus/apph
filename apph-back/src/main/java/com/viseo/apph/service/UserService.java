@@ -13,18 +13,12 @@ import javax.transaction.Transactional;
 public class UserService {
     @Autowired
     UserDAO userDAO;
-
     PasswordEncoder encoder =  new BCryptPasswordEncoder();
 
     @Transactional
     public void registerUser(String login, String password) {
       User newUser = new User().setLogin(login).setPassword(password);
       userDAO.createUser(newUser);
-    }
-
-    @Transactional
-    public void deleteUser(long userId){
-        userDAO.deleteUser(userId);
     }
 
     @Transactional

@@ -15,18 +15,10 @@ public class UserDAO {
     {
         em.persist(user);
     }
-    public void deleteUser(long id)
-    {
-        User user = em.find(User.class,id);
-        em.remove(user);
-    }
 
-    public User getUserByLogin(String login) throws NoResultException
-    {
+    public User getUserByLogin(String login) throws NoResultException {
         return em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)
                 .setParameter("login",login)
                 .getSingleResult();
     }
-
-
 }
