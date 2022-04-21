@@ -33,19 +33,11 @@ public class Folder extends BaseEntity {
         return this;
     }
 
-    public User getUser() {
-        return this.user;
-    }
-
     public Folder setUser(User user) {
-        if (user != this.user) {
-            if (this.user != null) {
-                throw new IllegalArgumentException("This folder is already owned by an user.");
-            }
+        assert this.user == null;
+        if (user != null) {
             this.user = user;
-            if (this.user != null) {
-                this.user.folders.add(this);
-            }
+            this.user.folders.add(this);
         }
         return this;
     }

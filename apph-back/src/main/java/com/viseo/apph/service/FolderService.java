@@ -19,10 +19,10 @@ public class FolderService {
     Logger logger = LoggerFactory.getLogger(FolderService.class);
 
     @Autowired
-    private FolderDAO folderDAO;
+    FolderDAO folderDAO;
 
     @Autowired
-    private UserDAO userDAO;
+    UserDAO userDAO;
 
     @Transactional
     public FolderResponse getFoldersByUser(long userId) throws NotFoundException {
