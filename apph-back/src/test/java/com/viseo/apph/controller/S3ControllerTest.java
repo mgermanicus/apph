@@ -1,5 +1,6 @@
 package com.viseo.apph.controller;
 
+import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.S3Service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockMultipartFile;
+
+import java.io.IOException;
 
 import static org.mockito.Mockito.*;
 
@@ -19,7 +22,7 @@ public class S3ControllerTest {
     S3Controller s3Controller;
 
     @Test
-    public void testUpload(){
+    public void testUpload() throws InvalidFileException, IOException {
         // Given
         MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
         // When

@@ -1,5 +1,6 @@
 package com.viseo.apph.service;
 
+import com.viseo.apph.exception.InvalidFileException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,7 +13,6 @@ import software.amazon.awssdk.services.s3.model.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
@@ -33,17 +33,17 @@ public class S3Service implements IAmazonS3 {
     }
 
     @Override
-    public String save(MultipartFile file) {
+    public String save(MultipartFile file) throws InvalidFileException, IOException {
         String filename = file.getOriginalFilename();
         return upload(file, filename);
     }
 
-    public String saveWithName(MultipartFile file,String name) {
+    public String saveWithName(MultipartFile file,String name) throws InvalidFileException, IOException {
         return upload(file, name);
     }
 
-    public String upload(MultipartFile file, String name) {
-        try {
+    public String upload(MultipartFile file, String name) throws InvalidFileException, IOException {
+        if (file != null) {
             File fileToSave = convertMultiPartToFile(file,name);
             // contentType(MediaType.<Type>.toString()) can be used to change the format
             PutObjectResponse por = s3.putObject(PutObjectRequest.builder()
@@ -53,8 +53,8 @@ public class S3Service implements IAmazonS3 {
                 Files.delete(Paths.get(fileToSave.getAbsolutePath()));
             }
             return por.eTag();
-        } catch (IOException e) {
-            throw new FileSystemNotFoundException("File not found");
+        } else {
+            throw new InvalidFileException("Invalid file");
         }
     }
 

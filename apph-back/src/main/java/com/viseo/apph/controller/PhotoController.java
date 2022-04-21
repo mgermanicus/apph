@@ -1,14 +1,21 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.dto.MessageResponse;
+import com.viseo.apph.dto.ResponseDTO;
+import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.PhotoService;
 import com.viseo.apph.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -21,8 +28,12 @@ public class PhotoController {
     S3Service s3Service;
 
     @PostMapping("/upload")
-    public String upload(MultipartFile file, String name) {
-        Photo photo = photoService.addPhoto(name);
-        return s3Service.saveWithName(file,photo.getId()+"");
+    public ResponseEntity<ResponseDTO> upload(MultipartFile file, String name) {
+        try{
+            Photo photo = photoService.addPhoto(name);
+            return ResponseEntity.ok(new MessageResponse(s3Service.saveWithName(file,photo.getId()+"")));
+        } catch (IOException | InvalidFileException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
+        }
     }
 }
