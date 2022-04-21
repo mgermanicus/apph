@@ -12,6 +12,7 @@ class ApphBackApplicationTests {
 
     @Test
     void contextShouldNotLoadWhenPropertiesIncorrect() {
+        // Given
         assertThrows(UnsatisfiedDependencyException.class, () ->
             ApphBackApplication.main(new String[] {"--spring.profiles.active=incorrect"}));
     }

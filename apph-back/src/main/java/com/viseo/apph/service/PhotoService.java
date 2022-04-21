@@ -14,8 +14,8 @@ public class PhotoService {
     PhotoDao photoDao;
 
     @Transactional
-    public void addPhoto(String name) {
+    public Photo addPhoto(String name) {
         Photo photo = new Photo().setName(name);
-        photoDao.addPhoto(photo);
+        return photoDao.addPhoto(photo);
     }
 }
