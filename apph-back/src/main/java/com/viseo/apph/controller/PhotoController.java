@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
 
@@ -32,7 +33,8 @@ public class PhotoController {
         try{
             Photo photo = photoService.addPhoto(name);
             return ResponseEntity.ok(new MessageResponse(s3Service.saveWithName(file,photo.getId()+"")));
-        } catch (IOException | InvalidFileException e) {
+        } catch (IOException | InvalidFileException | S3Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
         }
     }
