@@ -3,9 +3,7 @@ const API_URL = 'http://localhost:8080/';
 export default class ImageService {
   static async handleResponse(response: Response) {
     const body = await response.json();
-    if (!response.ok) {
-      throw Error(body.message);
-    }
+    if (!response.ok) throw Error("Une erreur est survenue lors de l'upload");
     return body;
   }
 

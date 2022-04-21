@@ -16,37 +16,42 @@ import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import React from 'react';
 import ImageService from '../../services/ImageService';
 import { UploadStatus } from '../../utils/types/UploadImage';
+import verifyFormat from '../../utils/verifyFormat';
+
+function displayAlert(
+  uploadStatus: UploadStatus,
+  errorMessage = "Une erreur est survenue lors de l'upload"
+) {
+  switch (uploadStatus) {
+    case 'success':
+      return <Alert severity="success">Votre fichier a bien été uploadé</Alert>;
+    case 'error':
+      return <Alert severity="error">{errorMessage}</Alert>;
+    default:
+      return <></>;
+  }
+}
 
 export default function UploadImage(): JSX.Element {
   const [title, setTitle] = React.useState('');
   const [uploadStatus, setUploadStatus] = React.useState<UploadStatus>('none');
+  const [errorMessage, setErrorMessage] = React.useState<string>('');
   const fileInput = React.createRef<HTMLInputElement>();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const imageFiles = fileInput.current?.files;
-    if (imageFiles) {
+    const files = fileInput.current?.files;
+    if (files) {
+      const file = files[0];
       setUploadStatus('uploading');
       try {
-        await ImageService.uploadImage(title, imageFiles[0]);
+        verifyFormat(file);
+        await ImageService.uploadImage(title, file);
         setUploadStatus('success');
       } catch (error) {
-        //TODO handle different errors
+        if (error instanceof Error) setErrorMessage(error.message);
         setUploadStatus('error');
       }
-    }
-  }
-
-  function displayAlert() {
-    switch (uploadStatus) {
-      case 'success':
-        return (
-          <Alert severity="success">Votre fichier a bien été uploadé</Alert>
-        );
-      case 'error':
-        return <Alert severity="error">Une erreur est survenue</Alert>;
-      default:
-        return <></>;
     }
   }
 
@@ -110,7 +115,7 @@ export default function UploadImage(): JSX.Element {
               >
                 Ajouter
               </Button>
-              {displayAlert()}
+              {displayAlert(uploadStatus, errorMessage)}
             </Stack>
           </Box>
         </Box>
