@@ -17,7 +17,7 @@ public class S3Controller {
     @Autowired
     S3Service s3s;
 
-    @PostMapping("upload")
+    @PostMapping("/upload")
     public String upload(@RequestParam("file") MultipartFile file) {
         return s3s.save(file);
     }
