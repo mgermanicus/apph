@@ -1,26 +1,21 @@
 package com.viseo.apph.service;
 
+import com.viseo.apph.dao.PhotoDao;
+import com.viseo.apph.domain.Photo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import javax.transaction.Transactional;
 
 @Service
 public class PhotoService {
 
-    public String addPhoto(MultipartFile filePhoto) throws IOException {
-        String filePath = "photos";
-        File dirPhoto = new File(filePath);
-        if(!dirPhoto.exists()){
-            if(!dirPhoto.mkdirs()){
-                throw new IOException("Unable to create new directory");
-            }
-        }
-        String fileName;
-        if ( (fileName = filePhoto.getOriginalFilename())!=null){
-            filePhoto.transferTo(new File(dirPhoto.getAbsolutePath() + fileName));
-        }
-        return fileName;
+    @Autowired
+    PhotoDao photoDao;
+
+    @Transactional
+    public Photo addPhoto(String name) {
+        Photo photo = new Photo().setName(name);
+        return photoDao.addPhoto(photo);
     }
 }
