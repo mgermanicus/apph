@@ -1,7 +1,7 @@
 const API_URL = 'http://localhost:8080/';
 
 export default class ImageService {
-  static uploadImage(title: string, imageFile: File) {
+  static async uploadImage(title: string, imageFile: File) {
     const formData = new FormData();
     formData.append('file', imageFile);
     formData.append('name', title);
@@ -9,16 +9,7 @@ export default class ImageService {
       method: 'POST',
       body: formData
     };
-
-    try {
-      return fetch(`${API_URL}photo/upload`, requestOptions).then((res) =>
-        //this.handleResponse(res)
-        // TODO
-        console.log(res)
-      );
-    } catch (error) {
-      //return this.handleConnectionError(error);
-      // TODO
-    }
+    const response = await fetch(`${API_URL}photo/upload`, requestOptions);
+    if (!response.ok) throw Error; // TODO customize error
   }
 }

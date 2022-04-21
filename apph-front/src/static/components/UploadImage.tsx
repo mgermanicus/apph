@@ -1,4 +1,5 @@
 import {
+  Alert,
   Avatar,
   Box,
   Button,
@@ -14,24 +15,37 @@ import {
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import React from 'react';
 import ImageService from '../../services/ImageService';
+import { UploadStatus } from '../../utils/types/UploadImage';
 
 export default function UploadImage(): JSX.Element {
   const [title, setTitle] = React.useState('');
-  const [isInProgress, setIsInProgress] = React.useState(false);
+  const [uploadStatus, setUploadStatus] = React.useState<UploadStatus>('none');
   const fileInput = React.createRef<HTMLInputElement>();
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const imageFiles = fileInput.current?.files;
     if (imageFiles) {
-      setIsInProgress(true);
-      ImageService.uploadImage(title, imageFiles[0])?.then(() => {
-        // TODO error handling
-        setIsInProgress(false);
-      });
-    } else {
-      // TODO
-      throw Error;
+      setUploadStatus('uploading');
+      try {
+        await ImageService.uploadImage(title, imageFiles[0]);
+        setUploadStatus('success');
+      } catch (error) {
+        setUploadStatus('error'); // TODO customize error message
+      }
+    }
+  }
+
+  function displayAlert() {
+    switch (uploadStatus) {
+      case 'success':
+        return (
+          <Alert severity="success">Votre fichier a bien été uploadé</Alert>
+        );
+      case 'error':
+        return <Alert severity="error">Une erreur est survenue</Alert>;
+      default:
+        return <></>;
     }
   }
 
@@ -52,12 +66,7 @@ export default function UploadImage(): JSX.Element {
           <Typography component="h1" variant="h5">
             Ajouter une photo
           </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 1 }}
-          >
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <Stack
               direction="column"
               spacing={2}
@@ -88,17 +97,19 @@ export default function UploadImage(): JSX.Element {
                   type: 'file',
                   accept: 'image/*'
                 }}
+                required
                 id="fileInput"
               />
-              {isInProgress && <LinearProgress />}
+              {uploadStatus === 'uploading' && <LinearProgress />}
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
-                disabled={isInProgress}
+                disabled={uploadStatus === 'uploading'}
               >
                 Ajouter
               </Button>
+              {displayAlert()}
             </Stack>
           </Box>
         </Box>
