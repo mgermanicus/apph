@@ -31,7 +31,8 @@ export default function UploadImage(): JSX.Element {
         await ImageService.uploadImage(title, imageFiles[0]);
         setUploadStatus('success');
       } catch (error) {
-        setUploadStatus('error'); // TODO customize error message
+        //TODO handle different errors
+        setUploadStatus('error');
       }
     }
   }
