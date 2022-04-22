@@ -21,6 +21,6 @@ export default class ImageService {
     };
     return fetch(`${API_URL}photo/upload`, requestOptions)
       .then((response) => this.handleResponse(response))
-      .catch((error) => this.handleConnectionError());
+      .catch(() => this.handleConnectionError());
   }
 }
