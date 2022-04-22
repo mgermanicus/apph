@@ -1,12 +1,19 @@
 import cryptoJS from 'crypto-js';
 import jwtDecode from 'jwt-decode';
 import Cookies from 'universal-cookie';
+import Server from './Server';
 
 const API_URL = process.env['REACT_APP_API_URL'];
 const cookies = new Cookies();
 
 class UserService {
-  static async signIn(email: string, password: string) {
+  static signIn(
+    email: string,
+    password: string,
+    handleSuccess: () => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = `${API_URL}/auth/signIn`;
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -17,23 +24,17 @@ class UserService {
         password: cryptoJS.SHA256(password).toString()
       })
     };
-    try {
-      return await fetch(`${API_URL}/auth/signIn`, requestOptions)
-        .then(async (response) => {
-          if (response.ok) {
-            return response.text();
-          }
-          throw new Error(await response.text());
-        })
-        .then((jws) => {
-          const decodedToken = jwtDecode(jws);
-          if (decodedToken !== null && typeof decodedToken === 'object') {
-            cookies.set('user', { ...decodedToken, token: jws });
-          }
-        });
-    } catch (e) {
-      await Promise.reject(e);
-    }
+    const successFunction = (jws: string) => {
+      const decodedToken = jwtDecode(jws);
+      if (decodedToken !== null && typeof decodedToken === 'object') {
+        cookies.set('user', { ...decodedToken, token: jws });
+      }
+      handleSuccess();
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(errorMessage);
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
 }
 

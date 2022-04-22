@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import SignIn from './static/components/SignIn';
+import { SignIn } from './static/components/SignIn';
 import { createRoot } from 'react-dom/client';
 
 const container = document.getElementById('root');
