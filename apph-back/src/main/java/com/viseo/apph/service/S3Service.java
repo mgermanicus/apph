@@ -15,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Objects;
 
 @Service
 public class S3Service implements IAmazonS3 {
@@ -45,9 +44,8 @@ public class S3Service implements IAmazonS3 {
     public String upload(MultipartFile file, String name) throws InvalidFileException, IOException {
         if (file != null) {
             File fileToSave = convertMultiPartToFile(file,name);
-            // contentType(MediaType.<Type>.toString()) can be used to change the format
             PutObjectResponse por = s3.putObject(PutObjectRequest.builder()
-                    .bucket(bucketName).key(user + name)
+                    .bucket(bucketName).key(user + fileToSave.getName())
                     .contentLength(fileToSave.length()).build(), RequestBody.fromFile(fileToSave));
             if(fileToSave.exists()){
                 Files.delete(Paths.get(fileToSave.getAbsolutePath()));
@@ -72,11 +70,15 @@ public class S3Service implements IAmazonS3 {
         return filename + " deleted";
     }
 
-    public File convertMultiPartToFile(MultipartFile file, String name) throws IOException {
-        File convertedFile = new File(Objects.requireNonNull(name));
-        try(FileOutputStream fos = new FileOutputStream(convertedFile)){
-            fos.write(file.getBytes());
-            return convertedFile;
+    public File convertMultiPartToFile(MultipartFile file, String name) throws IOException, InvalidFileException {
+        if( name != null){
+            File convertedFile = new File(name);
+            try(FileOutputStream fos = new FileOutputStream(convertedFile)){
+                fos.write(file.getBytes());
+                return convertedFile;
+            }
+        }else{
+            throw new InvalidFileException("Name is null");
         }
     }
 }
