@@ -1,13 +1,17 @@
 const API_URL = 'http://localhost:8080/';
 
 export default class ImageService {
-  static async handleResponse(response: Response) {
-    const body = await response.json();
+  static handleResponse(response: Response) {
+    const body = response.json();
     if (!response.ok) throw Error("Une erreur est survenue lors de l'upload");
     return body;
   }
 
-  static async uploadImage(title: string, imageFile: File) {
+  static handleConnectionError() {
+    throw new Error('Une erreur est survenue lors de la connexion au serveur');
+  }
+
+  static uploadImage(title: string, imageFile: File) {
     const formData = new FormData();
     formData.append('file', imageFile);
     formData.append('name', title);
@@ -15,7 +19,8 @@ export default class ImageService {
       method: 'POST',
       body: formData
     };
-    const response = await fetch(`${API_URL}photo/upload`, requestOptions);
-    return this.handleResponse(response);
+    return fetch(`${API_URL}photo/upload`, requestOptions)
+      .then((response) => this.handleResponse(response))
+      .catch((error) => this.handleConnectionError());
   }
 }
