@@ -13,10 +13,10 @@ import {
 } from '@mui/material';
 
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import React from 'react';
 import ImageService from '../../services/ImageService';
 import { UploadStatus } from '../../utils/types/UploadImage';
 import verifyFormat from '../../utils/verifyFormat';
+import { createRef, FormEvent, useState } from 'react';
 
 function displayAlert(
   uploadStatus: UploadStatus,
@@ -33,12 +33,12 @@ function displayAlert(
 }
 
 export default function UploadImage(): JSX.Element {
-  const [title, setTitle] = React.useState('');
-  const [uploadStatus, setUploadStatus] = React.useState<UploadStatus>('none');
-  const [errorMessage, setErrorMessage] = React.useState<string>('');
-  const fileInput = React.createRef<HTMLInputElement>();
+  const [title, setTitle] = useState('');
+  const [uploadStatus, setUploadStatus] = useState<UploadStatus>('none');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const fileInput = createRef<HTMLInputElement>();
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const files = fileInput.current?.files;
     if (files) {
