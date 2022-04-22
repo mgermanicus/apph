@@ -16,10 +16,6 @@ public class UserDAO {
         em.persist(user);
     }
 
-    public User getUser(long id) {
-        return em.find(User.class, id);
-    }
-
     public User getUserByLogin(String login) throws NoResultException {
         return em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)
                 .setParameter("login", login)

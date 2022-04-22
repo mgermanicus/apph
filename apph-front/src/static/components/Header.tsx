@@ -1,18 +1,9 @@
 import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material';
 import { UserAvatar } from './UserAvatar';
-import { makeStyles } from '@mui/styles';
 import LoginIcon from '@mui/icons-material/Login';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
-
-const makeAppBarStyles = makeStyles({
-  appBarStyle: {
-    position: 'absolute'
-  },
-  iconButton: {
-    mr: 2
-  }
-});
+import { makeAppBarStyles } from '../../utils/theme';
 
 export const Header = ({ isAuth }: { isAuth: boolean }): JSX.Element => {
   const classes = makeAppBarStyles();

@@ -1,38 +1,35 @@
 import { UserProfile } from '../components/UserProfile';
 import { useEffect, useState } from 'react';
-import { UserService } from '../../services/UserService';
-import { IUser } from '../../utils/types/User';
+import { IUser } from '../../utils/types';
 import { ErrorCard } from '../components/ErrorCard';
+import UserService from '../../services/UserService';
 
 export const UserProfileContainer = (): JSX.Element => {
   const [firstname, setFirstname] = useState<string>('');
   const [lastname, setLastname] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [error, setError] = useState<Response>();
+  const [error, setError] = useState<string>();
+
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await UserService.getUser();
-        if (response?.ok) {
-          const { firstname, lastname, login } =
-            (await response.json()) as IUser;
-          setFirstname(firstname);
-          setLastname(lastname);
-          setEmail(login);
-        } else {
-          setError(response);
+    (async () => {
+      await UserService.getUser(
+        (user: string) => {
+          const userConverted: IUser = JSON.parse(user);
+          setFirstname(userConverted.firstname);
+          setLastname(userConverted.lastname);
+          setEmail(userConverted.login);
+        },
+        (errorMessage: string) => {
+          setError(errorMessage);
         }
-      } catch (e) {
-        console.error('toto');
-      }
-    };
-    fetchUserInfo().catch(console.error);
-  }, []);
+      );
+    })();
+  }, [firstname, lastname, email]);
 
   return (
     <>
       {error ? (
-        <ErrorCard statusCode={error.status} errorMessage={'User Not Found'} />
+        <ErrorCard errorMessage={error} />
       ) : (
         <UserProfile firstname={firstname} lastname={lastname} login={email} />
       )}

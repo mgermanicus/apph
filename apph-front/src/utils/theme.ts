@@ -8,3 +8,12 @@ export const makeCardStyles = makeStyles({
     marginTop: 150
   }
 });
+
+export const makeAppBarStyles = makeStyles({
+  appBarStyle: {
+    position: 'absolute'
+  },
+  iconButton: {
+    mr: 2
+  }
+});

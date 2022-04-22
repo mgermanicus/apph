@@ -2,19 +2,15 @@ import { makeCardStyles } from '../../utils/theme';
 import { Card, CardContent, CardHeader, Typography } from '@mui/material';
 import * as React from 'react';
 
-interface IError {
-  statusCode: number;
-  errorMessage: string;
-}
-
 export const ErrorCard = ({
-  statusCode,
   errorMessage
-}: IError): JSX.Element => {
+}: {
+  errorMessage: string;
+}): JSX.Element => {
   const classes = makeCardStyles();
   return (
     <Card className={classes.cardStyle}>
-      <CardHeader title={`${statusCode} `} />
+      <CardHeader title={'ERROR'} />
       <CardContent>
         <Typography variant="body2">Message: {errorMessage}</Typography>
       </CardContent>

@@ -1,14 +1,12 @@
 import { Route, Routes } from 'react-router-dom';
-import { HeaderContainer } from './static/containers/HeaderContainer';
 import { UserProfileContainer } from './static/containers/UserProfileContainer';
+import { SignIn } from './static/components/SignIn';
 
 export const PrivateRoutes = (): JSX.Element => {
   return (
-    <>
-      <HeaderContainer />
-      <Routes>
-        <Route path="/me" element={<UserProfileContainer />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/login" element={<SignIn />} />
+      <Route path="/me" element={<UserProfileContainer />} />
+    </Routes>
   );
 };
