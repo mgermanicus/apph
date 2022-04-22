@@ -1,5 +1,6 @@
 package com.viseo.apph.controller;
 
+import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.service.UserService;
@@ -25,7 +26,7 @@ public class AuthController {
     public ResponseEntity login(@RequestBody UserRequest userRequest) {
         try {
             User user = userService.login(userRequest.getLogin(),userRequest.getPassword());
-            Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+            Key key = JwtConfig.getKey();
             String jws = Jwts.builder().claim("login",user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 7_200_000)).signWith(key).compact();
             return ResponseEntity.ok(jws);
         }
