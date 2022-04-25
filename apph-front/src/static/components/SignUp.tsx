@@ -35,7 +35,7 @@ function Copyright(props: { sx: SxProps }) {
 
 const theme = createTheme();
 
-export default function SignUp() {
+export function SignUp() {
   const [errorMessage, setErrorMessage] = useState('');
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -45,12 +45,16 @@ export default function SignUp() {
     const firstName = data.get('firstName')?.toString();
     const lastName = data.get('lastName')?.toString();
     if (email && password && firstName && lastName) {
-      UserService.signUp(email, password, firstName, lastName).then(
+      UserService.signUp(
+        email,
+        password,
+        firstName,
+        lastName,
         () => {
-          console.log('Compte crée'); //TODO redirection signIn
+          console.log('Création de compte réussie');
         },
-        (reason) => {
-          setErrorMessage(reason.message);
+        (errorMessage: string) => {
+          setErrorMessage(errorMessage);
         }
       );
     }

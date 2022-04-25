@@ -41,8 +41,11 @@ class UserService {
     email: string,
     password: string,
     firstName: string,
-    lastName: string
+    lastName: string,
+    handleSuccess: () => void,
+    handleError: (errorMessage: string) => void
   ) {
+    const URL = `${API_URL}/auth/signUp`;
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -55,18 +58,13 @@ class UserService {
         lastName
       })
     };
-    try {
-      return await fetch(`${API_URL}/auth/signUp`, requestOptions).then(
-        async (response) => {
-          if (response.ok) {
-            return response.text();
-          }
-          throw new Error(await response.text());
-        }
-      );
-    } catch (e) {
-      await Promise.reject(e);
-    }
+    const successFunction = () => {
+      handleSuccess();
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(errorMessage);
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
 }
 
