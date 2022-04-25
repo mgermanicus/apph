@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { createEvent, fireEvent, screen } from '@testing-library/react';
 import Server from '../../services/Server';
 
 export function fillText(label: RegExp, value: string) {
@@ -36,4 +36,25 @@ export function triggerRequestFailure(response: string) {
     errorFunction(response);
     return Promise.resolve();
   };
+}
+
+export function spyRequest() {
+  const spy = jest.fn();
+  Server.request = spy;
+  return spy;
+}
+
+export function inputFile(file: File, input: HTMLInputElement) {
+  fireEvent(
+    input,
+    createEvent('input', input, {
+      target: { files: [file] }
+    })
+  );
+}
+
+export function fakeFile(size: number, type: string) {
+  const file = new File([''], 'big_image.png', { type });
+  Object.defineProperty(file, 'size', { value: size });
+  return file;
 }

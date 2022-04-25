@@ -15,7 +15,6 @@ import {
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import ImageService from '../../services/ImageService';
 import { UploadStatus } from '../../utils/types/UploadImage';
-import imageFileCheck from '../../utils/imageFileCheck';
 import { createRef, FormEvent, useState } from 'react';
 
 function displayAlert(
