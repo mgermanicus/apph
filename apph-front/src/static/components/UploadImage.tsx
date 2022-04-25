@@ -101,10 +101,10 @@ export default function UploadImage(): JSX.Element {
                 inputRef={fileInput}
                 inputProps={{
                   type: 'file',
-                  accept: 'image/*'
+                  accept: 'image/*',
+                  'data-testid': 'file-input'
                 }}
                 required
-                id="fileInput"
               />
               {uploadStatus === 'uploading' && <LinearProgress />}
               <Button
