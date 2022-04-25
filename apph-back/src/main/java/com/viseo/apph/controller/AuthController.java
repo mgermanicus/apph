@@ -28,7 +28,6 @@ public class AuthController {
     {
         try
         {
-            System.out.println("test");
             User user = userService.login(userRequest.getLogin(),userRequest.getPassword());
             Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
             String jws = Jwts.builder().claim("login",user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 7_200_000)).signWith(key).compact();
@@ -39,5 +38,19 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Email or Password.");
         }
 
+    }
+
+    @PostMapping("/signUp")
+    public ResponseEntity register(@RequestBody UserRequest userRequest)
+    {
+        try
+        {
+            userService.registerUser(userRequest.getLogin(),userRequest.getPassword(), userRequest.getFirstName(), userRequest.getLastName());
+            return ResponseEntity.ok().body("User created");
+        }
+        catch(IllegalArgumentException e)
+        {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email already used.");
+        }
     }
 }

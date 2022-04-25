@@ -35,6 +35,38 @@ class UserService {
       await Promise.reject(e);
     }
   }
+
+  static async signUp(
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string
+  ) {
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email,
+        password: cryptoJS.SHA256(password).toString(),
+        firstName,
+        lastName
+      })
+    };
+    try {
+      return await fetch(`${API_URL}/auth/signUp`, requestOptions).then(
+        async (response) => {
+          if (response.ok) {
+            return response.text();
+          }
+          throw new Error(await response.text());
+        }
+      );
+    } catch (e) {
+      await Promise.reject(e);
+    }
+  }
 }
 
 export default UserService;

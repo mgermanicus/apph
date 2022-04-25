@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.lang.reflect.Field;
 
@@ -70,5 +71,34 @@ public class UserControllerTest {
         //THEN
         Assert.assertTrue( responseEntity.getStatusCode().is2xxSuccessful());
 
+    }
+
+    @Test
+    public void testRegister()
+    {
+        //GIVEN
+        createAuthController();
+        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenThrow(new NoResultException());
+        when(passwordEncoder.encode("password")).thenReturn("password");
+        //WHEN
+        ResponseEntity responseEntity = authController.register(userRequest);
+        //THEN
+        Assert.assertTrue( responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testRegisterFail()
+    {
+        //GIVEN
+        createAuthController();
+        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
+        when(typedQuery.setParameter("login","tintin")).thenReturn(typedQuery);
+        //WHEN
+        ResponseEntity responseEntity = authController.register(userRequest);
+        //THEN
+        Assert.assertTrue( responseEntity.getStatusCode().isError());
     }
 }
