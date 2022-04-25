@@ -37,17 +37,17 @@ public class S3Service implements IAmazonS3 {
         return upload(file, filename);
     }
 
-    public String saveWithName(MultipartFile file,String name) throws InvalidFileException, IOException {
+    public String saveWithName(MultipartFile file, String name) throws InvalidFileException, IOException {
         return upload(file, name);
     }
 
     public String upload(MultipartFile file, String name) throws InvalidFileException, IOException {
         if (file != null) {
-            File fileToSave = convertMultiPartToFile(file,name);
+            File fileToSave = convertMultiPartToFile(file, name);
             PutObjectResponse por = s3.putObject(PutObjectRequest.builder()
                     .bucket(bucketName).key(user + fileToSave.getName())
                     .contentLength(fileToSave.length()).build(), RequestBody.fromFile(fileToSave));
-            if(fileToSave.exists()){
+            if (fileToSave.exists()) {
                 Files.delete(Paths.get(fileToSave.getAbsolutePath()));
             }
             return por.eTag();
@@ -59,8 +59,8 @@ public class S3Service implements IAmazonS3 {
     @Override
     public byte[] download(String filename) {
         ResponseBytes<GetObjectResponse> s3Object = s3.getObject(
-        GetObjectRequest.builder().bucket(bucketName).key(user + filename).build(),
-        ResponseTransformer.toBytes());
+                GetObjectRequest.builder().bucket(bucketName).key(user + filename).build(),
+                ResponseTransformer.toBytes());
         return s3Object.asByteArray();
     }
 
@@ -71,13 +71,13 @@ public class S3Service implements IAmazonS3 {
     }
 
     public File convertMultiPartToFile(MultipartFile file, String name) throws IOException, InvalidFileException {
-        if( name != null){
+        if (name != null) {
             File convertedFile = new File(name);
-            try(FileOutputStream fos = new FileOutputStream(convertedFile)){
+            try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
                 fos.write(file.getBytes());
                 return convertedFile;
             }
-        }else{
+        } else {
             throw new InvalidFileException("Name is null");
         }
     }

@@ -25,7 +25,7 @@ public class S3Controller {
 
     @PostMapping("/upload")
     public ResponseEntity<ResponseDTO> upload(@RequestParam("file") MultipartFile file) {
-        try{
+        try {
             return ResponseEntity.ok(new MessageResponse(s3s.save(file)));
         } catch (IOException | InvalidFileException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));

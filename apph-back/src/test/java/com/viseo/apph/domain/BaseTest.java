@@ -1,17 +1,17 @@
 package com.viseo.apph.domain;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BaseTest {
 
     @Test
-    public void testBaseEntity(){
+    public void testBaseEntity() {
         // Given
         BaseEntity baseEntity = new BaseEntity().setId(1L).setVersion(2L);
         // Then
@@ -21,15 +21,15 @@ public class BaseTest {
     }
 
     @Test
-    public void testEquals(){
+    public void testEquals() {
         // Given
         BaseEntity baseEntity = new BaseEntity().setId(1L).setVersion(2L);
         BaseEntity baseEntityCopy = new BaseEntity().setId(1L).setVersion(2L);
         // Then
-        assertEquals(baseEntity,baseEntityCopy);
-        assertEquals(baseEntity,baseEntity);
-        assertNotEquals(baseEntity,null);
-        assertNotEquals(baseEntity,this);
-        assertNotEquals(baseEntity,baseEntityCopy.setId(3L));
+        assertEquals(baseEntity, baseEntityCopy);
+        assertEquals(baseEntity, baseEntity);
+        assertNotEquals(baseEntity, null);
+        assertNotEquals(baseEntity, this);
+        assertNotEquals(baseEntity, baseEntityCopy.setId(3L));
     }
 }

@@ -4,16 +4,15 @@ import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.service.UserService;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+
+import javax.persistence.NoResultException;
 import java.security.Key;
 import java.util.Date;
-import javax.persistence.NoResultException;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")

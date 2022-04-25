@@ -17,7 +17,7 @@ public class DataBaseConfig {
     @PersistenceContext
     EntityManager em;
     boolean init = false;
-    PasswordEncoder encoder =  new BCryptPasswordEncoder();
+    PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @EventListener(ContextRefreshedEvent.class)
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -27,10 +27,9 @@ public class DataBaseConfig {
     }
 
     @Transactional
-    public void initialize()
-    {
-        this.init=true;
-        User alexandre = new User().setLogin("Alexandre").setPassword( encoder.encode("13e15721c9d4ad58d34983344dfba265a90d80f63db77c2eb3804379d9608889"));
+    public void initialize() {
+        this.init = true;
+        User alexandre = new User().setLogin("Alexandre").setPassword(encoder.encode("13e15721c9d4ad58d34983344dfba265a90d80f63db77c2eb3804379d9608889"));
         User baptiste = new User().setLogin("Baptiste").setPassword(encoder.encode("15cc3b2994423d897d1e1ba43a670870fda7c4d62548416603a8ddddf7b9e06e"));
         User wassim = new User().setLogin("Wassim").setPassword(encoder.encode("789e40562e8ad7d8e789a970cf432f52ab355fb45267f1116f597d08b1f7455f"));
         User min = new User().setLogin("Min").setPassword(encoder.encode("dea79332147ffe1fb2a81cf9a5bdf0066ddcc625699996ede0ce140e5cb004b1"));

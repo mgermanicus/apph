@@ -38,10 +38,10 @@ public class PhotoControllerTest {
         Photo photo = new Photo();
         // When
         when(photoService.addPhoto(name)).thenReturn(photo);
-        ResponseEntity<ResponseDTO> responseEntity = photoController.upload(file,name);
+        ResponseEntity<ResponseDTO> responseEntity = photoController.upload(file, name);
         // Then
         verify(photoService, times(1)).addPhoto(any());
-        verify(s3Service, times(1)).saveWithName(any(),anyString());
+        verify(s3Service, times(1)).saveWithName(any(), anyString());
         assertEquals(responseEntity.getStatusCode().toString()
                 , HttpStatus.OK.toString());
     }
@@ -54,8 +54,8 @@ public class PhotoControllerTest {
         Photo photo = new Photo();
         // When
         when(photoService.addPhoto(name)).thenReturn(photo);
-        when(s3Service.saveWithName(any(),anyString())).thenThrow(InvalidFileException.class);
-        ResponseEntity<ResponseDTO> responseEntity = photoController.upload(file,name);
+        when(s3Service.saveWithName(any(), anyString())).thenThrow(InvalidFileException.class);
+        ResponseEntity<ResponseDTO> responseEntity = photoController.upload(file, name);
         // Then
         assertEquals(responseEntity.getStatusCode().toString()
                 , HttpStatus.INTERNAL_SERVER_ERROR.toString());

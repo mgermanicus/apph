@@ -32,22 +32,22 @@ public class S3ControllerTest {
     }
 
     @Test
-    public void testDownload(){
+    public void testDownload() {
         // Given
         String fileName = "test";
         // When
         s3Controller.download(fileName);
         // Then
-        verify(s3Service,times(1)).download(anyString());
+        verify(s3Service, times(1)).download(anyString());
     }
 
     @Test
-    public void testDelete(){
+    public void testDelete() {
         // Given
         String fileName = "test";
         // When
         s3Controller.delete(fileName);
         // Then
-        verify(s3Service,times(1)).delete(anyString());
+        verify(s3Service, times(1)).delete(anyString());
     }
 }

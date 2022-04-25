@@ -4,8 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="photos")
-public class Photo extends BaseEntity{
+@Table(name = "photos")
+public class Photo extends BaseEntity {
 
     String name;
 

@@ -23,9 +23,9 @@ public class PhotoService {
 
     public String getFormat(MultipartFile file) throws InvalidFileException {
         String contentType = file.getContentType();
-        if(contentType != null && contentType.startsWith("image/")){
+        if (contentType != null && contentType.startsWith("image/")) {
             String[] types = contentType.split("/");
-            return "."+types[1] ;
+            return "." + types[1];
         } else {
             throw new InvalidFileException("Wrong file format");
         }

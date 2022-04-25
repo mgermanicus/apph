@@ -13,18 +13,18 @@ import javax.transaction.Transactional;
 public class UserService {
     @Autowired
     UserDAO userDAO;
-    PasswordEncoder encoder =  new BCryptPasswordEncoder();
+    PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Transactional
     public void registerUser(String login, String password) {
-      User newUser = new User().setLogin(login).setPassword(password);
-      userDAO.createUser(newUser);
+        User newUser = new User().setLogin(login).setPassword(password);
+        userDAO.createUser(newUser);
     }
 
     @Transactional
-    public User login(String login, String password) throws IllegalArgumentException{
+    public User login(String login, String password) throws IllegalArgumentException {
         User user = userDAO.getUserByLogin(login);
-        if(encoder.matches(password,user.getPassword()))
+        if (encoder.matches(password, user.getPassword()))
             return user;
         throw new IllegalArgumentException();
     }

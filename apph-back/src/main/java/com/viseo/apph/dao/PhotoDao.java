@@ -11,7 +11,7 @@ public class PhotoDao {
     @PersistenceContext
     EntityManager em;
 
-    public Photo addPhoto(Photo photo){
+    public Photo addPhoto(Photo photo) {
         em.persist(photo);
         return photo;
     }
