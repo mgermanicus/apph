@@ -2,7 +2,7 @@ package com.viseo.apph.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class MessageResponse implements ResponseDTO {
+public class MessageResponse implements IResponseDTO {
     @JsonProperty("message")
     String message;
 

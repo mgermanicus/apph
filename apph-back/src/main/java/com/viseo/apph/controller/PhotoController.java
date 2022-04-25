@@ -2,7 +2,7 @@ package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.dto.MessageResponse;
-import com.viseo.apph.dto.ResponseDTO;
+import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.PhotoService;
 import com.viseo.apph.service.S3Service;
@@ -29,7 +29,7 @@ public class PhotoController {
     S3Service s3Service;
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseDTO> upload(MultipartFile file, String name) {
+    public ResponseEntity<IResponseDTO> upload(MultipartFile file, String name) {
         try {
             String format = photoService.getFormat(file);
             Photo photo = photoService.addPhoto(name);
