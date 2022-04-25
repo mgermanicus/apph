@@ -31,9 +31,8 @@ public class PhotoServiceTest {
         try {
             Field emField = dao.getClass().getDeclaredField("em");
             emField.setAccessible(true);
-            emField.set(dao,em);
-        }
-        catch(IllegalAccessException | NoSuchFieldException e) {
+            emField.set(dao, em);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }
     }

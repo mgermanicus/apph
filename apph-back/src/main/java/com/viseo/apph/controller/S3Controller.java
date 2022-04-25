@@ -1,7 +1,7 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.dto.MessageResponse;
-import com.viseo.apph.dto.ResponseDTO;
+import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +24,8 @@ public class S3Controller {
     S3Service s3s;
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseDTO> upload(@RequestParam("file") MultipartFile file) {
-        try{
+    public ResponseEntity<IResponseDTO> upload(@RequestParam("file") MultipartFile file) {
+        try {
             return ResponseEntity.ok(new MessageResponse(s3s.save(file)));
         } catch (IOException | InvalidFileException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
