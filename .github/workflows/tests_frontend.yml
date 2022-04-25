@@ -1,0 +1,20 @@
+name: linter
+on: push
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apph-front
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+      - name: Install modules
+        run: npm install
+      - name: Run tests
+        run: npm run test -- --watchAll=false
