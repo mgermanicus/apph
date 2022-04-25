@@ -13,7 +13,6 @@ import javax.transaction.Transactional;
 public class UserService {
     @Autowired
     UserDAO userDAO;
-
     PasswordEncoder encoder =  new BCryptPasswordEncoder();
 
     @Transactional
@@ -24,11 +23,6 @@ public class UserService {
         }
       User newUser = new User().setLogin(login).setPassword(encoder.encode(password)).setFirstName(firstName).setLastName(lastName);
       userDAO.createUser(newUser);
-    }
-
-    @Transactional
-    public void deleteUser(long userId){
-        userDAO.deleteUser(userId);
     }
 
     @Transactional

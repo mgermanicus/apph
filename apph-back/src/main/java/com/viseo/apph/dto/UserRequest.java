@@ -36,15 +36,6 @@ public class UserRequest {
         return this;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public UserRequest setId(long id) {
-        this.id = id;
-        return this;
-    }
-
     public String getLogin() {
         return login;
     }

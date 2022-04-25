@@ -1,8 +1,8 @@
 import React from 'react';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import SignIn from './static/components/SignIn';
-import SignUp from './static/components/SignUp';
+import { SignIn } from './static/components/SignIn';
+import { SignUp } from './static/components/SignUp';
 import { createRoot } from 'react-dom/client';
 
 const container = document.getElementById('root');

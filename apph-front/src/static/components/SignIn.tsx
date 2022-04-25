@@ -36,7 +36,17 @@ function Copyright(props: { sx: SxProps }) {
 
 const theme = createTheme();
 
-export default function SignIn() {
+let connected = false;
+
+export function isConnected() {
+  return connected;
+}
+
+export function resetConnected() {
+  connected = false;
+}
+
+export function SignIn() {
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -45,12 +55,15 @@ export default function SignIn() {
     const email = data.get('email')?.toString();
     const password = data.get('password')?.toString();
     if (email && password) {
-      UserService.signIn(email, password).then(
+      UserService.signIn(
+        email,
+        password,
         () => {
+          connected = true;
           console.log('Connexion réussie, token stocké dans les cookies'); //TODO redirection vers "mes photos"
         },
-        (reason) => {
-          setErrorMessage(reason.message);
+        (errorMessage: string) => {
+          setErrorMessage(errorMessage);
         }
       );
     }
