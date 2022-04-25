@@ -125,7 +125,7 @@ export function SignIn() {
             </Link>
             <br />
             <br />
-            <Link href="#" variant="body2">
+            <Link href="signUp" variant="body2">
               Vous n'avez pas encore de compte ? Enregistrez-vous !
             </Link>
           </Box>
