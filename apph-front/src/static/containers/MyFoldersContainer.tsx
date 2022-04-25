@@ -6,61 +6,75 @@ import TreeView from '@mui/lab/TreeView';
 import { FolderTree } from '../components/FolderTree';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ChevronRight from '@mui/icons-material/ChevronRight';
+import { Alert } from '@mui/material';
+import * as React from 'react';
 
 export const MyFoldersContainer = (): JSX.Element => {
   const [rootFolder, setRootFolder] = useState<IFolder | null>(null);
   const [selectedFolder, setSelectedFolder] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     getFolders().catch(console.error);
   }, []);
 
   const getFolders = async () => {
-    const parentFolder = await FolderService.getFolders(1);
-    if (parentFolder) {
-      setRootFolder(parentFolder);
-      setSelectedFolder(parentFolder.id);
-      setLoading(false);
-    } else {
-      console.log('Réponse nulle !');
-    }
+    await FolderService.getFolders(
+      5,
+      (parentFolder) => {
+        if (parentFolder) {
+          setRootFolder(parentFolder);
+          setSelectedFolder(parentFolder.id);
+        } else {
+          setErrorMessage('Réponse nulle !');
+        }
+      },
+      (error: string) => {
+        setErrorMessage(error);
+      }
+    );
+    setLoading(false);
   };
 
-  return (
-    <>
-      {loading ? (
-        //TODO replace by a real loading page
-        <CircularProgress />
-      ) : (
-        <div
-          style={{
-            display: 'flex'
+  if (loading) {
+    //TODO replace by a real loading page
+    return <CircularProgress />;
+  } else if (errorMessage) {
+    return (
+      <Alert sx={{ mb: 2 }} severity="error">
+        {errorMessage}
+      </Alert>
+    );
+  } else {
+    return (
+      <div
+        style={{
+          display: 'flex'
+        }}
+      >
+        <TreeView
+          defaultCollapseIcon={<ExpandMore />}
+          defaultExpandIcon={<ChevronRight />}
+          selected={selectedFolder}
+          onNodeSelect={(_event: SyntheticEvent, node: string) => {
+            setSelectedFolder(node);
+          }}
+          sx={{
+            overflowX: 'hidden',
+            width: '30%'
           }}
         >
-          <TreeView
-            defaultCollapseIcon={<ExpandMore />}
-            defaultExpandIcon={<ChevronRight />}
-            selected={selectedFolder}
-            onNodeSelect={(_event: SyntheticEvent, node: string) => {
-              setSelectedFolder(node);
-            }}
-            sx={{
-              overflowX: 'hidden',
-              width: '30%'
-            }}
-          >
-            <FolderTree folder={rootFolder} />
-          </TreeView>
-          {/*TODO display folder's content here*/}
-          <div
-            style={{
-              width: '70%'
-            }}
-          >
-            Selected folder's id: {selectedFolder}
-          </div>
+          <FolderTree folder={rootFolder} />
+        </TreeView>
+        {/*TODO display folder's content here*/}
+        <div
+          style={{
+            width: '70%'
+          }}
+        >
+          Selected folder's id: {selectedFolder}
         </div>
-      )}
-    </>
-  );
+      </div>
+    );
+  }
 };

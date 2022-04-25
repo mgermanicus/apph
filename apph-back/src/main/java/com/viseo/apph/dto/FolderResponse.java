@@ -3,7 +3,7 @@ package com.viseo.apph.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FolderResponse implements ResponseDTO {
+public class FolderResponse implements IResponseDTO {
     long id;
 
     long version;

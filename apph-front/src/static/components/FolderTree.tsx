@@ -1,5 +1,7 @@
 import { IFolder } from '../../utils/types/Folder';
 import { TreeItem } from '@mui/lab';
+import { Alert } from '@mui/material';
+import * as React from 'react';
 
 export const FolderTree = ({
   folder
@@ -15,8 +17,10 @@ export const FolderTree = ({
       </TreeItem>
     );
   } else {
-    //TODO handling error when folder is null
-    console.error('Folder is null !');
-    return <>Error</>;
+    return (
+      <Alert sx={{ mb: 2 }} severity="error">
+        Folder is null !
+      </Alert>
+    );
   }
 };

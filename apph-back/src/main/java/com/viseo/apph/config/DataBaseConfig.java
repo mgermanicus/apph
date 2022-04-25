@@ -25,7 +25,7 @@ public class DataBaseConfig {
 
     @EventListener(ContextRefreshedEvent.class)
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        if (!this.init) {
+        if (this.init) {
             event.getApplicationContext().getBean(DataBaseConfig.class).initialize();
         }
     }

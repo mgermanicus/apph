@@ -22,7 +22,7 @@ public class AuthController {
     UserService userService;
 
     @PostMapping("/signIn")
-    public ResponseEntity login(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<String> login(@RequestBody UserRequest userRequest) {
         try {
             User user = userService.login(userRequest.getLogin(), userRequest.getPassword());
             Key key = JwtConfig.getKey();
