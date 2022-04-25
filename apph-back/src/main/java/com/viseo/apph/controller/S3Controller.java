@@ -27,8 +27,10 @@ public class S3Controller {
     public ResponseEntity<IResponseDTO> upload(@RequestParam("file") MultipartFile file) {
         try {
             return ResponseEntity.ok(new MessageResponse(s3s.save(file)));
-        } catch (IOException | InvalidFileException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
+        } catch (InvalidFileException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Le format du fichier n'est pas valide"));
         }
     }
 

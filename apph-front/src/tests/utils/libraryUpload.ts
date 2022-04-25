@@ -1,6 +1,6 @@
 import { createEvent, fireEvent } from '@testing-library/react';
 
-export function uploadFile(file: File, input: HTMLInputElement) {
+export function inputFile(file: File, input: HTMLInputElement) {
   fireEvent(
     input,
     createEvent('input', input, {

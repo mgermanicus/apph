@@ -34,8 +34,10 @@ public class PhotoController {
             String format = photoService.getFormat(file);
             Photo photo = photoService.addPhoto(name);
             return ResponseEntity.ok(new MessageResponse(s3Service.saveWithName(file, photo.getId() + format)));
-        } catch (IOException | InvalidFileException | S3Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
+        } catch (IOException | S3Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
+        } catch (InvalidFileException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Le format du fichier n'est pas valide"));
         }
     }
 }
