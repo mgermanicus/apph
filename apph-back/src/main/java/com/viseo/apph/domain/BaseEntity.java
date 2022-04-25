@@ -52,8 +52,6 @@ public class BaseEntity implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         BaseEntity other = (BaseEntity) obj;
-        if (id != other.id)
-            return false;
-        return true;
+        return (id == other.id);
     }
 }
