@@ -24,7 +24,7 @@ public class S3Config {
     @Bean(destroyMethod = "close")
     public S3Client s3() {
         awsBasicCredentials = AwsBasicCredentials.create(accessKey, secretKey);
-        return S3Client.builder().region(Region.of(region))
-                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials)).build();
+        return S3Client.builder()
+                .region(Region.of(region)).credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials)).build();
     }
 }
