@@ -35,3 +35,5 @@ Runs eslint on all project's files.
 ### `npm run prettier`
 
 Runs prettier on all project's files.
+
+test workflow jira (à supprimer si ce n'est pas fait)
