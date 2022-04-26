@@ -17,17 +17,11 @@ export default class ImageService {
       method: 'POST',
       body: formData
     };
-    const successFunction = () => {
-      handleSuccess();
-    };
-    const errorFunction = (errorMessage: string) => {
-      handleError(errorMessage);
-    };
-    return Server.request(
+ return Server.request(
       `${API_URL}photo/upload`,
       requestOptions,
-      successFunction,
-      errorFunction
+      handleSuccess,
+      handleError
     );
   }
 }
