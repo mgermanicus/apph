@@ -10,6 +10,7 @@ public class BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+
     @Version
     long version;
 

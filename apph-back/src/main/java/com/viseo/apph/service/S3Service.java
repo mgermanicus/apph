@@ -1,11 +1,10 @@
 package com.viseo.apph.service;
 
+import com.viseo.apph.exception.InvalidFileException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.ResponseBytes;
-import software.amazon.awssdk.core.exception.SdkServiceException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -14,6 +13,8 @@ import software.amazon.awssdk.services.s3.model.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Service
 public class S3Service implements IAmazonS3 {
@@ -31,47 +32,53 @@ public class S3Service implements IAmazonS3 {
     }
 
     @Override
-    public String save(MultipartFile file) {
+    public String save(MultipartFile file) throws InvalidFileException, IOException {
         String filename = file.getOriginalFilename();
-        try {
-            File fileToSave = convertMultiPartToFile(file);
+        return upload(file, filename);
+    }
+
+    public String saveWithName(MultipartFile file, String name) throws InvalidFileException, IOException {
+        return upload(file, name);
+    }
+
+    public String upload(MultipartFile file, String name) throws InvalidFileException, IOException {
+        if (file != null) {
+            File fileToSave = convertMultiPartToFile(file, name);
             PutObjectResponse por = s3.putObject(PutObjectRequest.builder()
-                    .bucket(bucketName).key(user + filename)
-                    .contentType(MediaType.APPLICATION_PDF.toString())
-                    .contentLength((long) fileToSave.length()).build(), RequestBody.fromFile(fileToSave));
-            return por.toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+                    .bucket(bucketName).key(user + fileToSave.getName())
+                    .contentLength(fileToSave.length()).build(), RequestBody.fromFile(fileToSave));
+            if (fileToSave.exists()) {
+                Files.delete(Paths.get(fileToSave.getAbsolutePath()));
+            }
+            return por.eTag();
+        } else {
+            throw new InvalidFileException("Invalid file");
         }
     }
 
     @Override
     public byte[] download(String filename) {
-        try {
-            ResponseBytes<GetObjectResponse> s3Object = s3.getObject(
-                    GetObjectRequest.builder().bucket(bucketName).key(user + filename).build(),
-                    ResponseTransformer.toBytes());
-            return s3Object.asByteArray();
-        } catch (SdkServiceException e) {
-            throw new RuntimeException(e);
-        }
+        ResponseBytes<GetObjectResponse> s3Object = s3.getObject(
+                GetObjectRequest.builder().bucket(bucketName).key(user + filename).build(),
+                ResponseTransformer.toBytes());
+        return s3Object.asByteArray();
     }
 
     @Override
     public String delete(String filename) {
-        try {
-            s3.deleteObject(DeleteObjectRequest.builder().bucket(bucketName).key(user + filename).build());
-            return filename + " deleted";
-        } catch (SdkServiceException e) {
-            throw new RuntimeException(e);
-        }
+        s3.deleteObject(DeleteObjectRequest.builder().bucket(bucketName).key(user + filename).build());
+        return filename + " deleted";
     }
 
-    public File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File convertedFile = new File(file.getOriginalFilename());
-        FileOutputStream fos = new FileOutputStream(convertedFile);
-        fos.write(file.getBytes());
-        fos.close();
-        return convertedFile;
+    public File convertMultiPartToFile(MultipartFile file, String name) throws IOException, InvalidFileException {
+        if (name != null) {
+            File convertedFile = new File(name);
+            try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
+                fos.write(file.getBytes());
+                return convertedFile;
+            }
+        } else {
+            throw new InvalidFileException("Name is null");
+        }
     }
 }
