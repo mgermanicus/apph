@@ -18,7 +18,7 @@ export default class Server {
       if (error instanceof Error) {
         errorFunction(error.message);
       } else {
-        console.log(error);
+        console.error(error);
       }
     }
   }
