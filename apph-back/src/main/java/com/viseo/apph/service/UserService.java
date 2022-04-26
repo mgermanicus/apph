@@ -31,9 +31,8 @@ public class UserService {
     }
 
     @Transactional
-    public User getUser(String login, Claims claims) {
-        if (claims.get("login").equals(login))
-            return userDAO.getUserByLogin(login);
-        return null;
+    public User getUser(Claims claims) {
+        String login = claims.get("login").toString();
+        return userDAO.getUserByLogin(login);
     }
 }

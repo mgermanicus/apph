@@ -66,24 +66,9 @@ public class UserTest {
         when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("toto").setPassword("password").setFirstname("firstname").setLastname("lastname"));
         when(typedQuery.setParameter("login", "toto")).thenReturn(typedQuery);
         //WHEN
-        ResponseEntity responseEntity = userController.getUserInfo(jws, "toto");
+        ResponseEntity responseEntity = userController.getUserInfo(jws);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
-    }
-
-    @Test
-    public void testFailDifferentLogin() {
-        //GIVEN
-        createUserController();
-        User user = new User().setLogin("toto").setPassword("password");
-        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", user.getLogin())).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenThrow(new NoResultException());
-        //WHEN
-        ResponseEntity responseEntity = userController.getUserInfo(jws, user.getLogin());
-        //THEN
-        Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -93,7 +78,7 @@ public class UserTest {
         User user = new User().setLogin("toto").setPassword("password");
         String jws = Jwts.builder().claim("login", "dumb_toto").setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         //WHEN
-        ResponseEntity responseEntity = userController.getUserInfo(jws, user.getLogin());
+        ResponseEntity responseEntity = userController.getUserInfo(jws);
         //THEN
         Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.FORBIDDEN);
     }
@@ -107,7 +92,7 @@ public class UserTest {
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("toto").setPassword("password").setFirstname("firstname").setLastname("lastname"));
         //WHEN
-        ResponseEntity responseEntity = userController.getUserInfo(jws, user.getLogin());
+        ResponseEntity responseEntity = userController.getUserInfo(jws);
         //THEN
         Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.UNAUTHORIZED);
     }
@@ -122,7 +107,7 @@ public class UserTest {
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("toto").setPassword("password").setFirstname("firstname").setLastname("lastname"));
         //WHEN
-        ResponseEntity responseEntity = userController.getUserInfo(jws, user.getLogin());
+        ResponseEntity responseEntity = userController.getUserInfo(jws);
         //THEN
         Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.UNAUTHORIZED);
     }

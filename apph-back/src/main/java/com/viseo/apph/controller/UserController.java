@@ -15,24 +15,22 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.NoResultException;
 
 @RestController
-@RequestMapping("/user")
 @CrossOrigin(origins = "${front-server}")
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
     UserService userService;
 
-    @GetMapping("/{login}")
-    public ResponseEntity getUserInfo(@RequestHeader("Authentication") String token, @PathVariable("login") String login) {
+    @GetMapping("/")
+    public ResponseEntity getUserInfo(@RequestHeader("Authentication") String token) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            User user = userService.getUser(login, claims);
-            if (user != null)
-                return ResponseEntity.ok(new User().setLogin(user.getLogin()).setFirstname(user.getFirstname())
-                        .setLastname(user.getLastname()));
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not Authorized");
-        } catch (NoResultException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
+            User user = userService.getUser(claims);
+            return ResponseEntity.ok(new User().setLogin(user.getLogin()).setFirstname(user.getFirstname())
+                    .setLastname(user.getLastname()));
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User does not exist");
         } catch (SignatureException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token not valid");
         } catch (ExpiredJwtException e) {

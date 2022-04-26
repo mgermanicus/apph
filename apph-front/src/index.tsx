@@ -1,12 +1,12 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import reportWebVitals from './reportWebVitals';
 import { App } from './App';
+import React from 'react';
+import reportWebVitals from './reportWebVitals';
+import { createRoot } from 'react-dom/client';
 
-const el = document.getElementById('root');
-if (el === null) throw new Error('Root container missing in index.html');
+const container = document.getElementById('root');
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const root = createRoot(container!);
 
-const root = createRoot(el);
 root.render(
   <React.StrictMode>
     <App />
