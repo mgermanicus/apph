@@ -28,4 +28,9 @@ public class UserService {
             return user;
         throw new IllegalArgumentException();
     }
+
+    @Transactional
+    public User getUserById(long id) {
+        return userDAO.getUserById(id);
+    }
 }

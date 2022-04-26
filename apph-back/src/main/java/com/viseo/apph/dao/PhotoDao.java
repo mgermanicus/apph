@@ -18,7 +18,7 @@ public class PhotoDao {
         return photo;
     }
 
-    public List<Photo> getUserByLogin(long idUser) throws NoResultException {
+    public List<Photo> getUserPhotos(long idUser) throws NoResultException {
         return em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)
                 .setParameter("idUser", idUser)
                 .getResultList();

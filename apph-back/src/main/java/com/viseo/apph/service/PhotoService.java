@@ -2,12 +2,14 @@ package com.viseo.apph.service;
 
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -34,7 +36,20 @@ public class PhotoService {
     }
 
     @Transactional
-    public List<Photo> getInfoPhoto(long idUser) {
-        return photoDao.getUserByLogin(idUser);
+    public List<PhotoResponse> getUserPhotos(long idUser) {
+        List<Photo> usersPhoto = photoDao.getUserPhotos(idUser);
+        List<PhotoResponse> usersPhotoResponse = new ArrayList<PhotoResponse>();
+        for(Photo photo:usersPhoto) {
+            PhotoResponse photoResponse = new PhotoResponse()
+                    .setTitle(photo.getTitle())
+                    .setCreationDate(photo.getCreationDate())
+                    .setSize(photo.getSize())
+                    .setTags(photo.getTags())
+                    .setDescription(photo.getDescription())
+                    .setShootingDate(photo.getShootingDate())
+                    .setUrl("fake url"); //TODO RECUPERER LE VRAI URL
+            usersPhotoResponse.add(photoResponse);
+        }
+        return usersPhotoResponse;
     }
 }

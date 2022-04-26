@@ -1,11 +1,14 @@
 package com.viseo.apph.controller;
 
+import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.dto.MessageResponse;
+import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.PhotoService;
 import com.viseo.apph.service.S3Service;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +30,10 @@ public class PhotoController {
     S3Service s3Service;
 
 
-    @GetMapping(value = "/", produces = "application/json")
-    public ResponseEntity getInfoPhoto() {
-        List<Photo> infoPhotos = photoService.getInfoPhoto(1);
-
+    @GetMapping(value = "/infos", produces = "application/json")
+    public ResponseEntity<List<PhotoResponse>> getUserPhotos(@RequestHeader("token") String token) {
+        int userId = (int)Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody().get("id");
+        List<PhotoResponse> infoPhotos = photoService.getUserPhotos(userId);
         return ResponseEntity.ok(infoPhotos);
     }
 

@@ -26,7 +26,7 @@ public class AuthController {
         try {
             User user = userService.login(userRequest.getLogin(), userRequest.getPassword());
             Key key = JwtConfig.getKey();
-            String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 7_200_000)).signWith(key).compact();
+            String jws = Jwts.builder().claim("login", user.getLogin()).claim("id",user.getId()).setExpiration(new Date(System.currentTimeMillis() + 7_200_000)).signWith(key).compact();
             return ResponseEntity.ok(jws);
         } catch (IllegalArgumentException | NoResultException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Email or Password.");
