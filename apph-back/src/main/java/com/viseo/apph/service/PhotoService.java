@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -18,15 +17,9 @@ public class PhotoService {
     PhotoDao photoDao;
 
     @Transactional
-    public Photo addPhoto(String title, long idUser, int size, String description, String tags, Date creationDate, Date shootingDate) {
+    public Photo addPhoto(String title) {
         Photo photo = new Photo()
-                .setTitle(title)
-                .setIdUser(idUser)
-                .setSize(size)
-                .setDescription(description)
-                .setTags(tags)
-                .setCreationDate(creationDate)
-                .setShootingDate(shootingDate);
+                .setTitle(title);
         return photoDao.addPhoto(photo);
     }
 
@@ -41,7 +34,7 @@ public class PhotoService {
     }
 
     @Transactional
-    public List<Photo> getInfoPhoto(long idUser){
+    public List<Photo> getInfoPhoto(long idUser) {
         return photoDao.getUserByLogin(idUser);
     }
 }

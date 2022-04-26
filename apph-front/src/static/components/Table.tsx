@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import {useEffect, useState} from "react";
+import { useEffect, useState } from 'react';
 
 const columns: GridColDef[] = [
   { field: 'title', headerName: 'Title', width: 70 },

@@ -17,9 +17,10 @@ public class PhotoDao {
         em.persist(photo);
         return photo;
     }
+
     public List<Photo> getUserByLogin(long idUser) throws NoResultException {
         return em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)
-                .setParameter("idUser",idUser)
+                .setParameter("idUser", idUser)
                 .getResultList();
     }
 }

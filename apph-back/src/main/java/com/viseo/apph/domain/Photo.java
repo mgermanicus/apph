@@ -3,7 +3,6 @@ package com.viseo.apph.domain;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "photos")
