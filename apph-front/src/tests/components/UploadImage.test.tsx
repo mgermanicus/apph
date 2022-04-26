@@ -1,13 +1,19 @@
 import { render } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 import UploadImageContainer from '../../static/containers/UploadImageContainer';
+
 import {
   clickButton,
-  fakeFile,
   fillText,
-  inputFile,
-  spyRequest
+  spyRequestFailure,
+  spyRequestSuccess,
+  triggerRequestFailure
 } from '../utils/library';
+import {
+  fakeFile,
+  fakeUploadRequestParams,
+  inputFile
+} from '../utils/fileLibrary';
 
 describe('Test UploadImage', () => {
   beforeEach(() => {
@@ -19,7 +25,7 @@ describe('Test UploadImage', () => {
     render(<UploadImageContainer />);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000000000, 'image/png');
-    const spyRequestFunction = spyRequest();
+    const spyRequestFunction = spyRequestFailure('');
     //WHEN
     fillText(/Titre de la photo/, 'Titre');
     inputFile(file, fileInput);
@@ -36,7 +42,7 @@ describe('Test UploadImage', () => {
     render(<UploadImageContainer />);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000, 'application/zip');
-    const spyRequestFunction = spyRequest();
+    const spyRequestFunction = spyRequestFailure('');
     //WHEN
     fillText(/Titre de la photo/, 'Titre');
     inputFile(file, fileInput);
@@ -48,6 +54,42 @@ describe('Test UploadImage', () => {
     expect(spyRequestFunction).not.toBeCalled();
   });
 
-  // TODO test image upload success
-  // TODO test error when submitting incomplete form
+  it('tests successful file upload', () => {
+    //GIVEN
+    render(<UploadImageContainer />);
+    const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
+    const file = fakeFile(1000, 'image/png');
+    const title = 'Titre';
+    const spyRequestFunction = spyRequestSuccess();
+    const requestParams = fakeUploadRequestParams(file, title);
+    //WHEN
+    fillText(/Titre de la photo/, title);
+    inputFile(file, fileInput);
+    clickButton(/Ajouter/);
+    //THEN
+    expect(
+      screen.getByText(/Votre fichier a bien été uploadé/)
+    ).toBeInTheDocument();
+    expect(spyRequestFunction).toBeCalledWith(
+      requestParams.URL,
+      requestParams.requestOptions,
+      expect.anything(),
+      expect.anything()
+    );
+  });
+
+  it('tests handling of server error', () => {
+    //GIVEN
+    render(<UploadImageContainer />);
+    const serverError = "Une erreur est survenue lors de l'upload";
+    const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
+    const file = fakeFile(1000, 'image/png');
+    triggerRequestFailure(serverError);
+    //WHEN
+    fillText(/Titre de la photo/, 'Titre');
+    inputFile(file, fileInput);
+    clickButton(/Ajouter/);
+    //THEN
+    expect(screen.getByText(new RegExp(serverError))).toBeInTheDocument();
+  });
 });

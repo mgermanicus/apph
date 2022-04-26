@@ -38,23 +38,34 @@ export function triggerRequestFailure(response: string) {
   };
 }
 
-export function spyRequest() {
-  const spy = jest.fn();
+export function spyRequestFailure(error: string) {
+  const spy = jest.fn(
+    (
+      URL: string,
+      requestOptions: RequestInit,
+      successFunction: (body: string) => void | undefined,
+      errorFunction: (error: string) => void
+    ) => {
+      errorFunction(error);
+      return Promise.resolve();
+    }
+  );
   Server.request = spy;
   return spy;
 }
 
-export function inputFile(file: File, input: HTMLInputElement) {
-  fireEvent(
-    input,
-    createEvent('input', input, {
-      target: { files: [file] }
-    })
+export function spyRequestSuccess() {
+  const spy = jest.fn(
+    (
+      URL: string,
+      requestOptions: RequestInit,
+      successFunction: (body: string) => void | undefined,
+      errorFunction: (error: string) => void
+    ) => {
+      successFunction('');
+      return Promise.resolve();
+    }
   );
-}
-
-export function fakeFile(size: number, type: string) {
-  const file = new File([''], 'big_image.png', { type });
-  Object.defineProperty(file, 'size', { value: size });
-  return file;
+  Server.request = spy;
+  return spy;
 }
