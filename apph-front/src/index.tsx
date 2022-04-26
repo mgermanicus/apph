@@ -3,10 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import UploadImageContainer from './static/containers/UploadImageContainer';
+import App from './App';
 
 ReactDOM.render(
   <React.StrictMode>
-    <UploadImageContainer />
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );
