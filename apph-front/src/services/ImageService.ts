@@ -1,6 +1,7 @@
 import Server from './Server';
 import imageFileCheck from '../utils/imageFileCheck';
 const API_URL = 'http://localhost:8080/';
+import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 const { token } = cookies.get('user');
 export default class ImageService {

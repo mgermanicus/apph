@@ -24,12 +24,14 @@ const columns: GridColDef[] = [
 
 
 export default function DataTable() {
-  const [data,setData] = useState([]);
+  const [data, setData] = useState([]);
   useEffect(() => {
-    fetch('http://localhost:8080/photo/1').then( (response) => response.json()).then(val=>{
-      setData(val)
-    });
-  },[])
+    fetch('http://localhost:8080/photo/1')
+      .then((response) => response.json())
+      .then((val) => {
+        setData(val);
+      });
+  }, []);
   return (
     <div style={{ height: 400, width: '100%' }}>
       <DataGrid
