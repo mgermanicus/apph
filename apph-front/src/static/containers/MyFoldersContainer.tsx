@@ -20,20 +20,18 @@ export const MyFoldersContainer = (): JSX.Element => {
 
   const getFolders = async () => {
     await FolderService.getFolders(
+      //TODO replace by the userId or change by the token
       5,
       (parentFolder) => {
-        if (parentFolder) {
-          setRootFolder(parentFolder);
-          setSelectedFolder(parentFolder.id);
-        } else {
-          setErrorMessage('Réponse nulle !');
-        }
+        setRootFolder(parentFolder);
+        setSelectedFolder(parentFolder.id);
+        setLoading(false);
       },
       (error: string) => {
         setErrorMessage(error);
+        setLoading(false);
       }
     );
-    setLoading(false);
   };
 
   if (loading) {
