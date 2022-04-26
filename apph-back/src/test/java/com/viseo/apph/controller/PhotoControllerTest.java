@@ -26,15 +26,5 @@ public class PhotoControllerTest {
     @InjectMocks
     PhotoController photoController;
 
-    @Test
-    public void testUpload() throws InvalidFileException, IOException {
-        // Given
-        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
-        String name = "Test@";
-        // When
-        assertThrows(RuntimeException.class,
-                () -> photoController.upload(file,name));
-        // Then
-        verify(photoService, times(1)).addPhoto(any());
-    }
+
 }

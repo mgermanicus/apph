@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class PhotoService {
@@ -16,8 +18,15 @@ public class PhotoService {
     PhotoDao photoDao;
 
     @Transactional
-    public Photo addPhoto(String name) {
-        Photo photo = new Photo().setName(name);
+    public Photo addPhoto(String title, long idUser, int size, String description, String tags, Date creationDate, Date shootingDate) {
+        Photo photo = new Photo()
+                .setTitle(title)
+                .setIdUser(idUser)
+                .setSize(size)
+                .setDescription(description)
+                .setTags(tags)
+                .setCreationDate(creationDate)
+                .setShootingDate(shootingDate);
         return photoDao.addPhoto(photo);
     }
 
@@ -29,5 +38,10 @@ public class PhotoService {
         } else {
             throw new InvalidFileException("Wrong file format");
         }
+    }
+
+    @Transactional
+    public List<Photo> getInfoPhoto(long idUser){
+        return photoDao.getUserByLogin(idUser);
     }
 }

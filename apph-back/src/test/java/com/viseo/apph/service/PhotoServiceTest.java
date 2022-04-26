@@ -38,14 +38,5 @@ public class PhotoServiceTest {
         }
     }
 
-    @Test
-    public void testAddPhoto() {
-        // Given
-        createPhotoService();
-        String name = "Test@";
-        // WHEN
-        photoService.addPhoto(name);
-        // THEN
-        verify(em, times(1)).persist(any(Photo.class));
-    }
+
 }

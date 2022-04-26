@@ -20,14 +20,5 @@ public class PhotoDaoTest {
     @InjectMocks
     PhotoDao photoDao = new PhotoDao();
 
-    @Test
-    public void testAddPhoto() {
-        //Given
-        String fileName = "test";
-        Photo photo = new Photo().setName(fileName);
-        //When
-        photoDao.addPhoto(photo);
-        //Then
-        verify(mockEm, times(1)).persist(any());
-    }
+
 }

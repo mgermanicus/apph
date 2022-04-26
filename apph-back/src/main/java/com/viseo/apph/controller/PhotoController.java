@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -25,14 +26,10 @@ public class PhotoController {
     @Autowired
     S3Service s3Service;
 
-    @PostMapping("/upload")
-    public ResponseEntity<ResponseDTO> upload(MultipartFile file, String name) {
-        try{
-            String format = photoService.getFormat(file);
-            Photo photo = photoService.addPhoto(name);
-            return ResponseEntity.ok(new MessageResponse(s3Service.saveWithName(file,photo.getId()+format)));
-        } catch (IOException | InvalidFileException | S3Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
-        }
-    }
+    @GetMapping(value="/1", produces = "application/json")
+   public ResponseEntity getInfoPhoto() {
+        List<Photo> infoPhotos = photoService.getInfoPhoto(1);
+
+        return ResponseEntity.ok(infoPhotos);
+   }
 }
