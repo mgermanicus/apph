@@ -1,4 +1,4 @@
-import { createEvent, fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import Server from '../../services/Server';
 
 export function fillText(label: RegExp, value: string) {

@@ -17,7 +17,7 @@ export default class ImageService {
       method: 'POST',
       body: formData
     };
-    const successFunction = (body: string) => {
+    const successFunction = () => {
       handleSuccess();
     };
     const errorFunction = (errorMessage: string) => {
