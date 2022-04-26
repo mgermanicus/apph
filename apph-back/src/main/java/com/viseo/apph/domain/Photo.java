@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name="photos")
-public class Photo extends BaseEntity{
+@Table(name = "photos")
+public class Photo extends BaseEntity {
 
     String title;
     long idUser;

@@ -15,7 +15,6 @@ import {
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import ImageService from '../../services/ImageService';
 import { UploadStatus } from '../../utils/types/UploadImage';
-import verifyFormat from '../../utils/verifyFormat';
 import { createRef, FormEvent, useState } from 'react';
 
 function displayAlert(
@@ -44,14 +43,17 @@ export default function UploadImage(): JSX.Element {
     if (files) {
       const file = files[0];
       setUploadStatus('uploading');
-      try {
-        verifyFormat(file);
-        await ImageService.uploadImage(title, file);
-        setUploadStatus('success');
-      } catch (error) {
-        if (error instanceof Error) setErrorMessage(error.message);
-        setUploadStatus('error');
-      }
+      ImageService.uploadImage(
+        title,
+        file,
+        () => {
+          setUploadStatus('success');
+        },
+        (errorMessage) => {
+          setUploadStatus('error');
+          setErrorMessage(errorMessage);
+        }
+      );
     }
   }
 
@@ -101,10 +103,10 @@ export default function UploadImage(): JSX.Element {
                 inputRef={fileInput}
                 inputProps={{
                   type: 'file',
-                  accept: 'image/*'
+                  accept: 'image/*',
+                  'data-testid': 'file-input'
                 }}
                 required
-                id="fileInput"
               />
               {uploadStatus === 'uploading' && <LinearProgress />}
               <Button
