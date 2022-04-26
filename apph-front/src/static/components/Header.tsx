@@ -1,12 +1,16 @@
-import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material';
+import {AppBar, Box, Drawer, IconButton, Toolbar, Typography} from '@mui/material';
 import { UserAvatar } from './UserAvatar';
 import LoginIcon from '@mui/icons-material/Login';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
 import { makeAppBarStyles } from '../../utils/theme';
+import {useState} from "react";
+import {DrawerMenuItem} from "./DrawerMenuItem";
+import {AutoFixHigh, Flight, Folder, InsertPhoto, LocalOffer, Search} from "@mui/icons-material";
 
 export const Header = ({ isAuth }: { isAuth: boolean }): JSX.Element => {
   const classes = makeAppBarStyles();
+  const [drawerMenuVisible, setDrawerMenuVisible] = useState<boolean>(false);
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar className={classes.appBarStyle}>
@@ -20,6 +24,24 @@ export const Header = ({ isAuth }: { isAuth: boolean }): JSX.Element => {
           >
             <MenuIcon />
           </IconButton>
+          <Drawer
+              open={drawerMenuVisible}
+              onClose={() => setDrawerMenuVisible(false)}
+          >
+            <Box
+                onClick={() => setDrawerMenuVisible(false)}
+                onKeyDown={() => setDrawerMenuVisible(false)}
+            >
+              <List>
+                <DrawerMenuItem title="Mes Photos" url="pictures" icon={<InsertPhoto/>} />
+                <DrawerMenuItem title="Mes Dossiers" url="/folders" icon={<Folder/>} />
+                <DrawerMenuItem title="Mes Voyages" url="/trips" icon={<Flight/>} />
+                <DrawerMenuItem title="Mes Tags" url="/tags" icon={<LocalOffer/>} />
+                <DrawerMenuItem title="Mes Traitements" url="/treatments" icon={<AutoFixHigh/>} />
+                <DrawerMenuItem title="Recherche Avancée" url="/research" icon={<Search/>}/>
+              </List>
+            </Box>
+          </Drawer>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             APPH
           </Typography>
