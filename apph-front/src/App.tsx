@@ -1,5 +1,6 @@
 import React from 'react';
 import Table from './static/components/Table';
+import {SignIn} from "./static/components/SignIn";
 
 function App() {
   return (

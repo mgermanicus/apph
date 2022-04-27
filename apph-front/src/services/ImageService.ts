@@ -1,6 +1,6 @@
 import Server from './Server';
 import imageFileCheck from '../utils/imageFileCheck';
-const API_URL = 'http://localhost:8080/';
+const API_URL = process.env['REACT_APP_API_URL'];
 import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 const { token } = cookies.get('user');
