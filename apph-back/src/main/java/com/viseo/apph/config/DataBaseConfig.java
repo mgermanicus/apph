@@ -1,6 +1,8 @@
 package com.viseo.apph.config;
 
+import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,22 +15,25 @@ import javax.transaction.Transactional;
 
 @Component
 public class DataBaseConfig {
-
     @PersistenceContext
     EntityManager em;
-    boolean init = false;
+
+    @Value("${init-database}")
+    boolean init;
+
     PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @EventListener(ContextRefreshedEvent.class)
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        if (!this.init) {
+        if (this.init) {
             event.getApplicationContext().getBean(DataBaseConfig.class).initialize();
         }
     }
 
     @Transactional
     public void initialize() {
-        this.init = true;
+        this.init = false;
+        //User
         User alexandre = new User().setLogin("Alexandre").setPassword(encoder.encode("13e15721c9d4ad58d34983344dfba265a90d80f63db77c2eb3804379d9608889"))
                 .setFirstname("Alexandre").setLastname("HU");
         User baptiste = new User().setLogin("Baptiste").setPassword(encoder.encode("15cc3b2994423d897d1e1ba43a670870fda7c4d62548416603a8ddddf7b9e06e"))
@@ -64,5 +69,23 @@ public class DataBaseConfig {
         em.persist(doryan);
         em.persist(yunan);
         em.persist(manon);
+        //Elie's folders
+        Folder elieRoot = new Folder().setName("Elie_root").setParentFolderId(null).setUser(elie);
+        em.persist(elieRoot);
+        Folder elieChild1 = new Folder().setName("Elie_child_1").setParentFolderId(elieRoot.getId()).setUser(elie);
+        Folder elieChild2 = new Folder().setName("Elie_child_2").setParentFolderId(elieRoot.getId()).setUser(elie);
+        em.persist(elieChild1);
+        em.persist(elieChild2);
+        Folder elieGrandchildOf1 = new Folder().setName("Elie_grandchild_of_1").setParentFolderId(elieChild1.getId()).setUser(elie);
+        Folder elieGrandchildOf2 = new Folder().setName("Elie_grandchild_of_2").setParentFolderId(elieChild2.getId()).setUser(elie);
+        em.persist(elieGrandchildOf1);
+        em.persist(elieGrandchildOf2);
+        //Yunan's folders
+        Folder yunanRoot = new Folder().setName("Yunan_root").setParentFolderId(null).setUser(yunan);
+        em.persist(yunanRoot);
+        Folder yunanChild1 = new Folder().setName("Yunan_child_1").setParentFolderId(yunanRoot.getId()).setUser(yunan);
+        Folder yunanChild2 = new Folder().setName("Yunan_child_2").setParentFolderId(yunanRoot.getId()).setUser(yunan);
+        em.persist(yunanChild1);
+        em.persist(yunanChild2);
     }
 }

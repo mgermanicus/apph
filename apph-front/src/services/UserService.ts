@@ -3,7 +3,6 @@ import jwtDecode from 'jwt-decode';
 import Cookies from 'universal-cookie';
 import Server from './Server';
 
-const API_URL = process.env['REACT_APP_API_URL'];
 const cookies = new Cookies();
 
 export default class UserService {
@@ -13,7 +12,7 @@ export default class UserService {
     handleSuccess: () => void,
     handleError: (errorMessage: string) => void
   ) {
-    const URL = `${API_URL}/auth/signIn`;
+    const URL = '/auth/signIn';
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -50,11 +49,6 @@ export default class UserService {
       }
     };
 
-    return Server.request(
-      `${API_URL}/user/`,
-      requestOptions,
-      handleSuccess,
-      handleError
-    );
+    return Server.request(`/user/`, requestOptions, handleSuccess, handleError);
   }
 }

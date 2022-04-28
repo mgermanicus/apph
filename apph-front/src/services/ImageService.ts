@@ -1,6 +1,5 @@
 import Server from './Server';
 import imageFileCheck from '../utils/imageFileCheck';
-const API_URL = 'http://localhost:8080/';
 
 export default class ImageService {
   static uploadImage(
@@ -17,8 +16,8 @@ export default class ImageService {
       method: 'POST',
       body: formData
     };
- return Server.request(
-      `${API_URL}photo/upload`,
+    return Server.request(
+      `/photo/upload`,
       requestOptions,
       handleSuccess,
       handleError
