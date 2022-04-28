@@ -17,10 +17,6 @@ public class UserService {
 
     @Transactional
     public void registerUser(String login, String password, String firstName, String lastName) {
-        if (userDAO.userExist(login))
-        {
-            throw new IllegalArgumentException();
-        }
       User newUser = new User().setLogin(login).setPassword(encoder.encode(password)).setFirstName(firstName).setLastName(lastName);
       userDAO.createUser(newUser);
     }

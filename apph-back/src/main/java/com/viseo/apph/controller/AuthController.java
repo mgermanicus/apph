@@ -4,15 +4,16 @@ import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.service.UserService;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
+import javax.persistence.EntityExistsException;
 import javax.persistence.NoResultException;
 
 @RestController
@@ -44,7 +45,7 @@ public class AuthController {
             userService.registerUser(userRequest.getLogin(),userRequest.getPassword(), userRequest.getFirstName(), userRequest.getLastName());
             return ResponseEntity.ok().body("User created");
         }
-        catch(IllegalArgumentException e)
+        catch(DataIntegrityViolationException e)
         {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email already used.");
         }

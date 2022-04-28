@@ -22,19 +22,4 @@ public class UserDAO {
                 .setParameter("login",login)
                 .getSingleResult();
     }
-
-    public boolean userExist(String login)
-    {
-        try
-        {
-            em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)
-                    .setParameter("login",login)
-                    .getSingleResult();
-        }
-        catch (NoResultException e)
-        {
-           return false;
-        }
-        return true;
-    }
 }

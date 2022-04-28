@@ -1,5 +1,6 @@
 package com.viseo.apph.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -7,6 +8,7 @@ import javax.persistence.Table;
 @Table(name = "users")
 public class User extends BaseEntity {
     private static final long serialVersionUID = 1L;
+    @Column(unique=true)
     String login;
     String password;
     String firstName;
