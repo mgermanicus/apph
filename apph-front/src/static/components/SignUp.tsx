@@ -44,9 +44,14 @@ export function SignUp() {
     const data = new FormData(event.currentTarget);
     const email = data.get('email')?.toString();
     const password = data.get('password')?.toString();
+    const confirmPassword = data.get('confirmPassword')?.toString();
     const firstName = data.get('firstName')?.toString();
     const lastName = data.get('lastName')?.toString();
-    if (email && password && firstName && lastName) {
+    if (password != confirmPassword) {
+      setErrorMessage(
+        'Ces mots de passe ne correspondent pas. Veuillez réessayer.'
+      );
+    } else if (email && password && firstName && lastName) {
       UserService.signUp(
         email,
         password,
@@ -128,6 +133,16 @@ export function SignUp() {
                   name="password"
                   type="password"
                   autoComplete="new-password"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="confirmPassword"
+                  label="confirmer le Mot de passe"
+                  name="confirmPassword"
+                  type="confirmPassword"
                 />
               </Grid>
             </Grid>

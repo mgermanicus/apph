@@ -4,7 +4,8 @@ import { render } from '@testing-library/react';
 import {
   clickButton,
   fillPassword,
-  fillText, triggerRequestFailure,
+  fillText,
+  triggerRequestFailure,
   triggerRequestSuccess
 } from '../utils/library';
 import cryptoJS from 'crypto-js';
