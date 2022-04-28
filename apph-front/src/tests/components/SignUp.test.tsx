@@ -4,10 +4,17 @@ import { render } from '@testing-library/react';
 import {
   clickButton,
   fillPassword,
-  fillText,
+  fillText, triggerRequestFailure,
   triggerRequestSuccess
 } from '../utils/library';
 import cryptoJS from 'crypto-js';
+import { useNavigate } from 'react-router-dom';
+
+const mockedUsedNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...(jest.requireActual('react-router-dom') as any),
+  useNavigate: () => mockedUsedNavigate
+}));
 
 describe('Tests du composant SignUp.tsx', () => {
   beforeEach(() => {
@@ -28,6 +35,21 @@ describe('Tests du composant SignUp.tsx', () => {
     fillPassword(/Nom/, 'Dupont');
     clickButton(/Créer votre compte/);
     //THEN
-    //no assert needed just check no error was thrown
+    expect(useNavigate()).toBeCalled();
+  });
+
+  it('checks when the server sends an error', () => {
+    //GIVEN
+    cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
+    triggerRequestFailure('Test error');
+    render(<SignUp />);
+    //WHEN
+    fillText(/Email/, 'test@viseo.com');
+    fillPassword(/Mot de passe/, 'P@ssW0rd');
+    fillPassword(/Prénom/, 'Bob');
+    fillPassword(/Nom/, 'Dupont');
+    clickButton(/Créer votre compte/);
+    //THEN
+    expect(useNavigate()).not.toBeCalled();
   });
 });

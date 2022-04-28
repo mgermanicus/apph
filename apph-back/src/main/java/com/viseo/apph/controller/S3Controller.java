@@ -1,12 +1,18 @@
 package com.viseo.apph.controller;
 
+import com.viseo.apph.dto.MessageResponse;
+import com.viseo.apph.dto.IResponseDTO;
+import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -17,9 +23,15 @@ public class S3Controller {
     @Autowired
     S3Service s3s;
 
-    @PostMapping("upload")
-    public String upload(@RequestParam("file") MultipartFile file) {
-        return s3s.save(file);
+    @PostMapping("/upload")
+    public ResponseEntity<IResponseDTO> upload(@RequestParam("file") MultipartFile file) {
+        try {
+            return ResponseEntity.ok(new MessageResponse(s3s.save(file)));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
+        } catch (InvalidFileException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Le format du fichier n'est pas valide"));
+        }
     }
 
     @GetMapping("/{filename}")

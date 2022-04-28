@@ -13,11 +13,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.lang.reflect.Field;
-import static org.mockito.Mockito.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class AuthTest {
     @Mock
@@ -35,19 +39,18 @@ public class AuthTest {
         UserDAO userDAO = new UserDAO();
         inject(userDAO, "em", em);
         userService = new UserService();
-        inject(userService,"encoder",passwordEncoder);
-        inject(userService,"userDAO",userDAO);
+        inject(userService, "encoder", passwordEncoder);
+        inject(userService, "userDAO", userDAO);
         authController = new AuthController();
-        inject(authController,"userService",userService);
+        inject(authController, "userService", userService);
     }
 
-    void inject(Object component,String field, Object injected) {
+    void inject(Object component, String field, Object injected) {
         try {
             Field compField = component.getClass().getDeclaredField(field);
             compField.setAccessible(true);
-            compField.set(component,injected);
-        }
-        catch(IllegalAccessException | NoSuchFieldException e) {
+            compField.set(component, injected);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }
     }
@@ -59,13 +62,14 @@ public class AuthTest {
         UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
-        when(typedQuery.setParameter("login","tintin")).thenReturn(typedQuery);
-        when(passwordEncoder.matches("password","password")).thenReturn(true);
+        when(typedQuery.setParameter("login", "tintin")).thenReturn(typedQuery);
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
         //WHEN
         ResponseEntity responseEntity = authController.login(userRequest);
         //THEN
-        Assert.assertTrue( responseEntity.getStatusCode().is2xxSuccessful());
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
+
     @Test
     public void testFailLoginUserNotFind() {
         //GIVEN
@@ -73,13 +77,14 @@ public class AuthTest {
         UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
-        when(typedQuery.setParameter("login","tintin")).thenThrow(noResultException);
-        when(passwordEncoder.matches("password","password")).thenReturn(true);
+        when(typedQuery.setParameter("login", "tintin")).thenThrow(noResultException);
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
         //WHEN
         ResponseEntity responseEntity = authController.login(userRequest);
         //THEN
-        Assert.assertTrue(responseEntity.getStatusCode().equals(HttpStatus.UNAUTHORIZED));
+        assertEquals(HttpStatus.UNAUTHORIZED,responseEntity.getStatusCode());
     }
+
     @Test
     public void testFailLoginPasswordNotMatch() {
         //GIVEN
@@ -87,12 +92,12 @@ public class AuthTest {
         UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
-        when(typedQuery.setParameter("login","tintin")).thenReturn(typedQuery);
-        when(passwordEncoder.matches("password","fakePassword")).thenReturn(false);
+        when(typedQuery.setParameter("login", "tintin")).thenReturn(typedQuery);
+        when(passwordEncoder.matches("password", "fakePassword")).thenReturn(false);
         //WHEN
         ResponseEntity responseEntity = authController.login(userRequest);
         //THEN
-        Assert.assertTrue(responseEntity.getStatusCode().equals(HttpStatus.UNAUTHORIZED));
+        assertEquals(HttpStatus.UNAUTHORIZED,responseEntity.getStatusCode());
     }
 
     @Test

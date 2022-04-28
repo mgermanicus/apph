@@ -37,3 +37,35 @@ export function triggerRequestFailure(response: string) {
     return Promise.resolve();
   };
 }
+
+export function spyRequestFailure(error: string) {
+  const spy = jest.fn(
+    (
+      URL: string,
+      requestOptions: RequestInit,
+      successFunction: (body: string) => void | undefined,
+      errorFunction: (error: string) => void
+    ) => {
+      errorFunction(error);
+      return Promise.resolve();
+    }
+  );
+  Server.request = spy;
+  return spy;
+}
+
+export function spyRequestSuccess() {
+  const spy = jest.fn(
+    (
+      URL: string,
+      requestOptions: RequestInit,
+      successFunction: (body: string) => void | undefined,
+      errorFunction: (error: string) => void
+    ) => {
+      successFunction('');
+      return Promise.resolve();
+    }
+  );
+  Server.request = spy;
+  return spy;
+}

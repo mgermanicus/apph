@@ -10,6 +10,7 @@ public class BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+
     @Version
     long version;
 
@@ -52,6 +53,6 @@ public class BaseEntity implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         BaseEntity other = (BaseEntity) obj;
-        return (id == other.id);
+        return id == other.id;
     }
 }

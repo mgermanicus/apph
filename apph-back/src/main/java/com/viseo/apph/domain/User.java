@@ -3,6 +3,9 @@ package com.viseo.apph.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -11,8 +14,11 @@ public class User extends BaseEntity {
     @Column(unique=true)
     String login;
     String password;
-    String firstName;
-    String lastName;
+    String firstname;
+    String lastname;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Folder> folders = new ArrayList<>();
 
     public User() {
         super();
@@ -36,21 +42,43 @@ public class User extends BaseEntity {
         return this;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public User setFirstName(String firstName) {
-        this.firstName = firstName;
+    public User setFirstname(String firstName) {
+        this.firstname = firstName;
         return this;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getLastname() {
+        return lastname;
     }
 
-    public User setLastName(String lastName) {
-        this.lastName = lastName;
+    public User setLastname(String lastName) {
+        this.lastname = lastName;
+        return this;
+    }
+
+    public List<Folder> getFolders() {
+        return folders;
+    }
+
+    public User addFolder(Folder folder) {
+        assert folder != null;
+        if (!this.folders.contains(folder)) {
+            this.folders.add(folder);
+            folder.user = this;
+        }
+        return this;
+    }
+
+    public User removeFolder(Folder folder) {
+        assert folder != null;
+        if (this.folders.contains(folder)) {
+            this.folders.remove(folder);
+            folder.user = null;
+        }
         return this;
     }
 }

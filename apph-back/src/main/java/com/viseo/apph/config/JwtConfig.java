@@ -10,10 +10,6 @@ import java.security.Key;
 public class JwtConfig {
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    public JwtConfig() {
-
-    }
-
     public static Key getKey() {
         return key;
     }
