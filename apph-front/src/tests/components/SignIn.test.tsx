@@ -9,11 +9,11 @@ import {
   clickButton,
   fillPassword,
   fillText,
+  JWS_TOKEN,
   triggerRequestFailure,
   triggerRequestSuccess
-} from '../utils/library';
+} from '../utils';
 import cryptoJS from 'crypto-js';
-import { JWS_TOKEN } from '../utils/token';
 
 describe('Tests du composant SignIn.tsx', () => {
   beforeEach(() => {
