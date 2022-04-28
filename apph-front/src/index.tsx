@@ -2,13 +2,8 @@ import { App } from './App';
 import React from 'react';
 import reportWebVitals from './reportWebVitals';
 import { createRoot } from 'react-dom/client';
-import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import userReducer from './redux/slices/userSlice';
-
-const store = configureStore({
-  reducer: userReducer
-});
+import store from './redux/store/store';
 
 const container = document.getElementById('root');
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

@@ -48,7 +48,6 @@ export const resetConnected = () => {
 
 export const SignIn = () => {
   const [errorMessage, setErrorMessage] = useState('');
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -60,7 +59,7 @@ export const SignIn = () => {
         password,
         () => {
           connected = true;
-          console.log('Connexion réussie, token stocké dans les cookies'); //TODO redirection vers "mes photos"
+          location.reload();
         },
         (errorMessage: string) => {
           setErrorMessage(errorMessage);

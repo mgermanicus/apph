@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { triggerRequestFailure, triggerRequestSuccess } from '../utils/library';
+import { triggerRequestFailure, triggerRequestSuccess } from '../utils';
 import { render, screen } from '@testing-library/react';
-import { MyFoldersContainer } from '../../static/containers/MyFoldersContainer';
+import { MyFoldersPage } from '../../static/pages/MyFoldersPage';
 
 describe('Folder Tree Tests', () => {
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe('Folder Tree Tests', () => {
       '{"id":1,"version":0,"name":"Elie_root","parentFolderId":null,"childrenFolders":[{"id":2,"version":0,"name":"Elie_child_1","parentFolderId":1,"childrenFolders":[]},{"id":3,"version":0,"name":"Elie_child_2","parentFolderId":1,"childrenFolders":[]}]}'
     );
     //WHEN
-    render(<MyFoldersContainer />);
+    render(<MyFoldersPage />);
     //THEN
     expect(screen.getByText(/Elie_root/)).toBeInTheDocument();
   });
@@ -23,7 +23,7 @@ describe('Folder Tree Tests', () => {
     //GIVEN
     triggerRequestFailure('{"message": "User not found."}');
     //WHEN
-    render(<MyFoldersContainer />);
+    render(<MyFoldersPage />);
     //THEN
     expect(screen.getByText(/User not found./)).toBeInTheDocument();
   });

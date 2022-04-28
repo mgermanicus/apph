@@ -1,15 +1,9 @@
 export const authHeader = () => {
-  const userFromLocalStorage = localStorage.getItem('user');
-  if (userFromLocalStorage) {
-    const user = JSON.parse(userFromLocalStorage);
-    return user.accessToken
-      ? {
-          'Content-Type': 'application/json',
-          Authorization: user.accessToken
-        }
-      : {
-          'Content-Type': 'application/json',
-          Authorization: undefined
-        };
+  const tokenFromLocalStorage = localStorage.getItem('token');
+  if (tokenFromLocalStorage) {
+    return {
+      'Content-Type': 'application/json',
+      Authentication: tokenFromLocalStorage
+    };
   }
 };
