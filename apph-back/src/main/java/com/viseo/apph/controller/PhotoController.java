@@ -19,7 +19,8 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import java.io.IOException;
 
 @RestController
-@CrossOrigin(origins = "${front-server}")
+//@CrossOrigin(origins = "${front-server}")
+@CrossOrigin(origins = "http://localhost:3000/")
 @RequestMapping("/photo")
 public class PhotoController {
     @Autowired

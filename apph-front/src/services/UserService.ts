@@ -10,7 +10,6 @@ export default class UserService {
       method: 'GET',
       headers: authHeader()
     };
-
     return Server.request(`/user/`, requestOptions, handleSuccess, handleError);
   }
 }

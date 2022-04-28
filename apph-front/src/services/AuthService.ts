@@ -1,7 +1,6 @@
 import cryptoJS from 'crypto-js';
 import jwtDecode from 'jwt-decode';
 import Server from './Server';
-import { authHeader } from './AuthHeader';
 
 export default class AuthService {
   static signIn(
@@ -13,7 +12,9 @@ export default class AuthService {
     const URL = `/auth/signIn`;
     const requestOptions = {
       method: 'POST',
-      headers: authHeader(),
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         email,
         password: cryptoJS.SHA256(password).toString()
@@ -23,6 +24,7 @@ export default class AuthService {
       const decodedToken = jwtDecode(jws);
       if (decodedToken !== null && typeof decodedToken === 'object') {
         localStorage.setItem('user', JSON.stringify(decodedToken));
+        localStorage.setItem('token', jws);
       }
       handleSuccess();
     };
@@ -35,4 +37,8 @@ export default class AuthService {
   static logout = () => {
     localStorage.removeItem('user');
   };
+
+  static getCurrentUser() {
+    return localStorage.getItem('user');
+  }
 }
