@@ -4,7 +4,6 @@ import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.service.UserService;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import io.jsonwebtoken.Jwts;
 import java.security.Key;
 import java.util.Date;
-import javax.persistence.EntityExistsException;
 import javax.persistence.NoResultException;
 
 @RestController
@@ -32,7 +30,7 @@ public class AuthController {
             return ResponseEntity.ok(jws);
         }
         catch(IllegalArgumentException | NoResultException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Email or Password.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou mot de passe invalide.");
         }
 
     }
@@ -43,11 +41,11 @@ public class AuthController {
         try
         {
             userService.registerUser(userRequest.getLogin(),userRequest.getPassword(), userRequest.getFirstName(), userRequest.getLastName());
-            return ResponseEntity.ok().body("User created");
+            return ResponseEntity.ok().body("Utilisateur crée");
         }
         catch(DataIntegrityViolationException e)
         {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email already used.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email déjà utilisé.");
         }
     }
 }
