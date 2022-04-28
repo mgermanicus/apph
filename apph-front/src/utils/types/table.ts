@@ -7,4 +7,5 @@ export interface ITable {
   title: string;
   url: string;
   tags: string;
+  details: JSX.Element;
 }

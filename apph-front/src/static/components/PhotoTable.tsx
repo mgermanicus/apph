@@ -6,6 +6,7 @@ import { Alert, Collapse, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ITable } from '../../utils/types/table';
 import PhotoService from '../../services/PhotoService';
+import Button from '@mui/material/Button';
 
 const columns: GridColDef[] = [
   {
@@ -59,6 +60,14 @@ const columns: GridColDef[] = [
     flex: 1,
     align: 'center',
     headerAlign: 'center'
+  },
+  {
+    field: 'actions',
+    headerName: 'Actions',
+    flex: 1,
+    align: 'center',
+    headerAlign: 'center',
+    renderCell: (params) => params.row.details
   }
 ];
 export default function DataTable() {
@@ -67,6 +76,9 @@ export default function DataTable() {
   useEffect(() => {
     PhotoService.getData(
       (tab) => {
+        tab.forEach(
+          (row) => (row.details = <Button variant="outlined">Détails</Button>)
+        );
         setData(tab);
       },
       (errorMessage: string) => {
