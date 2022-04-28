@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { IUser, makeCardStyles } from '../../utils';
 import { Card, CardContent, CardHeader, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 export const UserProfile = ({
   firstname,
@@ -13,6 +14,7 @@ export const UserProfile = ({
       <CardHeader title={`${firstname} ${lastname}`} />
       <CardContent>
         <Typography variant="body2">Email: {login}</Typography>
+        <Link to="/me/edit">Modifier</Link>
       </CardContent>
     </Card>
   );

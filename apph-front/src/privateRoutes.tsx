@@ -6,6 +6,7 @@ import { MyFoldersPage } from './static/pages/MyFoldersPage';
 import { PrivatePageContainer } from './static/pages/PrivatePageContainer';
 import { useSelector } from 'react-redux';
 import { IUser } from './utils';
+import { EditProfile } from './static/components/EditProfile';
 
 export const PrivateRoutes = (): JSX.Element => {
   const user = useSelector(
@@ -28,6 +29,12 @@ export const PrivateRoutes = (): JSX.Element => {
           path="/me"
           element={needAuthenticationRoute(
             <PrivatePageContainer element={<UserProfilePage />} />
+          )}
+        />
+        <Route
+          path="/me/edit"
+          element={needAuthenticationRoute(
+            <PrivatePageContainer element={<EditProfile />} />
           )}
         />
         <Route

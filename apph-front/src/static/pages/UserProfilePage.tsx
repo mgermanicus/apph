@@ -11,31 +11,22 @@ export const UserProfilePage = (): JSX.Element => {
   const [lastname, setLastname] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string>();
-  const [editMode, setEditMode] = useState<boolean>(false);
-
-  const updateUser = () =>
-    UserService.getUser(
-      (user: string) => {
-        const userConverted: IUser = JSON.parse(user);
-        setFirstname(userConverted.firstname);
-        setLastname(userConverted.lastname);
-        setEmail(userConverted.login);
-      },
-      (errorMessage: string) => {
-        setError(errorMessage);
-      }
-    );
 
   useEffect(() => {
     (async () => {
-      await updateUser();
+      await UserService.getUser(
+        (user: string) => {
+          const userConverted: IUser = JSON.parse(user);
+          setFirstname(userConverted.firstname);
+          setLastname(userConverted.lastname);
+          setEmail(userConverted.login);
+        },
+        (errorMessage: string) => {
+          setError(errorMessage);
+        }
+      );
     })();
   }, [firstname, lastname, email]);
-
-  const handleEdit = async () => {
-    await updateUser();
-    setEditMode(false);
-  };
 
   return (
     <Stack
@@ -46,24 +37,8 @@ export const UserProfilePage = (): JSX.Element => {
     >
       {error ? (
         <ErrorCard errorMessage={error} />
-      ) : editMode ? (
-        <>
-          <EditProfile
-            firstname={firstname}
-            lastname={lastname}
-            login={email}
-            onEdit={handleEdit}
-          />
-        </>
       ) : (
-        <>
-          <UserProfile
-            firstname={firstname}
-            lastname={lastname}
-            login={email}
-          />
-          <Button onClick={() => setEditMode(true)}>Modifier</Button>
-        </>
+        <UserProfile firstname={firstname} lastname={lastname} login={email} />
       )}
     </Stack>
   );
