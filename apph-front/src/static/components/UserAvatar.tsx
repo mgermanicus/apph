@@ -1,6 +1,6 @@
 import { Avatar } from '@mui/material';
 import * as React from 'react';
-import { randomColorCodeFromString } from '../../utils/random';
+import { randomColorCodeFromString } from '../../utils';
 
 export const UserAvatar = ({
   firstname,

@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { makeCardStyles } from '../../utils/theme';
+import { IUser, makeCardStyles } from '../../utils';
 import { Card, CardContent, CardHeader, Typography } from '@mui/material';
-import { IUser } from '../../utils/types';
 
 export const UserProfile = ({
   firstname,

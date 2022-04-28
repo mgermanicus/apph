@@ -11,7 +11,7 @@ import { UserAvatar } from './UserAvatar';
 import LoginIcon from '@mui/icons-material/Login';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
-import { makeAppBarStyles } from '../../utils/theme';
+import { makeAppBarStyles } from '../../utils';
 import { useState } from 'react';
 import { DrawerMenuItem } from './DrawerMenuItem';
 import {

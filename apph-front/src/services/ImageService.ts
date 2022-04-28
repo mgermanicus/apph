@@ -1,5 +1,5 @@
 import Server from './Server';
-import imageFileCheck from '../utils/imageFileCheck';
+import { imageFileCheck } from '../utils';
 
 export default class ImageService {
   static uploadImage(
@@ -17,7 +17,7 @@ export default class ImageService {
       body: formData
     };
     return Server.request(
-      `/photo/upload`,
+      `photo/upload`,
       requestOptions,
       handleSuccess,
       handleError

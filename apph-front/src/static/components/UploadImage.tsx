@@ -14,13 +14,13 @@ import {
 
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import ImageService from '../../services/ImageService';
-import { UploadStatus } from '../../utils/types/UploadImage';
+import { UploadStatus } from '../../utils';
 import { createRef, FormEvent, useState } from 'react';
 
-function displayAlert(
+const displayAlert = (
   uploadStatus: UploadStatus,
   errorMessage = "Une erreur est survenue lors de l'upload"
-) {
+) => {
   switch (uploadStatus) {
     case 'success':
       return <Alert severity="success">Votre fichier a bien été uploadé</Alert>;
@@ -29,9 +29,9 @@ function displayAlert(
     default:
       return <></>;
   }
-}
+};
 
-export default function UploadImage(): JSX.Element {
+export const UploadImage = (): JSX.Element => {
   const [title, setTitle] = useState('');
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>('none');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -124,4 +124,4 @@ export default function UploadImage(): JSX.Element {
       </CssBaseline>
     </Container>
   );
-}
+};

@@ -14,9 +14,9 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Alert, Collapse, IconButton, SxProps } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import UserService from '../../services/UserService';
+import AuthService from '../../services/AuthService';
 
-function Copyright(props: { sx: SxProps }) {
+const Copyright = (props: { sx: SxProps }) => {
   return (
     <Typography
       variant="body2"
@@ -32,21 +32,21 @@ function Copyright(props: { sx: SxProps }) {
       {'.'}
     </Typography>
   );
-}
+};
 
 const theme = createTheme();
 
 let connected = false;
 
-export function isConnected() {
+export const isConnected = () => {
   return connected;
-}
+};
 
-export function resetConnected() {
+export const resetConnected = () => {
   connected = false;
-}
+};
 
-export function SignIn() {
+export const SignIn = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -55,7 +55,7 @@ export function SignIn() {
     const email = data.get('email')?.toString();
     const password = data.get('password')?.toString();
     if (email && password) {
-      UserService.signIn(
+      AuthService.signIn(
         email,
         password,
         () => {
@@ -154,4 +154,4 @@ export function SignIn() {
       </Container>
     </ThemeProvider>
   );
-}
+};
