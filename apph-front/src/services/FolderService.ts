@@ -1,17 +1,20 @@
 import { IFolder } from '../utils/types/Folder';
 import Server from './Server';
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
 
 export class FolderService {
   static getFolders(
-    id: number,
     handleSuccess: (folder: IFolder) => void,
     handleError: (errorMessage: string) => void
   ) {
-    const URL = `/folder/${id}`;
+    const token = cookies.get('user');
     const requestOptions = {
       method: 'Get',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authentication: token.token
       }
     };
     const successFunction = (folder: string) => {
@@ -20,6 +23,11 @@ export class FolderService {
     const errorFunction = (errorMessage: string) => {
       handleError(JSON.parse(errorMessage).message);
     };
-    return Server.request(URL, requestOptions, successFunction, errorFunction);
+    return Server.request(
+      `/folder/`,
+      requestOptions,
+      successFunction,
+      errorFunction
+    );
   }
 }

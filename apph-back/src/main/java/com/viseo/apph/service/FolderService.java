@@ -3,6 +3,7 @@ package com.viseo.apph.service;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.dao.FolderDAO;
+import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FolderResponse;
 import com.viseo.apph.exception.NotFoundException;
 import org.slf4j.Logger;
@@ -25,12 +26,9 @@ public class FolderService {
     UserDAO userDAO;
 
     @Transactional
-    public FolderResponse getFoldersByUser(long userId) throws NotFoundException {
-        if (userDAO.getUserById(userId) == null) {
-            logger.error("User not found.");
-            throw new NotFoundException("User not found.");
-        }
-        List<Folder> folderList = folderDAO.getFolderByUser(userId);
+    public FolderResponse getFoldersByUser(String login) throws NotFoundException {
+        User user = userDAO.getUserByLogin(login);
+        List<Folder> folderList = folderDAO.getFolderByUser(user.getId());
         Folder parentFolder = getParentFolder(folderList);
         FolderResponse parentFolderResponse = new FolderResponse()
                 .setId(parentFolder.getId())
@@ -48,7 +46,7 @@ public class FolderService {
             }
         }
         logger.error("Parent folder not found.");
-        throw new NotFoundException("Parent folder not found.");
+        throw new NotFoundException("Dossier parent introuvable.");
     }
 
     FolderResponse connectFolderToChildrenFolder(FolderResponse parentFolder, List<Folder> folders) {

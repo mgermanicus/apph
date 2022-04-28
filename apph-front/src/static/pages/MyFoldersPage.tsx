@@ -20,8 +20,6 @@ export const MyFoldersPage = (): JSX.Element => {
 
   const getFolders = async () => {
     await FolderService.getFolders(
-      //TODO replace by the userId or change by the token
-      5,
       (parentFolder) => {
         setRootFolder(parentFolder);
         setSelectedFolder(parentFolder.id.toString());
