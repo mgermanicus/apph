@@ -20,6 +20,7 @@ export const PrivateRoutes = (): JSX.Element => {
     <>
       <Header isAuth={authenticated} />
       <Routes>
+        <Route path="*" element={needNoAuthenticationRoute(<SignIn />)} />
         <Route path="/" element={needNoAuthenticationRoute(<SignIn />)} />
         <Route
           path="/me"
