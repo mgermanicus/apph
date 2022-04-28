@@ -29,10 +29,16 @@ public class PhotoController {
     @Autowired
     S3Service s3Service;
 
+    public interface TokenManager{
+        default int getIdOfToken(String token){
+            return (int)Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody().get("id");
+        };
+    }
+    static TokenManager tokenManager = new TokenManager() {};
 
     @GetMapping(value = "/infos", produces = "application/json")
     public ResponseEntity<List<PhotoResponse>> getUserPhotos(@RequestHeader("token") String token) {
-        int userId = (int)Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody().get("id");
+        int userId = tokenManager.getIdOfToken(token);
         List<PhotoResponse> infoPhotos = photoService.getUserPhotos(userId);
         return ResponseEntity.ok(infoPhotos);
     }

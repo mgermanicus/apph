@@ -41,7 +41,7 @@ public class DataBaseConfig {
         User yunan = new User().setLogin("Yunan").setPassword(encoder.encode("04eefe3817d9a64aa70efbd3144ff239f26729fc0bfc98c4f669f14fed0786a7"));
         User manon = new User().setLogin("Manon").setPassword(encoder.encode("190987e7c02f48b91221bc4914ee26eaec486dab371296a53a5e7e583cdfc663"));
         Photo photo1 = new Photo().setIdUser(1).setSize(1200).setTags("img").setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo photo2 = new Photo().setIdUser(1).setSize(1300).setTags("img2").setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo photo2 = new Photo().setIdUser(1).setSize(1300).setTags("img2").setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setShootingDate(new Date());
         em.persist(alexandre);
         em.persist(baptiste);
         em.persist(wassim);

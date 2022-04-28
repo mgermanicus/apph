@@ -5,23 +5,18 @@ import Cookies from 'universal-cookie';
 
 const columns: GridColDef[] = [
   { field: 'title', headerName: 'Title', width: 70 },
-  {
-    field: 'description',
-    headerName: 'Description',
-    width: 130,
-    sortable: false
-  },
+  { field: 'description', headerName: 'Description', width: 130 },
   {
     field: 'creationDate',
     headerName: 'Creation date',
     type: 'date',
-    width: 130
+    width: 300
   },
   {
     field: 'shootingDate',
     headerName: 'Shooting date',
     type: 'date',
-    width: 130
+    width: 300
   },
   { field: 'size', headerName: 'Size', type: 'number', width: 130 },
   { field: 'tags', headerName: 'Tags', width: 130 }
