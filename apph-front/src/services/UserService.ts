@@ -58,13 +58,7 @@ class UserService {
         lastName
       })
     };
-    const successFunction = () => {
-      handleSuccess();
-    };
-    const errorFunction = (errorMessage: string) => {
-      handleError(errorMessage);
-    };
-    return Server.request(URL, requestOptions, successFunction, errorFunction);
+    return Server.request(URL, requestOptions, handleSuccess, handleError);
   }
 }
 

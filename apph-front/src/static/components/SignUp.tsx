@@ -14,6 +14,7 @@ import { Alert, Collapse, IconButton, SxProps } from '@mui/material';
 import UserService from '../../services/UserService';
 import { useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
+import { useNavigate } from 'react-router-dom';
 
 function Copyright(props: { sx: SxProps }) {
   return (
@@ -36,6 +37,7 @@ function Copyright(props: { sx: SxProps }) {
 const theme = createTheme();
 
 export function SignUp() {
+  const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState('');
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -52,6 +54,7 @@ export function SignUp() {
         lastName,
         () => {
           console.log('Création de compte réussie');
+          navigate('/signIn');
         },
         (errorMessage: string) => {
           setErrorMessage(errorMessage);

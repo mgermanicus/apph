@@ -23,16 +23,18 @@ function RouterSwitch() {
         <Route path="/" element={<App />} />
         <Route path="/signIn" element={<SignIn />} />
         <Route path="/signUp" element={<SignUp />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );
 }
 
 root.render(
-  <Router>
-    <RouterSwitch />
-  </Router>
+  <React.StrictMode>
+    <Router>
+      <RouterSwitch />
+    </Router>
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
