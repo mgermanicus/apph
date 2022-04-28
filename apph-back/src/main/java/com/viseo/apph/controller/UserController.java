@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.NoResultException;
 
 @RestController
-//@CrossOrigin(origins = "${front-server}")
-@CrossOrigin(origins = "http://localhost:3000/")
+@CrossOrigin(origins = "${front-server}")
 @RequestMapping("/user")
 public class UserController {
 

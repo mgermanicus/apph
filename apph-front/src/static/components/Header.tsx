@@ -11,7 +11,7 @@ import { UserAvatar } from './UserAvatar';
 import LoginIcon from '@mui/icons-material/Login';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
-import { makeAppBarStyles } from '../../utils';
+import { IUser, makeAppBarStyles } from '../../utils';
 import { useState } from 'react';
 import { DrawerMenuItem } from './DrawerMenuItem';
 import {
@@ -22,9 +22,14 @@ import {
   LocalOffer,
   Search
 } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
 
 export const Header = ({ isAuth }: { isAuth: boolean }): JSX.Element => {
   const classes = makeAppBarStyles();
+  const user = useSelector(
+    ({ currentUser }: { currentUser: IUser }) => currentUser
+  );
+
   const [drawerMenuVisible, setDrawerMenuVisible] = useState<boolean>(false);
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -87,7 +92,10 @@ export const Header = ({ isAuth }: { isAuth: boolean }): JSX.Element => {
           </Typography>
           {isAuth ? (
             <IconButton component={Link} to="/me">
-              <UserAvatar firstname={'Min'} lastname={'SUN'} />
+              <UserAvatar
+                firstname={user.firstname ?? user.login}
+                lastname={user.lastname ?? ''}
+              />
             </IconButton>
           ) : (
             <IconButton color="secondary">

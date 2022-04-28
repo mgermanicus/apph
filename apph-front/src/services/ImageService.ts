@@ -17,7 +17,7 @@ export default class ImageService {
       body: formData
     };
     return Server.request(
-      `photo/upload`,
+      `/photo/upload`,
       requestOptions,
       handleSuccess,
       handleError

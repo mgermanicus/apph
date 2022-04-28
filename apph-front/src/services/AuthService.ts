@@ -36,6 +36,7 @@ export default class AuthService {
 
   static logout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
   static getCurrentUser() {
