@@ -8,25 +8,20 @@ import {
 } from '@mui/material';
 import { makeCardStyles } from '../../utils/theme';
 import { FormEvent, useState } from 'react';
+import UserService from '../../services/UserService';
 
-type Props = {
-  firstname: string;
-  lastname: string;
-  login: string;
-  onEdit: () => void;
-};
-
-export const EditProfile = ({ onEdit, ...props }: Props) => {
-  const [firstname, setFirstname] = useState(props.firstname);
-  const [lastname, setLastname] = useState(props.lastname);
-  const [login, setLogin] = useState(props.login);
+export const EditProfile = () => {
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const classes = makeCardStyles();
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    onEdit();
+    const edited = {};
+    UserService.editUser();
   };
 
   return (

@@ -51,4 +51,14 @@ export default class UserService {
 
     return Server.request(`/user/`, requestOptions, handleSuccess, handleError);
   }
+
+  static editUser(
+    firstname?: string,
+    lastname?: string,
+    login?: string,
+    password?: string
+  ) {
+    // TODO send to server & edit cookies
+    return null;
+  }
 }
