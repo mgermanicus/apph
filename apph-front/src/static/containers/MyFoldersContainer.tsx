@@ -47,7 +47,8 @@ export const MyFoldersContainer = (): JSX.Element => {
     return (
       <div
         style={{
-          display: 'flex'
+          display: 'flex',
+          marginTop: '70px'
         }}
       >
         <TreeView

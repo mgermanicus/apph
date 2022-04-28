@@ -24,7 +24,7 @@ public class FolderController {
             FolderResponse folder = folderService.getFoldersByUser(userId);
             return ResponseEntity.ok(folder);
         } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse().setMessage(e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
         }
     }
 }

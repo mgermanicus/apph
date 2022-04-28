@@ -1,5 +1,4 @@
 import { createEvent, fireEvent } from '@testing-library/react';
-const API_URL = process.env['REACT_APP_API_URL'];
 
 export function inputFile(file: File, input: HTMLInputElement) {
   fireEvent(
@@ -24,5 +23,5 @@ export function fakeUploadRequestParams(file: File, title: string) {
     method: 'POST',
     body: formData
   };
-  return { URL: `${API_URL}photo/upload`, requestOptions };
+  return { URL: `/photo/upload`, requestOptions };
 }

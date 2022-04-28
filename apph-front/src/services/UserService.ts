@@ -49,11 +49,6 @@ export default class UserService {
       }
     };
 
-    return Server.request(
-      `${API_URL}/user/`,
-      requestOptions,
-      handleSuccess,
-      handleError
-    );
+    return Server.request(`/user/`, requestOptions, handleSuccess, handleError);
   }
 }
