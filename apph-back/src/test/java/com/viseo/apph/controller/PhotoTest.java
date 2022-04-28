@@ -28,6 +28,8 @@ PhotoController photoController;
 @Mock
 EntityManager em ;
 @Mock
+PhotoController.TokenManager tokenManager;
+@Mock
 TypedQuery typedQuery;
     private void createPhotoController() {
         PhotoDao photoDao = new PhotoDao();
@@ -56,16 +58,12 @@ TypedQuery typedQuery;
         String token = "token";
         List<Photo> listPhoto = new ArrayList<>();
         listPhoto.add(new Photo());
-        PhotoController.tokenManager = new PhotoController.TokenManager() {
-            @Override
-            public int getIdOfToken(String token) {
-                return 1;
-            }
-        };
+        PhotoController.tokenManager = tokenManager;
+
         when(em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)).thenReturn(typedQuery);
         when(typedQuery.setParameter("idUser", 1L)).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(listPhoto);
-
+        when(tokenManager.getIdOfToken("token")).thenReturn(1);
         //WHEN
         ResponseEntity responseEntity = photoController.getUserPhotos(token);
         //THEN
