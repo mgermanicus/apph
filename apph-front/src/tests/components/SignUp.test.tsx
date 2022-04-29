@@ -32,6 +32,7 @@ describe('Tests du composant SignUp.tsx', () => {
     //WHEN
     fillText(/Email/, 'test@viseo.com');
     fillPassword(/Mot de passe/, 'P@ssW0rd');
+    fillPassword(/confirmer le mot de passe/, 'P@ssW0rd');
     fillPassword(/Prénom/, 'Bob');
     fillPassword(/Nom/, 'Dupont');
     clickButton(/Créer votre compte/);
@@ -47,6 +48,7 @@ describe('Tests du composant SignUp.tsx', () => {
     //WHEN
     fillText(/Email/, 'test@viseo.com');
     fillPassword(/Mot de passe/, 'P@ssW0rd');
+    fillPassword(/confirmer le mot de passe/, 'P@ssW0rd');
     fillPassword(/Prénom/, 'Bob');
     fillPassword(/Nom/, 'Dupont');
     clickButton(/Créer votre compte/);

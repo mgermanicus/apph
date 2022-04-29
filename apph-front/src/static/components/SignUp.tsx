@@ -140,7 +140,7 @@ export function SignUp() {
                   required
                   fullWidth
                   id="confirmPassword"
-                  label="confirmer le Mot de passe"
+                  label="confirmer le mot de passe"
                   name="confirmPassword"
                   type="confirmPassword"
                 />
