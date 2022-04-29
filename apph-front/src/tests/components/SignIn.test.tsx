@@ -11,6 +11,7 @@ import {
 } from '../utils';
 import cryptoJS from 'crypto-js';
 import Cookies from 'universal-cookie';
+import { wrapper } from '../utils/components/CustomWrapper';
 
 describe('Tests du composant SignIn.tsx', () => {
   const cookies = new Cookies();
@@ -27,14 +28,13 @@ describe('Tests du composant SignIn.tsx', () => {
     //GIVEN
     cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
     triggerRequestSuccess(JWS_TOKEN);
-    render(<SignIn />);
+    render(<SignIn />, { wrapper });
     //WHEN
     fillText(/Adresse email/, 'test@viseo.com');
     fillPassword(/Mot de passe/, 'P@ssW0rd');
     clickButton(/Connexion/);
     //THEN
     expect(cookies.get('user')).toStrictEqual({
-      login: 'Elie',
       token: JWS_TOKEN
     });
   });
@@ -43,7 +43,7 @@ describe('Tests du composant SignIn.tsx', () => {
     //GIVEN
     cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
     triggerRequestFailure('Test error');
-    render(<SignIn />);
+    render(<SignIn />, { wrapper });
     //WHEN
     fillText(/Adresse email/, 'test@viseo.com');
     fillPassword(/Mot de passe/, 'P@ssW0rd');

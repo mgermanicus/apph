@@ -14,6 +14,10 @@ import Container from '@mui/material/Container';
 import { Alert, Collapse, IconButton, SxProps } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AuthService from '../../services/AuthService';
+import { useDispatch } from 'react-redux';
+import { changeCurrentUser } from '../../redux/slices/userSlice';
+import { IUser } from '../../utils';
+import { useNavigate } from 'react-router-dom';
 
 const Copyright = (props: { sx: SxProps }) => {
   return (
@@ -35,6 +39,8 @@ const Copyright = (props: { sx: SxProps }) => {
 
 export const SignIn = () => {
   const [errorMessage, setErrorMessage] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -44,8 +50,9 @@ export const SignIn = () => {
       AuthService.signIn(
         email,
         password,
-        () => {
-          location.reload();
+        (user: IUser) => {
+          dispatch(changeCurrentUser(user));
+          navigate('/pictures');
         },
         (errorMessage: string) => {
           setErrorMessage(errorMessage);

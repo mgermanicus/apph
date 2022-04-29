@@ -3,11 +3,15 @@ import { UserProfilePage } from './static/pages/UserProfilePage';
 import { SignIn } from './static/components/SignIn';
 import { TODOPage } from './static/pages/TODOPage';
 import { MyFoldersPage } from './static/pages/MyFoldersPage';
-import AuthService from './services/AuthService';
-import { RoutePage } from './static/pages/RoutePage';
+import { PrivatePageContainer } from './static/pages/PrivatePageContainer';
+import { useSelector } from 'react-redux';
+import { IUser } from './utils';
 
 export const PrivateRoutes = (): JSX.Element => {
-  const authenticated = !!AuthService.getCurrentUser();
+  const user = useSelector(
+    ({ currentUser }: { currentUser: IUser }) => currentUser
+  );
+  const authenticated = !!user.login;
   const needAuthenticationRoute = (element: JSX.Element): JSX.Element => {
     return authenticated ? element : <Navigate to="/" />;
   };
@@ -23,43 +27,53 @@ export const PrivateRoutes = (): JSX.Element => {
         <Route
           path="/me"
           element={needAuthenticationRoute(
-            <RoutePage element={<UserProfilePage />} />
+            <PrivatePageContainer element={<UserProfilePage />} />
           )}
         />
         <Route
           path="/pictures"
           element={needAuthenticationRoute(
-            <RoutePage element={<TODOPage todo="Page: Mes Photos" />} />
+            <PrivatePageContainer
+              element={<TODOPage todo="Page: Mes Photos" />}
+            />
           )}
         />
         <Route
           path="/folders"
           element={needAuthenticationRoute(
-            <RoutePage element={<MyFoldersPage />} />
+            <PrivatePageContainer element={<MyFoldersPage />} />
           )}
         />
         <Route
           path="/trips"
           element={needAuthenticationRoute(
-            <RoutePage element={<TODOPage todo="Page: Mes Voyages" />} />
+            <PrivatePageContainer
+              element={<TODOPage todo="Page: Mes Voyages" />}
+            />
           )}
         />
         <Route
           path="/tags"
           element={needAuthenticationRoute(
-            <RoutePage element={<TODOPage todo="Page: Mes Tags" />} />
+            <PrivatePageContainer
+              element={<TODOPage todo="Page: Mes Tags" />}
+            />
           )}
         />
         <Route
           path="/treatments"
           element={needAuthenticationRoute(
-            <RoutePage element={<TODOPage todo="Page: Mes Traitements" />} />
+            <PrivatePageContainer
+              element={<TODOPage todo="Page: Mes Traitements" />}
+            />
           )}
         />
         <Route
           path="/research"
           element={needAuthenticationRoute(
-            <RoutePage element={<TODOPage todo="Page: Rechercher Avancée" />} />
+            <PrivatePageContainer
+              element={<TODOPage todo="Page: Rechercher Avancée" />}
+            />
           )}
         />
       </Routes>

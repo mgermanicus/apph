@@ -2,6 +2,7 @@ import cryptoJS from 'crypto-js';
 import jwtDecode from 'jwt-decode';
 import Server from './Server';
 import Cookies from 'universal-cookie';
+import { IUser } from '../utils';
 
 const cookies = new Cookies();
 
@@ -9,7 +10,7 @@ export default class AuthService {
   static signIn(
     email: string,
     password: string,
-    handleSuccess: () => void,
+    handleSuccess: (user: IUser) => void,
     handleError: (errorMessage: string) => void
   ) {
     const URL = `/auth/signIn`;
@@ -24,11 +25,17 @@ export default class AuthService {
       })
     };
     const successFunction = (jws: string) => {
-      const decodedToken = jwtDecode(jws);
+      const decodedToken = jwtDecode(jws) as { login: string };
+      const user: IUser = {
+        firstname: '',
+        lastname: '',
+        login: ''
+      };
       if (decodedToken !== null && typeof decodedToken === 'object') {
-        cookies.set('user', { ...decodedToken, token: jws });
+        user.login = decodedToken.login;
+        cookies.set('user', { token: jws });
       }
-      handleSuccess();
+      handleSuccess(user);
     };
     const errorFunction = (errorMessage: string) => {
       handleError(errorMessage);
@@ -38,10 +45,9 @@ export default class AuthService {
 
   static logout = () => {
     cookies.remove('user');
-    location.reload();
   };
 
-  static getCurrentUser() {
-    return cookies.get('user');
+  static getToken() {
+    return cookies.get('user')?.token;
   }
 }

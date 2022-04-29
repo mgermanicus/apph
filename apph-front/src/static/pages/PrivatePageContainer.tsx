@@ -1,6 +1,6 @@
 import { Header } from '../components/Header';
 
-export const RoutePage = ({
+export const PrivatePageContainer = ({
   element
 }: {
   element: JSX.Element;
