@@ -24,7 +24,7 @@ public class AuthController {
     @PostMapping("/signIn")
     public ResponseEntity<String> login(@RequestBody UserRequest userRequest) {
         try {
-            User user = userService.login(userRequest.getLogin(), userRequest.getPassword());
+            User user = userService.login(userRequest);
             Key key = JwtConfig.getKey();
             String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 7_200_000)).signWith(key).compact();
             return ResponseEntity.ok(jws);
@@ -39,7 +39,7 @@ public class AuthController {
     {
         try
         {
-            userService.registerUser(userRequest.getLogin(),userRequest.getPassword(), userRequest.getFirstName(), userRequest.getLastName());
+            userService.registerUser(userRequest);
             return ResponseEntity.ok().body("Utilisateur crée");
         }
         catch(DataIntegrityViolationException e)

@@ -61,6 +61,7 @@ public class S3Service implements IAmazonS3 {
         ResponseBytes<GetObjectResponse> s3Object = s3.getObject(
                 GetObjectRequest.builder().bucket(bucketName).key(user + filename).build(),
                 ResponseTransformer.toBytes());
+        s3.utilities().getUrl(builder -> builder.bucket(bucketName).key(user + filename)).toExternalForm();
         return s3Object.asByteArray();
     }
 
