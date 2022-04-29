@@ -9,18 +9,20 @@ import {
 import { makeCardStyles } from '../../utils/theme';
 import { FormEvent, useState } from 'react';
 import UserService from '../../services/UserService';
+import { useLocation } from 'react-router-dom';
+import { IUser } from '../../utils/types';
 
 export const EditProfile = () => {
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [login, setLogin] = useState('');
+  const props = useLocation().state as IUser;
+  const [firstname, setFirstname] = useState(props.firstname);
+  const [lastname, setLastname] = useState(props.lastname);
+  const [login, setLogin] = useState(props.login);
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const classes = makeCardStyles();
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    const edited = {};
     UserService.editUser();
   };
 
