@@ -36,7 +36,7 @@ public class S3Dao {
                 return convertedFile;
             }
         } else {
-            throw new InvalidFileException("Name is null");
+            throw new InvalidFileException("Le nom est null");
         }
     }
 
@@ -51,7 +51,7 @@ public class S3Dao {
             }
             return por.eTag();
         } else {
-            throw new InvalidFileException("Invalid file");
+            throw new InvalidFileException("Fichier invalide");
         }
     }
 
@@ -64,6 +64,6 @@ public class S3Dao {
 
     public String delete(String filename) {
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(bucketName).key(user + filename).build());
-        return filename + " deleted";
+        return filename + " supprimé";
     }
 }
