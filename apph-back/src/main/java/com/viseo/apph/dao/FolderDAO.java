@@ -12,8 +12,16 @@ public class FolderDAO {
     @PersistenceContext
     EntityManager em;
 
+    public Folder getFolderById(long id) {
+        return em.find(Folder.class, id);
+    }
+
     public List<Folder> getFolderByUser(long userId) {
         return em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)
                 .setParameter("userId", userId).getResultList();
+    }
+
+    public void createFolder(Folder folder) {
+        em.persist(folder);
     }
 }

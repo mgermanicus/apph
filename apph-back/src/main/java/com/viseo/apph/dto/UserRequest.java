@@ -3,9 +3,6 @@ package com.viseo.apph.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserRequest {
-    @JsonProperty("id")
-    long id;
-
     @JsonProperty("email")
     String login;
 
