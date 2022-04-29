@@ -33,16 +33,6 @@ const Copyright = (props: { sx: SxProps }) => {
   );
 };
 
-let connected = false;
-
-export const isConnected = () => {
-  return connected;
-};
-
-export const resetConnected = () => {
-  connected = false;
-};
-
 export const SignIn = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -55,7 +45,6 @@ export const SignIn = () => {
         email,
         password,
         () => {
-          connected = true;
           location.reload();
         },
         (errorMessage: string) => {

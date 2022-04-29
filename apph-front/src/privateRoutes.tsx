@@ -4,7 +4,7 @@ import { SignIn } from './static/components/SignIn';
 import { TODOPage } from './static/pages/TODOPage';
 import { MyFoldersPage } from './static/pages/MyFoldersPage';
 import AuthService from './services/AuthService';
-import { Header } from './static/components/Header';
+import { RoutePage } from './static/pages/RoutePage';
 
 export const PrivateRoutes = (): JSX.Element => {
   const authenticated = !!AuthService.getCurrentUser();
@@ -15,47 +15,51 @@ export const PrivateRoutes = (): JSX.Element => {
   const needNoAuthenticationRoute = (element: JSX.Element): JSX.Element => {
     return !authenticated ? element : <Navigate to="/pictures" />;
   };
-
   return (
     <>
-      <Header isAuth={authenticated} />
       <Routes>
         <Route path="*" element={needNoAuthenticationRoute(<SignIn />)} />
         <Route path="/" element={needNoAuthenticationRoute(<SignIn />)} />
         <Route
           path="/me"
-          element={needAuthenticationRoute(<UserProfilePage />)}
+          element={needAuthenticationRoute(
+            <RoutePage element={<UserProfilePage />} />
+          )}
         />
         <Route
           path="/pictures"
           element={needAuthenticationRoute(
-            <TODOPage todo="Page: Mes Photos" />
+            <RoutePage element={<TODOPage todo="Page: Mes Photos" />} />
           )}
         />
         <Route
           path="/folders"
-          element={needAuthenticationRoute(<MyFoldersPage />)}
+          element={needAuthenticationRoute(
+            <RoutePage element={<MyFoldersPage />} />
+          )}
         />
         <Route
           path="/trips"
           element={needAuthenticationRoute(
-            <TODOPage todo="Page: Mes Voyages" />
+            <RoutePage element={<TODOPage todo="Page: Mes Voyages" />} />
           )}
         />
         <Route
           path="/tags"
-          element={needAuthenticationRoute(<TODOPage todo="Page: Mes Tags" />)}
+          element={needAuthenticationRoute(
+            <RoutePage element={<TODOPage todo="Page: Mes Tags" />} />
+          )}
         />
         <Route
           path="/treatments"
           element={needAuthenticationRoute(
-            <TODOPage todo="Page: Mes Traitements" />
+            <RoutePage element={<TODOPage todo="Page: Mes Traitements" />} />
           )}
         />
         <Route
           path="/research"
           element={needAuthenticationRoute(
-            <TODOPage todo="Page: Rechercher Avancée" />
+            <RoutePage element={<TODOPage todo="Page: Rechercher Avancée" />} />
           )}
         />
       </Routes>

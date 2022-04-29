@@ -1,8 +1,4 @@
-import {
-  isConnected,
-  resetConnected,
-  SignIn
-} from '../../static/components/SignIn';
+import { SignIn } from '../../static/components/SignIn';
 import * as React from 'react';
 import { render } from '@testing-library/react';
 import {
@@ -14,11 +10,17 @@ import {
   triggerRequestSuccess
 } from '../utils';
 import cryptoJS from 'crypto-js';
+import Cookies from 'universal-cookie';
 
 describe('Tests du composant SignIn.tsx', () => {
+  const cookies = new Cookies();
   beforeEach(() => {
     jest.clearAllMocks();
-    resetConnected();
+    cookies.remove('user');
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: { reload: jest.fn() }
+    });
   });
 
   it('checks when the server sends an acknowledgment', () => {
@@ -31,7 +33,10 @@ describe('Tests du composant SignIn.tsx', () => {
     fillPassword(/Mot de passe/, 'P@ssW0rd');
     clickButton(/Connexion/);
     //THEN
-    expect(isConnected()).toBe(true);
+    expect(cookies.get('user')).toStrictEqual({
+      login: 'Elie',
+      token: JWS_TOKEN
+    });
   });
 
   it('checks when the server sends a failure', () => {
@@ -44,6 +49,6 @@ describe('Tests du composant SignIn.tsx', () => {
     fillPassword(/Mot de passe/, 'P@ssW0rd');
     clickButton(/Connexion/);
     //THEN
-    expect(isConnected()).toBe(false);
+    expect(cookies.get('user')).toStrictEqual(undefined);
   });
 });

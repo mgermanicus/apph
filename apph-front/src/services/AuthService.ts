@@ -1,6 +1,9 @@
 import cryptoJS from 'crypto-js';
 import jwtDecode from 'jwt-decode';
 import Server from './Server';
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
 
 export default class AuthService {
   static signIn(
@@ -23,8 +26,7 @@ export default class AuthService {
     const successFunction = (jws: string) => {
       const decodedToken = jwtDecode(jws);
       if (decodedToken !== null && typeof decodedToken === 'object') {
-        localStorage.setItem('user', JSON.stringify(decodedToken));
-        localStorage.setItem('token', jws);
+        cookies.set('user', { ...decodedToken, token: jws });
       }
       handleSuccess();
     };
@@ -35,11 +37,11 @@ export default class AuthService {
   }
 
   static logout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    cookies.remove('user');
+    location.reload();
   };
 
   static getCurrentUser() {
-    return localStorage.getItem('user');
+    return cookies.get('user');
   }
 }

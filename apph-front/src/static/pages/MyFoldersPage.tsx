@@ -24,7 +24,7 @@ export const MyFoldersPage = (): JSX.Element => {
       5,
       (parentFolder) => {
         setRootFolder(parentFolder);
-        setSelectedFolder(parentFolder.id);
+        setSelectedFolder(parentFolder.id.toString());
         setLoading(false);
       },
       (error: string) => {

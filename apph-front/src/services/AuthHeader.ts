@@ -1,9 +1,11 @@
+import AuthService from './AuthService';
+
 export const authHeader = () => {
-  const tokenFromLocalStorage = localStorage.getItem('token');
-  if (tokenFromLocalStorage) {
+  const user = AuthService.getCurrentUser();
+  if (user.token) {
     return {
       'Content-Type': 'application/json',
-      Authentication: tokenFromLocalStorage
+      Authentication: user.token
     };
   }
 };

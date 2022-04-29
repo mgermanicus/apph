@@ -1,17 +1,15 @@
 import { createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 import { IUser } from '../../utils';
+import AuthService from '../../services/AuthService';
 
-const user = localStorage.getItem('user');
-
+const user = AuthService.getCurrentUser();
 export const currentUserSlice = createSlice({
   name: 'currentUser',
-  initialState: user
-    ? (JSON.parse(user) as IUser)
-    : ({
-        firstname: '',
-        lastname: '',
-        login: ''
-      } as IUser),
+  initialState: {
+    firstname: '',
+    lastname: '',
+    login: user?.login || ''
+  } as IUser,
   reducers: {
     changeCurrentUser: (state: Draft<IUser>, action: PayloadAction<IUser>) => {
       state.firstname = action.payload.firstname;
