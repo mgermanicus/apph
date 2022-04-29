@@ -1,6 +1,8 @@
 package com.viseo.apph.service;
 
+import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.exception.InvalidFileException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,68 +19,29 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @Service
-public class S3Service implements IAmazonS3 {
+public class S3Service {
 
-    @Value("${bucketName}")
-    String bucketName;
+    @Autowired
+    S3Dao s3Dao;
 
-    @Value("${user}")
-    String user;
-
-    final S3Client s3;
-
-    public S3Service(S3Client s3) {
-        this.s3 = s3;
-    }
-
-    @Override
     public String save(MultipartFile file) throws InvalidFileException, IOException {
-        String filename = file.getOriginalFilename();
-        return upload(file, filename);
+        if (file != null) {
+            String filename = file.getOriginalFilename();
+            return s3Dao.upload(file, filename);
+        }
+        throw new InvalidFileException("file must not be null");
     }
 
     public String saveWithName(MultipartFile file, String name) throws InvalidFileException, IOException {
-        return upload(file, name);
+        return s3Dao.upload(file, name);
     }
 
-    public String upload(MultipartFile file, String name) throws InvalidFileException, IOException {
-        if (file != null) {
-            File fileToSave = convertMultiPartToFile(file, name);
-            PutObjectResponse por = s3.putObject(PutObjectRequest.builder()
-                    .bucket(bucketName).key(user + fileToSave.getName())
-                    .contentLength(fileToSave.length()).build(), RequestBody.fromFile(fileToSave));
-            if (fileToSave.exists()) {
-                Files.delete(Paths.get(fileToSave.getAbsolutePath()));
-            }
-            return por.eTag();
-        } else {
-            throw new InvalidFileException("Invalid file");
-        }
-    }
 
-    @Override
     public byte[] download(String filename) {
-        ResponseBytes<GetObjectResponse> s3Object = s3.getObject(
-                GetObjectRequest.builder().bucket(bucketName).key(user + filename).build(),
-                ResponseTransformer.toBytes());
-        return s3Object.asByteArray();
+        return s3Dao.download(filename);
     }
 
-    @Override
     public String delete(String filename) {
-        s3.deleteObject(DeleteObjectRequest.builder().bucket(bucketName).key(user + filename).build());
-        return filename + " deleted";
-    }
-
-    public File convertMultiPartToFile(MultipartFile file, String name) throws IOException, InvalidFileException {
-        if (name != null) {
-            File convertedFile = new File(name);
-            try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
-                fos.write(file.getBytes());
-                return convertedFile;
-            }
-        } else {
-            throw new InvalidFileException("Name is null");
-        }
+        return s3Dao.delete(filename);
     }
 }

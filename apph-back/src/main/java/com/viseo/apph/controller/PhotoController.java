@@ -25,15 +25,12 @@ public class PhotoController {
     @Autowired
     PhotoService photoService;
 
-    @Autowired
-    S3Service s3Service;
-
     @PostMapping("/upload")
     public ResponseEntity<IResponseDTO> upload(MultipartFile file, String name) {
         try {
             String format = photoService.getFormat(file);
             Photo photo = photoService.addPhoto(name);
-            return ResponseEntity.ok(new MessageResponse(s3Service.saveWithName(file, photo.getId() + format)));
+            return ResponseEntity.ok(new MessageResponse(photoService.saveWithName(file, photo.getId() + format)));
         } catch (IOException | S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
         } catch (InvalidFileException e) {

@@ -41,7 +41,6 @@ public class PhotoControllerTest {
         ResponseEntity<IResponseDTO> responseEntity = photoController.upload(file, name);
         // Then
         verify(photoService, times(1)).addPhoto(any());
-        verify(s3Service, times(1)).saveWithName(any(), anyString());
         assertEquals(responseEntity.getStatusCode().toString()
                 , HttpStatus.OK.toString());
     }
@@ -52,12 +51,10 @@ public class PhotoControllerTest {
         MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
         String name = "Test@";
         Photo photo = new Photo();
+        when(photoService.getFormat(any())).thenThrow(new InvalidFileException("error"));
         // When
-        when(photoService.addPhoto(name)).thenReturn(photo);
-        when(s3Service.saveWithName(any(), anyString())).thenThrow(InvalidFileException.class);
-        ResponseEntity<IResponseDTO> responseEntity = photoController.upload(file, name);
+        ResponseEntity<IResponseDTO> responseEntity = photoController.upload(null, name);
         // Then
-        assertEquals(responseEntity.getStatusCode().toString()
-                , HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.toString(), responseEntity.getStatusCode().toString());
     }
 }
