@@ -1,6 +1,5 @@
 package com.viseo.apph.config;
 
-import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
@@ -15,6 +14,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class DataBaseConfig {
@@ -91,8 +92,13 @@ public class DataBaseConfig {
         em.persist(yunanChild1);
         em.persist(yunanChild2);
         //Photo
-        Photo photo1 = new Photo().setIdUser(1).setSize(1200).setTags("img").setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo photo2 = new Photo().setIdUser(1).setSize(1300).setTags("img2").setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setShootingDate(new Date());
+        Set<String> photoTags1 = new HashSet<>();
+        photoTags1.add("tag1");
+        Photo photo1 = new Photo().setIdUser(1).setSize(1200).setTags(photoTags1).setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setShootingDate(new Date());
+        Set<String> photoTags2 = new HashSet<>();
+        photoTags2.add("tag2");
+        photoTags2.add("tag3");
+        Photo photo2 = new Photo().setIdUser(1).setSize(1300).setTags(photoTags2).setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setShootingDate(new Date());
         em.persist(photo1);
         em.persist(photo2);
     }

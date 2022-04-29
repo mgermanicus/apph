@@ -1,6 +1,5 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.controller.AuthController;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.UserRequest;

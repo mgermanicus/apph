@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { UploadImage } from './UploadImage';
 import { Alert, Collapse, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ITable } from '../../utils/types/table';
 import PhotoService from '../../services/PhotoService';
-import Button from '@mui/material/Button';
+import PhotoDetails from './PhotoDetails';
 
 const columns: GridColDef[] = [
   {
@@ -52,7 +52,14 @@ const columns: GridColDef[] = [
     headerName: 'Tags',
     flex: 1.5,
     align: 'center',
-    headerAlign: 'center'
+    headerAlign: 'center',
+    renderCell: (params) =>
+      params.row.tags.map((tag: string, index: number) => {
+        if (index !== params.row.tags.length - 1) {
+          return tag + ', ';
+        }
+        return tag;
+      })
   },
   {
     field: 'url',
@@ -77,7 +84,20 @@ export default function DataTable() {
     PhotoService.getData(
       (tab) => {
         tab.forEach(
-          (row) => (row.details = <Button variant="outlined">Détails</Button>)
+          (row) =>
+            (row.details = (
+              <PhotoDetails
+                photoSrc={
+                  'https://i.pinimg.com/originals/a2/39/b5/a239b5b33d145fcab7e48544b81019da.jpg'
+                }
+                title={row.title}
+                description={row.description}
+                creationDate={row.creationDate}
+                shootingDate={row.shootingDate}
+                size={row.size}
+                tags={row.tags}
+              />
+            ))
         );
         setData(tab);
       },

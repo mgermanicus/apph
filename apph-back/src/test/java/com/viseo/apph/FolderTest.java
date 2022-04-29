@@ -19,7 +19,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.lang.reflect.Field;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FolderTest {

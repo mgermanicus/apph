@@ -1,8 +1,10 @@
 package com.viseo.apph.domain;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "photos")
@@ -14,7 +16,8 @@ public class Photo extends BaseEntity {
     Date creationDate;
     Date shootingDate;
     float size;
-    String tags;
+    @ElementCollection
+    Set<String> tags;
 
     public Photo() {
         super();
@@ -74,11 +77,11 @@ public class Photo extends BaseEntity {
         return this;
     }
 
-    public String getTags() {
+    public Set<String> getTags() {
         return tags;
     }
 
-    public Photo setTags(String tags) {
+    public Photo setTags(Set<String> tags) {
         this.tags = tags;
         return this;
     }

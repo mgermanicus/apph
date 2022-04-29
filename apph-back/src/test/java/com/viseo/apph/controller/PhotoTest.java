@@ -1,25 +1,22 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.dao.PhotoDao;
-import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
-import com.viseo.apph.domain.User;
 import com.viseo.apph.service.PhotoService;
-import com.viseo.apph.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
-
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class PhotoTest {
