@@ -21,7 +21,13 @@ export const UserProfile = ({
       <CardHeader title={`${firstname} ${lastname}`} />
       <CardContent>
         <Typography variant="body2">Email: {login}</Typography>
-        <Link to="/me/edit">Modifier</Link>
+        <Button
+          component={Link}
+          to="/me/edit"
+          state={{ firstname, lastname, login }}
+        >
+          Modifier
+        </Button>
       </CardContent>
     </Card>
   );

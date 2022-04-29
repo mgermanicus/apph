@@ -3,8 +3,7 @@ import { useEffect, useState } from 'react';
 import { IUser } from '../../utils/types';
 import { ErrorCard } from '../components/ErrorCard';
 import UserService from '../../services/UserService';
-import { Button, Stack } from '@mui/material';
-import { EditProfile } from '../components/EditProfile';
+import { Stack } from '@mui/material';
 
 export const UserProfileContainer = (): JSX.Element => {
   const [firstname, setFirstname] = useState<string>('');
