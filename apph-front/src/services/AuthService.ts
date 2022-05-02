@@ -50,4 +50,9 @@ export default class AuthService {
   static getToken() {
     return cookies.get('user')?.token;
   }
+
+  static editUser = (user: IUser) => {
+    const token = this.getToken();
+    cookies.set('user', { ...user, token });
+  };
 }

@@ -7,23 +7,67 @@ import {
   TextField
 } from '@mui/material';
 import { makeCardStyles } from '../../utils/theme';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import UserService from '../../services/UserService';
-import { useLocation } from 'react-router-dom';
-import { IUser } from '../../utils/types';
+import { IEditedUser, IUser } from '../../utils/types';
+import AuthService from '../../services/AuthService';
 
 export const EditProfile = () => {
-  const props = useLocation().state as IUser;
-  const [firstname, setFirstname] = useState(props.firstname);
-  const [lastname, setLastname] = useState(props.lastname);
-  const [login, setLogin] = useState(props.login);
+  const [user, setUser] = useState<IUser>({
+    firstname: '',
+    lastname: '',
+    login: ''
+  });
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const [error, setError] = useState<string>();
   const classes = makeCardStyles();
 
+  const updateUser = (newUser: IUser) => {
+    setUser((user) => ({ ...newUser }));
+    setFirstname(newUser.firstname);
+    setLastname(newUser.lastname);
+    setLogin(newUser.login);
+  };
+
+  useEffect(() => {
+    (async () => {
+      await UserService.getUser(
+        (user: string) => {
+          const userConverted: IUser = JSON.parse(user);
+          updateUser(userConverted);
+        },
+        (errorMessage: string) => {
+          setError(errorMessage);
+        }
+      );
+    })();
+  }, []);
+
+  const editedFields = (): IEditedUser => {
+    return {
+      ...(firstname != user.firstname && { firstname }),
+      ...(lastname != user.lastname && { lastname }),
+      ...(login != user.login && { login }),
+      ...(password && { password })
+    };
+  };
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    UserService.editUser();
+    UserService.editUser(
+      editedFields(),
+      (body: string) => {
+        const newUser = JSON.parse(body);
+        AuthService.editUser(newUser);
+        updateUser(newUser);
+      },
+      (errorMessage: string) => {
+        setError(errorMessage);
+      }
+    );
   };
 
   return (
@@ -57,8 +101,15 @@ export const EditProfile = () => {
             />
             <TextField
               label="Confirmer le mot de passe"
+              required={!!password}
               value={passwordConfirmation}
               onChange={(e) => setPasswordConfirmation(e.target.value)}
+              error={password != passwordConfirmation}
+              helperText={
+                password != passwordConfirmation
+                  ? 'La saisie ne correspond pas au mot de passe'
+                  : ''
+              }
             />
             <Button type="submit">Valider</Button>
           </Stack>

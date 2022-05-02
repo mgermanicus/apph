@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { IUser, makeCardStyles } from '../../utils';
-import { Card, CardContent, CardHeader, Typography } from '@mui/material';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Typography
+} from '@mui/material';
 import { Link } from 'react-router-dom';
 
 export const UserProfile = ({
@@ -14,11 +20,7 @@ export const UserProfile = ({
       <CardHeader title={`${firstname} ${lastname}`} />
       <CardContent>
         <Typography variant="body2">Email: {login}</Typography>
-        <Button
-          component={Link}
-          to="/me/edit"
-          state={{ firstname, lastname, login }}
-        >
+        <Button component={Link} to="/me/edit">
           Modifier
         </Button>
       </CardContent>

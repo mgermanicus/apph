@@ -3,3 +3,10 @@ export interface IUser {
   lastname: string;
   login: string;
 }
+
+export interface IEditedUser {
+  firstname?: string;
+  lastname?: string;
+  login?: string;
+  password?: string;
+}

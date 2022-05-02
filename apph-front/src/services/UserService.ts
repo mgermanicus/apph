@@ -1,5 +1,7 @@
 import Server from './Server';
 import { getTokenHeader } from '../utils/token';
+import { IEditedUser, IUser } from '../utils/types';
+import cryptoJS from 'crypto-js';
 
 export default class UserService {
   static getUser(
@@ -14,12 +16,24 @@ export default class UserService {
   }
 
   static editUser(
-    firstname?: string,
-    lastname?: string,
-    login?: string,
-    password?: string
+    { password, ...rest }: IEditedUser,
+    handleSuccess: (user: string) => void,
+    handleError: (errorMessage: string) => void
   ) {
-    // TODO send to server & edit cookies
-    return null;
+    const requestOptions = {
+      method: 'PUT',
+      headers: getTokenHeader(),
+      body: JSON.stringify({
+        ...(password && { password: cryptoJS.SHA256(password).toString() }),
+        ...rest
+      })
+    };
+
+    return Server.request(
+      `/user/edit`,
+      requestOptions,
+      handleSuccess,
+      handleError
+    );
   }
 }
