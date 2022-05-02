@@ -69,7 +69,7 @@ public class UserService {
         if (newPassword == null) return;
         if (!userDAO.existById(userId))
             throw new NotFoundException("User not Found.");
-        userDAO.editPassword(userId, newPassword);
+        userDAO.editPassword(userId, encoder.encode(newPassword));
     }
 
 }
