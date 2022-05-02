@@ -2,6 +2,7 @@ package com.viseo.apph.service;
 
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.User;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +28,12 @@ public class UserService {
         if (encoder.matches(password, user.getPassword()))
             return user;
         throw new IllegalArgumentException();
+    }
+
+    @Transactional
+    public User getUser(Claims claims) {
+        String login = claims.get("login").toString();
+        return userDAO.getUserByLogin(login);
     }
 
     @Transactional

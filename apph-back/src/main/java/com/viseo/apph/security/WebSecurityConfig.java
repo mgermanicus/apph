@@ -14,6 +14,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatcher("/s3/**")
               //  .antMatcher("/photo/**")
                 .authorizeRequests()
+                .antMatchers("/folder/**").permitAll()
                 .anyRequest().authenticated();
     }
 }

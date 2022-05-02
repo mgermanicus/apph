@@ -22,7 +22,7 @@ public class UserDAO {
                 .getSingleResult();
     }
 
-    public User getUserById(long id){
-        return em.find(User.class,id);
+    public User getUserById(long userId) {
+        return em.find(User.class, userId);
     }
 }

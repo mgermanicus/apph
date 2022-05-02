@@ -1,9 +1,6 @@
 import Server from './Server';
-import imageFileCheck from '../utils/imageFileCheck';
-const API_URL = process.env['REACT_APP_API_URL'];
-import Cookies from 'universal-cookie';
-const cookies = new Cookies();
-const { token } = cookies.get('user');
+import { imageFileCheck } from '../utils';
+
 export default class ImageService {
   static uploadImage(
     title: string,
@@ -19,17 +16,11 @@ export default class ImageService {
       method: 'POST',
       body: formData
     };
-    const successFunction = (body: string) => {
-      handleSuccess();
-    };
-    const errorFunction = (errorMessage: string) => {
-      handleError(errorMessage);
-    };
     return Server.request(
-      `${API_URL}photo/upload`,
+      `/photo/upload`,
       requestOptions,
-      successFunction,
-      errorFunction
+      handleSuccess,
+      handleError
     );
   }
 }

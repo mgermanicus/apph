@@ -1,6 +1,7 @@
 package com.viseo.apph.service;
 
 import com.viseo.apph.dao.PhotoDao;
+import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
@@ -11,12 +12,16 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.IOException;
 
 @Service
 public class PhotoService {
 
     @Autowired
     PhotoDao photoDao;
+
+    @Autowired
+    S3Dao s3Dao;
 
     @Transactional
     public Photo addPhoto(String title) {
@@ -51,5 +56,9 @@ public class PhotoService {
             usersPhotoResponse.add(photoResponse);
         }
         return usersPhotoResponse;
+    }
+
+    public String saveWithName(MultipartFile file, String name) throws InvalidFileException, IOException {
+        return s3Dao.upload(file, name);
     }
 }

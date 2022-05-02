@@ -9,4 +9,8 @@ public class MessageResponse implements IResponseDTO {
     public MessageResponse(String message) {
         this.message = message;
     }
+
+    public String getMessage() {
+        return message;
+    }
 }

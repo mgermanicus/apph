@@ -1,14 +1,32 @@
 import React from 'react';
-import Table from './static/components/Table';
-import {SignIn} from "./static/components/SignIn";
+import { Box, createTheme, ThemeProvider } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { PrivateRoutes } from './privateRoutes';
+import { BrowserRouter } from 'react-router-dom';
 
-function App() {
+const useStyles = makeStyles({
+  textAlignCenter: {
+    textAlign: 'center'
+  }
+});
+
+const theme = createTheme({
+  palette: {
+    background: {
+      paper: '#f2f2f2'
+    }
+  }
+});
+
+export const App = () => {
+  const classes = useStyles();
   return (
-    <div className="App">
-      <header className="App-header">Débrouillez-vous</header>
-      <Table />
-    </div>
+    <ThemeProvider theme={theme}>
+      <BrowserRouter>
+        <Box className={classes.textAlignCenter}>
+          <PrivateRoutes />
+        </Box>
+      </BrowserRouter>
+    </ThemeProvider>
   );
-}
-
-export default App;
+};
