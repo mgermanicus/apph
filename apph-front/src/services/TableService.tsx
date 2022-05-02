@@ -1,5 +1,6 @@
 import Cookies from 'universal-cookie';
 import Server from './Server';
+import { ITable } from '../utils/types/table';
 
 const cookies = new Cookies();
 
@@ -18,13 +19,13 @@ class TableService {
         token: userInfos?.token
       }
     };
-    const successFunction = (val: any) => {
+    const successFunction = (val: string) => {
       let i = 1;
-      val = JSON.parse(val);
-      for (let elt of val) {
+      const tab: Array<ITable> = JSON.parse(val);
+      for (const elt of tab) {
         elt.id = i++;
       }
-      setData(val);
+      setData(tab);
       handleSuccess();
     };
     const errorFunction = (errorMessage: string) => {

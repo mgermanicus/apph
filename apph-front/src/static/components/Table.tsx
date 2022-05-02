@@ -5,6 +5,7 @@ import TableService from '../../services/TableService';
 import { UploadImage } from './UploadImage';
 import { Alert, Collapse, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { ITable } from '../../utils/types/table';
 
 const columns: GridColDef[] = [
   {
@@ -61,7 +62,7 @@ const columns: GridColDef[] = [
   }
 ];
 export default function DataTable() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState('');
   useEffect(() => {
     TableService.getData(

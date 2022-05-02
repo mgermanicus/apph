@@ -12,7 +12,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and()
                 .antMatcher("/s3/**")
-              //  .antMatcher("/photo/**")
                 .authorizeRequests()
                 .antMatchers("/folder/**").permitAll()
                 .anyRequest().authenticated();
