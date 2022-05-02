@@ -8,17 +8,13 @@ import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.PhotoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
-
-import static java.net.HttpURLConnection.HTTP_OK;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -38,13 +34,10 @@ public class PhotoController {
         }
     }
 
-    @GetMapping("/download")
+    @PostMapping("/download")
     public ResponseEntity<IResponseDTO> download(@RequestBody PhotoRequest photoRequest) {
         Photo photo = photoService.getPhoto(photoRequest.getId());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-type", MediaType.ALL_VALUE);
-        headers.add("Content-Disposition", "attachment; filename=" + photoRequest.getId() + "." + photo.getExtension());
-        PhotoResponse photoResponse = photoService.download(photoRequest.getId());
-        return ResponseEntity.status(HTTP_OK).headers(headers).body(photoResponse);
+        PhotoResponse photoResponse = photoService.download(photoRequest.getId()).setName(photo.getName()).setExtension(photo.getExtension());
+        return ResponseEntity.ok(photoResponse);
     }
 }
