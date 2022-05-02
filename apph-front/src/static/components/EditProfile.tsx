@@ -77,6 +77,12 @@ export const EditProfile = () => {
     );
   };
 
+  const resetChanges = () => {
+    setFirstname(user.firstname);
+    setLastname(user.lastname);
+    setLogin(user.login);
+  };
+
   return (
     <Card className={classes.cardStyle}>
       <CardHeader title="Modifier le profil" />
@@ -102,11 +108,13 @@ export const EditProfile = () => {
               onChange={(e) => setLogin(e.target.value)}
             />
             <TextField
+              type="password"
               label="Mot de passe"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
             <TextField
+              type="password"
               label="Confirmer le mot de passe"
               required={!!password}
               value={passwordConfirmation}
@@ -114,11 +122,14 @@ export const EditProfile = () => {
               error={password != passwordConfirmation}
               helperText={
                 password != passwordConfirmation
-                  ? 'La saisie ne correspond pas au mot de passe'
+                  ? 'Les mots de passe de correspondent pas'
                   : ''
               }
             />
             <Button type="submit">Valider</Button>
+            <Button color="error" onClick={(e) => resetChanges()}>
+              Annuler les modifications
+            </Button>
           </Stack>
         </form>
       </CardContent>
