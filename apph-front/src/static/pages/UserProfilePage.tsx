@@ -1,10 +1,10 @@
 import { UserProfile } from '../components/UserProfile';
 import { useEffect, useState } from 'react';
-import { IUser } from '../../utils/types';
+import { IUser } from '../../utils';
 import { ErrorCard } from '../components/ErrorCard';
 import UserService from '../../services/UserService';
 
-export const UserProfileContainer = (): JSX.Element => {
+export const UserProfilePage = (): JSX.Element => {
   const [firstname, setFirstname] = useState<string>('');
   const [lastname, setLastname] = useState<string>('');
   const [email, setEmail] = useState<string>('');

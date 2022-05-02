@@ -8,10 +8,10 @@ import {
   Typography
 } from '@mui/material';
 import { UserAvatar } from './UserAvatar';
-import LoginIcon from '@mui/icons-material/Login';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
-import { makeAppBarStyles } from '../../utils/theme';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { Link, useNavigate } from 'react-router-dom';
+import { IUser, makeAppBarStyles } from '../../utils';
 import { useState } from 'react';
 import { DrawerMenuItem } from './DrawerMenuItem';
 import {
@@ -22,10 +22,20 @@ import {
   LocalOffer,
   Search
 } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
+import AuthService from '../../services/AuthService';
 
-export const Header = ({ isAuth }: { isAuth: boolean }): JSX.Element => {
+export const Header = (): JSX.Element => {
   const classes = makeAppBarStyles();
+  const navigate = useNavigate();
+  const user = useSelector(
+    ({ currentUser }: { currentUser: IUser }) => currentUser
+  );
   const [drawerMenuVisible, setDrawerMenuVisible] = useState<boolean>(false);
+  const handleLogout = () => {
+    AuthService.logout();
+    navigate(0);
+  };
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar className={classes.appBarStyle}>
@@ -85,15 +95,15 @@ export const Header = ({ isAuth }: { isAuth: boolean }): JSX.Element => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             APPH
           </Typography>
-          {isAuth ? (
-            <IconButton component={Link} to="/me">
-              <UserAvatar firstname={'Min'} lastname={'SUN'} />
-            </IconButton>
-          ) : (
-            <IconButton color="secondary">
-              <LoginIcon />
-            </IconButton>
-          )}
+          <IconButton component={Link} to="/me">
+            <UserAvatar
+              firstname={user.firstname || user.login}
+              lastname={user.lastname || ''}
+            />
+          </IconButton>
+          <IconButton onClick={handleLogout}>
+            <LogoutIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
     </Box>

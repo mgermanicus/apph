@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import { IFolder } from '../../utils/types/Folder';
 import { FolderService } from '../../services/FolderService';
@@ -7,9 +8,8 @@ import { FolderTree } from '../components/FolderTree';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import { Alert } from '@mui/material';
-import * as React from 'react';
 
-export const MyFoldersContainer = (): JSX.Element => {
+export const MyFoldersPage = (): JSX.Element => {
   const [rootFolder, setRootFolder] = useState<IFolder | null>(null);
   const [selectedFolder, setSelectedFolder] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -24,7 +24,7 @@ export const MyFoldersContainer = (): JSX.Element => {
       5,
       (parentFolder) => {
         setRootFolder(parentFolder);
-        setSelectedFolder(parentFolder.id);
+        setSelectedFolder(parentFolder.id.toString());
         setLoading(false);
       },
       (error: string) => {

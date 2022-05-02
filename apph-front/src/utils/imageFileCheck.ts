@@ -1,8 +1,8 @@
-export default function imageFileCheck(
+export const imageFileCheck = (
   imageFile: File,
   handleError: (errorMessage: string) => void,
   maxFileSizeMb = 10
-) {
+) => {
   if (!/image\/.*/.test(imageFile.type)) {
     handleError("Le format du fichier n'est pas valide");
     return false;
@@ -14,4 +14,4 @@ export default function imageFileCheck(
     return false;
   }
   return true;
-}
+};

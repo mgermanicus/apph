@@ -4,15 +4,23 @@ import { Alert } from '@mui/material';
 import * as React from 'react';
 
 export const FolderTree = ({
-  folder
+  folder,
+  key
 }: {
   folder: IFolder | null;
+  key?: number;
 }): JSX.Element => {
   if (folder) {
     return (
-      <TreeItem nodeId={folder.id} key={folder.id} label={folder.name}>
+      <TreeItem
+        nodeId={folder.id.toString()}
+        key={folder.id.toString() + key}
+        label={folder.name}
+      >
         {Array.isArray(folder.childrenFolders) && folder.childrenFolders.length
-          ? folder.childrenFolders.map((child) => <FolderTree folder={child} />)
+          ? folder.childrenFolders.map((child, key) => (
+              <FolderTree folder={child} key={key} />
+            ))
           : null}
       </TreeItem>
     );
