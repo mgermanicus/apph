@@ -64,7 +64,7 @@ export const EditProfile = () => {
       (body: string) => {
         if (editedFields().login) {
           AuthService.logout();
-          navigate('/');
+          navigate(0);
         } else {
           const newUser = JSON.parse(body);
           AuthService.editUser(newUser);
