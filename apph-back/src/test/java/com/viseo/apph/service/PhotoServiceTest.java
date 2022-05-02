@@ -43,17 +43,6 @@ public class PhotoServiceTest {
     }
 
     @Test
-    public void testAddPhoto() {
-        // Given
-        createPhotoService();
-        String name = "Test@";
-        // WHEN
-        photoService.addPhoto(name);
-        // THEN
-        verify(em, times(1)).persist(any(Photo.class));
-    }
-
-    @Test
     public void testGetFormat() throws InvalidFileException {
         // Given
         createPhotoService();
@@ -61,6 +50,6 @@ public class PhotoServiceTest {
         MockMultipartFile file = new MockMultipartFile("file", "orig", ContentType.IMAGE_GIF.toString(), "bar".getBytes());
         // When
         assertThrows(InvalidFileException.class, () -> photoService.getFormat(fileException));
-        assertEquals(".gif",photoService.getFormat(file));
+        assertEquals("gif",photoService.getFormat(file));
     }
 }

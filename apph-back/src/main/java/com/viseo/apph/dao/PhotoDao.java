@@ -15,4 +15,8 @@ public class PhotoDao {
         em.persist(photo);
         return photo;
     }
+
+    public Photo getPhoto(long id) {
+        return em.find(Photo.class, id);
+    }
 }

@@ -24,9 +24,6 @@ public class PhotoControllerTest {
     @Mock
     PhotoService photoService;
 
-    @Mock
-    S3Service s3Service;
-
     @InjectMocks
     PhotoController photoController;
 
@@ -37,24 +34,20 @@ public class PhotoControllerTest {
         String name = "Test@";
         Photo photo = new Photo();
         // When
-        when(photoService.addPhoto(name)).thenReturn(photo);
         ResponseEntity<IResponseDTO> responseEntity = photoController.upload(file, name);
         // Then
-        verify(photoService, times(1)).addPhoto(any());
+        verify(photoService, times(1)).upload(any(), anyString());
         assertEquals(responseEntity.getStatusCode().toString()
                 , HttpStatus.OK.toString());
     }
 
     @Test
-    public void testUploadException() throws InvalidFileException, IOException {
+    public void testUploadException() {
         // Given
-        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
         String name = "Test@";
-        Photo photo = new Photo();
-        when(photoService.getFormat(any())).thenThrow(new InvalidFileException("error"));
         // When
         ResponseEntity<IResponseDTO> responseEntity = photoController.upload(null, name);
         // Then
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.toString(), responseEntity.getStatusCode().toString());
+        assertEquals(HttpStatus.OK.toString(), responseEntity.getStatusCode().toString());
     }
 }

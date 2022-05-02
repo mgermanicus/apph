@@ -1,6 +1,8 @@
 package com.viseo.apph.domain;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Folder extends BaseEntity {
