@@ -1,5 +1,5 @@
 import Server from './Server';
-import { getTokenHeader } from '../utils/token';
+import { getTokenHeader } from '../utils';
 
 export default class UserService {
   static getUser(
