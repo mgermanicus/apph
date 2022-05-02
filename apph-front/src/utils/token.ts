@@ -1,6 +1,6 @@
-import AuthService from './AuthService';
+import AuthService from '../services/AuthService';
 
-export const authHeader = () => {
+export const getTokenHeader = () => {
   const token = AuthService.getToken();
   if (token) {
     return {

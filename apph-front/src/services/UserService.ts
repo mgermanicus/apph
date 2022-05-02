@@ -1,5 +1,5 @@
 import Server from './Server';
-import { authHeader } from './AuthHeader';
+import { getTokenHeader } from '../utils/token';
 
 export default class UserService {
   static getUser(
@@ -8,7 +8,7 @@ export default class UserService {
   ) {
     const requestOptions = {
       method: 'GET',
-      headers: authHeader()
+      headers: getTokenHeader()
     };
     return Server.request(`/user/`, requestOptions, handleSuccess, handleError);
   }
