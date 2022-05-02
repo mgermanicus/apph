@@ -10,8 +10,10 @@ import { makeCardStyles } from '../../utils/theme';
 import { FormEvent, useEffect, useState } from 'react';
 import UserService from '../../services/UserService';
 import { IEditedUser, IUser } from '../../utils/types';
+import { useNavigate } from 'react-router-dom';
 
 export const EditProfile = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<IUser>({
     firstname: '',
     lastname: '',
@@ -59,9 +61,14 @@ export const EditProfile = () => {
     UserService.editUser(
       editedFields(),
       (body: string) => {
-        const newUser = JSON.parse(body);
-        UserService.updateCookies(newUser);
-        updateUser(newUser);
+        if (editedFields().login) {
+          UserService.deleteCookies();
+          navigate('/login');
+        } else {
+          const newUser = JSON.parse(body);
+          UserService.updateCookies(newUser);
+          updateUser(newUser);
+        }
       },
       (errorMessage: string) => {
         setError(errorMessage);

@@ -83,4 +83,8 @@ export default class UserService {
     const token = cookies.get('user').token;
     cookies.set('user', { ...user, token });
   }
+
+  static deleteCookies() {
+    cookies.remove('user');
+  }
 }
