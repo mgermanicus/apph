@@ -11,8 +11,10 @@ import { FormEvent, useEffect, useState } from 'react';
 import UserService from '../../services/UserService';
 import { IEditedUser, IUser } from '../../utils/types';
 import AuthService from '../../services/AuthService';
+import { useNavigate } from 'react-router-dom';
 
 export const EditProfile = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<IUser>({
     firstname: '',
     lastname: '',
@@ -60,9 +62,14 @@ export const EditProfile = () => {
     UserService.editUser(
       editedFields(),
       (body: string) => {
-        const newUser = JSON.parse(body);
-        AuthService.editUser(newUser);
-        updateUser(newUser);
+        if (editedFields().login) {
+          AuthService.logout();
+          navigate('/login');
+        } else {
+          const newUser = JSON.parse(body);
+          AuthService.editUser(newUser);
+          updateUser(newUser);
+        }
       },
       (errorMessage: string) => {
         setError(errorMessage);

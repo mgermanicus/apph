@@ -46,7 +46,7 @@ public class UserService {
         if (userDAO.existByLogin(newLogin))
             throw new DataIntegrityViolationException("Login is Already in Use.");
         // TODO revoke token & generate new one
-        editLogin(userId, newLogin);
+        userDAO.editLogin(userId, newLogin);
     }
 
     @Transactional
