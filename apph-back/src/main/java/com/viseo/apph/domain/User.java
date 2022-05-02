@@ -20,6 +20,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Photo> photos = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Tag> tags = new ArrayList<>();
+
     public User() {
         super();
     }
