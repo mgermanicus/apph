@@ -1,6 +1,6 @@
 import Server from './Server';
 import { getTokenHeader } from '../utils/token';
-import { IEditedUser, IUser } from '../utils/types';
+import { IEditedUser } from '../utils/types';
 import cryptoJS from 'crypto-js';
 
 export default class UserService {
