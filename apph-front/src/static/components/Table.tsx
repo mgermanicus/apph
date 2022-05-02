@@ -3,6 +3,8 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import TableService from '../../services/TableService';
 import { UploadImage } from './UploadImage';
+import { Alert, Collapse, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const columns: GridColDef[] = [
   {
@@ -60,11 +62,16 @@ const columns: GridColDef[] = [
 ];
 export default function DataTable() {
   const [data, setData] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
   useEffect(() => {
     TableService.getData(
       setData,
-      () => {},
-      () => {}
+      () => {
+        console.log('Affichage du tableau');
+      },
+      (errorMessage: string) => {
+        setErrorMessage(errorMessage);
+      }
     );
   }, []);
   return (
@@ -76,6 +83,26 @@ export default function DataTable() {
         pageSize={5}
         rowsPerPageOptions={[5]}
       />
+      <Collapse in={errorMessage !== ''}>
+        <Alert
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setErrorMessage('');
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+          sx={{ mb: 2 }}
+          severity="error"
+        >
+          {errorMessage}
+        </Alert>
+      </Collapse>
     </div>
   );
 }
