@@ -24,7 +24,7 @@ const theme = createTheme({
 export const App = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-
+  const authenticated = AuthService.isTokenValid();
   useEffect(() => {
     try {
       if (AuthService.isTokenValid()) {
@@ -33,13 +33,12 @@ export const App = () => {
     } catch (e) {
       console.error(e);
     }
-  }, []);
-
+  }, [authenticated]);
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Box className={classes.textAlignCenter}>
-          <PrivateRoutes />
+          <PrivateRoutes authenticated={authenticated} />
         </Box>
       </BrowserRouter>
     </ThemeProvider>

@@ -9,22 +9,25 @@ import { useSelector } from 'react-redux';
 import { IUser } from './utils';
 import Table from './static/components/PhotoTable';
 
-export const PrivateRoutes = (): JSX.Element => {
+export const PrivateRoutes = ({
+  authenticated
+}: {
+  authenticated: boolean;
+}): JSX.Element => {
   const user = useSelector(
     ({ currentUser }: { currentUser: IUser }) => currentUser
   );
-  const authenticated = !!user.login;
+  const isAuthenticated = authenticated !== !!user.login || !!user.login;
   const needAuthenticationRoute = (element: JSX.Element): JSX.Element => {
-    return authenticated ? element : <Navigate to="/" />;
+    return isAuthenticated ? element : <Navigate to="/" />;
   };
 
   const needNoAuthenticationRoute = (element: JSX.Element): JSX.Element => {
-    return !authenticated ? element : <Navigate to="/pictures" />;
+    return !isAuthenticated ? element : <Navigate to="/pictures" />;
   };
   return (
     <>
       <Routes>
-        <Route path="*" element={needNoAuthenticationRoute(<SignIn />)} />
         <Route path="/" element={needNoAuthenticationRoute(<SignIn />)} />
         <Route path="/signUp" element={<SignUp />} />
         <Route
