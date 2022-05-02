@@ -2,6 +2,7 @@ import cryptoJS from 'crypto-js';
 import jwtDecode from 'jwt-decode';
 import Cookies from 'universal-cookie';
 import Server from './Server';
+import { IEditedUser, IUser } from '../utils/types';
 
 const cookies = new Cookies();
 
@@ -53,12 +54,33 @@ export default class UserService {
   }
 
   static editUser(
-    firstname?: string,
-    lastname?: string,
-    login?: string,
-    password?: string
+    { password, ...rest }: IEditedUser,
+    handleSuccess: (user: string) => void,
+    handleError: (errorMessage: string) => void
   ) {
-    // TODO send to server & edit cookies
-    return null;
+    const token = cookies.get('user');
+    const requestOptions = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authentication: token.token
+      },
+      body: JSON.stringify({
+        ...(password && { password: cryptoJS.SHA256(password).toString() }),
+        ...rest
+      })
+    };
+
+    return Server.request(
+      `/user/edit`,
+      requestOptions,
+      handleSuccess,
+      handleError
+    );
+  }
+
+  static updateCookies(user: IUser) {
+    const token = cookies.get('user').token;
+    cookies.set('user', { ...user, token });
   }
 }
