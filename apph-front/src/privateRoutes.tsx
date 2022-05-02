@@ -6,6 +6,7 @@ import { MyFoldersPage } from './static/pages/MyFoldersPage';
 import { PrivatePageContainer } from './static/pages/PrivatePageContainer';
 import { useSelector } from 'react-redux';
 import { IUser } from './utils';
+import Table from './static/components/Table';
 
 export const PrivateRoutes = (): JSX.Element => {
   const user = useSelector(
@@ -33,9 +34,7 @@ export const PrivateRoutes = (): JSX.Element => {
         <Route
           path="/pictures"
           element={needAuthenticationRoute(
-            <PrivatePageContainer
-              element={<TODOPage todo="Page: Mes Photos" />}
-            />
+            <PrivatePageContainer element={<Table />} />
           )}
         />
         <Route

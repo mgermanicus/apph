@@ -38,7 +38,7 @@ export const Header = (): JSX.Element => {
   };
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar className={classes.appBarStyle}>
+      <AppBar position="relative">
         <Toolbar>
           <IconButton
             size="large"

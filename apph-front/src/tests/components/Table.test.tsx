@@ -1,18 +1,8 @@
-import {
-  clickButton,
-  fakeFile,
-  fillText,
-  inputFile,
-  spyRequest,
-  triggerRequestSuccess
-} from '../utils/library';
+import { triggerRequestSuccess } from '../utils/library';
 import { render } from '@testing-library/react';
-import UploadImageContainer from '../../static/containers/UploadImageContainer';
 import { screen } from '@testing-library/dom';
 import Table from '../../static/components/Table';
 import * as React from 'react';
-import Cookies from 'universal-cookie';
-import renderer from 'react-test-renderer';
 
 describe('Tests du composant Table.tsx', () => {
   beforeEach(() => {

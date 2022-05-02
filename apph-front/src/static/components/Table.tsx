@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import TableService from '../../services/TableService';
+import { UploadImage } from './UploadImage';
 
 const columns: GridColDef[] = [
   {
@@ -68,6 +69,7 @@ export default function DataTable() {
   }, []);
   return (
     <div style={{ height: 400, width: '100%' }}>
+      <UploadImage />
       <DataGrid
         rows={data}
         columns={columns}

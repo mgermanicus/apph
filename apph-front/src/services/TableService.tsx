@@ -1,7 +1,6 @@
 import Cookies from 'universal-cookie';
 import Server from './Server';
 
-const API_URL = process.env['REACT_APP_API_URL'];
 const cookies = new Cookies();
 
 class TableService {
@@ -10,7 +9,7 @@ class TableService {
     handleSuccess: () => void,
     handleError: (errorMessage: string) => void
   ) {
-    const URL = `${API_URL}/photo/infos`;
+    const URL = `/photo/infos`;
     const userInfos = cookies.get('user');
     const requestOptions = {
       method: 'GET',

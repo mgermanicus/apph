@@ -65,7 +65,7 @@ export const UploadImage = (): JSX.Element => {
   };
 
   return (
-    <Box sx={{ mt: 10 }}>
+    <Box sx={{ m: 1 }}>
       <Button variant="outlined" onClick={handleClickOpen}>
         UPLOAD
       </Button>
