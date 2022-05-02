@@ -10,6 +10,7 @@ import {
 } from '../utils/library';
 import cryptoJS from 'crypto-js';
 import { useNavigate } from 'react-router-dom';
+import { JWS_TOKEN } from '../utils/token';
 
 const mockedUsedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -25,16 +26,14 @@ describe('Tests du composant SignUp.tsx', () => {
   it('checks when the server sends an acknowledgment', () => {
     //GIVEN
     cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
-    triggerRequestSuccess(
-      'eyJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6IkVsaWUifQ.slvgzwhi13LHv_KeKsRKpKMoulz7qVVU0A-LCgCPPRk'
-    );
+    triggerRequestSuccess(JWS_TOKEN);
     render(<SignUp />);
     //WHEN
     fillText(/Email/, 'test@viseo.com');
     fillPassword(/Mot de passe/, 'P@ssW0rd');
     fillPassword(/confirmer le mot de passe/, 'P@ssW0rd');
-    fillPassword(/Prénom/, 'Bob');
-    fillPassword(/Nom/, 'Dupont');
+    fillText(/Prénom/, 'Bob');
+    fillText(/Nom/, 'Dupont');
     clickButton(/Créer votre compte/);
     //THEN
     expect(useNavigate()).toBeCalled();
@@ -49,8 +48,8 @@ describe('Tests du composant SignUp.tsx', () => {
     fillText(/Email/, 'test@viseo.com');
     fillPassword(/Mot de passe/, 'P@ssW0rd');
     fillPassword(/confirmer le mot de passe/, 'P@ssW0rd');
-    fillPassword(/Prénom/, 'Bob');
-    fillPassword(/Nom/, 'Dupont');
+    fillText(/Prénom/, 'Bob');
+    fillText(/Nom/, 'Dupont');
     clickButton(/Créer votre compte/);
     //THEN
     expect(useNavigate()).not.toBeCalled();
