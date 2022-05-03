@@ -42,10 +42,3 @@ protected void configure(HttpSecurity http) throws Exception {
                 .anyRequest().authenticated();
     }
 ```
-
-##DataBase Configuration
-In your application-local.properties, add the setting:
-```properties
-init-database=true
-```
-In order to initialize the database.
