@@ -12,6 +12,30 @@ public class UserRequest {
     @JsonProperty("password")
     String password;
 
+    @JsonProperty("firstName")
+    String firstName;
+
+    @JsonProperty("lastName")
+    String lastName;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public UserRequest setFirstName(String firstName) {
+        this.firstName = firstName;
+        return this;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public UserRequest setLastName(String lastName) {
+        this.lastName = lastName;
+        return this;
+    }
+
     public String getLogin() {
         return login;
     }
