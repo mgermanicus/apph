@@ -8,7 +8,6 @@ import { FolderTree } from '../components/FolderTree';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import { Alert, Box } from '@mui/material';
-import * as React from 'react';
 import { CreateFolderButton } from '../components/CreateFolderButton';
 
 export const MyFoldersPage = (): JSX.Element => {
