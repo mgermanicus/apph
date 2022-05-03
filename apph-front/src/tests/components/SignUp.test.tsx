@@ -40,21 +40,6 @@ describe('Tests du composant SignUp.tsx', () => {
     expect(useNavigate()).toBeCalled();
   });
 
-  it('checks when the server sends an error if missing parameters', () => {
-    //GIVEN
-    cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
-    triggerRequestSuccess(JWS_TOKEN);
-    render(<SignUp />);
-    //WHEN
-    fillText(/Email/, 'test@viseo.com');
-    clickButton(/Créer votre compte/);
-    //THEN
-    expect(
-      screen.getByText(/Remplir les champs obligatoires./)
-    ).toBeInTheDocument();
-    expect(useNavigate()).not.toBeCalled();
-  });
-
   it('checks when the server sends an error if invalid email', () => {
     //GIVEN
     cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
