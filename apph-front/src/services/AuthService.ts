@@ -43,6 +43,30 @@ export default class AuthService {
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
 
+  static async signUp(
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    handleSuccess: () => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = `/auth/signUp`;
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email,
+        password: cryptoJS.SHA256(password).toString(),
+        firstName,
+        lastName
+      })
+    };
+    return Server.request(URL, requestOptions, handleSuccess, handleError);
+  }
+
   static logout = () => {
     cookies.remove('user');
   };

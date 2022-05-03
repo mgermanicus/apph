@@ -99,4 +99,33 @@ public class AuthTest {
         //THEN
         assertEquals(HttpStatus.UNAUTHORIZED,responseEntity.getStatusCode());
     }
+
+    @Test
+    public void testRegister()
+    {
+        //GIVEN
+        createAuthController();
+        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenThrow(new NoResultException());
+        when(passwordEncoder.encode("password")).thenReturn("password");
+        //WHEN
+        ResponseEntity responseEntity = authController.register(userRequest);
+        //THEN
+        Assert.assertTrue( responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testRegisterFail()
+    {
+        //GIVEN
+        createAuthController();
+        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
+        when(typedQuery.setParameter("login","tintin")).thenReturn(typedQuery);
+        //WHEN
+        ResponseEntity responseEntity = authController.register(userRequest);
+        //THEN
+        Assert.assertTrue( responseEntity.getStatusCode().isError());
+    }
 }

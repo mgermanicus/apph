@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { UserProfilePage } from './static/pages/UserProfilePage';
 import { SignIn } from './static/components/SignIn';
+import { SignUp } from './static/components/SignUp';
 import { TODOPage } from './static/pages/TODOPage';
 import { MyFoldersPage } from './static/pages/MyFoldersPage';
 import { PrivatePageContainer } from './static/pages/PrivatePageContainer';
@@ -24,6 +25,7 @@ export const PrivateRoutes = (): JSX.Element => {
       <Routes>
         <Route path="*" element={needNoAuthenticationRoute(<SignIn />)} />
         <Route path="/" element={needNoAuthenticationRoute(<SignIn />)} />
+        <Route path="/signUp" element={<SignUp />} />
         <Route
           path="/me"
           element={needAuthenticationRoute(
