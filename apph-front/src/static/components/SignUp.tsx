@@ -10,10 +10,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Alert, Collapse, IconButton, SxProps } from '@mui/material';
-import UserService from '../../services/UserService';
 import { useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
+import AuthService from '../../services/AuthService';
 
 function Copyright(props: { sx: SxProps }) {
   return (
@@ -56,7 +56,7 @@ export function SignUp() {
         'Ces mots de passe ne correspondent pas. Veuillez réessayer.'
       );
     } else if (email && password && firstName && lastName && confirmPassword) {
-      UserService.signUp(
+      AuthService.signUp(
         email,
         password,
         firstName,
