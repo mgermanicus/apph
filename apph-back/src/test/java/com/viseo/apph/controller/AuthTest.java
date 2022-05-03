@@ -1,4 +1,4 @@
-package com.viseo.apph;
+package com.viseo.apph.controller;
 
 import com.viseo.apph.controller.AuthController;
 import com.viseo.apph.dao.UserDAO;

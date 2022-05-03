@@ -36,4 +36,9 @@ public class UserService {
         String login = claims.get("login").toString();
         return userDAO.getUserByLogin(login);
     }
+
+    @Transactional
+    public User getUserById(long id) {
+        return userDAO.getUserById(id);
+    }
 }

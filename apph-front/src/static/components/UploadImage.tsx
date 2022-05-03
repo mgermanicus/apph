@@ -12,7 +12,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import ImageService from '../../services/ImageService';
+import PhotoService from '../../services/PhotoService';
 import { UploadStatus } from '../../utils';
 import { createRef, FormEvent, useState } from 'react';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
@@ -50,7 +50,7 @@ export const UploadImage = (): JSX.Element => {
     if (files) {
       const file = files[0];
       setUploadStatus('uploading');
-      ImageService.uploadImage(
+      PhotoService.uploadImage(
         title,
         file,
         () => {
@@ -65,7 +65,7 @@ export const UploadImage = (): JSX.Element => {
   };
 
   return (
-    <Box sx={{ mt: 10 }}>
+    <Box sx={{ m: 1 }}>
       <Button variant="outlined" onClick={handleClickOpen}>
         Upload
       </Button>
