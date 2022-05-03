@@ -21,6 +21,7 @@ describe('Test UploadImage', () => {
   it('tests error when user picks file too large', () => {
     //GIVEN
     render(<UploadImage />);
+    clickButton(/Upload/);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000000000, 'image/png');
     const spyRequestFunction = spyRequestFailure('');
@@ -38,6 +39,7 @@ describe('Test UploadImage', () => {
   it('tests error when user picks invalid file format', () => {
     //GIVEN
     render(<UploadImage />);
+    clickButton(/Upload/);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000, 'application/zip');
     const spyRequestFunction = spyRequestFailure('');
@@ -55,6 +57,7 @@ describe('Test UploadImage', () => {
   it('tests successful file upload', () => {
     //GIVEN
     render(<UploadImage />);
+    clickButton(/Upload/);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000, 'image/png');
     const title = 'Titre';
@@ -79,6 +82,7 @@ describe('Test UploadImage', () => {
   it('tests handling of server error', () => {
     //GIVEN
     render(<UploadImage />);
+    clickButton(/Upload/);
     const serverError = "Une erreur est survenue lors de l'upload";
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000, 'image/png');
