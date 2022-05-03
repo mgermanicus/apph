@@ -45,7 +45,7 @@ public class UserService {
             throw new NotFoundException("User not Found.");
         if (userDAO.existByLogin(newLogin))
             throw new DataIntegrityViolationException("Login is Already in Use.");
-        // TODO revoke token & generate new one
+        // TODO revoke token ?
         userDAO.editLogin(userId, newLogin);
     }
 

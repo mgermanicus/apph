@@ -10,6 +10,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,11 +51,11 @@ public class UserController {
             return ResponseEntity.ok(new User().setLogin(user.getLogin()).setFirstname(user.getFirstname())
                     .setLastname(user.getLastname()));
         } catch (NullPointerException | NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User does not exist");
-        } catch (SignatureException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token not valid");
-        } catch (ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token expired");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erreur interne");
+        } catch (SignatureException | ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("La session a expiré. Veuillez vous reconnecter");
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ce login est déjà pris");
         }
     }
 }

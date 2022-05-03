@@ -1,17 +1,21 @@
 import {
+  Alert,
+  AlertColor,
   Button,
   Card,
   CardContent,
   CardHeader,
+  Dialog,
   Stack,
   TextField
 } from '@mui/material';
 import { makeCardStyles } from '../../utils/theme';
 import { FormEvent, useEffect, useState } from 'react';
 import UserService from '../../services/UserService';
-import { IEditedUser, IUser } from '../../utils/types';
+import { IEditedUser, IUser, UploadStatus } from '../../utils/types';
 import AuthService from '../../services/AuthService';
 import { useNavigate } from 'react-router-dom';
+import { ConfirmationDialog } from './ConfirmationDialog';
 
 export const EditProfile = () => {
   const navigate = useNavigate();
@@ -25,7 +29,9 @@ export const EditProfile = () => {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  const [error, setError] = useState<string>();
+  const [alertMessage, setAlertMessage] = useState<string>();
+  const [errorOccured, setErrorOccured] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const classes = makeCardStyles();
 
   const updateUser = (newUser: IUser) => {
@@ -43,7 +49,7 @@ export const EditProfile = () => {
           updateUser(userConverted);
         },
         (errorMessage: string) => {
-          setError(errorMessage);
+          setAlertMessage(errorMessage);
         }
       );
     })();
@@ -57,8 +63,8 @@ export const EditProfile = () => {
       ...(password && { password })
     };
   };
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
+
+  const editUser = async () =>
     UserService.editUser(
       editedFields(),
       (body: string) => {
@@ -69,18 +75,37 @@ export const EditProfile = () => {
           const newUser = JSON.parse(body);
           AuthService.editUser(newUser);
           updateUser(newUser);
+          setErrorOccured(false);
+          setAlertMessage('Le profil a bien été modifié.');
         }
       },
       (errorMessage: string) => {
-        setError(errorMessage);
+        setErrorOccured(true);
+        setAlertMessage(errorMessage);
       }
     );
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    if (editedFields().login) {
+      setDialogOpen(true);
+    } else {
+      editUser();
+    }
   };
 
   const resetChanges = () => {
     setFirstname(user.firstname);
     setLastname(user.lastname);
     setLogin(user.login);
+  };
+
+  const displayAlert = () => {
+    return (
+      <Alert severity={errorOccured ? 'error' : 'success'}>
+        {alertMessage}
+      </Alert>
+    );
   };
 
   return (
@@ -130,8 +155,18 @@ export const EditProfile = () => {
             <Button color="error" onClick={(e) => resetChanges()}>
               Annuler les modifications
             </Button>
+            {alertMessage ? displayAlert() : <></>}
           </Stack>
         </form>
+        <ConfirmationDialog
+          open={dialogOpen}
+          onConfirm={() => {
+            setDialogOpen(false);
+            editUser();
+          }}
+          onCancel={() => setDialogOpen(false)}
+          message="Vous allez être déconnecté"
+        />
       </CardContent>
     </Card>
   );
