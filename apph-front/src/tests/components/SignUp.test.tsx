@@ -11,6 +11,7 @@ import {
 import cryptoJS from 'crypto-js';
 import { useNavigate } from 'react-router-dom';
 import { JWS_TOKEN } from '../utils/token';
+import { screen } from '@testing-library/dom';
 
 const mockedUsedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -31,7 +32,7 @@ describe('Tests du composant SignUp.tsx', () => {
     //WHEN
     fillText(/Email/, 'test@viseo.com');
     fillPassword(/Mot de passe/, 'P@ssW0rd');
-    fillPassword(/confirmer le mot de passe/, 'P@ssW0rd');
+    fillPassword(/Confirmer le mot de passe/, 'P@ssW0rd');
     fillText(/Prénom/, 'Bob');
     fillText(/Nom/, 'Dupont');
     clickButton(/Créer votre compte/);
@@ -39,7 +40,60 @@ describe('Tests du composant SignUp.tsx', () => {
     expect(useNavigate()).toBeCalled();
   });
 
-  it('checks when the server sends an error', () => {
+  it('checks when the server sends an error if missing parameters', () => {
+    //GIVEN
+    cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
+    triggerRequestSuccess(JWS_TOKEN);
+    render(<SignUp />);
+    //WHEN
+    fillText(/Email/, 'test@viseo.com');
+    clickButton(/Créer votre compte/);
+    //THEN
+    expect(
+      screen.getByText(/Remplir les champs obligatoires./)
+    ).toBeInTheDocument();
+    expect(useNavigate()).not.toBeCalled();
+  });
+
+  it('checks when the server sends an error if invalid email', () => {
+    //GIVEN
+    cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
+    triggerRequestSuccess(JWS_TOKEN);
+    render(<SignUp />);
+    //WHEN
+    fillText(/Email/, 'badEmail');
+    fillPassword(/Mot de passe/, 'P@ssW0rd');
+    fillPassword(/Confirmer le mot de passe/, 'P@ssW0rd');
+    fillText(/Prénom/, 'Bob');
+    fillText(/Nom/, 'Dupont');
+    clickButton(/Créer votre compte/);
+    //THEN
+    expect(screen.getByText(/Email non valide./)).toBeInTheDocument();
+    expect(useNavigate()).not.toBeCalled();
+  });
+
+  it('checks when the server sends an error if invalid confirm password', () => {
+    //GIVEN
+    cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
+    triggerRequestSuccess(JWS_TOKEN);
+    render(<SignUp />);
+    //WHEN
+    fillText(/Email/, 'test@viseo.com');
+    fillPassword(/Mot de passe/, 'P@ssW0rd');
+    fillPassword(/Confirmer le mot de passe/, 'NotSamePassword');
+    fillText(/Prénom/, 'Bob');
+    fillText(/Nom/, 'Dupont');
+    clickButton(/Créer votre compte/);
+    //THEN
+    expect(
+      screen.getByText(
+        /Ces mots de passe ne correspondent pas. Veuillez réessayer./
+      )
+    ).toBeInTheDocument();
+    expect(useNavigate()).not.toBeCalled();
+  });
+
+  it('checks when the server sends an error request fail', () => {
     //GIVEN
     cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
     triggerRequestFailure('Test error');
@@ -47,11 +101,12 @@ describe('Tests du composant SignUp.tsx', () => {
     //WHEN
     fillText(/Email/, 'test@viseo.com');
     fillPassword(/Mot de passe/, 'P@ssW0rd');
-    fillPassword(/confirmer le mot de passe/, 'P@ssW0rd');
+    fillPassword(/Confirmer le mot de passe/, 'P@ssW0rd');
     fillText(/Prénom/, 'Bob');
     fillText(/Nom/, 'Dupont');
     clickButton(/Créer votre compte/);
     //THEN
+    expect(screen.getByText(/Test error/)).toBeInTheDocument();
     expect(useNavigate()).not.toBeCalled();
   });
 });

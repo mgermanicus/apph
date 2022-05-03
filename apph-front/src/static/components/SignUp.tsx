@@ -44,11 +44,18 @@ export function SignUp() {
     const confirmPassword = data.get('confirmPassword')?.toString();
     const firstName = data.get('firstName')?.toString();
     const lastName = data.get('lastName')?.toString();
-    if (password != confirmPassword) {
+    const emailValidator =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (!email || !password || !firstName || !lastName || !confirmPassword) {
+      setErrorMessage('Remplir les champs obligatoires.');
+    } else if (!email || !emailValidator.test(email)) {
+      setErrorMessage('Email non valide.');
+    } else if (password != confirmPassword) {
       setErrorMessage(
         'Ces mots de passe ne correspondent pas. Veuillez réessayer.'
       );
-    } else if (email && password && firstName && lastName) {
+    } else if (email && password && firstName && lastName && confirmPassword) {
       UserService.signUp(
         email,
         password,
@@ -113,6 +120,7 @@ export function SignUp() {
                 label="Email"
                 name="email"
                 autoComplete="email"
+                type="email"
               />
             </Grid>
             <Grid item xs={12}>
@@ -131,9 +139,9 @@ export function SignUp() {
                 required
                 fullWidth
                 id="confirmPassword"
-                label="confirmer le mot de passe"
+                label="Confirmer le mot de passe"
                 name="confirmPassword"
-                type="confirmPassword"
+                type="password"
               />
             </Grid>
           </Grid>
@@ -145,7 +153,7 @@ export function SignUp() {
           >
             Créer votre compte
           </Button>
-          <Grid container justifyContent="flex-end">
+          <Grid container justifyContent="center">
             <Grid item>
               <Link href="signIn" variant="body2">
                 Vous avez déja un compte? Se connecter
