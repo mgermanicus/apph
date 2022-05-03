@@ -1,13 +1,32 @@
-import Cookies from 'universal-cookie';
 import Server from './Server';
+import { imageFileCheck } from '../utils';
+import Cookies from 'universal-cookie';
 import { ITable } from '../utils/types/table';
-
 const cookies = new Cookies();
-
-class TableService {
-  static getData(
-    setData: (val: any) => void,
+export default class PhotoService {
+  static uploadImage(
+    title: string,
+    imageFile: File,
     handleSuccess: () => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    if (!imageFileCheck(imageFile, handleError)) return;
+    const formData = new FormData();
+    formData.append('file', imageFile);
+    formData.append('name', title);
+    const requestOptions = {
+      method: 'POST',
+      body: formData
+    };
+    return Server.request(
+      `/photo/upload`,
+      requestOptions,
+      handleSuccess,
+      handleError
+    );
+  }
+  static getData(
+    handleSuccess: (tab: Array<ITable>) => void,
     handleError: (errorMessage: string) => void
   ) {
     const URL = `/photo/infos`;
@@ -25,8 +44,7 @@ class TableService {
       for (const elt of tab) {
         elt.id = i++;
       }
-      setData(tab);
-      handleSuccess();
+      handleSuccess(tab);
     };
     const errorFunction = (errorMessage: string) => {
       handleError(errorMessage);
@@ -34,5 +52,3 @@ class TableService {
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
 }
-
-export default TableService;

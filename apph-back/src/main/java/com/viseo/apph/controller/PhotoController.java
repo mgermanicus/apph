@@ -25,11 +25,6 @@ public class PhotoController {
     @Autowired
     PhotoService photoService;
 
-    public interface TokenManager{
-        default int getIdOfToken(String token){
-            return (int)Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody().get("id");
-        };
-    }
     static TokenManager tokenManager = new TokenManager() {};
 
     @GetMapping(value = "/infos", produces = "application/json")

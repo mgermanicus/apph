@@ -1,10 +1,10 @@
 import { triggerRequestSuccess } from '../utils/library';
 import { render } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
-import Table from '../../static/components/Table';
+import Table from '../../static/components/PhotoTable';
 import * as React from 'react';
 
-describe('Tests du composant Table.tsx', () => {
+describe('Tests du composant PhotoTable.tsx', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

@@ -28,7 +28,7 @@ PhotoController photoController;
 @Mock
 EntityManager em ;
 @Mock
-PhotoController.TokenManager tokenManager;
+TokenManager tokenManager;
 @Mock
 TypedQuery typedQuery;
     private void createPhotoController() {

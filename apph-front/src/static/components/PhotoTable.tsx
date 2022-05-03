@@ -1,24 +1,24 @@
 import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import TableService from '../../services/TableService';
 import { UploadImage } from './UploadImage';
 import { Alert, Collapse, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ITable } from '../../utils/types/table';
+import PhotoService from '../../services/PhotoService';
 
 const columns: GridColDef[] = [
   {
     field: 'title',
     headerName: 'Title',
-    width: 70,
+    flex: 1,
     align: 'center',
     headerAlign: 'center'
   },
   {
     field: 'description',
     headerName: 'Description',
-    width: 130,
+    flex: 1.7,
     align: 'center',
     headerAlign: 'center'
   },
@@ -26,7 +26,7 @@ const columns: GridColDef[] = [
     field: 'creationDate',
     headerName: 'Creation date',
     type: 'date',
-    width: 250,
+    flex: 2.2,
     align: 'center',
     headerAlign: 'center'
   },
@@ -34,7 +34,7 @@ const columns: GridColDef[] = [
     field: 'shootingDate',
     headerName: 'Shooting date',
     type: 'date',
-    width: 250,
+    flex: 2.2,
     align: 'center',
     headerAlign: 'center'
   },
@@ -42,21 +42,21 @@ const columns: GridColDef[] = [
     field: 'size',
     headerName: 'Size',
     type: 'number',
-    width: 130,
+    flex: 1,
     align: 'center',
     headerAlign: 'center'
   },
   {
     field: 'tags',
     headerName: 'Tags',
-    width: 130,
+    flex: 1.5,
     align: 'center',
     headerAlign: 'center'
   },
   {
     field: 'url',
     headerName: 'Url',
-    width: 130,
+    flex: 1,
     align: 'center',
     headerAlign: 'center'
   }
@@ -65,10 +65,9 @@ export default function DataTable() {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState('');
   useEffect(() => {
-    TableService.getData(
-      setData,
-      () => {
-        console.log('Affichage du tableau');
+    PhotoService.getData(
+      (tab) => {
+        setData(tab);
       },
       (errorMessage: string) => {
         setErrorMessage(errorMessage);

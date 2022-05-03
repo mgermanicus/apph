@@ -6,7 +6,7 @@ import { MyFoldersPage } from './static/pages/MyFoldersPage';
 import { PrivatePageContainer } from './static/pages/PrivatePageContainer';
 import { useSelector } from 'react-redux';
 import { IUser } from './utils';
-import Table from './static/components/Table';
+import Table from './static/components/PhotoTable';
 
 export const PrivateRoutes = (): JSX.Element => {
   const user = useSelector(
