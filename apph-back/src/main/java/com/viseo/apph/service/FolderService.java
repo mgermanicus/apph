@@ -58,11 +58,7 @@ public class FolderService {
         }
         Folder folder = new Folder().setName(request.getName()).setParentFolderId(request.getParentFolderId()).setUser(user);
         folderDAO.createFolder(folder);
-        return new FolderResponse()
-                .setId(folder.getId())
-                .setVersion(folder.getVersion())
-                .setName(folder.getName())
-                .setParentFolderId(folder.getParentFolderId());
+        return getFoldersByUser(login);
     }
 
     Folder getParentFolder(List<Folder> folders) throws NotFoundException {
