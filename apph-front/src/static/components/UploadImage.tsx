@@ -67,7 +67,7 @@ export const UploadImage = (): JSX.Element => {
   return (
     <Box sx={{ mt: 10 }}>
       <Button variant="outlined" onClick={handleClickOpen}>
-        UPLOAD
+        Upload
       </Button>
       <Dialog open={open} onClose={handleClose}>
         <Container component="main">
