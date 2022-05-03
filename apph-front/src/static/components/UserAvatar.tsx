@@ -1,6 +1,6 @@
 import { Avatar } from '@mui/material';
 import * as React from 'react';
-import { randomColorCodeFromString } from '../../utils/random';
+import { randomColorCodeFromString } from '../../utils';
 
 export const UserAvatar = ({
   firstname,
@@ -14,7 +14,7 @@ export const UserAvatar = ({
       sx: {
         backgroundColor: randomColorCodeFromString(firstname + lastname)
       },
-      children: `${firstname[0]}${lastname[0]}`
+      children: `${firstname[0]} ${lastname[0] ?? ''}`
     };
   };
   return <Avatar {...avatar(firstname, lastname)} />;

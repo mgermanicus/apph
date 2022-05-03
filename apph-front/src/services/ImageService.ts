@@ -1,5 +1,5 @@
 import Server from './Server';
-import imageFileCheck from '../utils/imageFileCheck';
+import { imageFileCheck } from '../utils';
 
 export default class ImageService {
   static uploadImage(

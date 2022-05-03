@@ -1,4 +1,4 @@
-import { makeCardStyles } from '../../utils/theme';
+import { makeCardStyles } from '../../utils';
 import { Card, CardContent, CardHeader, Typography } from '@mui/material';
 import * as React from 'react';
 

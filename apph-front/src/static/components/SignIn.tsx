@@ -13,9 +13,13 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Alert, Collapse, IconButton, SxProps } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import UserService from '../../services/UserService';
+import AuthService from '../../services/AuthService';
+import { useDispatch } from 'react-redux';
+import { changeCurrentUser } from '../../redux/slices/userSlice';
+import { IUser } from '../../utils';
+import { useNavigate } from 'react-router-dom';
 
-function Copyright(props: { sx: SxProps }) {
+const Copyright = (props: { sx: SxProps }) => {
   return (
     <Typography
       variant="body2"
@@ -31,33 +35,24 @@ function Copyright(props: { sx: SxProps }) {
       {'.'}
     </Typography>
   );
-}
+};
 
-let connected = false;
-
-export function isConnected() {
-  return connected;
-}
-
-export function resetConnected() {
-  connected = false;
-}
-
-export function SignIn() {
+export const SignIn = () => {
   const [errorMessage, setErrorMessage] = useState('');
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get('email')?.toString();
     const password = data.get('password')?.toString();
     if (email && password) {
-      UserService.signIn(
+      AuthService.signIn(
         email,
         password,
-        () => {
-          connected = true;
-          console.log('Connexion réussie, token stocké dans les cookies'); //TODO redirection vers "mes photos"
+        (user: IUser) => {
+          dispatch(changeCurrentUser(user));
+          navigate('/pictures');
         },
         (errorMessage: string) => {
           setErrorMessage(errorMessage);
@@ -149,4 +144,4 @@ export function SignIn() {
       </Collapse>
     </Container>
   );
-}
+};

@@ -1,19 +1,17 @@
 import { render } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
-import UploadImage from '../../static/components/UploadImage';
+import { UploadImage } from '../../static/components/UploadImage';
 
 import {
   clickButton,
+  fakeFile,
+  fakeUploadRequestParams,
   fillText,
+  inputFile,
   spyRequestFailure,
   spyRequestSuccess,
   triggerRequestFailure
-} from '../utils/library';
-import {
-  fakeFile,
-  fakeUploadRequestParams,
-  inputFile
-} from '../utils/fileLibrary';
+} from '../utils';
 
 describe('Test UploadImage', () => {
   beforeEach(() => {
