@@ -33,7 +33,7 @@ function Copyright(props: { sx: SxProps }) {
   );
 }
 
-export function SignUp() {
+export const SignUp = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState('');
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -47,11 +47,9 @@ export function SignUp() {
     const emailValidator =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-    if (!email || !password || !firstName || !lastName || !confirmPassword) {
-      setErrorMessage('Remplir les champs obligatoires.');
-    } else if (!email || !emailValidator.test(email)) {
+    if (email && !emailValidator.test(email)) {
       setErrorMessage('Email non valide.');
-    } else if (password != confirmPassword) {
+    } else if (password && confirmPassword && password != confirmPassword) {
       setErrorMessage(
         'Ces mots de passe ne correspondent pas. Veuillez réessayer.'
       );
@@ -62,7 +60,6 @@ export function SignUp() {
         firstName,
         lastName,
         () => {
-          console.log('Création de compte réussie');
           navigate('/signIn');
         },
         (errorMessage: string) => {
@@ -89,7 +86,7 @@ export function SignUp() {
         <Typography component="h1" variant="h5">
           Créer un compte
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -185,4 +182,4 @@ export function SignUp() {
       </Collapse>
     </Container>
   );
-}
+};
