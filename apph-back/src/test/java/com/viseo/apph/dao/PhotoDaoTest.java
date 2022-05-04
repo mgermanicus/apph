@@ -23,11 +23,12 @@ public class PhotoDaoTest {
     @Test
     public void testAddPhoto() {
         //Given
-        String fileName = "test";
-        Photo photo = new Photo().setName(fileName);
+        String fileTitle = "test";
+        Photo photo = new Photo().setTitle(fileTitle);
         //When
         photoDao.addPhoto(photo);
         //Then
         verify(mockEm, times(1)).persist(any());
     }
+
 }

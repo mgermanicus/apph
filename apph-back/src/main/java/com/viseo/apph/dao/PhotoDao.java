@@ -4,7 +4,9 @@ import com.viseo.apph.domain.Photo;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Repository
 public class PhotoDao {
@@ -14,6 +16,12 @@ public class PhotoDao {
     public Photo addPhoto(Photo photo) {
         em.persist(photo);
         return photo;
+    }
+
+    public List<Photo> getUserPhotos(long idUser) throws NoResultException {
+        return em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)
+                .setParameter("idUser", idUser)
+                .getResultList();
     }
 
     public Photo getPhoto(long id) {

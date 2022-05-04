@@ -1,4 +1,4 @@
-package com.viseo.apph;
+package com.viseo.apph.controller;
 
 import com.viseo.apph.controller.AuthController;
 import com.viseo.apph.dao.UserDAO;
@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,8 @@ import javax.persistence.TypedQuery;
 import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -98,5 +101,35 @@ public class AuthTest {
         ResponseEntity responseEntity = authController.login(userRequest);
         //THEN
         assertEquals(HttpStatus.UNAUTHORIZED,responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testRegister()
+    {
+        //GIVEN
+        createAuthController();
+        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenThrow(new NoResultException());
+        when(passwordEncoder.encode("password")).thenReturn("password");
+        //WHEN
+        ResponseEntity responseEntity = authController.register(userRequest);
+        //THEN
+        Assert.assertTrue( responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testRegisterFailUserExist()
+    {
+        //GIVEN
+        createAuthController();
+        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
+        when(typedQuery.setParameter("login","tintin")).thenReturn(typedQuery);
+        doThrow(new DataIntegrityViolationException("test")).when(em).persist(any());
+        //WHEN
+        ResponseEntity responseEntity = authController.register(userRequest);
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().isError());
     }
 }

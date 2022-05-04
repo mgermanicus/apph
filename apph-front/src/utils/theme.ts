@@ -10,9 +10,6 @@ export const makeCardStyles = makeStyles({
 });
 
 export const makeAppBarStyles = makeStyles({
-  appBarStyle: {
-    position: 'absolute'
-  },
   iconButton: {
     mr: 2
   }

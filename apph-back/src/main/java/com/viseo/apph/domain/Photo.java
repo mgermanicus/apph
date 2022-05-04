@@ -2,12 +2,19 @@ package com.viseo.apph.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.Date;
 
 @Entity
 @Table(name = "photos")
 public class Photo extends BaseEntity {
 
-    String name;
+    String title;
+    long idUser;
+    String description;
+    Date creationDate;
+    Date shootingDate;
+    float size;
+    String tags;
 
     String extension;
 
@@ -15,12 +22,66 @@ public class Photo extends BaseEntity {
         super();
     }
 
-    public String getName() {
-        return name;
+    public long getIdUser() {
+        return idUser;
     }
 
-    public Photo setName(String name) {
-        this.name = name;
+    public Photo setIdUser(long idUser) {
+        this.idUser = idUser;
+        return this;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Photo setTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Photo setDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public Photo setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+        return this;
+    }
+
+    public Date getShootingDate() {
+        return shootingDate;
+    }
+
+    public Photo setShootingDate(Date shootingDate) {
+        this.shootingDate = shootingDate;
+        return this;
+    }
+
+    public float getSize() {
+        return size;
+    }
+
+    public Photo setSize(float size) {
+        this.size = size;
+        return this;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public Photo setTags(String tags) {
+        this.tags = tags;
         return this;
     }
 

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.io.IOException;
 
 @Service
@@ -22,9 +24,10 @@ public class PhotoService {
     S3Dao s3Dao;
 
     @Transactional
-    public String upload(MultipartFile file, String name) throws IOException, InvalidFileException {
+    public String upload(MultipartFile file, String title) throws IOException, InvalidFileException {
         String extension = getFormat(file);
-        Photo photo = photoDao.addPhoto(new Photo().setName(name).setExtension(extension));
+        Photo photo = photoDao.addPhoto(new Photo()
+                .setTitle(title).setExtension(extension));
         return s3Dao.upload(file, photo.getId() + "");
     }
 
@@ -36,6 +39,24 @@ public class PhotoService {
         } else {
             throw new InvalidFileException("Wrong file format");
         }
+    }
+
+    @Transactional
+    public List<PhotoResponse> getUserPhotos(long idUser) {
+        List<Photo> usersPhoto = photoDao.getUserPhotos(idUser);
+        List<PhotoResponse> usersPhotoResponse = new ArrayList<PhotoResponse>();
+        for(Photo photo:usersPhoto) {
+            PhotoResponse photoResponse = new PhotoResponse()
+                    .setTitle(photo.getTitle())
+                    .setCreationDate(photo.getCreationDate())
+                    .setSize(photo.getSize())
+                    .setTags(photo.getTags())
+                    .setDescription(photo.getDescription())
+                    .setShootingDate(photo.getShootingDate())
+                    .setUrl("fake url"); //TODO RECUPERER LE VRAI URL
+            usersPhotoResponse.add(photoResponse);
+        }
+        return usersPhotoResponse;
     }
 
     public PhotoResponse download(long id) {
