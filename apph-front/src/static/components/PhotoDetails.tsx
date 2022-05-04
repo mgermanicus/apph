@@ -69,8 +69,9 @@ const PhotoDetails = ({
             id="modal-modal-description"
             sx={{ mt: 2 }}
             align="center"
+            component={'div'}
           >
-            <Box component="img" sx={{ width: 0.7 }} src={photoSrc} />
+            <Box component={'img'} sx={{ width: 0.7 }} src={photoSrc} />
             <Box
               sx={{
                 display: 'flex',
@@ -88,13 +89,17 @@ const PhotoDetails = ({
               </Box>
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>Date de création:</Typography>
-                <Typography sx={detailTypoStyle}>{creationDate}</Typography>
+                <Typography sx={detailTypoStyle}>
+                  {creationDate.toLocaleString()}
+                </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>
                   Date de prise de vue:
                 </Typography>
-                <Typography sx={detailTypoStyle}>{shootingDate}</Typography>
+                <Typography sx={detailTypoStyle}>
+                  {shootingDate.toLocaleString()}
+                </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>Taille:</Typography>
