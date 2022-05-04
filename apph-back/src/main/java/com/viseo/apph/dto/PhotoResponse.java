@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 
-public class PhotoResponse {
+public class PhotoResponse implements IResponseDTO {
 
     @JsonProperty("title")
     String title;
@@ -22,14 +22,12 @@ public class PhotoResponse {
     String url;
     @JsonProperty("data")
     byte[] data;
-    @JsonProperty("data")
-    String name;
     @JsonProperty("extension")
     String extension;
 
     public PhotoResponse() {
-
     }
+
     public String getTitle() {
         return title;
     }
@@ -90,6 +88,7 @@ public class PhotoResponse {
 
     public PhotoResponse setUrl(String url) {
         this.url = url;
+        return this;
     }
 
     public byte[] getData() {
@@ -98,15 +97,6 @@ public class PhotoResponse {
 
     public PhotoResponse setData(byte[] data) {
         this.data = data;
-        return this;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public PhotoResponse setName(String name) {
-        this.name = name;
         return this;
     }
 

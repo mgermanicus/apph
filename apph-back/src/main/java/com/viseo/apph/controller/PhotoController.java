@@ -1,16 +1,12 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.dto.PhotoResponse;
-import com.viseo.apph.dto.MessageResponse;
-import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.PhotoService;
-import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +21,10 @@ import java.util.List;
 @CrossOrigin(origins = "${front-server}")
 @RequestMapping("/photo")
 public class PhotoController {
+    static TokenManager tokenManager = new TokenManager() {
+    };
     @Autowired
     PhotoService photoService;
-
-    static TokenManager tokenManager = new TokenManager() {};
 
     @GetMapping(value = "/infos", produces = "application/json")
     public ResponseEntity<List<PhotoResponse>> getUserPhotos(@RequestHeader("token") String token) {
@@ -51,7 +47,7 @@ public class PhotoController {
     @PostMapping("/download")
     public ResponseEntity<IResponseDTO> download(@RequestBody PhotoRequest photoRequest) {
         Photo photo = photoService.getPhoto(photoRequest.getId());
-        PhotoResponse photoResponse = photoService.download(photoRequest.getId()).setName(photo.getName()).setExtension(photo.getExtension());
+        PhotoResponse photoResponse = photoService.download(photoRequest.getId()).setTitle(photo.getTitle()).setExtension(photo.getExtension());
         return ResponseEntity.ok(photoResponse);
     }
 }

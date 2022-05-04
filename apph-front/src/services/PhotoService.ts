@@ -2,6 +2,8 @@ import Server from './Server';
 import { imageFileCheck } from '../utils';
 import Cookies from 'universal-cookie';
 import { ITable } from '../utils/types/table';
+import { IPhoto } from '../utils/types/Photo';
+
 const cookies = new Cookies();
 export default class PhotoService {
   static uploadImage(
@@ -25,6 +27,7 @@ export default class PhotoService {
       handleError
     );
   }
+
   static getData(
     handleSuccess: (tab: Array<ITable>) => void,
     handleError: (errorMessage: string) => void
@@ -50,5 +53,26 @@ export default class PhotoService {
       handleError(errorMessage);
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
+
+  static downloadImage(
+    id: number,
+    handleSuccess: (photo: IPhoto) => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = `/photo/download`;
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id
+      })
+    };
+    const successFunction = (photo: string) => {
+      handleSuccess(JSON.parse(photo));
+    };
+    return Server.request(URL, requestOptions, successFunction, handleError);
   }
 }

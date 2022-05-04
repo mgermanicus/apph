@@ -1,6 +1,6 @@
 export interface IPhoto {
   id: string;
-  name: string;
+  title: string;
   data: BinaryData;
   extension: string;
 }

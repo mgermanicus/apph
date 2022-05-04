@@ -15,7 +15,6 @@ public class Photo extends BaseEntity {
     Date shootingDate;
     float size;
     String tags;
-
     String extension;
 
     public Photo() {
