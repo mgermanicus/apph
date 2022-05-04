@@ -25,15 +25,24 @@ export default class AuthService {
       })
     };
     const successFunction = (jws: string) => {
-      const decodedToken = jwtDecode(jws) as { login: string };
+      const decodedToken = jwtDecode(jws) as {
+        id: number;
+        exp: number;
+      } & IUser;
       const user: IUser = {
         firstname: '',
         lastname: '',
         login: ''
       };
-      if (decodedToken !== null && typeof decodedToken === 'object') {
+      if (typeof decodedToken === 'object') {
         user.login = decodedToken.login;
-        cookies.set('user', { token: jws });
+        user.lastname = decodedToken.lastname;
+        user.firstname = decodedToken.firstname;
+        cookies.set(
+          'user',
+          { token: jws },
+          { expires: new Date(decodedToken.exp * 1000) }
+        );
       }
       handleSuccess(user);
     };
@@ -73,5 +82,13 @@ export default class AuthService {
 
   static getToken() {
     return cookies.get('user')?.token;
+  }
+
+  static isTokenValid() {
+    return !!AuthService.getToken();
+  }
+
+  static getUserLoginByToken() {
+    return jwtDecode(AuthService.getToken()) as IUser;
   }
 }

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { UploadImage } from './UploadImage';
 import { Alert, Collapse, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -61,7 +61,7 @@ const columns: GridColDef[] = [
     headerAlign: 'center'
   }
 ];
-export default function DataTable() {
+export const DataTable = () => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState('');
   useEffect(() => {
@@ -105,4 +105,4 @@ export default function DataTable() {
       </Collapse>
     </div>
   );
-}
+};
