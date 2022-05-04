@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -144,12 +145,15 @@ public class FolderTest {
         when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQuery);
+        when(typedQuery.setParameter("userId", 1L)).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(robert.getFolders());
         //WHEN
         ResponseEntity responseEntity = folderController.createFolder(jws, request);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         FolderResponse folderResponse = (FolderResponse) responseEntity.getBody();
-        Assert.assertEquals("Robert Child", folderResponse.getName());
+        Assert.assertEquals("Robert Root", folderResponse.getName());
     }
 
     @Test
@@ -166,7 +170,7 @@ public class FolderTest {
         when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
-        doThrow(new EntityExistsException()).when(em).persist(any());
+        doThrow(new DataIntegrityViolationException("SQLException")).when(em).persist(any());
         //WHEN
         ResponseEntity responseEntity = folderController.createFolder(jws, request);
         //THEN

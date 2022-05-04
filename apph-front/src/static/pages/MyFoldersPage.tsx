@@ -69,7 +69,8 @@ export const MyFoldersPage = (): JSX.Element => {
             }}
             sx={{
               overflowX: 'hidden',
-              width: '100%'
+              width: '100%',
+              textAlign: 'start'
             }}
           >
             <FolderTree folder={rootFolder} />

@@ -10,12 +10,12 @@ export class FolderService {
     handleSuccess: (folder: IFolder) => void,
     handleError: (errorMessage: string) => void
   ) {
-    const token = cookies.get('user');
+    const user = cookies.get('user');
     const requestOptions = {
       method: 'Get',
       headers: {
         'Content-Type': 'application/json',
-        Authentication: token.token
+        Authentication: user.token
       }
     };
     const successFunction = (folder: string) => {
@@ -38,12 +38,12 @@ export class FolderService {
     handleSuccess: (folder: IFolder) => void,
     handleError: (errorMessage: string) => void
   ) {
-    const token = cookies.get('user');
+    const user = cookies.get('user');
     const requestOptions = {
       method: 'Post',
       headers: {
         'Content-Type': 'application/json',
-        Authentication: token.token
+        Authentication: user.token
       },
       body: JSON.stringify({
         name,

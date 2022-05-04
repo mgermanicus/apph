@@ -24,22 +24,25 @@ export const CreateFolderButton = ({
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    setLoading(true);
-    FolderService.createFolder(
-      folderName,
-      selected,
-      (folder: IFolder) => {
-        setRootFolder(folder);
-        setLoading(false);
-        setShowModal(false);
-      },
-      (error: string) => {
-        setErrorMessage(error);
-        setLoading(false);
-      }
-    );
+  const handleSubmit = () => {
+    if (folderName === '') {
+        setErrorMessage('Le nom du dossier ne peut pas être vide.')
+    } else {
+        setLoading(true);
+        FolderService.createFolder(
+            folderName,
+            selected,
+            (folder: IFolder) => {
+                setRootFolder(folder);
+                setLoading(false);
+                setShowModal(false);
+            },
+            (error: string) => {
+                setErrorMessage(error);
+                setLoading(false);
+            }
+        );
+    }
   };
 
   return (
@@ -60,9 +63,9 @@ export const CreateFolderButton = ({
           }
         }}
       >
-        <DialogTitle>Création d'un dossier</DialogTitle>
+        <DialogTitle sx={{fontWeight: 'bold'}} >Création d'un dossier</DialogTitle>
         <DialogContent>
-          <DialogContentText>Entrez le nom de dossier:</DialogContentText>
+          <DialogContentText sx={{color: 'black'}} >Entrez le nom de dossier:</DialogContentText>
           <TextField
             autoFocus
             margin="dense"
@@ -75,6 +78,12 @@ export const CreateFolderButton = ({
             label="Nom du Dossier"
             size="small"
             disabled={loading}
+            onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    handleSubmit();
+                }
+            }}
           />
           <DialogContentText
             sx={{ color: 'red', fontSize: 'small' }}
@@ -84,7 +93,13 @@ export const CreateFolderButton = ({
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={(event) => handleSubmit(event)} disabled={loading}>
+          <Button
+              onClick={(event) => {
+                  event.preventDefault()
+                  handleSubmit()
+              }}
+              disabled={loading}
+          >
             {loading ? <CircularProgress /> : <>Créer</>}
           </Button>
         </DialogActions>

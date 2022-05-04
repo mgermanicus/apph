@@ -11,11 +11,11 @@ import com.viseo.apph.service.FolderService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityExistsException;
 import javax.persistence.NoResultException;
 
 @CrossOrigin
@@ -46,7 +46,7 @@ public class FolderController {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             FolderResponse folder = folderService.createFolder(claims.get("login").toString(), request);
             return ResponseEntity.ok(folder);
-        } catch (EntityExistsException eee) {
+        } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Le dossier existe déjà dans le dossier actuel."));
         } catch (NotFoundException nfe) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
