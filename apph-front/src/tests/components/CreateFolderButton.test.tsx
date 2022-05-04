@@ -7,10 +7,10 @@ import {
   fillText,
   triggerRequestFailure,
   triggerRequestSuccess
-} from '../utils/library';
+} from '../utils';
 import Cookies from 'universal-cookie';
 import jwtDecode from 'jwt-decode';
-import { JWS_TOKEN } from '../utils/token';
+import { JWS_TOKEN } from '../utils';
 
 describe('Create Folder Button Tests', () => {
   const onSetRootFolder = jest.fn();
