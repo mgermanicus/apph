@@ -3,11 +3,10 @@ import { useEffect, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Alert, Collapse, IconButton, Stack } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { ITable } from '../../utils/types/table';
+import { IPagination, ITable } from '../../utils';
 import PhotoService from '../../services/PhotoService';
 import PhotoDetails from './PhotoDetails';
 import { DownloadImage } from './DownloadImage';
-import { IPagination } from '../../utils/types/Pagination';
 
 const columns: GridColDef[] = [
   {

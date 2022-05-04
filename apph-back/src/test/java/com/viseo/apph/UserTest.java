@@ -72,7 +72,6 @@ public class UserTest {
     public void testFailUserNotFind() {
         //GIVEN
         createUserController();
-        User user = new User().setLogin("toto").setPassword("password");
         String jws = Jwts.builder().claim("login", "dumb_toto").setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         //WHEN
         ResponseEntity responseEntity = userController.getUserInfo(jws);

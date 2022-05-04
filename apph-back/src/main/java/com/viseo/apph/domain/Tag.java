@@ -28,7 +28,7 @@ public class Tag extends BaseEntity {
 
     public Tag setUser(User user) {
         assert this.user == null;
-        if(user != null) {
+        if (user != null) {
             this.user = user;
             this.user.tags.add(this);
         }

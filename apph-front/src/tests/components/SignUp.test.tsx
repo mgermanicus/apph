@@ -5,12 +5,12 @@ import {
   clickButton,
   fillPassword,
   fillText,
+  JWS_TOKEN,
   triggerRequestFailure,
   triggerRequestSuccess
-} from '../utils/library';
+} from '../utils';
 import cryptoJS from 'crypto-js';
 import { useNavigate } from 'react-router-dom';
-import { JWS_TOKEN } from '../utils/token';
 import { screen } from '@testing-library/dom';
 
 const mockedUsedNavigate = jest.fn();

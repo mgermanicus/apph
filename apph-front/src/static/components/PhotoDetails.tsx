@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { IPhotoDetails } from '../../utils/types/table';
+import { IPhotoDetails } from '../../utils';
 
 const modalStyle = {
   position: 'absolute',

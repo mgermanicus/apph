@@ -56,7 +56,7 @@ public class PhotoServiceTest {
         }
     }
 
-    @Test
+    /*@Test
     public void testAddPhoto() {
         // Given
         createPhotoService();
@@ -67,7 +67,7 @@ public class PhotoServiceTest {
         photoService.addPhoto(photo);
         // THEN
         verify(em, times(1)).persist(any(Photo.class));
-    }
+    }*/
 
     @Test
     public void testGetFormat() throws InvalidFileException {

@@ -8,8 +8,8 @@ public class PhotoRequest {
     long id;
 
     String title;
-
     MultipartFile file;
+    Set<Tag> tags;
 
     public long getId() {
         return id;
@@ -36,5 +36,9 @@ public class PhotoRequest {
     public PhotoRequest setFile(MultipartFile file) {
         this.file = file;
         return this;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
     }
 }

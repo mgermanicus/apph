@@ -2,6 +2,7 @@ package com.viseo.apph.domain;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -13,14 +14,16 @@ public class Photo extends BaseEntity {
     Date creationDate;
     Date shootingDate;
     float size;
+    String format;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "photo_tag",
+            joinColumns = @JoinColumn(name = "photo_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
+    Set<Tag> tags = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     User user;
-
-
-    @ElementCollection
-    Set<String> tags;
-    String format;
 
     public Photo() {
         super();
@@ -80,11 +83,16 @@ public class Photo extends BaseEntity {
         return this;
     }
 
-    public Set<String> getTags() {
+    public Set<Tag> getTags() {
         return tags;
     }
 
-    public Photo setTags(Set<String> tags) {
+    public Photo setTags(Tag tag) {
+        this.tags.add(tag);
+        return this;
+    }
+
+    public Photo setTags(Set<Tag> tags) {
         this.tags = tags;
         return this;
     }

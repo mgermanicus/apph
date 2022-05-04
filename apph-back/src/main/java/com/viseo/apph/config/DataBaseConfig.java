@@ -2,6 +2,7 @@ package com.viseo.apph.config;
 
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -97,10 +98,15 @@ public class DataBaseConfig {
         em.persist(larbiRoot);
         em.persist(doryanRoot);
         em.persist(manonRoot);
+        //Elie's tags
+        Tag elieT1 = new Tag().setName("Elie_T1").setUser(elie);
+        Tag elieT2 = new Tag().setName("Elie_T2").setUser(elie);
+        em.persist(elieT1);
+        em.persist(elieT2);
         //Photo
-        Photo photo1 = new Photo().setFormat(".jpeg").setUser(alexandre).setSize(1200).setTags(Collections.singleton("img")).setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo photo1 = new Photo().setFormat(".jpeg").setUser(alexandre).setSize(1200).setTags(elieT1).setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setShootingDate(new Date());
         // NOTE : you need a file named 1.jpeg in your S3 folder with this photo in the database
-        Photo photo2 = new Photo().setFormat(".png").setUser(alexandre).setSize(1300).setTags(Collections.singleton("img2")).setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setShootingDate(new Date());
+        Photo photo2 = new Photo().setFormat(".png").setUser(alexandre).setSize(1300).setTags(elieT1).setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setShootingDate(new Date());
         // NOTE : you need a file named 2.png in your S3 folder with this photo in the database
         em.persist(photo1);
         em.persist(photo2);

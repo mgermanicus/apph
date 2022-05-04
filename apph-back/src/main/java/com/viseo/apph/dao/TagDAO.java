@@ -1,25 +1,26 @@
 package com.viseo.apph.dao;
 
 import com.viseo.apph.domain.Tag;
+import com.viseo.apph.domain.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.io.InvalidObjectException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class TagDAO {
     @PersistenceContext
     EntityManager em;
 
-    public String createTag(Tag tag) throws InvalidObjectException {
-        if (tag.getName() != null && tag.getUser() != null) {
-            em.persist(tag);
-            return tag.getName() + " créé";
+    public List<Tag> getTagsByUser(long userId) {
+        List<Tag> tags = em.createQuery("SELECT t FROM Tag t WHERE t.user.id=:userId", Tag.class)
+                .setParameter("userId", userId).getResultList();
+        List<Tag> filteredTag = new ArrayList<>();
+        for (Tag tag : tags) {
+            filteredTag.add((Tag) new Tag().setName(tag.getName()).setId(tag.getId()));
         }
-        throw new InvalidObjectException("Le nom du tag est obligatoir");
+        return filteredTag;
     }
-
-    // TODO
-    // getTagsByUserId(long userId)
 }

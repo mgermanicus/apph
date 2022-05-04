@@ -1,5 +1,6 @@
 import {
   Alert,
+  Autocomplete,
   Avatar,
   Box,
   Button,
@@ -14,8 +15,10 @@ import {
 } from '@mui/material';
 import PhotoService from '../../services/PhotoService';
 import { UploadStatus } from '../../utils';
-import { createRef, FormEvent, useState } from 'react';
+import { createRef, FormEvent, useEffect, useState } from 'react';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import { ITag } from '../../utils/types/Tag';
+import TagService from '../../services/TagService';
 
 const displayAlert = (
   uploadStatus: UploadStatus,
@@ -37,7 +40,8 @@ export const UploadImage = (): JSX.Element => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const fileInput = createRef<HTMLInputElement>();
   const [open, setOpen] = useState(false);
-
+  const [allTags, setAllTags] = useState<ITag[]>([]);
+  const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -53,6 +57,7 @@ export const UploadImage = (): JSX.Element => {
       PhotoService.uploadImage(
         title,
         file,
+        selectedTags,
         () => {
           setUploadStatus('success');
         },
@@ -63,6 +68,20 @@ export const UploadImage = (): JSX.Element => {
       );
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      await TagService.getAllTags(
+        (tags: string) => {
+          const tagsConverted: ITag[] = JSON.parse(tags);
+          setAllTags(tagsConverted);
+        },
+        (errorMessage: string) => {
+          setErrorMessage(errorMessage);
+        }
+      );
+    })();
+  }, [allTags]);
 
   return (
     <Box sx={{ m: 1 }}>
@@ -109,6 +128,19 @@ export const UploadImage = (): JSX.Element => {
                     name="title"
                     autoComplete="title"
                     autoFocus
+                  />
+                  <Autocomplete
+                    multiple
+                    limitTags={2}
+                    id="tags"
+                    size="small"
+                    options={allTags}
+                    onChange={(event, tags) => setSelectedTags(tags)}
+                    isOptionEqualToValue={(tag, value) => tag.id === value.id}
+                    getOptionLabel={(tag) => tag.name}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Tags" />
+                    )}
                   />
                   <Input
                     fullWidth

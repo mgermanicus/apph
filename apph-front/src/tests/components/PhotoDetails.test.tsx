@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 import PhotoDetails from '../../static/components/PhotoDetails';
-import { clickButton } from '../utils/library';
+import { clickButton } from '../utils';
 
 describe('Test du composant PhotoDetails', () => {
   beforeEach(() => {
