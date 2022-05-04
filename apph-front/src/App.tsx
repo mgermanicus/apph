@@ -31,7 +31,7 @@ export const App = () => {
         dispatch(changeCurrentUser(AuthService.getUserLoginByToken()));
       }
     } catch (e) {
-      console.error(e);
+      alert('Session expirée, veuillez-vous reconnecter.');
     }
   }, [authenticated]);
   return (
