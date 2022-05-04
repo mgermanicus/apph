@@ -25,7 +25,10 @@ export default class AuthService {
       })
     };
     const successFunction = (jws: string) => {
-      const decodedToken = jwtDecode(jws) as { login: string; exp: number };
+      const decodedToken = jwtDecode(jws) as {
+        id: number;
+        exp: number;
+      } & IUser;
       const user: IUser = {
         firstname: '',
         lastname: '',
@@ -33,7 +36,13 @@ export default class AuthService {
       };
       if (typeof decodedToken === 'object') {
         user.login = decodedToken.login;
-        cookies.set('user', { token: jws });
+        user.lastname = decodedToken.lastname;
+        user.firstname = decodedToken.firstname;
+        cookies.set(
+          'user',
+          { token: jws },
+          { expires: new Date(decodedToken.exp * 1000) }
+        );
       }
       handleSuccess(user);
     };
@@ -76,14 +85,7 @@ export default class AuthService {
   }
 
   static isTokenValid() {
-    const jwt = AuthService.getToken();
-    if (jwt) {
-      return (
-        (jwtDecode(AuthService.getToken()) as { exp: number })?.exp * 1000 >
-        Date.now()
-      );
-    }
-    return false;
+    return !!AuthService.getToken();
   }
 
   static getUserLoginByToken() {
