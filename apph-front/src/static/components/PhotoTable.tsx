@@ -6,6 +6,7 @@ import { Alert, Collapse, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ITable } from '../../utils/types/table';
 import PhotoService from '../../services/PhotoService';
+import { DownloadImage } from './DownloadImage';
 
 const columns: GridColDef[] = [
   {
@@ -58,6 +59,14 @@ const columns: GridColDef[] = [
     headerName: 'Url',
     flex: 1,
     align: 'center',
+    headerAlign: 'center'
+  },
+  {
+    field: 'action',
+    headerName: 'Action',
+    flex: 2,
+    align: 'center',
+    renderCell: (params) => DownloadImage(+params.id),
     headerAlign: 'center'
   }
 ];

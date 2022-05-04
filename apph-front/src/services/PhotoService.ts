@@ -42,11 +42,7 @@ export default class PhotoService {
       }
     };
     const successFunction = (val: string) => {
-      let i = 1;
       const tab: Array<ITable> = JSON.parse(val);
-      for (const elt of tab) {
-        elt.id = i++;
-      }
       handleSuccess(tab);
     };
     const errorFunction = (errorMessage: string) => {

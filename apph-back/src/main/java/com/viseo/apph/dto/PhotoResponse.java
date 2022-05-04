@@ -6,6 +6,8 @@ import java.util.Date;
 
 public class PhotoResponse implements IResponseDTO {
 
+    @JsonProperty("id")
+    long id;
     @JsonProperty("title")
     String title;
     @JsonProperty("description")
@@ -25,7 +27,13 @@ public class PhotoResponse implements IResponseDTO {
     @JsonProperty("extension")
     String extension;
 
-    public PhotoResponse() {
+    public long getId() {
+        return id;
+    }
+
+    public PhotoResponse setId(long id) {
+        this.id = id;
+        return this;
     }
 
     public String getTitle() {
