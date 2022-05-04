@@ -1,6 +1,6 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.controller.AuthController;
+import com.viseo.apph.dao.FolderDAO;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.UserRequest;
@@ -40,10 +40,13 @@ public class AuthTest {
 
     private void createAuthController() {
         UserDAO userDAO = new UserDAO();
+        FolderDAO folderDAO = new FolderDAO();
         inject(userDAO, "em", em);
+        inject(folderDAO, "em", em);
         userService = new UserService();
         inject(userService, "encoder", passwordEncoder);
         inject(userService, "userDAO", userDAO);
+        inject(userService, "folderDAO", folderDAO);
         authController = new AuthController();
         inject(authController, "userService", userService);
     }
