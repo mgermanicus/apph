@@ -30,7 +30,7 @@ export default class UserService {
     };
 
     return Server.request(
-      `/user/edit`,
+      `/user/edit/`,
       requestOptions,
       handleSuccess,
       handleError

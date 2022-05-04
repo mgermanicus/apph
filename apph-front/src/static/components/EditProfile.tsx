@@ -1,18 +1,17 @@
 import {
   Alert,
-  AlertColor,
+  Box,
   Button,
   Card,
   CardContent,
   CardHeader,
-  Dialog,
   Stack,
   TextField
 } from '@mui/material';
 import { makeCardStyles } from '../../utils/theme';
 import { FormEvent, useEffect, useState } from 'react';
 import UserService from '../../services/UserService';
-import { IEditedUser, IUser, UploadStatus } from '../../utils/types';
+import { IEditedUser, IUser } from '../../utils/types';
 import AuthService from '../../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmationDialog } from './ConfirmationDialog';
@@ -49,6 +48,7 @@ export const EditProfile = () => {
           updateUser(userConverted);
         },
         (errorMessage: string) => {
+          setErrorOccured(true);
           setAlertMessage(errorMessage);
         }
       );
@@ -87,6 +87,7 @@ export const EditProfile = () => {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
+    if (password != passwordConfirmation) return;
     if (editedFields().login) {
       setDialogOpen(true);
     } else {
@@ -112,7 +113,7 @@ export const EditProfile = () => {
     <Card className={classes.cardStyle}>
       <CardHeader title="Modifier le profil" />
       <CardContent>
-        <form onSubmit={handleSubmit}>
+        <Box component="form" onSubmit={handleSubmit}>
           <Stack spacing={2}>
             <TextField
               required
@@ -157,14 +158,16 @@ export const EditProfile = () => {
             </Button>
             {alertMessage ? displayAlert() : <></>}
           </Stack>
-        </form>
+        </Box>
         <ConfirmationDialog
           open={dialogOpen}
           onConfirm={() => {
             setDialogOpen(false);
             editUser();
           }}
-          onCancel={() => setDialogOpen(false)}
+          onCancel={() => {
+            setDialogOpen(false);
+          }}
           message="Vous allez être déconnecté"
         />
       </CardContent>

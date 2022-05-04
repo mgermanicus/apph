@@ -53,6 +53,6 @@ export default class AuthService {
 
   static editUser = (user: IUser) => {
     const token = this.getToken();
-    cookies.set('user', { ...user, token });
+    cookies.set('user', { token });
   };
 }
