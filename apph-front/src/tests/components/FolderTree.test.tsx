@@ -1,10 +1,13 @@
 import * as React from 'react';
-import { triggerRequestFailure, triggerRequestSuccess } from '../utils';
+import {
+  JWS_TOKEN,
+  triggerRequestFailure,
+  triggerRequestSuccess
+} from '../utils';
 import { render, screen } from '@testing-library/react';
 import { MyFoldersPage } from '../../static/pages/MyFoldersPage';
 import Cookies from 'universal-cookie';
 import jwtDecode from 'jwt-decode';
-import { JWS_TOKEN } from '../utils';
 
 describe('Folder Tree Tests', () => {
   beforeEach(() => {

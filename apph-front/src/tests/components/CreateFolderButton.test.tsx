@@ -3,6 +3,7 @@ import { render } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 import { CreateFolderButton } from '../../static/components/CreateFolderButton';
 import {
+  JWS_TOKEN,
   clickButton,
   fillText,
   triggerRequestFailure,
@@ -10,7 +11,6 @@ import {
 } from '../utils';
 import Cookies from 'universal-cookie';
 import jwtDecode from 'jwt-decode';
-import { JWS_TOKEN } from '../utils';
 
 describe('Create Folder Button Tests', () => {
   const onSetRootFolder = jest.fn();
