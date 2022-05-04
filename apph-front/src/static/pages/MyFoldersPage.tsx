@@ -81,9 +81,7 @@ export const MyFoldersPage = (): JSX.Element => {
           style={{
             width: '70%'
           }}
-        >
-          Selected folder's id: {selectedFolder}
-        </div>
+        ></div>
       </div>
     );
   }
