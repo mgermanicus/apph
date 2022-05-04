@@ -14,7 +14,7 @@ export const UserAvatar = ({
       sx: {
         backgroundColor: randomColorCodeFromString(firstname + lastname)
       },
-      children: `${firstname[0]} ${lastname[0] ?? ''}`
+      children: `${firstname[0]}${lastname[0] ?? ''}`
     };
   };
   return <Avatar {...avatar(firstname, lastname)} />;
