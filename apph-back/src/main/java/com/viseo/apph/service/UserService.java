@@ -1,6 +1,8 @@
 package com.viseo.apph.service;
 
+import com.viseo.apph.dao.FolderDAO;
 import com.viseo.apph.dao.UserDAO;
+import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.UserRequest;
 import io.jsonwebtoken.Claims;
@@ -15,12 +17,18 @@ import javax.transaction.Transactional;
 public class UserService {
     @Autowired
     UserDAO userDAO;
+
+    @Autowired
+    FolderDAO folderDAO;
+
     PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Transactional
     public void registerUser(UserRequest userRequest) {
         User newUser = new User().setLogin(userRequest.getLogin()).setPassword(encoder.encode(userRequest.getPassword())).setFirstname(userRequest.getFirstName()).setLastname(userRequest.getLastName());
         userDAO.createUser(newUser);
+        Folder rootFolder = new Folder().setName(newUser.getFirstname()).setParentFolderId(null).setUser(newUser);
+        folderDAO.createFolder(rootFolder);
     }
 
     @Transactional
