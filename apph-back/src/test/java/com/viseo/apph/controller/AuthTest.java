@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,8 @@ import javax.persistence.TypedQuery;
 import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -115,7 +118,7 @@ public class AuthTest {
     }
 
     @Test
-    public void testRegisterFail()
+    public void testRegisterFailUserExist()
     {
         //GIVEN
         createAuthController();
@@ -123,9 +126,10 @@ public class AuthTest {
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
         when(typedQuery.setParameter("login","tintin")).thenReturn(typedQuery);
+        doThrow(new DataIntegrityViolationException("test")).when(em).persist(any());
         //WHEN
         ResponseEntity responseEntity = authController.register(userRequest);
         //THEN
-        Assert.assertTrue( responseEntity.getStatusCode().isError());
+        Assert.assertTrue(responseEntity.getStatusCode().isError());
     }
 }
