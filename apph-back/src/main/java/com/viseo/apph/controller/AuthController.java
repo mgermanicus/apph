@@ -16,8 +16,7 @@ import java.security.Key;
 import java.util.Date;
 
 @RestController
-//@CrossOrigin(origins = "${front-server}")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "${front-server}")
 @RequestMapping("/auth")
 public class AuthController {
     @Autowired

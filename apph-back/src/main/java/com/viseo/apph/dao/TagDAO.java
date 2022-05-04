@@ -23,4 +23,9 @@ public class TagDAO {
         }
         return filteredTag;
     }
+
+    public Tag createTag(Tag tag) {
+        em.persist(tag);
+        return tag;
+    }
 }

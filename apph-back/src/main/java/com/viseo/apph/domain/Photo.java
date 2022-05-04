@@ -16,7 +16,7 @@ public class Photo extends BaseEntity {
     float size;
     String format;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "photo_tag",
             joinColumns = @JoinColumn(name = "photo_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))

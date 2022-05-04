@@ -15,8 +15,8 @@ export default class PhotoService {
     const userInfos = cookies.get('user');
     const formData = new FormData();
     formData.append('file', imageFile);
+    formData.append('tags', JSON.stringify(selectedTags));
     formData.append('title', title);
-    formData.append('tags', selectedTags.toString());
     const requestOptions = {
       method: 'POST',
       headers: {

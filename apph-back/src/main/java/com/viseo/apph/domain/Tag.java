@@ -1,16 +1,17 @@
 package com.viseo.apph.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import javax.persistence.*;
 
 @Entity
-@Table(name = "tags")
+@Table(name="tags", uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "user_id" }) })
 public class Tag extends BaseEntity {
     String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
     User user;
 
     public Tag() {

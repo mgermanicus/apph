@@ -3,19 +3,19 @@ package com.viseo.apph.controller;
 import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.Tag;
-import com.viseo.apph.dto.*;
+import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.*;
 import com.viseo.apph.exception.InvalidFileException;
-import com.viseo.apph.dto.PaginationResponse;
 import com.viseo.apph.exception.UnauthorizedException;
 import com.viseo.apph.service.PhotoService;
+import com.viseo.apph.service.TagService;
+import com.viseo.apph.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import javax.persistence.NoResultException;
@@ -29,6 +29,10 @@ import java.util.Set;
 public class PhotoController {
     @Autowired
     PhotoService photoService;
+    @Autowired
+    TagService tagService;
+    @Autowired
+    UserService userService;
 
     @GetMapping(value = "/infos", produces = "application/json")
     public ResponseEntity<IResponseDTO> getUserPhotos(@RequestHeader("Authorization") String token, @RequestParam int pageSize, @RequestParam int page) {
@@ -47,12 +51,11 @@ public class PhotoController {
     public ResponseEntity<IResponseDTO> upload(@RequestHeader("Authorization") String token, @ModelAttribute PhotoRequest photoRequest) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            MultipartFile file = photoRequest.getFile();
-            String format = photoService.getFormat(file);
-            Set<Tag> tags = photoRequest.getTags();
-            String name = photoRequest.getName();
-            Photo photo = photoService.addPhoto(claims, name);
-            return ResponseEntity.ok(new MessageResponse(photoService.saveWithName(file, photo.getId() + format)));
+            User user = userService.getUser(claims);
+            Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
+            String format = photoService.getFormat(photoRequest.getFile());
+            Photo photo = photoService.addPhoto(photoRequest.getTitle(), allTags);
+            return ResponseEntity.ok(new MessageResponse(photoService.saveWithName(photoRequest.getFile(), photo.getId() + format)));
         } catch (IOException | S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
         } catch (InvalidFileException e) {
@@ -63,8 +66,8 @@ public class PhotoController {
     @PostMapping("/download")
     public ResponseEntity<IResponseDTO> download(@RequestHeader("Authorization") String token, @RequestBody PhotoRequest photoRequest) {
         try {
-            int userId = tokenManager.getIdOfToken(token);
-            Photo photo = photoService.getPhotoById(photoRequest.getId(), userId);
+            Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
+            Photo photo = photoService.getPhotoById(photoRequest.getId(), claims.get("login").toString());
             PhotoResponse photoResponse = photoService.download(photoRequest.getId() + photo.getFormat()).setTitle(photo.getTitle()).setFormat(photo.getFormat());
             return ResponseEntity.ok(photoResponse);
         } catch (S3Exception e) {

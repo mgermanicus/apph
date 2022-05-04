@@ -3,6 +3,7 @@ package com.viseo.apph.service;
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.domain.Tag;
 import com.viseo.apph.exception.InvalidFileException;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
@@ -13,6 +14,8 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -56,18 +59,18 @@ public class PhotoServiceTest {
         }
     }
 
-    /*@Test
+    @Test
     public void testAddPhoto() {
         // Given
         createPhotoService();
         String name = "Test@";
+        Set<Tag> tags = new HashSet<>();
         String format = ".png";
-        Photo photo = new Photo().setTitle(name).setFormat(format);
         // WHEN
-        photoService.addPhoto(photo);
+        photoService.addPhoto(name, format, 1);
         // THEN
         verify(em, times(1)).persist(any(Photo.class));
-    }*/
+    }
 
     @Test
     public void testGetFormat() throws InvalidFileException {

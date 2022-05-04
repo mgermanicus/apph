@@ -2,6 +2,9 @@ package com.viseo.apph.controller;
 
 import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.Tag;
+import com.viseo.apph.dto.IResponseDTO;
+import com.viseo.apph.dto.MessageResponse;
+import com.viseo.apph.dto.TagResponse;
 import com.viseo.apph.service.TagService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -15,8 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-//@CrossOrigin(origins = "${front-server}")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "${front-server}")
 @RequestMapping("/tag")
 public class TagController {
 
@@ -24,17 +26,32 @@ public class TagController {
     TagService tagService;
 
     @GetMapping("/")
-    public ResponseEntity getTags(@RequestHeader("Authentication") String token) {
+    public ResponseEntity<IResponseDTO> getTags(@RequestHeader("Authentication") String token) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             List<Tag> tags = tagService.getTags(claims);
-            return ResponseEntity.ok(tags);
+            return ResponseEntity.ok(new TagResponse(tags));
         } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User does not exist");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User does not exist"));
         } catch (SignatureException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token not valid");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Token not valid"));
         } catch (ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token expired");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Token expired"));
+        }
+    }
+
+    @PostMapping("/")
+    public ResponseEntity<IResponseDTO> createTag(@RequestHeader("Authentication") String token, @RequestBody String name) {
+        try {
+            Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
+            Tag tag = tagService.createTag(name, claims);
+            return ResponseEntity.ok(new TagResponse(tag));
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User does not exist"));
+        } catch (SignatureException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Token not valid"));
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Token expired"));
         }
     }
 }

@@ -41,4 +41,9 @@ public class PhotoRequest {
     public Set<Tag> getTags() {
         return tags;
     }
+
+    public String getToken() {
+        return token;
+    }
 }
+

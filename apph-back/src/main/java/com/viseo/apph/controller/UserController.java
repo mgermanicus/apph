@@ -13,8 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-//@CrossOrigin(origins = "${front-server}")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "${front-server}")
 @RequestMapping("/user")
 public class UserController {
 
