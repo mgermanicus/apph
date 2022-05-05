@@ -83,10 +83,10 @@ public class FolderTest {
         when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(robert);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQueryFolder);
-        when(typedQueryUser.setParameter("userId", 1L)).thenReturn(typedQueryUser);
+        when(typedQueryFolder.setParameter("userId", 1L)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getResultList()).thenReturn(robert.getFolders());
         //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = folderController.getFoldersByUser(jws);
+        ResponseEntity responseEntity = folderController.getFoldersByUser(jws);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         FolderResponse folderResponse = (FolderResponse) responseEntity.getBody();
@@ -128,7 +128,7 @@ public class FolderTest {
         when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(robert);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQueryFolder);
-        when(typedQueryUser.setParameter("userId", 1L)).thenReturn(typedQueryUser);
+        when(typedQueryFolder.setParameter("userId", 1L)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getResultList()).thenReturn(folders);
         //WHEN
         ResponseEntity<IResponseDTO> responseEntity = folderController.getFoldersByUser(jws);
@@ -153,7 +153,7 @@ public class FolderTest {
         when(typedQueryUser.getSingleResult()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQueryFolder);
-        when(typedQueryUser.setParameter("userId", 1L)).thenReturn(typedQueryUser);
+        when(typedQueryFolder.setParameter("userId", 1L)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getResultList()).thenReturn(robert.getFolders());
         //WHEN
         ResponseEntity<IResponseDTO> responseEntity = folderController.createFolder(jws, request);
