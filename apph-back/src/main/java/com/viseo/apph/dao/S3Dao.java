@@ -1,5 +1,6 @@
 package com.viseo.apph.dao;
 
+import com.viseo.apph.domain.Photo;
 import com.viseo.apph.exception.InvalidFileException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,8 +56,8 @@ public class S3Dao {
         }
     }
 
-    public String getPhotoUrl(String filename) {
-        return s3Client.utilities().getUrl(builder -> builder.bucket(bucketName).key(user + filename)).toExternalForm();
+    public String getPhotoUrl(Photo photo) {
+        return s3Client.utilities().getUrl(builder -> builder.bucket(bucketName).key(user + photo.getId() + photo.getFormat())).toExternalForm();
     }
 
     public byte[] download(String filename) {

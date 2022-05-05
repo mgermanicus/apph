@@ -53,7 +53,7 @@ public class PhotoService {
                     .setTags(photo.getTags())
                     .setDescription(photo.getDescription())
                     .setShootingDate(photo.getShootingDate())
-                    .setUrl(s3Dao.getPhotoUrl(photo.getTitle()));
+                    .setUrl(s3Dao.getPhotoUrl(photo));
             usersPhotoResponse.add(photoResponse);
         }
         return usersPhotoResponse;
