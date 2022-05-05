@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { IUser } from '../../utils';
 import { ErrorCard } from '../components/ErrorCard';
 import UserService from '../../services/UserService';
-import { Stack } from '@mui/material';
 
 export const UserProfilePage = (): JSX.Element => {
   const [firstname, setFirstname] = useState<string>('');
@@ -28,17 +27,12 @@ export const UserProfilePage = (): JSX.Element => {
   }, [firstname, lastname, email]);
 
   return (
-    <Stack
-      direction="column"
-      justifyContent="flex-start"
-      alignItems="center"
-      spacing={0}
-    >
+    <>
       {error ? (
         <ErrorCard errorMessage={error} />
       ) : (
         <UserProfile firstname={firstname} lastname={lastname} login={email} />
       )}
-    </Stack>
+    </>
   );
 };

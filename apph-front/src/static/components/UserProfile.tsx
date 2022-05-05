@@ -7,22 +7,21 @@ import {
   CardHeader,
   Typography
 } from '@mui/material';
-import { Link } from 'react-router-dom';
 
+import { useNavigate } from 'react-router-dom';
 export const UserProfile = ({
   firstname,
   lastname,
   login
 }: IUser): JSX.Element => {
+  const navigate = useNavigate();
   const classes = makeCardStyles();
   return (
     <Card className={classes.cardStyle}>
       <CardHeader title={`${firstname} ${lastname}`} />
       <CardContent>
         <Typography variant="body2">Email: {login}</Typography>
-        <Button component={Link} to="/me/edit">
-          Modifier
-        </Button>
+        <Button onClick={() => navigate('/me/edit')}>Modifier</Button>
       </CardContent>
     </Card>
   );
