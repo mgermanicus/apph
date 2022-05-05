@@ -18,7 +18,6 @@ import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertEquals;
@@ -71,7 +70,7 @@ public class S3Test {
     }
 
     @Test
-    public void testUploadException() throws InvalidFileException, IOException {
+    public void testUploadException() {
         // Given
         createUserController();
         MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());

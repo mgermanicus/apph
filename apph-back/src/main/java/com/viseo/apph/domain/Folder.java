@@ -1,8 +1,6 @@
 package com.viseo.apph.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "parentFolderId" }) })

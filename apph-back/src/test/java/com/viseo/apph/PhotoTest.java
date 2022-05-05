@@ -28,11 +28,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class photoTest {
+public class PhotoTest {
     @Mock
     EntityManager em;
     @Mock
-    TypedQuery typedQuery;
+    TypedQuery<Photo> typedQuery;
     @Mock
     TokenManager tokenManager;
     S3Client s3Client;
@@ -98,7 +98,7 @@ public class photoTest {
         when(typedQuery.getResultList()).thenReturn(listPhoto);
         when(tokenManager.getIdOfToken("token")).thenReturn(1);
         //WHEN
-        ResponseEntity responseEntity = photoController.getUserPhotos(token);
+        ResponseEntity<List<PhotoResponse>> responseEntity = photoController.getUserPhotos(token);
         //THEN
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }

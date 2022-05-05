@@ -8,6 +8,7 @@ import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FolderRequest;
 import com.viseo.apph.dto.FolderResponse;
+import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.service.FolderService;
 import io.jsonwebtoken.Jwts;
@@ -20,7 +21,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,7 +39,9 @@ public class FolderTest {
     EntityManager em;
 
     @Mock
-    TypedQuery typedQuery;
+    TypedQuery<User> typedQueryUser;
+    @Mock
+    TypedQuery<Folder> typedQueryFolder;
 
     FolderService folderService;
     FolderController folderController;
@@ -75,17 +79,18 @@ public class FolderTest {
         Folder robertChild2 = (Folder) new Folder().setName("Robert Child 2").setParentFolderId(1L).setUser(robert).setId(3);
         robert.addFolder(robertRoot).addFolder(robertChild1).addFolder(robertChild2);
         String jws = Jwts.builder().claim("login", robert.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(robert);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("userId", 1L)).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(robert.getFolders());
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(robert);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryUser.setParameter("userId", 1L)).thenReturn(typedQueryUser);
+        when(typedQueryFolder.getResultList()).thenReturn(robert.getFolders());
         //WHEN
-        ResponseEntity responseEntity = folderController.getFoldersByUser(jws);
+        ResponseEntity<IResponseDTO> responseEntity = folderController.getFoldersByUser(jws);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         FolderResponse folderResponse = (FolderResponse) responseEntity.getBody();
+        assert folderResponse != null;
         Assert.assertEquals("Robert Root", folderResponse.getName());
         Assert.assertEquals(1, folderResponse.getId());
         Assert.assertEquals(0, folderResponse.getVersion());
@@ -98,14 +103,15 @@ public class FolderTest {
         //GIVEN
         createFolderController();
         String jws = Jwts.builder().claim("login", "Not a User").setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Not a User")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenThrow(new NoResultException());
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", "Not a User")).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenThrow(new NoResultException());
         //WHEN
-        ResponseEntity responseEntity = folderController.getFoldersByUser(jws);
+        ResponseEntity<IResponseDTO> responseEntity = folderController.getFoldersByUser(jws);
         //THEN
         Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.NOT_FOUND);
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
         Assert.assertEquals("L'utilisateur n'existe pas.", messageResponse.getMessage());
     }
 
@@ -118,17 +124,18 @@ public class FolderTest {
         List<Folder> folders = new ArrayList<>();
         folders.add(folder);
         String jws = Jwts.builder().claim("login", robert.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(robert);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("userId", 1L)).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(folders);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(robert);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryUser.setParameter("userId", 1L)).thenReturn(typedQueryUser);
+        when(typedQueryFolder.getResultList()).thenReturn(folders);
         //WHEN
-        ResponseEntity responseEntity = folderController.getFoldersByUser(jws);
+        ResponseEntity<IResponseDTO> responseEntity = folderController.getFoldersByUser(jws);
         //THEN
         Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.NOT_FOUND);
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
         Assert.assertEquals("Dossier parent introuvable.", messageResponse.getMessage());
     }
 
@@ -141,18 +148,19 @@ public class FolderTest {
         Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setUser(robert).setId(1);
         robert.addFolder(robertRoot);
         String jws = Jwts.builder().claim("login", robert.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(robert);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("userId", 1L)).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(robert.getFolders());
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryUser.setParameter("userId", 1L)).thenReturn(typedQueryUser);
+        when(typedQueryFolder.getResultList()).thenReturn(robert.getFolders());
         //WHEN
-        ResponseEntity responseEntity = folderController.createFolder(jws, request);
+        ResponseEntity<IResponseDTO> responseEntity = folderController.createFolder(jws, request);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         FolderResponse folderResponse = (FolderResponse) responseEntity.getBody();
+        assert folderResponse != null;
         Assert.assertEquals("Robert Root", folderResponse.getName());
     }
 
@@ -166,16 +174,17 @@ public class FolderTest {
         Folder robertChild = (Folder) new Folder().setName("Robert Child").setParentFolderId(1L).setUser(robert).setId(2);
         robert.addFolder(robertRoot).addFolder(robertChild);
         String jws = Jwts.builder().claim("login", robert.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(robert);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
         doThrow(new DataIntegrityViolationException("SQLException")).when(em).persist(any());
         //WHEN
-        ResponseEntity responseEntity = folderController.createFolder(jws, request);
+        ResponseEntity<IResponseDTO> responseEntity = folderController.createFolder(jws, request);
         //THEN
         Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.CONFLICT);
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
         Assert.assertEquals("Le dossier existe déjà dans le dossier actuel.", messageResponse.getMessage());
     }
 
@@ -187,10 +196,11 @@ public class FolderTest {
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         String jws = Jwts.builder().claim("login", robert.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         //WHEN
-        ResponseEntity responseEntity = folderController.createFolder(jws, request);
+        ResponseEntity<IResponseDTO> responseEntity = folderController.createFolder(jws, request);
         //THEN
         Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.UNAUTHORIZED);
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
         Assert.assertEquals("Impossible de créer un dossier racine.", messageResponse.getMessage());
     }
 
@@ -204,15 +214,16 @@ public class FolderTest {
         Folder robertChild = (Folder) new Folder().setName("Robert Child").setParentFolderId(1L).setUser(robert).setId(2);
         robert.addFolder(robertRoot).addFolder(robertChild);
         String jws = Jwts.builder().claim("login", robert.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(robert);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(null);
         //WHEN
-        ResponseEntity responseEntity = folderController.createFolder(jws, request);
+        ResponseEntity<IResponseDTO> responseEntity = folderController.createFolder(jws, request);
         //THEN
         Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.NOT_FOUND);
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
         Assert.assertEquals("Dossier parent introuvable.", messageResponse.getMessage());
     }
 
@@ -226,15 +237,16 @@ public class FolderTest {
         Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setUser(robert).setId(1);
         robert.addFolder(robertRoot);
         String jws = Jwts.builder().claim("login", chris.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Chris")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(chris);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", "Chris")).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(chris);
         when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
         //WHEN
-        ResponseEntity responseEntity = folderController.createFolder(jws, request);
+        ResponseEntity<IResponseDTO> responseEntity = folderController.createFolder(jws, request);
         //THEN
         Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.UNAUTHORIZED);
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
         Assert.assertEquals("L'utilisateur n'a pas accès à ce dossier.", messageResponse.getMessage());
     }
 }
