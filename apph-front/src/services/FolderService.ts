@@ -1,7 +1,6 @@
 import { IFolder } from '../utils/types/Folder';
 import Server from './Server';
 import Cookies from 'universal-cookie';
-import cryptoJS from 'crypto-js';
 
 const cookies = new Cookies();
 

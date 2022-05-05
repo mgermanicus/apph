@@ -11,7 +11,7 @@ import { DownloadImage } from './DownloadImage';
 const columns: GridColDef[] = [
   {
     field: 'title',
-    headerName: 'Title',
+    headerName: 'Titre',
     flex: 1,
     align: 'center',
     headerAlign: 'center'
@@ -25,7 +25,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'creationDate',
-    headerName: 'Creation date',
+    headerName: 'Date de création',
     type: 'date',
     flex: 2.2,
     align: 'center',
@@ -33,7 +33,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'shootingDate',
-    headerName: 'Shooting date',
+    headerName: 'Date de prise de vue',
     type: 'date',
     flex: 2.2,
     align: 'center',
@@ -41,7 +41,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'size',
-    headerName: 'Size',
+    headerName: 'Taille',
     type: 'number',
     flex: 1,
     align: 'center',

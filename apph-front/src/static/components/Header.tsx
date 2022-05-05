@@ -61,7 +61,7 @@ export const Header = (): JSX.Element => {
               <List>
                 <DrawerMenuItem
                   title="Mes Photos"
-                  url="pictures"
+                  url="/pictures"
                   icon={<InsertPhoto />}
                 />
                 <DrawerMenuItem

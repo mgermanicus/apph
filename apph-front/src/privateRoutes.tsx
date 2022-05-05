@@ -80,6 +80,7 @@ export const PrivateRoutes = ({
             />
           )}
         />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
   );
