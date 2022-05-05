@@ -52,7 +52,7 @@ public class PhotoService {
                     .setTags(photo.getTags())
                     .setDescription(photo.getDescription())
                     .setShootingDate(photo.getShootingDate())
-                    .setUrl("fake url"); //TODO RECUPERER LE VRAI URL
+                    .setUrl(s3Dao.getPhotoUrl(photo.getTitle()));
             usersPhotoResponse.add(photoResponse);
         }
         return usersPhotoResponse;

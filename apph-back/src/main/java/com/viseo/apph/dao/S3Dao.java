@@ -55,6 +55,10 @@ public class S3Dao {
         }
     }
 
+    public String getPhotoUrl(String filename) {
+        return s3Client.utilities().getUrl(builder -> builder.bucket(bucketName).key(user + filename)).toExternalForm();
+    }
+
     public byte[] download(String filename) {
         ResponseBytes<GetObjectResponse> s3Object = s3Client.getObject(
                 GetObjectRequest.builder().bucket(bucketName).key(user + filename).build(),
