@@ -1,6 +1,8 @@
 package com.viseo.apph.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -9,7 +11,6 @@ import java.util.Date;
 public class Photo extends BaseEntity {
 
     String title;
-    long idUser;
     String description;
     Date creationDate;
     Date shootingDate;
@@ -17,16 +18,21 @@ public class Photo extends BaseEntity {
     String tags;
     String format;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    User user;
+
+
+
     public Photo() {
         super();
     }
 
-    public long getIdUser() {
-        return idUser;
+    public User getUser() {
+        return user;
     }
 
-    public Photo setIdUser(long idUser) {
-        this.idUser = idUser;
+    public Photo setUser(User user) {
+        this.user = user;
         return this;
     }
 

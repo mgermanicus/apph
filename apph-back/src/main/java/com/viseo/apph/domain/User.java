@@ -1,5 +1,7 @@
 package com.viseo.apph.domain;
 
+import org.hibernate.boot.model.source.spi.FetchCharacteristics;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -19,6 +21,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Folder> folders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Photo> photos = new ArrayList<>();
 
     public User() {
         super();
