@@ -3,12 +3,16 @@ package com.viseo.apph;
 import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.controller.PhotoController;
 import com.viseo.apph.dao.PhotoDao;
-import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
-import com.viseo.apph.dto.PhotoResponse;
+import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.PaginationRequest;
+import com.viseo.apph.dto.PaginationResponse;
 import com.viseo.apph.service.PhotoService;
 import io.jsonwebtoken.Jwts;
+import org.junit.Assert;
+import com.viseo.apph.dao.S3Dao;
+import com.viseo.apph.dto.PhotoResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -93,15 +97,29 @@ public class PhotoTest {
     {
         //GIVEN
         createPhotoController();
-        String token = Jwts.builder().claim("id", 1L).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         List<Photo> listPhoto = new ArrayList<>();
         listPhoto.add(new Photo());
-        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQuery);
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        String token = Jwts.builder().claim("login", robert.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        PaginationRequest request = new PaginationRequest().setPage(1).setPageSize(5);
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)).thenReturn(typedQuery);
         when(typedQuery.setParameter(eq("user"), any())).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(listPhoto);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
+        when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(robert);
         //WHEN
-        ResponseEntity<List<PhotoResponse>> responseEntity = photoController.getUserPhotos(token);
+        ResponseEntity responseEntity = photoController.getUserPhotos(token, request);
         //THEN
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        PaginationResponse paginationResponse = (PaginationResponse) responseEntity.getBody();
+        Assert.assertEquals(6, paginationResponse.getTotalSize());
+        Assert.assertEquals(5, paginationResponse.getPhotoList().size());
     }
 }
+>>>>>>>> e0e2fe7 ([feature][APPH-13] pagination back side + back test):apph-back/src/test/java/com/viseo/apph/PhotoTest.java

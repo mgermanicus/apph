@@ -5,6 +5,8 @@ import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.PaginationRequest;
+import com.viseo.apph.dto.PaginationResponse;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +17,17 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.IOException;
+import java.util.stream.Collectors;
 
 @Service
 public class PhotoService {
 
     @Autowired
     PhotoDao photoDao;
+
+    @Autowired
+    UserDAO userDAO;
 
     @Autowired
     S3Dao s3Dao;
@@ -49,22 +56,26 @@ public class PhotoService {
     }
 
     @Transactional
-    public List<PhotoResponse> getUserPhotos(long idUser) {
-        User user = userDAO.getUserById(idUser);
-        List<Photo> usersPhoto = photoDao.getUserPhotos(user);
-        List<PhotoResponse> usersPhotoResponse = new ArrayList<>();
-        for(Photo photo:usersPhoto) {
-            PhotoResponse photoResponse = new PhotoResponse()
-                    .setTitle(photo.getTitle())
-                    .setCreationDate(photo.getCreationDate())
-                    .setSize(photo.getSize())
-                    .setTags(photo.getTags())
-                    .setDescription(photo.getDescription())
-                    .setShootingDate(photo.getShootingDate())
-                    .setUrl(s3Dao.getPhotoUrl(photo));
-            usersPhotoResponse.add(photoResponse);
+    public PaginationResponse getUserPhotos(String userLogin, PaginationRequest request) {
+        User user = userDAO.getUserByLogin(userLogin);
+        List<Photo> userPhotos = photoDao.getUserPhotos(user);
+        int startIndex = (request.getPage() - 1) * request.getPageSize();
+        int endIndex = request.getPage() * request.getPageSize();
+        PaginationResponse response = new PaginationResponse().setTotalSize(userPhotos.size());
+        List<PhotoResponse> responseList = userPhotos.subList(startIndex, Math.min(endIndex, userPhotos.size())).stream()
+                .map(photo -> new PhotoResponse()
+                        .setTitle(photo.getTitle())
+                        .setCreationDate(photo.getCreationDate())
+                        .setSize(photo.getSize())
+                        .setTags(photo.getTags())
+                        .setDescription(photo.getDescription())
+                        .setShootingDate(photo.getShootingDate())
+                        .setUrl(s3Dao.getPhotoUrl(photo))
+                        ).collect(Collectors.toList());
+        for (PhotoResponse photo :responseList) {
+            response.addPhoto(photo);
         }
-        return usersPhotoResponse;
+        return response;
     }
 
     public String saveWithName(MultipartFile file, String name) throws InvalidFileException, IOException {
