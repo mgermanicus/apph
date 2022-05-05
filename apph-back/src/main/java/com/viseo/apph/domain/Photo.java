@@ -15,6 +15,7 @@ public class Photo extends BaseEntity {
     Date shootingDate;
     float size;
     String tags;
+    String format;
 
     public Photo() {
         super();
@@ -80,6 +81,15 @@ public class Photo extends BaseEntity {
 
     public Photo setTags(String tags) {
         this.tags = tags;
+        return this;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public Photo setFormat(String format) {
+        this.format = format;
         return this;
     }
 }

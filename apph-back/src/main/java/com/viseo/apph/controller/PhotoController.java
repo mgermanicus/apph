@@ -38,7 +38,7 @@ public class PhotoController {
     public ResponseEntity<IResponseDTO> upload(MultipartFile file, String name) {
         try {
             String format = photoService.getFormat(file);
-            Photo photo = photoService.addPhoto(name);
+            Photo photo = photoService.addPhoto(name, format);
             return ResponseEntity.ok(new MessageResponse(photoService.saveWithName(file, photo.getId() + format)));
         } catch (IOException | S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
