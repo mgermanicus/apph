@@ -20,7 +20,7 @@ describe('Tests du composant PhotoTable.tsx', () => {
     expect(screen.getByText(/photo test 1/)).toBeInTheDocument();
   });
 
-  test('grid render', async () => {
+  test('Tests button display when grid rendered', async () => {
     //GIVEN
     triggerRequestSuccess(
       '[{"id":1,"title": "photo1","description": "photo test 1","creationDate": "2022-04-29T12:50:27.973+00:00","shootingDate": "2022-04-29T12:50:27.973+00:00","size": 1200,"tags": "img","url": "fakes url"},' +
@@ -29,10 +29,8 @@ describe('Tests du composant PhotoTable.tsx', () => {
     // When
     render(<DataTable />);
     // Then
-    screen.debug(await screen.findAllByRole('cell'));
-    screen.debug(await screen.findAllByText('url'));
     await waitFor(() => {
-      expect(screen.getByText(/Télécharger/)).toBeInTheDocument();
+      expect(screen.getAllByText(/Télécharger/)[0]).toBeInTheDocument();
     });
   });
 });

@@ -91,6 +91,7 @@ export const DataTable = () => {
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5]}
+        columnBuffer={8}
       />
       <Collapse in={errorMessage !== ''}>
         <Alert

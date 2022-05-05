@@ -23,7 +23,7 @@ export const DownloadImage = ({ id }: { id: number }): JSX.Element => {
   };
 
   return (
-    <Button variant="outlined" onClick={handleSubmit}>
+    <Button variant="outlined" onClick={handleSubmit} id={`download-${id}`}>
       Télécharger
       <DialogContentText
         sx={{ color: 'red', fontSize: 'small' }}
