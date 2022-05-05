@@ -3,12 +3,15 @@ package com.viseo.apph.service;
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.io.IOException;
 
 @Service
@@ -21,8 +24,9 @@ public class PhotoService {
     S3Dao s3Dao;
 
     @Transactional
-    public Photo addPhoto(String name) {
-        Photo photo = new Photo().setName(name);
+    public Photo addPhoto(String title) {
+        Photo photo = new Photo()
+                .setTitle(title);
         return photoDao.addPhoto(photo);
     }
 
@@ -34,6 +38,24 @@ public class PhotoService {
         } else {
             throw new InvalidFileException("Wrong file format");
         }
+    }
+
+    @Transactional
+    public List<PhotoResponse> getUserPhotos(long idUser) {
+        List<Photo> usersPhoto = photoDao.getUserPhotos(idUser);
+        List<PhotoResponse> usersPhotoResponse = new ArrayList<PhotoResponse>();
+        for(Photo photo:usersPhoto) {
+            PhotoResponse photoResponse = new PhotoResponse()
+                    .setTitle(photo.getTitle())
+                    .setCreationDate(photo.getCreationDate())
+                    .setSize(photo.getSize())
+                    .setTags(photo.getTags())
+                    .setDescription(photo.getDescription())
+                    .setShootingDate(photo.getShootingDate())
+                    .setUrl("fake url"); //TODO RECUPERER LE VRAI URL
+            usersPhotoResponse.add(photoResponse);
+        }
+        return usersPhotoResponse;
     }
 
     public String saveWithName(MultipartFile file, String name) throws InvalidFileException, IOException {

@@ -25,15 +25,24 @@ export default class AuthService {
       })
     };
     const successFunction = (jws: string) => {
-      const decodedToken = jwtDecode(jws) as { login: string };
+      const decodedToken = jwtDecode(jws) as {
+        id: number;
+        exp: number;
+      } & IUser;
       const user: IUser = {
         firstname: '',
         lastname: '',
         login: ''
       };
-      if (decodedToken !== null && typeof decodedToken === 'object') {
+      if (typeof decodedToken === 'object') {
         user.login = decodedToken.login;
-        cookies.set('user', { token: jws });
+        user.lastname = decodedToken.lastname;
+        user.firstname = decodedToken.firstname;
+        cookies.set(
+          'user',
+          { token: jws },
+          { expires: new Date(decodedToken.exp * 1000) }
+        );
       }
       handleSuccess(user);
     };
@@ -41,6 +50,30 @@ export default class AuthService {
       handleError(errorMessage);
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
+
+  static async signUp(
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    handleSuccess: () => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = `/auth/signUp`;
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email,
+        password: cryptoJS.SHA256(password).toString(),
+        firstName,
+        lastName
+      })
+    };
+    return Server.request(URL, requestOptions, handleSuccess, handleError);
   }
 
   static logout = () => {
@@ -55,4 +88,12 @@ export default class AuthService {
     const token = this.getToken();
     cookies.set('user', { token });
   };
+  
+  static isTokenValid() {
+    return !!AuthService.getToken();
+  }
+
+  static getUserLoginByToken() {
+    return jwtDecode(AuthService.getToken()) as IUser;
+  }
 }

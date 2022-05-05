@@ -1,39 +1,34 @@
-package com.viseo.apph.domain;
+package com.viseo.apph.dto;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Date;
 
-@Entity
-@Table(name = "photos")
-public class Photo extends BaseEntity {
+public class PhotoResponse {
 
+    @JsonProperty("title")
     String title;
-    long idUser;
+    @JsonProperty("description")
     String description;
+    @JsonProperty("creationDate")
     Date creationDate;
+    @JsonProperty("shootingDate")
     Date shootingDate;
+    @JsonProperty("size")
     float size;
+    @JsonProperty("tags")
     String tags;
+    @JsonProperty("url")
+    String url;
 
-    public Photo() {
-        super();
+    public PhotoResponse() {
+
     }
-
-    public long getIdUser() {
-        return idUser;
-    }
-
-    public Photo setIdUser(long idUser) {
-        this.idUser = idUser;
-        return this;
-    }
-
     public String getTitle() {
         return title;
     }
 
-    public Photo setTitle(String title) {
+    public PhotoResponse setTitle(String title) {
         this.title = title;
         return this;
     }
@@ -42,7 +37,7 @@ public class Photo extends BaseEntity {
         return description;
     }
 
-    public Photo setDescription(String description) {
+    public PhotoResponse setDescription(String description) {
         this.description = description;
         return this;
     }
@@ -51,7 +46,7 @@ public class Photo extends BaseEntity {
         return creationDate;
     }
 
-    public Photo setCreationDate(Date creationDate) {
+    public PhotoResponse setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
         return this;
     }
@@ -60,7 +55,7 @@ public class Photo extends BaseEntity {
         return shootingDate;
     }
 
-    public Photo setShootingDate(Date shootingDate) {
+    public PhotoResponse setShootingDate(Date shootingDate) {
         this.shootingDate = shootingDate;
         return this;
     }
@@ -69,7 +64,7 @@ public class Photo extends BaseEntity {
         return size;
     }
 
-    public Photo setSize(float size) {
+    public PhotoResponse setSize(float size) {
         this.size = size;
         return this;
     }
@@ -78,8 +73,17 @@ public class Photo extends BaseEntity {
         return tags;
     }
 
-    public Photo setTags(String tags) {
+    public PhotoResponse setTags(String tags) {
         this.tags = tags;
+        return this;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public PhotoResponse setUrl(String url) {
+        this.url = url;
         return this;
     }
 }

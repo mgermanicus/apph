@@ -38,7 +38,7 @@ export const Header = (): JSX.Element => {
   };
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar className={classes.appBarStyle}>
+      <AppBar position="relative">
         <Toolbar>
           <IconButton
             size="large"
@@ -61,7 +61,7 @@ export const Header = (): JSX.Element => {
               <List>
                 <DrawerMenuItem
                   title="Mes Photos"
-                  url="pictures"
+                  url="/pictures"
                   icon={<InsertPhoto />}
                 />
                 <DrawerMenuItem

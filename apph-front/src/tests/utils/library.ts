@@ -62,8 +62,7 @@ export function spyRequestSuccess() {
     (
       URL: string,
       requestOptions: RequestInit,
-      successFunction: (body: string) => void | undefined,
-      errorFunction: (error: string) => void
+      successFunction: (body: string) => void | undefined
     ) => {
       successFunction('');
       return Promise.resolve();

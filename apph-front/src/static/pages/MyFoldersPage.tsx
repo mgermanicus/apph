@@ -7,7 +7,8 @@ import TreeView from '@mui/lab/TreeView';
 import { FolderTree } from '../components/FolderTree';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ChevronRight from '@mui/icons-material/ChevronRight';
-import { Alert } from '@mui/material';
+import { Alert, Box } from '@mui/material';
+import { CreateFolderButton } from '../components/CreateFolderButton';
 
 export const MyFoldersPage = (): JSX.Element => {
   const [rootFolder, setRootFolder] = useState<IFolder | null>(null);
@@ -20,9 +21,7 @@ export const MyFoldersPage = (): JSX.Element => {
 
   const getFolders = async () => {
     await FolderService.getFolders(
-      //TODO replace by the userId or change by the token
-      5,
-      (parentFolder) => {
+      (parentFolder: IFolder) => {
         setRootFolder(parentFolder);
         setSelectedFolder(parentFolder.id.toString());
         setLoading(false);
@@ -47,32 +46,42 @@ export const MyFoldersPage = (): JSX.Element => {
     return (
       <div
         style={{
-          display: 'flex',
-          marginTop: '70px'
+          display: 'flex'
         }}
       >
-        <TreeView
-          defaultCollapseIcon={<ExpandMore />}
-          defaultExpandIcon={<ChevronRight />}
-          selected={selectedFolder}
-          onNodeSelect={(_event: SyntheticEvent, node: string) => {
-            setSelectedFolder(node);
-          }}
+        <Box
           sx={{
-            overflowX: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
             width: '30%'
           }}
         >
-          <FolderTree folder={rootFolder} />
-        </TreeView>
+          <CreateFolderButton
+            selected={selectedFolder}
+            setRootFolder={setRootFolder}
+          />
+          <TreeView
+            defaultCollapseIcon={<ExpandMore />}
+            defaultExpandIcon={<ChevronRight />}
+            selected={selectedFolder}
+            onNodeSelect={(_event: SyntheticEvent, node: string) => {
+              setSelectedFolder(node);
+            }}
+            sx={{
+              overflowX: 'hidden',
+              width: '100%',
+              textAlign: 'start'
+            }}
+          >
+            <FolderTree folder={rootFolder} />
+          </TreeView>
+        </Box>
         {/*TODO display folder's content here*/}
         <div
           style={{
             width: '70%'
           }}
-        >
-          Selected folder's id: {selectedFolder}
-        </div>
+        ></div>
       </div>
     );
   }

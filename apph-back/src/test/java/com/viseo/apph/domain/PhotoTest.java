@@ -9,10 +9,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class PhotoTest {
 
     @Test
-    public void testPhotoEntity() {
+    public void testPhotoEntity(){
         //GIVEN
-        Photo photo = new Photo().setName("Photo");
+        Photo photo = new Photo().setTitle("Photo");
         //THEN
-        Assert.assertEquals("Photo", photo.getName());
+        Assert.assertEquals("Photo", photo.getTitle());
     }
 }

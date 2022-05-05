@@ -1,30 +1,36 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { UserProfilePage } from './static/pages/UserProfilePage';
 import { SignIn } from './static/components/SignIn';
+import { SignUp } from './static/components/SignUp';
 import { TODOPage } from './static/pages/TODOPage';
 import { MyFoldersPage } from './static/pages/MyFoldersPage';
 import { PrivatePageContainer } from './static/pages/PrivatePageContainer';
 import { useSelector } from 'react-redux';
 import { IUser } from './utils';
 import { EditProfile } from './static/components/EditProfile';
+import { DataTable } from './static/components/PhotoTable';
 
-export const PrivateRoutes = (): JSX.Element => {
+export const PrivateRoutes = ({
+  authenticated
+}: {
+  authenticated: boolean;
+}): JSX.Element => {
   const user = useSelector(
     ({ currentUser }: { currentUser: IUser }) => currentUser
   );
-  const authenticated = !!user.login;
+  const isAuthenticated = authenticated !== !!user.login || !!user.login;
   const needAuthenticationRoute = (element: JSX.Element): JSX.Element => {
-    return authenticated ? element : <Navigate to="/" />;
+    return isAuthenticated ? element : <Navigate to="/" />;
   };
 
   const needNoAuthenticationRoute = (element: JSX.Element): JSX.Element => {
-    return !authenticated ? element : <Navigate to="/pictures" />;
+    return !isAuthenticated ? element : <Navigate to="/pictures" />;
   };
   return (
     <>
       <Routes>
-        <Route path="*" element={needNoAuthenticationRoute(<SignIn />)} />
         <Route path="/" element={needNoAuthenticationRoute(<SignIn />)} />
+        <Route path="/signUp" element={needNoAuthenticationRoute(<SignUp />)} />
         <Route
           path="/me"
           element={needAuthenticationRoute(
@@ -40,9 +46,7 @@ export const PrivateRoutes = (): JSX.Element => {
         <Route
           path="/pictures"
           element={needAuthenticationRoute(
-            <PrivatePageContainer
-              element={<TODOPage todo="Page: Mes Photos" />}
-            />
+            <PrivatePageContainer element={<DataTable />} />
           )}
         />
         <Route
@@ -83,6 +87,7 @@ export const PrivateRoutes = (): JSX.Element => {
             />
           )}
         />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
   );

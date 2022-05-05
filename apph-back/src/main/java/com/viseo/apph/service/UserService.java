@@ -1,8 +1,11 @@
 package com.viseo.apph.service;
 
+import com.viseo.apph.dao.FolderDAO;
 import com.viseo.apph.dao.UserDAO;
+import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.exception.NotFoundException;
+import com.viseo.apph.dto.UserRequest;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,18 +19,24 @@ import javax.transaction.Transactional;
 public class UserService {
     @Autowired
     UserDAO userDAO;
+
+    @Autowired
+    FolderDAO folderDAO;
+
     PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Transactional
-    public void registerUser(String login, String password) {
-        User newUser = new User().setLogin(login).setPassword(password);
+    public void registerUser(UserRequest userRequest) {
+        User newUser = new User().setLogin(userRequest.getLogin()).setPassword(encoder.encode(userRequest.getPassword())).setFirstname(userRequest.getFirstName()).setLastname(userRequest.getLastName());
         userDAO.createUser(newUser);
+        Folder rootFolder = new Folder().setName(newUser.getFirstname()).setParentFolderId(null).setUser(newUser);
+        folderDAO.createFolder(rootFolder);
     }
 
     @Transactional
-    public User login(String login, String password) throws IllegalArgumentException {
-        User user = userDAO.getUserByLogin(login);
-        if (encoder.matches(password, user.getPassword()))
+    public User login(UserRequest userRequest) throws IllegalArgumentException {
+        User user = userDAO.getUserByLogin(userRequest.getLogin());
+        if (encoder.matches(userRequest.getPassword(), user.getPassword()))
             return user;
         throw new IllegalArgumentException();
     }
@@ -63,4 +72,7 @@ public class UserService {
         userDAO.editPassword(userId, encoder.encode(newPassword));
     }
 
+    public User getUserById(long id) {
+        return userDAO.getUserById(id);
+    }
 }
