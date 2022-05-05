@@ -4,12 +4,11 @@ import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.controller.UserController;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.EditUserRequest;
 import com.viseo.apph.service.UserService;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -33,6 +33,10 @@ public class UserTest {
     EntityManager em;
     @Mock
     TypedQuery typedQuery;
+    @Mock
+    TypedQuery existByLoginQuery;
+    @Mock
+    PasswordEncoder passwordEncoder;
 
     UserService userService;
     UserController userController;
@@ -44,6 +48,7 @@ public class UserTest {
         inject(userService, "userDAO", userDAO);
         userController = new UserController();
         inject(userController, "userService", userService);
+        inject(userService, "encoder", passwordEncoder);
     }
 
     void inject(Object component, String field, Object injected) {
@@ -111,4 +116,102 @@ public class UserTest {
         //THEN
         Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.UNAUTHORIZED);
     }
+
+    @Test
+    public void testEditUserInfo() {
+        //GIVEN
+        User user = new User().setLogin("toto").setPassword("password").setFirstname("John").setLastname("Doe");
+        EditUserRequest request = new EditUserRequest()
+                .setFirstname("Jean")
+                .setLastname("Dupont")
+                .setPassword("newPassword");
+        createUserController();
+        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(user);
+        when(typedQuery.setParameter("login", "toto")).thenReturn(typedQuery);
+        when(em.find(User.class, user.getId())).thenReturn(user);
+        when(passwordEncoder.encode("newPassword")).thenReturn("newPassword");
+        //WHEN
+        ResponseEntity response = userController.editUserInfo(jws, request);
+        //THEN
+        Assert.assertTrue(response.getStatusCode().is2xxSuccessful());
+        Assert.assertEquals(request.getFirstname(), user.getFirstname());
+        Assert.assertEquals(request.getPassword(), user.getPassword());
+        Assert.assertEquals(request.getLastname(), user.getLastname());
+    }
+
+    @Test
+    public void testEditUserLogin() {
+        //GIVEN
+        User user = new User().setLogin("login");
+        EditUserRequest request = new EditUserRequest().setLogin("newLogin");
+        createUserController();
+        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(user);
+        when(typedQuery.setParameter("login", user.getLogin())).thenReturn(typedQuery);
+        when(em.find(User.class, user.getId())).thenReturn(user);
+        when(em.createQuery("SELECT count(user) FROM User user WHERE user.login = :login", Long.class)).thenReturn(existByLoginQuery);
+        when(existByLoginQuery.setParameter("login", request.getLogin())).thenReturn(existByLoginQuery);
+        when(existByLoginQuery.getSingleResult()).thenReturn(0L);
+        //WHEN
+        ResponseEntity response = userController.editUserInfo(jws, request);
+        //THEN
+        Assert.assertTrue(response.getStatusCode().is2xxSuccessful());
+        Assert.assertEquals(request.getLogin(), user.getLogin());
+    }
+
+    @Test
+    public void testEditUserInvalidLogin() {
+        //GIVEN
+        User user = new User().setLogin("login");
+        EditUserRequest request = new EditUserRequest().setLogin("alreadyTakenLogin");
+        createUserController();
+        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(user);
+        when(typedQuery.setParameter("login", user.getLogin())).thenReturn(typedQuery);
+        when(em.find(User.class, user.getId())).thenReturn(user);
+        when(em.createQuery("SELECT count(user) FROM User user WHERE user.login = :login", Long.class)).thenReturn(existByLoginQuery);
+        when(existByLoginQuery.setParameter("login", request.getLogin())).thenReturn(existByLoginQuery);
+        when(existByLoginQuery.getSingleResult()).thenReturn(1L);
+        //WHEN
+        ResponseEntity response = userController.editUserInfo(jws, request);
+        //THEN
+        Assert.assertTrue(response.getStatusCode().isError());
+        Assert.assertEquals("Ce login est déjà pris", response.getBody());
+        Assert.assertEquals("login", user.getLogin());
+    }
+
+    @Test
+    public void testEditUserNotFound() {
+        //GIVEN
+        User user = new User().setLogin("nonExistingLogin");
+        EditUserRequest request = new EditUserRequest().setFirstname("John");
+        createUserController();
+        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenThrow(new NoResultException());
+        when(typedQuery.setParameter("login", user.getLogin())).thenReturn(typedQuery);
+        //WHEN
+        ResponseEntity response = userController.editUserInfo(jws, request);
+        //THEN
+        Assert.assertTrue(response.getStatusCode().isError());
+        Assert.assertEquals("L'utilisateur lié à cette session n'existe pas", response.getBody());
+    }
+
+    @Test
+    public void testEditUserTokenExpired() {
+        //GIVEN
+        EditUserRequest request = new EditUserRequest();
+        createUserController();
+        String jws = Jwts.builder().claim("login", "").setExpiration(new Date(System.currentTimeMillis())).signWith(JwtConfig.getKey()).compact();
+        //WHEN
+        ResponseEntity response = userController.editUserInfo(jws, request);
+        //THEN
+        Assert.assertTrue(response.getStatusCode().isError());
+        Assert.assertEquals("La session a expiré. Veuillez vous reconnecter", response.getBody());
+    }
+
 }

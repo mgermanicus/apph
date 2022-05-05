@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.NoResultException;
+
 @RestController
 @CrossOrigin(origins = "${front-server}")
 @RequestMapping("/user")
@@ -50,12 +52,12 @@ public class UserController {
             userService.editPassword(user.getId(), request.getPassword());
             return ResponseEntity.ok(new User().setLogin(user.getLogin()).setFirstname(user.getFirstname())
                     .setLastname(user.getLastname()));
-        } catch (NullPointerException | NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erreur interne");
+        } catch (NullPointerException | NotFoundException | NoResultException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("L'utilisateur lié à cette session n'existe pas");
         } catch (SignatureException | ExpiredJwtException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("La session a expiré. Veuillez vous reconnecter");
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ce login est déjà pris");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Ce login est déjà pris");
         }
     }
 }

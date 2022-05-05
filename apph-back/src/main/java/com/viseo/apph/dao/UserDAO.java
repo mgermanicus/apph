@@ -46,10 +46,6 @@ public class UserDAO {
         user.setLastname(newLastname);
     }
 
-    public boolean existById(long userId) {
-        return em.find(User.class, userId) != null;
-    }
-
     public boolean existByLogin(String login) {
         Long count = em.createQuery("SELECT count(user) FROM User user WHERE user.login = :login", Long.class)
                 .setParameter("login", login)
