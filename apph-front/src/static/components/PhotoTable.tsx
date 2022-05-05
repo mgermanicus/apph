@@ -89,9 +89,7 @@ export const DataTable = () => {
           (row) =>
             (row.details = (
               <PhotoDetails
-                photoSrc={
-                  'https://i.pinimg.com/originals/a2/39/b5/a239b5b33d145fcab7e48544b81019da.jpg'
-                }
+                photoSrc={row.url}
                 title={row.title}
                 description={row.description}
                 creationDate={row.creationDate}
