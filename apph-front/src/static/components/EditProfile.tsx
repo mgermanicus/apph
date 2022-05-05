@@ -64,6 +64,11 @@ export const EditProfile = () => {
     };
   };
 
+  const displayAlert = (message: string) => {
+    setAlertMessage(message);
+    document.getElementById('alert')?.scrollIntoView();
+  };
+
   const editUser = async () =>
     UserService.editUser(
       editedFields(),
@@ -76,12 +81,12 @@ export const EditProfile = () => {
           AuthService.editUser(newUser);
           updateUser(newUser);
           setErrorOccured(false);
-          setAlertMessage('Le profil a bien été modifié.');
+          displayAlert('Le profil a bien été modifié.');
         }
       },
       (errorMessage: string) => {
         setErrorOccured(true);
-        setAlertMessage(errorMessage);
+        displayAlert(errorMessage);
       }
     );
 
@@ -99,14 +104,6 @@ export const EditProfile = () => {
     setFirstname(user.firstname);
     setLastname(user.lastname);
     setLogin(user.login);
-  };
-
-  const displayAlert = () => {
-    return (
-      <Alert severity={errorOccured ? 'error' : 'success'}>
-        {alertMessage}
-      </Alert>
-    );
   };
 
   return (
@@ -156,7 +153,13 @@ export const EditProfile = () => {
             <Button color="error" onClick={(e) => resetChanges()}>
               Annuler les modifications
             </Button>
-            {alertMessage ? displayAlert() : <></>}
+            {alertMessage ? (
+              <Alert severity={errorOccured ? 'error' : 'success'} id="alert">
+                {alertMessage}
+              </Alert>
+            ) : (
+              <></>
+            )}
           </Stack>
         </Box>
         <ConfirmationDialog
