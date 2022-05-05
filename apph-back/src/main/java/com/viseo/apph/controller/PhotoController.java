@@ -46,8 +46,12 @@ public class PhotoController {
 
     @PostMapping("/download")
     public ResponseEntity<IResponseDTO> download(@RequestBody PhotoRequest photoRequest) {
-        Photo photo = photoService.getPhoto(photoRequest.getId());
-        PhotoResponse photoResponse = photoService.download(photoRequest.getId()).setTitle(photo.getTitle()).setExtension(photo.getExtension());
-        return ResponseEntity.ok(photoResponse);
+        try {
+            Photo photo = photoService.getPhoto(photoRequest.getId());
+            PhotoResponse photoResponse = photoService.download(photoRequest.getId()).setTitle(photo.getTitle()).setExtension(photo.getExtension());
+            return ResponseEntity.ok(photoResponse);
+        } catch (S3Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du téléchargement"));
+        }
     }
 }

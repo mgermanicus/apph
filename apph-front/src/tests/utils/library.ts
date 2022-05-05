@@ -68,3 +68,18 @@ export function spyRequestSuccess() {
   Server.request = spy;
   return spy;
 }
+
+export function spyRequestSuccessBody(body: string) {
+  const spy = jest.fn(
+    (
+      URL: string,
+      requestOptions: RequestInit,
+      successFunction: (body: string) => void | undefined
+    ) => {
+      successFunction(body);
+      return Promise.resolve();
+    }
+  );
+  Server.request = spy;
+  return spy;
+}

@@ -9,4 +9,9 @@ public class PhotoRequest {
     public long getId() {
         return id;
     }
+
+    public PhotoRequest setId(long id) {
+        this.id = id;
+        return this;
+    }
 }

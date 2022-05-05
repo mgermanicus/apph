@@ -1,8 +1,10 @@
-import { Button } from '@mui/material';
+import { Button, DialogContentText } from '@mui/material';
 import { IPhoto } from '../../utils/types/Photo';
 import PhotoService from '../../services/PhotoService';
+import React, { useState } from 'react';
 
-export const DownloadImage = (id: number): JSX.Element => {
+export const DownloadImage = ({ id }: { id: number }): JSX.Element => {
+  const [errorMessage, setErrorMessage] = useState('');
   const handleSubmit = () => {
     PhotoService.downloadImage(
       id,
@@ -15,7 +17,7 @@ export const DownloadImage = (id: number): JSX.Element => {
         a.dispatchEvent(event);
       },
       (errorMessage) => {
-        console.log(errorMessage);
+        setErrorMessage(errorMessage);
       }
     );
   };
@@ -23,6 +25,12 @@ export const DownloadImage = (id: number): JSX.Element => {
   return (
     <Button variant="outlined" onClick={handleSubmit}>
       Télécharger
+      <DialogContentText
+        sx={{ color: 'red', fontSize: 'small' }}
+        hidden={!errorMessage}
+      >
+        {errorMessage}
+      </DialogContentText>
     </Button>
   );
 };

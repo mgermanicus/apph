@@ -66,7 +66,7 @@ const columns: GridColDef[] = [
     headerName: 'Action',
     flex: 2,
     align: 'center',
-    renderCell: (params) => DownloadImage(+params.id),
+    renderCell: (params) => <DownloadImage id={+params.id} />,
     headerAlign: 'center'
   }
 ];
