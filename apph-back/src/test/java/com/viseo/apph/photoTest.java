@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.ResponseEntity;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -80,5 +82,24 @@ public class photoTest {
         List<PhotoResponse> result =  photoController.getUserPhotos(token).getBody();
         //THEN
         assert(Objects.equals(Objects.requireNonNull(result).get(0).getUrl(), "testUrl"));
+    }
+
+
+    @Test
+    public void testGetInfos()
+    {
+        //GIVEN
+        createPhotoController();
+        String token = "token";
+        List<Photo> listPhoto = new ArrayList<>();
+        listPhoto.add(new Photo());
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)).thenReturn(typedQuery);
+        when(typedQuery.setParameter("idUser", 1L)).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(listPhoto);
+        when(tokenManager.getIdOfToken("token")).thenReturn(1);
+        //WHEN
+        ResponseEntity responseEntity = photoController.getUserPhotos(token);
+        //THEN
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 }
