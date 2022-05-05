@@ -60,10 +60,10 @@ export const SignUp = () => {
         firstName,
         lastName,
         () => {
-          navigate('/signIn');
+          navigate('/');
         },
-        (errorMessage: string) => {
-          setErrorMessage(errorMessage);
+        (error: string) => {
+          setErrorMessage(error);
         }
       );
     }
