@@ -88,7 +88,7 @@ export default class AuthService {
     const token = this.getToken();
     cookies.set('user', { token });
   };
-  
+
   static isTokenValid() {
     return !!AuthService.getToken();
   }
