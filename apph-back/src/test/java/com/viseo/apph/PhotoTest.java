@@ -1,12 +1,13 @@
 package com.viseo.apph;
 
+import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.controller.PhotoController;
-import com.viseo.apph.controller.TokenManager;
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.service.PhotoService;
+import io.jsonwebtoken.Jwts;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -19,6 +20,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -33,8 +35,7 @@ public class PhotoTest {
     EntityManager em;
     @Mock
     TypedQuery<Photo> typedQuery;
-    @Mock
-    TokenManager tokenManager;
+
     S3Client s3Client;
 
     PhotoService photoService;
@@ -52,7 +53,6 @@ public class PhotoTest {
         inject(photoService, "s3Dao", s3Dao);
         photoController = new PhotoController();
         inject(photoController, "photoService", photoService);
-        inject(photoController, "tokenManager", tokenManager);
     }
 
     void inject(Object component,String field, Object injected) {
@@ -70,8 +70,7 @@ public class PhotoTest {
     public void TestGetUserPhotosUrl() {
         //GIVEN
         createPhotoController();
-        String token = "token";
-        when(tokenManager.getIdOfToken("token")).thenReturn(1);
+        String token = Jwts.builder().claim("id", 1L).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         List<Photo> listPhoto = new ArrayList<>();
         listPhoto.add(new Photo());
         when(em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)).thenReturn(typedQuery);
@@ -90,13 +89,12 @@ public class PhotoTest {
     {
         //GIVEN
         createPhotoController();
-        String token = "token";
+        String token = Jwts.builder().claim("id", 1L).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         List<Photo> listPhoto = new ArrayList<>();
         listPhoto.add(new Photo());
         when(em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)).thenReturn(typedQuery);
         when(typedQuery.setParameter("idUser", 1L)).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(listPhoto);
-        when(tokenManager.getIdOfToken("token")).thenReturn(1);
         //WHEN
         ResponseEntity<List<PhotoResponse>> responseEntity = photoController.getUserPhotos(token);
         //THEN
