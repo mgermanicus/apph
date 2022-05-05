@@ -28,7 +28,7 @@ public class PhotoController {
     static TokenManager tokenManager = new TokenManager() {};
 
     @GetMapping(value = "/infos", produces = "application/json")
-    public ResponseEntity<List<PhotoResponse>> getUserPhotos(@RequestHeader("token") String token) {
+    public ResponseEntity<List<PhotoResponse>> getUserPhotos(@RequestHeader("Authorization") String token) {
         int userId = tokenManager.getIdOfToken(token);
         List<PhotoResponse> infoPhotos = photoService.getUserPhotos(userId);
         return ResponseEntity.ok(infoPhotos);

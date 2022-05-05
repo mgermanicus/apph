@@ -35,7 +35,7 @@ export default class PhotoService {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        token: userInfos?.token
+        Authorization: userInfos?.token
       }
     };
     const successFunction = (val: string) => {
