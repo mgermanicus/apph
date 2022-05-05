@@ -11,7 +11,7 @@ import PhotoDetails from './PhotoDetails';
 const columns: GridColDef[] = [
   {
     field: 'title',
-    headerName: 'Title',
+    headerName: 'Titre',
     flex: 1,
     align: 'center',
     headerAlign: 'center'
@@ -25,7 +25,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'creationDate',
-    headerName: 'Creation date',
+    headerName: 'Date de création',
     type: 'date',
     flex: 2.2,
     align: 'center',
@@ -34,7 +34,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'shootingDate',
-    headerName: 'Shooting date',
+    headerName: 'Date de prise de vue',
     type: 'date',
     flex: 2.2,
     align: 'center',
@@ -43,7 +43,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'size',
-    headerName: 'Size',
+    headerName: 'Taille',
     type: 'number',
     flex: 1,
     align: 'center',
@@ -79,7 +79,7 @@ const columns: GridColDef[] = [
     renderCell: (params) => params.row.details
   }
 ];
-export default function DataTable() {
+export const DataTable = () => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState('');
   useEffect(() => {
@@ -139,4 +139,4 @@ export default function DataTable() {
       </Collapse>
     </div>
   );
-}
+};

@@ -91,6 +91,21 @@ public class DataBaseConfig {
         Folder yunanChild2 = new Folder().setName("Yunan_child_2").setParentFolderId(yunanRoot.getId()).setUser(yunan);
         em.persist(yunanChild1);
         em.persist(yunanChild2);
+        //Other's root folder
+        Folder alexandreRoot = new Folder().setName("Alexandre_root").setParentFolderId(null).setUser(alexandre);
+        Folder baptisteRoot = new Folder().setName("Baptiste_root").setParentFolderId(null).setUser(baptiste);
+        Folder wassimRoot = new Folder().setName("Wassim_root").setParentFolderId(null).setUser(wassim);
+        Folder minRoot = new Folder().setName("Min_root").setParentFolderId(null).setUser(min);
+        Folder larbiRoot = new Folder().setName("Larbi_root").setParentFolderId(null).setUser(larbi);
+        Folder doryanRoot = new Folder().setName("Doryan_root").setParentFolderId(null).setUser(doryan);
+        Folder manonRoot = new Folder().setName("Manon_root").setParentFolderId(null).setUser(manon);
+        em.persist(alexandreRoot);
+        em.persist(baptisteRoot);
+        em.persist(wassimRoot);
+        em.persist(minRoot);
+        em.persist(larbiRoot);
+        em.persist(doryanRoot);
+        em.persist(manonRoot);
         //Photo
         Set<String> photoTags1 = new HashSet<>();
         photoTags1.add("tag1");

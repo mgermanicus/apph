@@ -5,6 +5,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "parentFolderId" }) })
 public class Folder extends BaseEntity {
     String name;
 
@@ -33,6 +34,10 @@ public class Folder extends BaseEntity {
     public Folder setParentFolderId(Long id) {
         this.parentFolderId = id;
         return this;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     public Folder setUser(User user) {
