@@ -18,6 +18,7 @@ public class Photo extends BaseEntity {
     float size;
     @ElementCollection
     Set<String> tags;
+    String format;
 
     public Photo() {
         super();
@@ -83,6 +84,15 @@ public class Photo extends BaseEntity {
 
     public Photo setTags(Set<String> tags) {
         this.tags = tags;
+        return this;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public Photo setFormat(String format) {
+        this.format = format;
         return this;
     }
 }

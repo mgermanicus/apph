@@ -24,9 +24,10 @@ public class PhotoService {
     S3Dao s3Dao;
 
     @Transactional
-    public Photo addPhoto(String title) {
+    public Photo addPhoto(String title, String format) {
         Photo photo = new Photo()
-                .setTitle(title);
+                .setTitle(title)
+                .setFormat(format);
         return photoDao.addPhoto(photo);
     }
 
@@ -43,7 +44,7 @@ public class PhotoService {
     @Transactional
     public List<PhotoResponse> getUserPhotos(long idUser) {
         List<Photo> usersPhoto = photoDao.getUserPhotos(idUser);
-        List<PhotoResponse> usersPhotoResponse = new ArrayList<PhotoResponse>();
+        List<PhotoResponse> usersPhotoResponse = new ArrayList<>();
         for(Photo photo:usersPhoto) {
             PhotoResponse photoResponse = new PhotoResponse()
                     .setTitle(photo.getTitle())

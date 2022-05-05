@@ -35,12 +35,14 @@ public class PhotoControllerTest {
         // Given
         MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
         String name = "Test@";
+        String format = ".png";
         Photo photo = new Photo();
         // When
-        when(photoService.addPhoto(name)).thenReturn(photo);
+        when(photoService.addPhoto(name, format)).thenReturn(photo);
+        when(photoService.getFormat(file)).thenReturn(format);
         ResponseEntity<IResponseDTO> responseEntity = photoController.upload(file, name);
         // Then
-        verify(photoService, times(1)).addPhoto(any());
+        verify(photoService, times(1)).addPhoto(any(), any());
         assertEquals(responseEntity.getStatusCode().toString()
                 , HttpStatus.OK.toString());
     }
