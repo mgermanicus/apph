@@ -12,17 +12,4 @@ export default class TagService {
     };
     return Server.request(`/tag/`, requestOptions, handleSuccess, handleError);
   }
-
-  static createTag(
-    name: string,
-    handleSuccess: (tag: string) => void,
-    handleError: (errorMessage: string) => void
-  ) {
-    const requestOptions = {
-      method: 'POST',
-      headers: getTokenHeader(),
-      body: name
-    };
-    return Server.request(`/tag/`, requestOptions, handleSuccess, handleError);
-  }
 }

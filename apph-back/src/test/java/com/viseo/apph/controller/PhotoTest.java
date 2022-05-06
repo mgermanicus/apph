@@ -1,4 +1,3 @@
-
 package com.viseo.apph.controller;
 
 import com.viseo.apph.config.JwtConfig;
@@ -55,7 +54,7 @@ UserDao UserDao;
         }
     }
 
-    /*@Test
+    @Test
     public void testGetInfos()
     {
         //GIVEN
@@ -71,5 +70,5 @@ UserDao UserDao;
         ResponseEntity responseEntity = photoController.getUserPhotos(jws);
         //THEN
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
-    }*/
+    }
 }

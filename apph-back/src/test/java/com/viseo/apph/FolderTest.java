@@ -59,13 +59,12 @@ public class FolderTest {
         inject(folderController, "folderService", folderService);
     }
 
-    void inject(Object component,String field, Object injected) {
+    void inject(Object component, String field, Object injected) {
         try {
             Field compField = component.getClass().getDeclaredField(field);
             compField.setAccessible(true);
-            compField.set(component,injected);
-        }
-        catch(IllegalAccessException | NoSuchFieldException e) {
+            compField.set(component, injected);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }
     }

@@ -39,19 +39,4 @@ public class TagController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Token expired"));
         }
     }
-
-    @PostMapping("/")
-    public ResponseEntity<IResponseDTO> createTag(@RequestHeader("Authentication") String token, @RequestBody String name) {
-        try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            Tag tag = tagService.createTag(name, claims);
-            return ResponseEntity.ok(new TagResponse(tag));
-        } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User does not exist"));
-        } catch (SignatureException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Token not valid"));
-        } catch (ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Token expired"));
-        }
-    }
 }
