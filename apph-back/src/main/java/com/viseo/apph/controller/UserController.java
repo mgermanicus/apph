@@ -47,9 +47,8 @@ public class UserController {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             User user = userService.getUser(claims);
-            userService.editUser(user.getId(), request);
-            return ResponseEntity.ok(new User().setLogin(user.getLogin()).setFirstname(user.getFirstname())
-                    .setLastname(user.getLastname()));
+            String newToken = userService.editUser(user.getId(), request, claims);
+            return ResponseEntity.ok(newToken);
         } catch (NullPointerException | NotFoundException | NoResultException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("L'utilisateur lié à cette session n'existe pas");
         } catch (SignatureException | ExpiredJwtException e) {

@@ -1,6 +1,5 @@
 import { fireEvent, screen } from '@testing-library/react';
 import Server from '../../services/Server';
-import { IUser } from '../../utils';
 import { FakeRequestResults } from './types/FakeRequestResults';
 import AuthService from '../../services/AuthService';
 
@@ -91,12 +90,8 @@ export const fakeRequest = (requestResults: FakeRequestResults) => {
   );
 };
 
-export const spyCookies = (token: string) => {
-  const spyGetToken = jest.fn(() => token);
-  const spyEditUser = jest.fn((user: IUser) => {
-    return;
-  });
-  AuthService.getToken = spyGetToken;
-  AuthService.editUser = spyEditUser;
-  return { spyGetToken, spyEditUser };
+export const spyCookies = () => {
+  const spyUpdateUserCookie = jest.fn();
+  AuthService.updateUserCookie = spyUpdateUserCookie;
+  return spyUpdateUserCookie;
 };

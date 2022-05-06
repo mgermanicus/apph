@@ -35,10 +35,11 @@ describe('Test EditProfile', () => {
       lastname: 'Dupont',
       login: 'john.doe@email.com'
     };
-    const { spyEditUser } = spyCookies('fake token');
+    const spyUpdateUserCookie = spyCookies();
+    const editedUserToken = 'edited user token';
     fakeRequest({
       '/user/': { body: JSON.stringify(user) },
-      '/user/edit/': { body: JSON.stringify(editedUser) }
+      '/user/edit/': { body: editedUserToken }
     });
     render(<EditProfile />);
     //WHEN
@@ -51,7 +52,7 @@ describe('Test EditProfile', () => {
     expect(
       screen.getByText(/Le profil a bien été modifié/)
     ).toBeInTheDocument();
-    expect(spyEditUser).toBeCalledWith(editedUser);
+    expect(spyUpdateUserCookie).toBeCalledWith(editedUserToken);
   });
 
   it('tests the popup validation when user edits login', () => {
@@ -68,7 +69,7 @@ describe('Test EditProfile', () => {
     };
     fakeRequest({
       '/user/': { body: JSON.stringify(user) },
-      '/user/edit': { body: JSON.stringify(editedUser) }
+      '/user/edit': { body: 'edited user token' }
     });
     render(<EditProfile />);
     //WHEN
@@ -123,7 +124,7 @@ describe('Test EditProfile', () => {
     AuthService.logout = jest.fn();
     fakeRequest({
       '/user/': { body: JSON.stringify(user) },
-      '/user/edit/': { body: JSON.stringify(editedUser) }
+      '/user/edit/': { body: 'edited user token' }
     });
     render(<EditProfile />);
     //WHEN

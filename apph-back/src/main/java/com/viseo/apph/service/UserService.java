@@ -1,5 +1,6 @@
 package com.viseo.apph.service;
 
+import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.dao.FolderDAO;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Folder;
@@ -7,6 +8,8 @@ import com.viseo.apph.domain.User;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.dto.UserRequest;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.security.Key;
 
 @Service
 public class UserService {
@@ -53,19 +57,27 @@ public class UserService {
     }
 
     @Transactional
-    public void editUser(long userId, UserRequest request) throws NotFoundException {
+    public String editUser(long userId, UserRequest request, Claims claims) throws NotFoundException {
         User user = userDAO.getUserById(userId);
+        Key key = JwtConfig.getKey();
+        JwtBuilder newClaims = Jwts.builder().setClaims(claims);
         if (user == null) throw new NotFoundException("User not found");
-        if (request.getFirstName() != null)
+        if (request.getFirstName() != null) {
             user.setFirstname(request.getFirstName());
-        if (request.getLastName() != null)
+            newClaims.claim("firstname", request.getFirstName());
+        }
+        if (request.getLastName() != null) {
             user.setLastname(request.getLastName());
+            newClaims.claim("lastname", request.getLastName());
+        }
         if (request.getPassword() != null)
             user.setPassword(encoder.encode(request.getPassword()));
         if (request.getLogin() != null) {
             if (userDAO.existByLogin(request.getLogin()))
                 throw new DataIntegrityViolationException("Login is Already in Use.");
             user.setLogin(request.getLogin());
+            newClaims.claim("login", request.getLogin());
         }
+        return newClaims.setExpiration(claims.getExpiration()).signWith(key).compact();
     }
 }

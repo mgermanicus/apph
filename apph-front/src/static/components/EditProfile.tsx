@@ -23,8 +23,8 @@ export const EditProfile = () => {
     lastname: '',
     login: ''
   });
-  const [firstName, setfirstName] = useState('');
-  const [lastName, setlastName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
@@ -33,19 +33,15 @@ export const EditProfile = () => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const classes = makeCardStyles();
 
-  const updateUser = (newUser: IUser) => {
-    setUser((user) => ({ ...newUser }));
-    setfirstName(newUser.firstname);
-    setlastName(newUser.lastname);
-    setLogin(newUser.login);
-  };
-
   useEffect(() => {
     (async () => {
       await UserService.getUser(
         (user: string) => {
           const userConverted: IUser = JSON.parse(user);
-          updateUser(userConverted);
+          setUser((user) => ({ ...userConverted }));
+          setFirstName(userConverted.firstname);
+          setLastName(userConverted.lastname);
+          setLogin(userConverted.login);
         },
         (errorMessage: string) => {
           setErrorOccured(true);
@@ -72,14 +68,12 @@ export const EditProfile = () => {
   const editUser = async () =>
     UserService.editUser(
       editedFields(),
-      (body: string) => {
+      (newToken: string) => {
         if (editedFields().email) {
           AuthService.logout();
           navigate(0);
         } else {
-          const newUser = JSON.parse(body);
-          AuthService.editUser(newUser);
-          updateUser(newUser);
+          AuthService.updateUserCookie(newToken);
           setErrorOccured(false);
           displayAlert('Le profil a bien été modifié.');
           navigate('/me');
@@ -102,8 +96,8 @@ export const EditProfile = () => {
   };
 
   const resetChanges = () => {
-    setfirstName(user.firstname);
-    setlastName(user.lastname);
+    setFirstName(user.firstname);
+    setLastName(user.lastname);
     setLogin(user.login);
   };
 
@@ -117,13 +111,13 @@ export const EditProfile = () => {
               required
               label="Nom"
               value={lastName}
-              onChange={(e) => setlastName(e.target.value)}
+              onChange={(e) => setLastName(e.target.value)}
             />
             <TextField
               required
               label="Prénom"
               value={firstName}
-              onChange={(e) => setfirstName(e.target.value)}
+              onChange={(e) => setFirstName(e.target.value)}
             />
             <TextField
               required
