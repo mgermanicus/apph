@@ -56,14 +56,15 @@ public class PhotoService {
     }
 
     @Transactional
-    public PaginationResponse getUserPhotos(String userLogin, PaginationRequest request) {
+    public PaginationResponse getUserPhotos(String userLogin, int pageSize, int page) {
         User user = userDAO.getUserByLogin(userLogin);
         List<Photo> userPhotos = photoDao.getUserPhotos(user);
-        int startIndex = (request.getPage() - 1) * request.getPageSize();
-        int endIndex = request.getPage() * request.getPageSize();
+        int startIndex = (page - 1) * pageSize;
+        int endIndex = page * pageSize;
         PaginationResponse response = new PaginationResponse().setTotalSize(userPhotos.size());
         List<PhotoResponse> responseList = userPhotos.subList(startIndex, Math.min(endIndex, userPhotos.size())).stream()
                 .map(photo -> new PhotoResponse()
+                        .setId(photo.getId())
                         .setTitle(photo.getTitle())
                         .setCreationDate(photo.getCreationDate())
                         .setSize(photo.getSize())

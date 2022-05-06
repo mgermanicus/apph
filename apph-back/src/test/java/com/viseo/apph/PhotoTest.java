@@ -106,7 +106,6 @@ public class PhotoTest {
         listPhoto.add(new Photo());
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         String token = Jwts.builder().claim("login", robert.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        PaginationRequest request = new PaginationRequest().setPage(1).setPageSize(5);
         when(em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)).thenReturn(typedQuery);
         when(typedQuery.setParameter(eq("user"), any())).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(listPhoto);
@@ -114,7 +113,7 @@ public class PhotoTest {
         when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(robert);
         //WHEN
-        ResponseEntity responseEntity = photoController.getUserPhotos(token, request);
+        ResponseEntity responseEntity = photoController.getUserPhotos(token, 5, 1);
         //THEN
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         PaginationResponse paginationResponse = (PaginationResponse) responseEntity.getBody();

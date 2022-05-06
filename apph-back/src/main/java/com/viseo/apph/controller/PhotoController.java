@@ -27,10 +27,10 @@ public class PhotoController {
     static TokenManager tokenManager = new TokenManager() {};
 
     @GetMapping(value = "/infos", produces = "application/json")
-    public ResponseEntity<IResponseDTO> getUserPhotos(@RequestHeader("Authorization") String token, @RequestBody PaginationRequest request) {
+    public ResponseEntity<IResponseDTO> getUserPhotos(@RequestHeader("Authorization") String token, @RequestParam int pageSize, @RequestParam int page) {
         try {
             String userLogin = tokenManager.getLoginOfToken(token);
-            PaginationResponse response = photoService.getUserPhotos(userLogin, request);
+            PaginationResponse response = photoService.getUserPhotos(userLogin, pageSize, page);
             return ResponseEntity.ok(response);
         } catch (NoResultException nre) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("L'utilisateur n'existe pas."));

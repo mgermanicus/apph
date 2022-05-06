@@ -1,8 +1,7 @@
 import Server from './Server';
 import { imageFileCheck } from '../utils';
 import Cookies from 'universal-cookie';
-import { ITable } from '../utils/types/table';
-
+import { IPagination } from '../utils/types/Pagination';
 const cookies = new Cookies();
 export default class PhotoService {
   static uploadImage(
@@ -31,10 +30,14 @@ export default class PhotoService {
     );
   }
   static getData(
-    handleSuccess: (tab: Array<ITable>) => void,
+    pageSize: number,
+    page: number,
+    handleSuccess: (pagination: IPagination) => void,
     handleError: (errorMessage: string) => void
   ) {
-    const URL = `/photo/infos`;
+    const URL = `/photo/infos?pageSize=${encodeURIComponent(
+      pageSize
+    )}&page=${encodeURIComponent(page)}`;
     const userInfos = cookies.get('user');
     const requestOptions = {
       method: 'GET',
@@ -44,15 +47,10 @@ export default class PhotoService {
       }
     };
     const successFunction = (val: string) => {
-      let i = 1;
-      const tab: Array<ITable> = JSON.parse(val);
-      for (const elt of tab) {
-        elt.id = i++;
-      }
-      handleSuccess(tab);
+      handleSuccess(JSON.parse(val));
     };
     const errorFunction = (errorMessage: string) => {
-      handleError(errorMessage);
+      handleError(JSON.parse(errorMessage).message);
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }

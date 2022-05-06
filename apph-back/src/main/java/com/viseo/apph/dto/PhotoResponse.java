@@ -6,7 +6,8 @@ import java.util.Date;
 import java.util.Set;
 
 public class PhotoResponse {
-
+    @JsonProperty("id")
+    long id;
     @JsonProperty("title")
     String title;
     @JsonProperty("description")
@@ -25,6 +26,16 @@ public class PhotoResponse {
     public PhotoResponse() {
 
     }
+
+    public long getId() {
+        return id;
+    }
+
+    public PhotoResponse setId(long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getTitle() {
         return title;
     }

@@ -7,6 +7,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { ITable } from '../../utils/types/table';
 import PhotoService from '../../services/PhotoService';
 import PhotoDetails from './PhotoDetails';
+import { IPagination } from '../../utils/types/Pagination';
 
 const columns: GridColDef[] = [
   {
@@ -81,12 +82,19 @@ const columns: GridColDef[] = [
 ];
 export const DataTable = () => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [pageSize, setPageSize] = useState<number>(5);
+  const [page, setPage] = useState<number>(1);
+  const [totalSize, setTotalSize] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const getData = () => {
+    setLoading(true);
     PhotoService.getData(
-      (tab) => {
-        tab.forEach(
+      pageSize,
+      page,
+      (pagination: IPagination) => {
+        pagination.photoList.forEach(
           (row) =>
             (row.details = (
               <PhotoDetails
@@ -100,10 +108,13 @@ export const DataTable = () => {
               />
             ))
         );
-        setData(tab);
+        setData(pagination.photoList);
+        setTotalSize(pagination.totalSize);
+        setLoading(false);
       },
-      (errorMessage: string) => {
-        setErrorMessage(errorMessage);
+      (error: string) => {
+        setErrorMessage(error);
+        setLoading(false);
       }
     );
   };
@@ -115,13 +126,19 @@ export const DataTable = () => {
   }, []);
 
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ height: 115 + pageSize * 52, width: '100%' }}>
       <UploadImage />
       <DataGrid
+        pagination
+        paginationMode="server"
+        loading={loading}
         rows={data}
+        rowCount={totalSize}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        pageSize={pageSize}
+        rowsPerPageOptions={[5, 10, 25]}
+        onPageChange={(page) => setPage(page + 1)}
+        onPageSizeChange={(size) => setPageSize(size)}
       />
       <Collapse in={errorMessage !== ''}>
         <Alert
