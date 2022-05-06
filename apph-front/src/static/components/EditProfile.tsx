@@ -82,6 +82,7 @@ export const EditProfile = () => {
           updateUser(newUser);
           setErrorOccured(false);
           displayAlert('Le profil a bien été modifié.');
+          navigate('/me');
         }
       },
       (errorMessage: string) => {
