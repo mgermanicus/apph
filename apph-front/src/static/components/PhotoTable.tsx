@@ -64,7 +64,8 @@ const columns: GridColDef[] = [
 export const DataTable = () => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState('');
-  useEffect(() => {
+
+  const getData = () => {
     PhotoService.getData(
       (tab) => {
         setData(tab);
@@ -73,7 +74,14 @@ export const DataTable = () => {
         setErrorMessage(errorMessage);
       }
     );
+  };
+
+  useEffect(() => {
+    getData();
+    const timer = setInterval(getData, 3000);
+    return () => clearInterval(timer);
   }, []);
+
   return (
     <div style={{ height: 400, width: '100%' }}>
       <UploadImage />
