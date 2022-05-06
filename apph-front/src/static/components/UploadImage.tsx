@@ -87,7 +87,7 @@ export const UploadImage = (): JSX.Element => {
     const isExisting = options.some((option) => inputValue === option.name);
     if (inputValue !== '' && !isExisting) {
       filtered.push({
-        name: `Add New Tag ${inputValue}`
+        name: `+ Add New Tag ${inputValue}`
       });
     }
     return filtered;
@@ -150,6 +150,7 @@ export const UploadImage = (): JSX.Element => {
                     autoFocus
                   />
                   <Autocomplete
+                    data-testid="#autocomplete"
                     multiple
                     limitTags={2}
                     id="tags"

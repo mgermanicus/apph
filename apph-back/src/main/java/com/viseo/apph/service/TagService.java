@@ -33,13 +33,6 @@ public class TagService {
     }
 
     @Transactional
-    public Tag createTag(String tagName, Claims claims) {
-        User user = userDao.getUserByLogin(claims.get("login").toString());
-        Tag tag = new Tag().setName(tagName).setUser(user);
-        return tagDAO.createTag(tag);
-    }
-
-    @Transactional
     public Set<Tag> createListTags(String listOfTags, User user) throws JsonProcessingException {
         // Parse tags from json to Tags[]
         GsonBuilder builder = new GsonBuilder();
@@ -49,9 +42,8 @@ public class TagService {
         List<Tag> tags = Arrays.stream(parsedTags).filter(tag -> tag.getId() != 0).collect(Collectors.toList());
         Set<Tag> allTags = new HashSet<>(tags);
         for (Tag tag : tagsToCreate) {
-            Tag newTag = tagDAO.createTag(new Tag().setName(tag.getName().substring(12)).setUser(user));
+            Tag newTag = tagDAO.createTag(new Tag().setName(tag.getName().substring(14)).setUser(user));
             allTags.add(newTag);
-            allTags.size();
         }
         return allTags;
     }
