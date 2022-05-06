@@ -1,6 +1,5 @@
 package com.viseo.apph.service;
 
-import com.viseo.apph.dao.FolderDAO;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.dao.FolderDAO;
