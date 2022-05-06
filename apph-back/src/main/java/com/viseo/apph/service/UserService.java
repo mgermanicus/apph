@@ -48,31 +48,24 @@ public class UserService {
     }
 
     @Transactional
-    public void editLogin(long userId, String newLogin) throws DataIntegrityViolationException, NotFoundException {
-        if (newLogin == null) return;
-        if (userDAO.existByLogin(newLogin))
-            throw new DataIntegrityViolationException("Login is Already in Use.");
-        userDAO.editLogin(userId, newLogin);
-    }
-
-    @Transactional
-    public void editFirstname(long userId, String newFirstname) throws NotFoundException {
-        if (newFirstname == null) return;
-        userDAO.editFirstname(userId, newFirstname);
-    }
-    @Transactional
-    public void editLastname(long userId, String newLastname) throws NotFoundException {
-        if (newLastname == null) return;
-        userDAO.editLastname(userId, newLastname);
-    }
-
-    @Transactional
-    public void editPassword(long userId, String newPassword) throws NotFoundException {
-        if (newPassword == null) return;
-        userDAO.editPassword(userId, encoder.encode(newPassword));
-    }
-
     public User getUserById(long id) {
         return userDAO.getUserById(id);
+    }
+
+    @Transactional
+    public void editUser(long userId, UserRequest request) throws NotFoundException {
+        User user = userDAO.getUserById(userId);
+        if (user == null) throw new NotFoundException("User not found");
+        if (request.getFirstName() != null)
+            user.setFirstname(request.getFirstName());
+        if (request.getLastName() != null)
+            user.setLastname(request.getLastName());
+        if (request.getPassword() != null)
+            user.setPassword(encoder.encode(request.getPassword()));
+        if (request.getLogin() != null) {
+            if (userDAO.existByLogin(request.getLogin()))
+                throw new DataIntegrityViolationException("Login is Already in Use.");
+            user.setLogin(request.getLogin());
+        }
     }
 }

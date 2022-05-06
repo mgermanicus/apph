@@ -11,7 +11,7 @@ import {
 import { makeCardStyles } from '../../utils/theme';
 import { FormEvent, useEffect, useState } from 'react';
 import UserService from '../../services/UserService';
-import { IEditedUser, IUser } from '../../utils/types';
+import { IUserRequest, IUser } from '../../utils/types';
 import AuthService from '../../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmationDialog } from './ConfirmationDialog';
@@ -23,8 +23,8 @@ export const EditProfile = () => {
     lastname: '',
     login: ''
   });
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
+  const [firstName, setfirstName] = useState('');
+  const [lastName, setlastName] = useState('');
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
@@ -35,8 +35,8 @@ export const EditProfile = () => {
 
   const updateUser = (newUser: IUser) => {
     setUser((user) => ({ ...newUser }));
-    setFirstname(newUser.firstname);
-    setLastname(newUser.lastname);
+    setfirstName(newUser.firstname);
+    setlastName(newUser.lastname);
     setLogin(newUser.login);
   };
 
@@ -55,11 +55,11 @@ export const EditProfile = () => {
     })();
   }, []);
 
-  const editedFields = (): IEditedUser => {
+  const editedFields = (): IUserRequest => {
     return {
-      ...(firstname != user.firstname && { firstname }),
-      ...(lastname != user.lastname && { lastname }),
-      ...(login != user.login && { login }),
+      ...(firstName != user.firstname && { firstName }),
+      ...(lastName != user.lastname && { lastName }),
+      ...(login != user.login && { email: login }),
       ...(password && { password })
     };
   };
@@ -73,7 +73,7 @@ export const EditProfile = () => {
     UserService.editUser(
       editedFields(),
       (body: string) => {
-        if (editedFields().login) {
+        if (editedFields().email) {
           AuthService.logout();
           navigate(0);
         } else {
@@ -93,7 +93,7 @@ export const EditProfile = () => {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     if (password != passwordConfirmation) return;
-    if (editedFields().login) {
+    if (editedFields().email) {
       setDialogOpen(true);
     } else {
       editUser();
@@ -101,8 +101,8 @@ export const EditProfile = () => {
   };
 
   const resetChanges = () => {
-    setFirstname(user.firstname);
-    setLastname(user.lastname);
+    setfirstName(user.firstname);
+    setlastName(user.lastname);
     setLogin(user.login);
   };
 
@@ -115,14 +115,14 @@ export const EditProfile = () => {
             <TextField
               required
               label="Nom"
-              value={lastname}
-              onChange={(e) => setLastname(e.target.value)}
+              value={lastName}
+              onChange={(e) => setlastName(e.target.value)}
             />
             <TextField
               required
               label="Prénom"
-              value={firstname}
-              onChange={(e) => setFirstname(e.target.value)}
+              value={firstName}
+              onChange={(e) => setfirstName(e.target.value)}
             />
             <TextField
               required

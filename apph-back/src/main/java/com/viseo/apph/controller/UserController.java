@@ -2,7 +2,8 @@ package com.viseo.apph.controller;
 
 import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.EditUserRequest;
+
+import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.service.UserService;
 import io.jsonwebtoken.Claims;
@@ -42,14 +43,11 @@ public class UserController {
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.PUT, produces = "application/json")
-    public ResponseEntity editUserInfo(@RequestHeader("Authentication") String token, @RequestBody EditUserRequest request) {
+    public ResponseEntity editUserInfo(@RequestHeader("Authentication") String token, @RequestBody UserRequest request) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             User user = userService.getUser(claims);
-            userService.editLogin(user.getId(), request.getLogin());
-            userService.editFirstname(user.getId(), request.getFirstname());
-            userService.editLastname(user.getId(), request.getLastname());
-            userService.editPassword(user.getId(), request.getPassword());
+            userService.editUser(user.getId(), request);
             return ResponseEntity.ok(new User().setLogin(user.getLogin()).setFirstname(user.getFirstname())
                     .setLastname(user.getLastname()));
         } catch (NullPointerException | NotFoundException | NoResultException e) {

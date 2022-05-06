@@ -4,7 +4,7 @@ import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.controller.UserController;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.EditUserRequest;
+import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -121,9 +121,9 @@ public class UserTest {
     public void testEditUserInfo() {
         //GIVEN
         User user = new User().setLogin("toto").setPassword("password").setFirstname("John").setLastname("Doe");
-        EditUserRequest request = new EditUserRequest()
-                .setFirstname("Jean")
-                .setLastname("Dupont")
+        UserRequest request = new UserRequest()
+                .setFirstName("Jean")
+                .setLastName("Dupont")
                 .setPassword("newPassword");
         createUserController();
         String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
@@ -136,16 +136,16 @@ public class UserTest {
         ResponseEntity response = userController.editUserInfo(jws, request);
         //THEN
         Assert.assertTrue(response.getStatusCode().is2xxSuccessful());
-        Assert.assertEquals(request.getFirstname(), user.getFirstname());
+        Assert.assertEquals(request.getFirstName(), user.getFirstname());
         Assert.assertEquals(request.getPassword(), user.getPassword());
-        Assert.assertEquals(request.getLastname(), user.getLastname());
+        Assert.assertEquals(request.getLastName(), user.getLastname());
     }
 
     @Test
     public void testEditUserLogin() {
         //GIVEN
         User user = new User().setLogin("login");
-        EditUserRequest request = new EditUserRequest().setLogin("newLogin");
+        UserRequest request = new UserRequest().setLogin("newLogin");
         createUserController();
         String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
@@ -166,7 +166,7 @@ public class UserTest {
     public void testEditUserInvalidLogin() {
         //GIVEN
         User user = new User().setLogin("login");
-        EditUserRequest request = new EditUserRequest().setLogin("alreadyTakenLogin");
+        UserRequest request = new UserRequest().setLogin("alreadyTakenLogin");
         createUserController();
         String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
@@ -188,7 +188,7 @@ public class UserTest {
     public void testEditUserNotFound() {
         //GIVEN
         User user = new User().setLogin("nonExistingLogin");
-        EditUserRequest request = new EditUserRequest().setFirstname("John");
+        UserRequest request = new UserRequest().setFirstName("John");
         createUserController();
         String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
@@ -204,7 +204,7 @@ public class UserTest {
     @Test
     public void testEditUserTokenExpired() {
         //GIVEN
-        EditUserRequest request = new EditUserRequest();
+        UserRequest request = new UserRequest();
         createUserController();
         String jws = Jwts.builder().claim("login", "").setExpiration(new Date(System.currentTimeMillis())).signWith(JwtConfig.getKey()).compact();
         //WHEN

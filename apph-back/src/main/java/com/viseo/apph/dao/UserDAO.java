@@ -26,25 +26,6 @@ public class UserDAO {
         return em.find(User.class, userId);
     }
 
-    public void editPassword(long userId, String newPassword) {
-        User user = em.find(User.class, userId);
-        user.setPassword(newPassword);
-    }
-
-    public void editLogin(long userId, String newLogin) {
-        User user = em.find(User.class, userId);
-        user.setLogin(newLogin);
-    }
-
-    public void editFirstname(long userId, String newFirstname) {
-        User user = em.find(User.class, userId);
-        user.setFirstname(newFirstname);
-    }
-
-    public void editLastname(long userId, String newLastname) {
-        User user = em.find(User.class, userId);
-        user.setLastname(newLastname);
-    }
 
     public boolean existByLogin(String login) {
         Long count = em.createQuery("SELECT count(user) FROM User user WHERE user.login = :login", Long.class)

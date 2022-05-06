@@ -1,5 +1,5 @@
 import Server from './Server';
-import { IEditedUser } from '../utils/types';
+import { IUserRequest } from '../utils/types';
 import cryptoJS from 'crypto-js';
 import { getTokenHeader } from '../utils';
 
@@ -16,7 +16,7 @@ export default class UserService {
   }
 
   static editUser(
-    { password, ...rest }: IEditedUser,
+    { password, ...rest }: IUserRequest,
     handleSuccess: (user: string) => void,
     handleError: (errorMessage: string) => void
   ) {

@@ -4,9 +4,9 @@ export interface IUser {
   login: string;
 }
 
-export interface IEditedUser {
-  firstname?: string;
-  lastname?: string;
-  login?: string;
+export interface IUserRequest {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
   password?: string;
 }
