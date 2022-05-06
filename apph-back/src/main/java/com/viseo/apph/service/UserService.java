@@ -61,7 +61,7 @@ public class UserService {
         User user = userDAO.getUserById(userId);
         Key key = JwtConfig.getKey();
         JwtBuilder newClaims = Jwts.builder().setClaims(claims);
-        if (user == null) throw new NotFoundException("User not found");
+        if (user == null) throw new NotFoundException("");
         if (request.getFirstName() != null) {
             user.setFirstname(request.getFirstName());
             newClaims.claim("firstname", request.getFirstName());
@@ -74,7 +74,7 @@ public class UserService {
             user.setPassword(encoder.encode(request.getPassword()));
         if (request.getLogin() != null) {
             if (userDAO.existByLogin(request.getLogin()))
-                throw new DataIntegrityViolationException("Login is Already in Use.");
+                throw new DataIntegrityViolationException("");
             user.setLogin(request.getLogin());
             newClaims.claim("login", request.getLogin());
         }
