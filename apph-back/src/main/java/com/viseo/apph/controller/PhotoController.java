@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -21,8 +22,9 @@ import java.util.List;
 @CrossOrigin(origins = "${front-server}")
 @RequestMapping("/photo")
 public class PhotoController {
-    static TokenManager tokenManager = new TokenManager() {
+    public static TokenManager tokenManager = new TokenManager() {
     };
+
     @Autowired
     PhotoService photoService;
 
@@ -45,13 +47,16 @@ public class PhotoController {
     }
 
     @PostMapping("/download")
-    public ResponseEntity<IResponseDTO> download(@RequestBody PhotoRequest photoRequest) {
+    public ResponseEntity<IResponseDTO> download(@RequestHeader("token") String token, @RequestBody PhotoRequest photoRequest) {
         try {
-            Photo photo = photoService.getPhoto(photoRequest.getId());
+            int userId = tokenManager.getIdOfToken(token);
+            Photo photo = photoService.getPhoto(photoRequest.getId(), userId);
             PhotoResponse photoResponse = photoService.download(photoRequest.getId()).setTitle(photo.getTitle()).setExtension(photo.getExtension());
             return ResponseEntity.ok(photoResponse);
         } catch (S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du téléchargement"));
+        } catch (FileNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Le fichier n'existe pas"));
         }
     }
 }

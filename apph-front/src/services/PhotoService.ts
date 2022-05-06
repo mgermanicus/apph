@@ -57,10 +57,12 @@ export default class PhotoService {
     handleError: (errorMessage: string) => void
   ) {
     const URL = `/photo/download`;
+    const userInfos = cookies.get('user');
     const requestOptions = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        token: userInfos?.token
       },
       body: JSON.stringify({
         id

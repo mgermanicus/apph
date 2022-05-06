@@ -24,7 +24,7 @@ public class PhotoDao {
                 .getResultList();
     }
 
-    public Photo getPhoto(long id) {
+    public Photo getPhoto(long id) throws NoResultException {
         return em.find(Photo.class, id);
     }
 }

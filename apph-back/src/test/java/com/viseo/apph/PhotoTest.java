@@ -1,6 +1,7 @@
 package com.viseo.apph;
 
 import com.viseo.apph.controller.PhotoController;
+import com.viseo.apph.controller.TokenManager;
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.domain.Photo;
@@ -30,6 +31,9 @@ public class PhotoTest {
     @Mock
     S3Dao s3Dao;
 
+    @Mock
+    TokenManager tokenManager;
+
     PhotoService photoService;
     PhotoController photoController;
 
@@ -58,15 +62,19 @@ public class PhotoTest {
         // GIVEN
         createPhotoController();
         long id = 1L;
+        int idUser = 2;
         String title = "test";
         String extension = "jpg";
-        PhotoRequest photoRequest = new PhotoRequest().setId(id);
         byte[] fileByteArray = "".getBytes();
-        Photo photo = (Photo) new Photo().setExtension(extension).setTitle(title).setId(id);
+        Photo photo = (Photo) new Photo().setExtension(extension).setTitle(title).setIdUser(idUser).setId(id);
+        PhotoRequest photoRequest = new PhotoRequest().setId(id);
+        String token = "token";
+        PhotoController.tokenManager = tokenManager;
         //WHEN
-        when(em.find(Photo.class, id)).thenReturn(photo);
-        when(s3Dao.download(id + "")).thenReturn(fileByteArray);
-        ResponseEntity<IResponseDTO> responseEntity = photoController.download(photoRequest);
+        when(em.find(any(), anyLong())).thenReturn(photo);
+        when(s3Dao.download(anyString())).thenReturn(fileByteArray);
+        when(tokenManager.getIdOfToken(anyString())).thenReturn(idUser);
+        ResponseEntity<IResponseDTO> responseEntity = photoController.download(token, photoRequest);
         // Then
         verify(em, times(1)).find(Photo.class, id);
         verify(s3Dao, times(1)).download(id + "");
@@ -78,16 +86,39 @@ public class PhotoTest {
     }
 
     @Test
-    public void testDownloadNotExist() {
+    public void testDownloadServerNotWork() {
         // GIVEN
         createPhotoController();
         long id = 1L;
+        int idUser = 2;
+        Photo photo = (Photo) new Photo().setExtension("png").setTitle("test").setIdUser(idUser).setId(id);
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
-        Photo photo = (Photo) new Photo().setExtension("png").setTitle("test").setId(id);
+        String token = "token";
+        PhotoController.tokenManager = tokenManager;
         //WHEN
         when(em.find(Photo.class, id)).thenReturn(photo);
         doThrow(S3Exception.class).when(s3Dao).download(anyString());
-        ResponseEntity<IResponseDTO> responseEntity = photoController.download(photoRequest);
+        when(tokenManager.getIdOfToken("token")).thenReturn(idUser);
+        ResponseEntity<IResponseDTO> responseEntity = photoController.download(token, photoRequest);
+        // Then
+        Assert.assertTrue(responseEntity.getStatusCode().isError());
+    }
+
+    @Test
+    public void testDownloadFileNotExist() {
+        // GIVEN
+        createPhotoController();
+        long id = 1L;
+        int idUser = 2;
+        byte[] fileByteArray = "".getBytes();
+        Photo photo = (Photo) new Photo().setExtension("png").setTitle("test").setIdUser(idUser).setId(id);
+        PhotoRequest photoRequest = new PhotoRequest().setId(id);
+        String token = "token";
+        PhotoController.tokenManager = tokenManager;
+        //WHEN
+        when(em.find(Photo.class, id)).thenReturn(photo);
+        when(tokenManager.getIdOfToken("token")).thenReturn(1);
+        ResponseEntity<IResponseDTO> responseEntity = photoController.download(token, photoRequest);
         // Then
         Assert.assertTrue(responseEntity.getStatusCode().isError());
     }

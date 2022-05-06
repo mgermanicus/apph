@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,12 @@ public class PhotoService {
         return new PhotoResponse().setData(photoByte);
     }
 
-    public Photo getPhoto(long id) {
-        return photoDao.getPhoto(id);
+    public Photo getPhoto(long id, long idUser) throws FileNotFoundException {
+        Photo photo = photoDao.getPhoto(id);
+        if (idUser == photo.getIdUser()) {
+            return photo;
+        } else {
+            throw new FileNotFoundException();
+        }
     }
 }
