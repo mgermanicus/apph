@@ -49,7 +49,7 @@ public class PhotoServiceTest {
         String name = "Test@";
         String format = ".png";
         // WHEN
-        photoService.addPhoto(name, format);
+        photoService.addPhoto(name, format, 1);
         // THEN
         verify(em, times(1)).persist(any(Photo.class));
     }

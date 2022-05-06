@@ -28,10 +28,12 @@ public class PhotoService {
     UserService userService;
 
     @Transactional
-    public Photo addPhoto(String title, String format) {
+    public Photo addPhoto(String title, String format, long userId) {
+        User user = userService.getUserById(userId);
         Photo photo = new Photo()
                 .setTitle(title)
-                .setFormat(format);
+                .setFormat(format)
+                .setUser(user);
         return photoDao.addPhoto(photo);
     }
 

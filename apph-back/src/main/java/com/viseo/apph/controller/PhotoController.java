@@ -4,6 +4,7 @@ import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.dto.MessageResponse;
+import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.PhotoService;
@@ -29,18 +30,19 @@ public class PhotoController {
 
     @GetMapping(value = "/infos", produces = "application/json")
     public ResponseEntity<List<PhotoResponse>> getUserPhotos(@RequestHeader("Authorization") String token) {
-        int userId = tokenManager.getIdOfToken(token);
+        long userId = tokenManager.getIdOfToken(token);
         List<PhotoResponse> infoPhotos = photoService.getUserPhotos(userId);
         return ResponseEntity.ok(infoPhotos);
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<IResponseDTO> upload(MultipartFile file, String name) {
+    public ResponseEntity<IResponseDTO> upload(@RequestHeader("Authorization") String token, @ModelAttribute PhotoRequest photoRequest) {
         try {
-            String format = photoService.getFormat(file);
-            Photo photo = photoService.addPhoto(name, format);
-            return ResponseEntity.ok(new MessageResponse(photoService.saveWithName(file, photo.getId() + format)));
-        } catch (IOException | S3Exception e) {
+            long userId = tokenManager.getIdOfToken(token);
+            String format = photoService.getFormat(photoRequest.getFile());
+            Photo photo = photoService.addPhoto(photoRequest.getTitle(), format, userId);
+            return ResponseEntity.ok(new MessageResponse(photoService.saveWithName(photoRequest.getFile(), photo.getId() + format)));
+        } catch (IOException | S3Exception | IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
         } catch (InvalidFileException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Le format du fichier n'est pas valide"));

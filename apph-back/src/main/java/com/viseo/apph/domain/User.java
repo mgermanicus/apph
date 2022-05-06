@@ -86,4 +86,13 @@ public class User extends BaseEntity {
         }
         return this;
     }
+
+    public User addPhoto(Photo photo) {
+        assert photo != null;
+        if (!this.photos.contains(photo)) {
+            this.photos.add(photo);
+            photo.setUser(this);
+        }
+        return this;
+    }
 }
