@@ -4,7 +4,6 @@ import com.viseo.apph.domain.Photo;
 import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.PhotoService;
-import com.viseo.apph.service.S3Service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -34,20 +33,24 @@ public class PhotoControllerTest {
         String name = "Test@";
         Photo photo = new Photo();
         // When
+        when(photoService.addPhoto(name)).thenReturn(photo);
         ResponseEntity<IResponseDTO> responseEntity = photoController.upload(file, name);
         // Then
-        verify(photoService, times(1)).upload(any(), anyString());
+        verify(photoService, times(1)).addPhoto(any());
         assertEquals(responseEntity.getStatusCode().toString()
                 , HttpStatus.OK.toString());
     }
 
     @Test
-    public void testUploadException() {
+    public void testUploadException() throws InvalidFileException, IOException {
         // Given
+        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
         String name = "Test@";
+        Photo photo = new Photo();
+        when(photoService.getFormat(any())).thenThrow(new InvalidFileException("error"));
         // When
         ResponseEntity<IResponseDTO> responseEntity = photoController.upload(null, name);
         // Then
-        assertEquals(HttpStatus.OK.toString(), responseEntity.getStatusCode().toString());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.toString(), responseEntity.getStatusCode().toString());
     }
 }

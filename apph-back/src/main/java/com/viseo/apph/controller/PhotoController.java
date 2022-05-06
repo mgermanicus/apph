@@ -24,7 +24,6 @@ import java.util.List;
 public class PhotoController {
     public static TokenManager tokenManager = new TokenManager() {
     };
-
     @Autowired
     PhotoService photoService;
 
@@ -38,7 +37,9 @@ public class PhotoController {
     @PostMapping("/upload")
     public ResponseEntity<IResponseDTO> upload(MultipartFile file, String name) {
         try {
-            return ResponseEntity.ok(new MessageResponse(photoService.upload(file, name)));
+            String format = photoService.getFormat(file);
+            Photo photo = photoService.addPhoto(name);
+            return ResponseEntity.ok(new MessageResponse(photoService.saveWithName(file, photo.getId() + format)));
         } catch (IOException | S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
         } catch (InvalidFileException e) {

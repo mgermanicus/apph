@@ -25,18 +25,17 @@ public class PhotoService {
     S3Dao s3Dao;
 
     @Transactional
-    public String upload(MultipartFile file, String title) throws IOException, InvalidFileException {
-        String extension = getFormat(file);
-        Photo photo = photoDao.addPhoto(new Photo()
-                .setTitle(title).setExtension(extension));
-        return s3Dao.upload(file, photo.getId() + "");
+    public Photo addPhoto(String title) {
+        Photo photo = new Photo()
+                .setTitle(title);
+        return photoDao.addPhoto(photo);
     }
 
     public String getFormat(MultipartFile file) throws InvalidFileException {
         String contentType = file.getContentType();
         if (contentType != null && contentType.startsWith("image/")) {
             String[] types = contentType.split("/");
-            return types[1];
+            return "." + types[1];
         } else {
             throw new InvalidFileException("Wrong file format");
         }
@@ -45,10 +44,9 @@ public class PhotoService {
     @Transactional
     public List<PhotoResponse> getUserPhotos(long idUser) {
         List<Photo> usersPhoto = photoDao.getUserPhotos(idUser);
-        List<PhotoResponse> usersPhotoResponse = new ArrayList<>();
+        List<PhotoResponse> usersPhotoResponse = new ArrayList<PhotoResponse>();
         for (Photo photo : usersPhoto) {
             PhotoResponse photoResponse = new PhotoResponse()
-                    .setId(photo.getId())
                     .setTitle(photo.getTitle())
                     .setCreationDate(photo.getCreationDate())
                     .setSize(photo.getSize())
@@ -59,6 +57,10 @@ public class PhotoService {
             usersPhotoResponse.add(photoResponse);
         }
         return usersPhotoResponse;
+    }
+
+    public String saveWithName(MultipartFile file, String name) throws InvalidFileException, IOException {
+        return s3Dao.upload(file, name);
     }
 
     public PhotoResponse download(long id) {
