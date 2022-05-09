@@ -90,7 +90,7 @@ const PhotoDetails = ({
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>Date de création:</Typography>
                 <Typography sx={detailTypoStyle}>
-                  {creationDate.toLocaleString()}
+                  {creationDate?.toLocaleString()}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
@@ -98,7 +98,7 @@ const PhotoDetails = ({
                   Date de prise de vue:
                 </Typography>
                 <Typography sx={detailTypoStyle}>
-                  {shootingDate.toLocaleString()}
+                  {shootingDate?.toLocaleString()}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
