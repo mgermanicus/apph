@@ -7,7 +7,6 @@ import com.viseo.apph.dao.TagDAO;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +20,14 @@ import java.util.stream.Collectors;
 @Service
 public class TagService {
     @Autowired
-    UserDAO userDao;
+    UserDAO userDAO;
 
     @Autowired
     TagDAO tagDAO;
 
     @Transactional
-    public List<Tag> getTags(Claims claims) {
-        User user = userDao.getUserByLogin(claims.get("login").toString());
+    public List<Tag> getTags(String login) {
+        User user = userDAO.getUserByLogin(login);
         return tagDAO.getTagsByUser(user.getId());
     }
 
@@ -42,7 +41,7 @@ public class TagService {
         List<Tag> tags = Arrays.stream(parsedTags).filter(tag -> tag.getId() != 0).collect(Collectors.toList());
         Set<Tag> allTags = new HashSet<>(tags);
         for (Tag tag : tagsToCreate) {
-            Tag newTag = tagDAO.createTag(new Tag().setName(tag.getName().substring(14)).setUser(user));
+            Tag newTag = tagDAO.createTag(new Tag().setName(tag.getName().substring(12)).setUser(user));
             allTags.add(newTag);
         }
         return allTags;

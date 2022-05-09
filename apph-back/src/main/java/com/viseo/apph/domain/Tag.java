@@ -35,8 +35,4 @@ public class Tag extends BaseEntity {
         }
         return this;
     }
-
-    public User getUser() {
-        return user;
-    }
 }

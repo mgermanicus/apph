@@ -21,15 +21,14 @@ import java.util.List;
 @CrossOrigin(origins = "${front-server}")
 @RequestMapping("/tag")
 public class TagController {
-
     @Autowired
-    TagService tagService;
+    private TagService tagService;
 
     @GetMapping("/")
     public ResponseEntity<IResponseDTO> getTags(@RequestHeader("Authentication") String token) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            List<Tag> tags = tagService.getTags(claims);
+            List<Tag> tags = tagService.getTags(claims.get("login").toString());
             return ResponseEntity.ok(new TagResponse(tags));
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User does not exist"));
