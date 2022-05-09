@@ -2,6 +2,7 @@ package com.viseo.apph.service;
 
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
+import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.PhotoResponse;
@@ -25,11 +26,11 @@ public class PhotoService {
     S3Dao s3Dao;
 
     @Autowired
-    UserService userService;
+    UserDAO userDAO;
 
     @Transactional
     public Photo addPhoto(String title, String format, long userId) {
-        User user = userService.getUserById(userId);
+        User user = userDAO.getUserById(userId);
         Photo photo = new Photo()
                 .setTitle(title)
                 .setFormat(format)
@@ -49,7 +50,7 @@ public class PhotoService {
 
     @Transactional
     public List<PhotoResponse> getUserPhotos(long idUser) {
-        User user = userService.getUserById(idUser);
+        User user = userDAO.getUserById(idUser);
         List<Photo> usersPhoto = photoDao.getUserPhotos(user);
         List<PhotoResponse> usersPhotoResponse = new ArrayList<>();
         for(Photo photo:usersPhoto) {

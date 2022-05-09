@@ -6,7 +6,6 @@ import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.PhotoService;
-import com.viseo.apph.service.S3Service;
 import io.jsonwebtoken.Jwts;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,9 +27,6 @@ public class PhotoControllerTest {
     @Mock
     PhotoService photoService;
 
-    @Mock
-    S3Service s3Service;
-
     @InjectMocks
     PhotoController photoController;
 
@@ -42,13 +38,13 @@ public class PhotoControllerTest {
         String format = ".png";
         PhotoRequest photoRequest = new PhotoRequest().setTitle(title).setFile(file);
         String jws = Jwts.builder().claim("id", 1).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        Photo photo = new Photo();
+        Photo photo = (Photo) new Photo().setId(1L);
         // When
-        when(photoService.addPhoto(title, format, any())).thenReturn(photo);
+        when(photoService.addPhoto(title, format, 1)).thenReturn(photo);
         when(photoService.getFormat(file)).thenReturn(format);
         ResponseEntity<IResponseDTO> responseEntity = photoController.upload(jws, photoRequest);
         // Then
-        verify(photoService, times(1)).addPhoto(any(), any(), any());
+        verify(photoService, times(1)).addPhoto(title, format, 1);
         assertEquals(responseEntity.getStatusCode().toString()
                 , HttpStatus.OK.toString());
     }
