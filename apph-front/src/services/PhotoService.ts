@@ -2,6 +2,7 @@ import Server from './Server';
 import { imageFileCheck } from '../utils';
 import Cookies from 'universal-cookie';
 import { ITable } from '../utils/types/table';
+
 const cookies = new Cookies();
 export default class PhotoService {
   static uploadImage(

@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 
 @Service
 public class PhotoService {
@@ -61,7 +61,7 @@ public class PhotoService {
                     .setTags(photo.getTags())
                     .setDescription(photo.getDescription())
                     .setShootingDate(photo.getShootingDate())
-                    .setUrl("fake url"); //TODO RECUPERER LE VRAI URL
+                    .setUrl(s3Dao.getPhotoUrl(photo));
             usersPhotoResponse.add(photoResponse);
         }
         return usersPhotoResponse;

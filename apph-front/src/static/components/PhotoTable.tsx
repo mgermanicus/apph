@@ -6,6 +6,7 @@ import { Alert, Collapse, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ITable } from '../../utils/types/table';
 import PhotoService from '../../services/PhotoService';
+import PhotoDetails from './PhotoDetails';
 
 const columns: GridColDef[] = [
   {
@@ -28,7 +29,8 @@ const columns: GridColDef[] = [
     type: 'date',
     flex: 2.2,
     align: 'center',
-    headerAlign: 'center'
+    headerAlign: 'center',
+    renderCell: (params) => params.row.creationDate.toLocaleString()
   },
   {
     field: 'shootingDate',
@@ -36,7 +38,8 @@ const columns: GridColDef[] = [
     type: 'date',
     flex: 2.2,
     align: 'center',
-    headerAlign: 'center'
+    headerAlign: 'center',
+    renderCell: (params) => params.row.shootingDate.toLocaleString()
   },
   {
     field: 'size',
@@ -51,7 +54,14 @@ const columns: GridColDef[] = [
     headerName: 'Tags',
     flex: 1.5,
     align: 'center',
-    headerAlign: 'center'
+    headerAlign: 'center',
+    renderCell: (params) =>
+      params.row.tags.map((tag: string, index: number) => {
+        if (index !== params.row.tags.length - 1) {
+          return tag + ', ';
+        }
+        return tag;
+      })
   },
   {
     field: 'url',
@@ -59,6 +69,14 @@ const columns: GridColDef[] = [
     flex: 1,
     align: 'center',
     headerAlign: 'center'
+  },
+  {
+    field: 'actions',
+    headerName: 'Actions',
+    flex: 1,
+    align: 'center',
+    headerAlign: 'center',
+    renderCell: (params) => params.row.details
   }
 ];
 export const DataTable = () => {
@@ -68,6 +86,20 @@ export const DataTable = () => {
   const getData = () => {
     PhotoService.getData(
       (tab) => {
+        tab.forEach(
+          (row) =>
+            (row.details = (
+              <PhotoDetails
+                photoSrc={row.url}
+                title={row.title}
+                description={row.description}
+                creationDate={row.creationDate}
+                shootingDate={row.shootingDate}
+                size={row.size}
+                tags={row.tags}
+              />
+            ))
+        );
         setData(tab);
       },
       (errorMessage: string) => {

@@ -29,7 +29,7 @@ public class UserTest {
     @Mock
     EntityManager em;
     @Mock
-    TypedQuery typedQuery;
+    TypedQuery<User> typedQuery;
 
     UserService userService;
     UserController userController;
