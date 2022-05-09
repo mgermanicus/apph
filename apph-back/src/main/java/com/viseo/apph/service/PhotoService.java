@@ -5,6 +5,7 @@ import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
+import com.viseo.apph.exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -68,14 +69,14 @@ public class PhotoService {
         return new PhotoResponse().setData(photoByte);
     }
 
-    public Photo getPhoto(long id, long idUser) throws FileNotFoundException {
+    public Photo getPhoto(long id, long idUser) throws FileNotFoundException, UnauthorizedException {
         Photo photo = photoDao.getPhoto(id);
         if (photo == null)
             throw new FileNotFoundException();
-        if ((idUser == photo.getIdUser()) {
+        if (idUser == photo.getIdUser()) {
             return photo;
         } else {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
         }
     }
 }
