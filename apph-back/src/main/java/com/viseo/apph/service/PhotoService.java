@@ -5,7 +5,6 @@ import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.PaginationRequest;
 import com.viseo.apph.dto.PaginationResponse;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
@@ -15,9 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 import java.util.stream.Collectors;
 
 @Service

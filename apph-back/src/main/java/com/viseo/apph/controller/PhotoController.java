@@ -1,11 +1,11 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.Photo;
-import com.viseo.apph.dto.*;
+import com.viseo.apph.dto.IResponseDTO;
+import com.viseo.apph.dto.MessageResponse;
+import com.viseo.apph.dto.PaginationResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.PhotoService;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +14,6 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import javax.persistence.NoResultException;
 import java.io.IOException;
-import java.security.SignatureException;
-import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")

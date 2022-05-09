@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { UploadImage } from './UploadImage';
 import { Alert, Collapse, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ITable } from '../../utils/types/table';
@@ -80,7 +79,7 @@ const columns: GridColDef[] = [
     renderCell: (params) => params.row.details
   }
 ];
-export const DataTable = () => {
+export const PhotoTable = () => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [pageSize, setPageSize] = useState<number>(5);
@@ -127,7 +126,6 @@ export const DataTable = () => {
 
   return (
     <div style={{ height: 115 + pageSize * 52, width: '100%' }}>
-      <UploadImage />
       <DataGrid
         pagination
         paginationMode="server"
@@ -137,7 +135,7 @@ export const DataTable = () => {
         columns={columns}
         pageSize={pageSize}
         rowsPerPageOptions={[5, 10, 25]}
-        onPageChange={(page) => setPage(page + 1)}
+        onPageChange={(pageIndex) => setPage(pageIndex + 1)}
         onPageSizeChange={(size) => setPageSize(size)}
       />
       <Collapse in={errorMessage !== ''}>
