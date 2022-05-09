@@ -83,7 +83,7 @@ export const PhotoTable = () => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [pageSize, setPageSize] = useState<number>(5);
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(0);
   const [totalSize, setTotalSize] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -91,7 +91,7 @@ export const PhotoTable = () => {
     setLoading(true);
     PhotoService.getData(
       pageSize,
-      page,
+      page + 1,
       (pagination: IPagination) => {
         pagination.photoList.forEach(
           (row) =>
@@ -129,14 +129,19 @@ export const PhotoTable = () => {
       <DataGrid
         pagination
         paginationMode="server"
+        page={page}
         loading={loading}
         rows={data}
         rowCount={totalSize}
         columns={columns}
         pageSize={pageSize}
-        rowsPerPageOptions={[5, 10, 25]}
-        onPageChange={(pageIndex) => setPage(pageIndex + 1)}
-        onPageSizeChange={(size) => setPageSize(size)}
+        rowsPerPageOptions={[5, 10, 20]}
+        onPageChange={(pageIndex) => setPage(pageIndex)}
+        onPageSizeChange={(size) => {
+          const newPage = Math.trunc(pageSize / size) * page;
+          setPageSize(size);
+          setPage(newPage);
+        }}
       />
       <Collapse in={errorMessage !== ''}>
         <Alert
