@@ -17,8 +17,6 @@ public class Photo extends BaseEntity {
     Date creationDate;
     Date shootingDate;
     float size;
-    String tags;
-    String format;
 
     @ManyToOne(fetch = FetchType.LAZY)
     User user;

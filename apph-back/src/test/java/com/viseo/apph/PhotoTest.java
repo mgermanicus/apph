@@ -4,6 +4,7 @@ import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.controller.PhotoController;
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
+import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.service.PhotoService;
@@ -44,13 +45,16 @@ public class PhotoTest {
 
     private void createPhotoController() {
         PhotoDao photoDao = new PhotoDao();
+        UserDAO userDAO = new UserDAO();
         inject(photoDao, "em", em);
+        inject(userDAO, "em", em);
         S3Dao s3Dao = new S3Dao();
         s3Client = mock(S3Client.class, RETURNS_DEEP_STUBS);
         inject(s3Dao, "s3Client", s3Client);
         photoService = new PhotoService();
         inject(photoService, "photoDao", photoDao);
         inject(photoService, "s3Dao", s3Dao);
+        inject(photoService, "userDAO", userDAO);
         photoController = new PhotoController();
         inject(photoController, "photoService", photoService);
     }
@@ -73,8 +77,8 @@ public class PhotoTest {
         String token = Jwts.builder().claim("id", 1L).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         List<Photo> listPhoto = new ArrayList<>();
         listPhoto.add(new Photo());
-        when(em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("idUser", 1L)).thenReturn(typedQuery);
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQuery);
+        when(typedQuery.setParameter(eq("user"), any())).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(listPhoto);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
         //WHEN
@@ -92,8 +96,8 @@ public class PhotoTest {
         String token = Jwts.builder().claim("id", 1L).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         List<Photo> listPhoto = new ArrayList<>();
         listPhoto.add(new Photo());
-        when(em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("idUser", 1L)).thenReturn(typedQuery);
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQuery);
+        when(typedQuery.setParameter(eq("user"), any())).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(listPhoto);
         //WHEN
         ResponseEntity<List<PhotoResponse>> responseEntity = photoController.getUserPhotos(token);
