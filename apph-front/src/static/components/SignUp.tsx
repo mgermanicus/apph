@@ -44,12 +44,7 @@ export const SignUp = () => {
     const confirmPassword = data.get('confirmPassword')?.toString();
     const firstName = data.get('firstName')?.toString();
     const lastName = data.get('lastName')?.toString();
-    const emailValidator =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-    if (email && !emailValidator.test(email)) {
-      setErrorMessage('Email non valide.');
-    } else if (password && confirmPassword && password != confirmPassword) {
+    if (password && confirmPassword && password != confirmPassword) {
       setErrorMessage(
         'Ces mots de passe ne correspondent pas. Veuillez réessayer.'
       );

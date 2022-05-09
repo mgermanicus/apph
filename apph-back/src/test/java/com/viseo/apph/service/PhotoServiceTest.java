@@ -1,6 +1,7 @@
 package com.viseo.apph.service;
 
 import com.viseo.apph.dao.PhotoDao;
+import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.exception.InvalidFileException;
 import org.apache.http.entity.ContentType;
@@ -30,6 +31,19 @@ public class PhotoServiceTest {
         setEntityManager(photoDao, em);
         photoService = new PhotoService();
         photoService.photoDao = photoDao;
+        UserDAO userDAO = new UserDAO();
+        setEntityManager(userDAO, em);
+        photoService.userDAO = userDAO;
+    }
+
+    void inject(Object component, String field, Object injected) {
+        try {
+            Field compField = component.getClass().getDeclaredField(field);
+            compField.setAccessible(true);
+            compField.set(component, injected);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
     }
 
     void setEntityManager(Object dao, EntityManager em) {
@@ -49,7 +63,7 @@ public class PhotoServiceTest {
         String name = "Test@";
         String format = ".png";
         // WHEN
-        photoService.addPhoto(name, format);
+        photoService.addPhoto(name, format, 1);
         // THEN
         verify(em, times(1)).persist(any(Photo.class));
     }

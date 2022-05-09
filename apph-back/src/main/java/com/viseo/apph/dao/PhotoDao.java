@@ -1,6 +1,7 @@
 package com.viseo.apph.dao;
 
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.domain.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -18,9 +19,9 @@ public class PhotoDao {
         return photo;
     }
 
-    public List<Photo> getUserPhotos(long idUser) throws NoResultException {
-        return em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)
-                .setParameter("idUser", idUser)
+    public List<Photo> getUserPhotos(User user) {
+        return em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)
+                .setParameter("user", user)
                 .getResultList();
     }
 }

@@ -99,14 +99,9 @@ public class DataBaseConfig {
         em.persist(doryanRoot);
         em.persist(manonRoot);
         //Photo
-        Set<String> photoTags1 = new HashSet<>();
-        photoTags1.add("tag1");
-        Photo photo1 = new Photo().setFormat(".jpeg").setIdUser(1).setSize(1200).setTags(photoTags1).setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo photo1 = new Photo().setFormat(".jpeg").setUser(alexandre).setSize(1200).setTags("img").setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setShootingDate(new Date());
         // NOTE : you need a file named 1.jpeg in your S3 folder with this photo in the database
-        Set<String> photoTags2 = new HashSet<>();
-        photoTags2.add("tag2");
-        photoTags2.add("tag3");
-        Photo photo2 = new Photo().setFormat(".png").setIdUser(1).setSize(1300).setTags(photoTags2).setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setShootingDate(new Date());
+        Photo photo2 = new Photo().setFormat(".png").setUser(alexandre).setSize(1300).setTags("img2").setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setShootingDate(new Date());
         // NOTE : you need a file named 2.png in your S3 folder with this photo in the database
         em.persist(photo1);
         em.persist(photo2);
