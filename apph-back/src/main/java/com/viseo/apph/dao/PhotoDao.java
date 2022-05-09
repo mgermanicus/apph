@@ -19,7 +19,7 @@ public class PhotoDao {
         return photo;
     }
 
-    public List<Photo> getUserPhotos(User user) throws NoResultException {
+    public List<Photo> getUserPhotos(User user) {
         return em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)
                 .setParameter("user", user)
                 .getResultList();
