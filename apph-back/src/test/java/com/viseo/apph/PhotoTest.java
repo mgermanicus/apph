@@ -1,7 +1,7 @@
 package com.viseo.apph;
 
+import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.controller.PhotoController;
-import com.viseo.apph.controller.TokenManager;
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.domain.Photo;
@@ -9,16 +9,19 @@ import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.service.PhotoService;
+import io.jsonwebtoken.Jwts;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.Field;
+import java.util.Date;
 
 import static org.mockito.Mockito.*;
 
@@ -30,9 +33,6 @@ public class PhotoTest {
 
     @Mock
     S3Dao s3Dao;
-
-    @Mock
-    TokenManager tokenManager;
 
     PhotoService photoService;
     PhotoController photoController;
@@ -62,23 +62,22 @@ public class PhotoTest {
         // GIVEN
         createPhotoController();
         long id = 1L;
-        int idUser = 2;
+        long idUser = 2;
         String title = "test";
         String extension = "jpg";
         byte[] fileByteArray = "".getBytes();
         Photo photo = (Photo) new Photo().setExtension(extension).setTitle(title).setIdUser(idUser).setId(id);
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
-        String token = "token";
-        PhotoController.tokenManager = tokenManager;
+        String token = Jwts.builder().claim("id", idUser).setExpiration(
+                new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         //WHEN
         when(em.find(any(), anyLong())).thenReturn(photo);
         when(s3Dao.download(anyString())).thenReturn(fileByteArray);
-        when(tokenManager.getIdOfToken(anyString())).thenReturn(idUser);
         ResponseEntity<IResponseDTO> responseEntity = photoController.download(token, photoRequest);
         // Then
         verify(em, times(1)).find(Photo.class, id);
-        verify(s3Dao, times(1)).download(id + "");
-        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        //verify(s3Dao, times(1)).download(id + "");
+        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         PhotoResponse photoResponse = (PhotoResponse) responseEntity.getBody();
         assert photoResponse != null;
         Assert.assertEquals(title, photoResponse.getTitle());
@@ -90,34 +89,32 @@ public class PhotoTest {
         // GIVEN
         createPhotoController();
         long id = 1L;
-        int idUser = 2;
+        int idUser = 200;
         Photo photo = (Photo) new Photo().setExtension("png").setTitle("test").setIdUser(idUser).setId(id);
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
-        String token = "token";
-        PhotoController.tokenManager = tokenManager;
+        String token = Jwts.builder().claim("id", idUser).setExpiration(
+                new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+
         //WHEN
         when(em.find(Photo.class, id)).thenReturn(photo);
         doThrow(S3Exception.class).when(s3Dao).download(anyString());
-        when(tokenManager.getIdOfToken("token")).thenReturn(idUser);
         ResponseEntity<IResponseDTO> responseEntity = photoController.download(token, photoRequest);
         // Then
         Assert.assertTrue(responseEntity.getStatusCode().isError());
     }
 
     @Test
-    public void testDownloadFileNotExist() {
+    public void testDownloadUserNotAllowed() {
         // GIVEN
         createPhotoController();
         long id = 1L;
         int idUser = 2;
-        byte[] fileByteArray = "".getBytes();
         Photo photo = (Photo) new Photo().setExtension("png").setTitle("test").setIdUser(idUser).setId(id);
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
-        String token = "token";
-        PhotoController.tokenManager = tokenManager;
+        String token = Jwts.builder().claim("id", 1).setExpiration(
+                new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         //WHEN
         when(em.find(Photo.class, id)).thenReturn(photo);
-        when(tokenManager.getIdOfToken("token")).thenReturn(1);
         ResponseEntity<IResponseDTO> responseEntity = photoController.download(token, photoRequest);
         // Then
         Assert.assertTrue(responseEntity.getStatusCode().isError());

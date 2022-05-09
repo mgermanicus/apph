@@ -22,7 +22,7 @@ import java.util.List;
 @CrossOrigin(origins = "${front-server}")
 @RequestMapping("/photo")
 public class PhotoController {
-    public static TokenManager tokenManager = new TokenManager() {
+    TokenManager tokenManager = new TokenManager() {
     };
     @Autowired
     PhotoService photoService;
