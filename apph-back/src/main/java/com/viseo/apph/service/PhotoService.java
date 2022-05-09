@@ -70,10 +70,12 @@ public class PhotoService {
 
     public Photo getPhoto(long id, long idUser) throws FileNotFoundException {
         Photo photo = photoDao.getPhoto(id);
-        if (idUser == photo.getIdUser()) {
+        if (photo == null)
+            throw new FileNotFoundException();
+        if ((idUser == photo.getIdUser()) {
             return photo;
         } else {
-            throw new FileNotFoundException();
+            throw new UnauthorizedException();
         }
     }
 }
