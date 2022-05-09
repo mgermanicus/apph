@@ -24,6 +24,7 @@ public class PhotoResponse {
     public PhotoResponse() {
 
     }
+
     public String getTitle() {
         return title;
     }

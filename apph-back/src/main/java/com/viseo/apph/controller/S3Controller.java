@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,7 @@ public class S3Controller {
     S3Service s3s;
 
     @PostMapping("/upload")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<IResponseDTO> upload(@RequestParam("file") MultipartFile file) {
         try {
             return ResponseEntity.ok(new MessageResponse(s3s.save(file)));
@@ -35,6 +37,7 @@ public class S3Controller {
     }
 
     @GetMapping("/{filename}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<byte[]> download(@PathVariable("filename") String filename) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", MediaType.ALL_VALUE);
@@ -44,6 +47,7 @@ public class S3Controller {
     }
 
     @DeleteMapping("/{filename}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public String delete(@PathVariable("filename") String filename) {
         return s3s.delete(filename);
     }

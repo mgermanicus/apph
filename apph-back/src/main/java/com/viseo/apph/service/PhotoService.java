@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 
 @Service
 public class PhotoService {
@@ -44,7 +44,7 @@ public class PhotoService {
     public List<PhotoResponse> getUserPhotos(long idUser) {
         List<Photo> usersPhoto = photoDao.getUserPhotos(idUser);
         List<PhotoResponse> usersPhotoResponse = new ArrayList<PhotoResponse>();
-        for(Photo photo:usersPhoto) {
+        for (Photo photo : usersPhoto) {
             PhotoResponse photoResponse = new PhotoResponse()
                     .setTitle(photo.getTitle())
                     .setCreationDate(photo.getCreationDate())

@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-
+/*
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class AuthTest {
     @Mock
@@ -136,3 +136,4 @@ public class AuthTest {
         Assert.assertTrue(responseEntity.getStatusCode().isError());
     }
 }
+*/

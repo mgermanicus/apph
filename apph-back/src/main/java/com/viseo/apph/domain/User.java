@@ -1,21 +1,25 @@
 package com.viseo.apph.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity {
     private static final long serialVersionUID = 1L;
-    @Column(unique=true)
+    @Column(unique = true)
     String login;
     String password;
     String firstname;
     String lastname;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "users_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Folder> folders = new ArrayList<>();
@@ -30,6 +34,15 @@ public class User extends BaseEntity {
 
     public User setLogin(String login) {
         this.login = login;
+        return this;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public User setRoles(Set<Role> roles) {
+        this.roles = roles;
         return this;
     }
 
@@ -62,6 +75,10 @@ public class User extends BaseEntity {
 
     public List<Folder> getFolders() {
         return folders;
+    }
+
+    public void setFolders(List<Folder> folders) {
+        this.folders = folders;
     }
 
     public User addFolder(Folder folder) {

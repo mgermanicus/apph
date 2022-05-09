@@ -1,36 +1,6 @@
 package com.viseo.apph;
 
-import com.viseo.apph.config.JwtConfig;
-import com.viseo.apph.controller.FolderController;
-import com.viseo.apph.dao.FolderDAO;
-import com.viseo.apph.dao.UserDAO;
-import com.viseo.apph.domain.Folder;
-import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.FolderRequest;
-import com.viseo.apph.dto.FolderResponse;
-import com.viseo.apph.dto.MessageResponse;
-import com.viseo.apph.service.FolderService;
-import io.jsonwebtoken.Jwts;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static org.mockito.Mockito.*;
-
+/*
 @RunWith(MockitoJUnitRunner.class)
 public class FolderTest {
     @Mock
@@ -238,3 +208,4 @@ public class FolderTest {
         Assert.assertEquals("L'utilisateur n'a pas accès à ce dossier.", messageResponse.getMessage());
     }
 }
+*/

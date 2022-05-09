@@ -1,19 +1,19 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.dto.FolderRequest;
 import com.viseo.apph.dto.FolderResponse;
-import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.dto.IResponseDTO;
+import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.exception.UnauthorizedException;
+import com.viseo.apph.security.UserDetailsImpl;
 import com.viseo.apph.service.FolderService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.NoResultException;
@@ -26,11 +26,13 @@ public class FolderController {
     private FolderService folderService;
 
     @ResponseBody
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/")
-    public ResponseEntity<IResponseDTO> getFoldersByUser(@RequestHeader("Authentication") String token) {
+    public ResponseEntity<IResponseDTO> getFoldersByUser() {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            FolderResponse folder = folderService.getFoldersByUser(claims.get("login").toString());
+            UserDetailsImpl userDetails =
+                    (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            FolderResponse folder = folderService.getFoldersByUser(userDetails.getLogin());
             return ResponseEntity.ok(folder);
         } catch (NotFoundException nfe) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
@@ -40,11 +42,13 @@ public class FolderController {
     }
 
     @ResponseBody
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/add")
-    public ResponseEntity<IResponseDTO> createFolder(@RequestHeader("Authentication") String token, @RequestBody FolderRequest request) {
+    public ResponseEntity<IResponseDTO> createFolder(@RequestBody FolderRequest request) {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            FolderResponse folder = folderService.createFolder(claims.get("login").toString(), request);
+            UserDetailsImpl userDetails =
+                    (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            FolderResponse folder = folderService.createFolder(userDetails.getLogin(), request);
             return ResponseEntity.ok(folder);
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Le dossier existe déjà dans le dossier actuel."));

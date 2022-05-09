@@ -5,7 +5,7 @@ export const getTokenHeader = () => {
   if (token) {
     return {
       'Content-Type': 'application/json',
-      Authentication: token
+      Authorization: 'Bearer ' + token
     };
   }
 };

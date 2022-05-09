@@ -2,7 +2,9 @@ package com.viseo.apph.service;
 
 import com.viseo.apph.dao.FolderDAO;
 import com.viseo.apph.dao.UserDAO;
+import com.viseo.apph.domain.ERole;
 import com.viseo.apph.domain.Folder;
+import com.viseo.apph.domain.Role;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.UserRequest;
 import io.jsonwebtoken.Claims;
@@ -12,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -25,7 +29,9 @@ public class UserService {
 
     @Transactional
     public void registerUser(UserRequest userRequest) {
-        User newUser = new User().setLogin(userRequest.getLogin()).setPassword(encoder.encode(userRequest.getPassword())).setFirstname(userRequest.getFirstName()).setLastname(userRequest.getLastName());
+        Set<Role> set = new HashSet<Role>();
+        set.add((new Role(ERole.ROLE_USER)));
+        User newUser = new User().setLogin(userRequest.getLogin()).setPassword(encoder.encode(userRequest.getPassword())).setFirstname(userRequest.getFirstName()).setLastname(userRequest.getLastName()).setRoles(set);
         userDAO.createUser(newUser);
         Folder rootFolder = new Folder().setName(newUser.getFirstname()).setParentFolderId(null).setUser(newUser);
         folderDAO.createFolder(rootFolder);

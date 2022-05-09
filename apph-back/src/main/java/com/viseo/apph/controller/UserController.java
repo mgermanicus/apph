@@ -1,18 +1,16 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.security.UserDetailsImpl;
 import com.viseo.apph.service.UserService;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import javax.persistence.NoResultException;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -23,12 +21,13 @@ public class UserController {
     UserService userService;
 
     @GetMapping("/")
-    public ResponseEntity getUserInfo(@RequestHeader("Authentication") String token) {
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity getUserInfo() {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            User user = userService.getUser(claims);
-            return ResponseEntity.ok(new User().setLogin(user.getLogin()).setFirstname(user.getFirstname())
-                    .setLastname(user.getLastname()));
+            UserDetailsImpl userDetails =
+                    (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            return ResponseEntity.ok(new User().setLogin(userDetails.getLogin()).setFirstname(userDetails.getFirstname())
+                    .setLastname(userDetails.getLastname()));
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User does not exist");
         } catch (SignatureException e) {

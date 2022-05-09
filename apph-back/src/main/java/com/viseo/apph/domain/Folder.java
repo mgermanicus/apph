@@ -3,7 +3,7 @@ package com.viseo.apph.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "parentFolderId" }) })
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "parentFolderId"})})
 public class Folder extends BaseEntity {
     String name;
 
