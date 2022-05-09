@@ -106,8 +106,8 @@ public class DataBaseConfig {
         em.persist(doryanRoot);
         em.persist(manonRoot);
         //Photo
-        Photo photo1 = new Photo().setIdUser(1).setSize(1200).setTags("img").setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo photo2 = new Photo().setIdUser(1).setSize(1300).setTags("img2").setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setShootingDate(new Date());
+        Photo photo1 = new Photo().setUser(alexandre).setSize(1200).setTags("img").setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo photo2 = new Photo().setUser(alexandre).setSize(1300).setTags("img2").setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setShootingDate(new Date());
         em.persist(photo1);
         em.persist(photo2);
     }

@@ -22,7 +22,7 @@ public class S3Dao {
     @Value("${bucketName}")
     String bucketName;
 
-    @Value("${user}")
+    @Value("${s3user}")
     String user;
 
     @Autowired
