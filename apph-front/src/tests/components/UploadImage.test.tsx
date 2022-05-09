@@ -73,7 +73,7 @@ describe('Test UploadImage', () => {
     ).toBeInTheDocument();
     expect(spyRequestFunction).toBeCalledWith(
       requestParams.URL,
-      requestParams.requestOptions,
+      expect.objectContaining(requestParams.requestOptions),
       expect.anything(),
       expect.anything()
     );
