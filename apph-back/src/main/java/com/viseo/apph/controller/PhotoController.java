@@ -31,7 +31,7 @@ public class PhotoController {
         List<PhotoResponse> infoPhotos = photoService.getUserPhotos(userId);
         return ResponseEntity.ok(infoPhotos);
     }
-+
+
     @PostMapping("/upload")
     public ResponseEntity<IResponseDTO> upload(@RequestHeader("Authorization") String token, @ModelAttribute PhotoRequest photoRequest) {
         try {
