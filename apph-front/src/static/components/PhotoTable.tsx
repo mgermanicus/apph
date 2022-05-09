@@ -30,7 +30,7 @@ const columns: GridColDef[] = [
     flex: 2.2,
     align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => params.row.creationDate.toLocaleString()
+    renderCell: (params) => params.row.creationDate?.toLocaleString()
   },
   {
     field: 'shootingDate',
@@ -39,7 +39,7 @@ const columns: GridColDef[] = [
     flex: 2.2,
     align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => params.row.shootingDate.toLocaleString()
+    renderCell: (params) => params.row.shootingDate?.toLocaleString()
   },
   {
     field: 'size',
