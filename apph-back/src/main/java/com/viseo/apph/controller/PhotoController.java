@@ -49,7 +49,7 @@ public class PhotoController {
     }
 
     @PostMapping("/download")
-    public ResponseEntity<IResponseDTO> download(@RequestHeader("Authentication") String token, @RequestBody PhotoRequest photoRequest) {
+    public ResponseEntity<IResponseDTO> download(@RequestHeader("Authorization") String token, @RequestBody PhotoRequest photoRequest) {
         try {
             int userId = tokenManager.getIdOfToken(token);
             Photo photo = photoService.getPhoto(photoRequest.getId(), userId);

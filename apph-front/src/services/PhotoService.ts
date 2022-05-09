@@ -62,7 +62,7 @@ export default class PhotoService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authentication: userInfos?.token
+        Authorization: userInfos?.token
       },
       body: JSON.stringify({
         id
