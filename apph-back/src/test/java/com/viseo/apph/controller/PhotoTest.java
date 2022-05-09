@@ -26,22 +26,22 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class PhotoTest {
 
-PhotoController photoController;
-@Mock
-EntityManager em ;
-@Mock
-TypedQuery typedQuery;
-@Mock
-UserDao UserDao;
+    PhotoController photoController;
+    @Mock
+    EntityManager em;
+    @Mock
+    TypedQuery typedQuery;
+    @Mock
+    UserDao userDao;
 
     private void createPhotoController() {
         PhotoDao photoDao = new PhotoDao();
-        inject(photoDao,"em",em);
+        inject(photoDao, "em", em);
         PhotoService photoService = new PhotoService();
-        inject(photoService,"photoDao",photoDao);
-        inject(photoService, "UserDao", UserDao);
+        inject(photoService, "photoDao", photoDao);
+        inject(photoService, "userDao", userDao);
         photoController = new PhotoController();
-        inject(photoController,"photoService",photoService);
+        inject(photoController, "photoService", photoService);
     }
 
     void inject(Object component, String field, Object injected) {
@@ -55,17 +55,17 @@ UserDao UserDao;
     }
 
     @Test
-    public void testGetInfos()
-    {
+    public void testGetInfos() {
         //GIVEN
         createPhotoController();
-        String jws = Jwts.builder().claim("id", 1).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        User user = new User().setLogin("toto").setPassword("password");
+        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         List<Photo> listPhoto = new ArrayList<>();
         listPhoto.add(new Photo());
         when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("user", new User())).thenReturn(typedQuery);
+        when(typedQuery.setParameter("user", user)).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(listPhoto);
-        when(userDAO.getUserById(1)).thenReturn(new User());
+        when(userDao.getUserByLogin(user.getLogin())).thenReturn(user);
         //WHEN
         ResponseEntity responseEntity = photoController.getUserPhotos(jws);
         //THEN

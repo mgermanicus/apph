@@ -96,8 +96,8 @@ export const UploadImage = (): JSX.Element => {
   useEffect(() => {
     TagService.getAllTags(
       (tags: string) => {
-        const tagsConverted = JSON.parse(tags);
-        setAllTags(tagsConverted.tags as ITag[]);
+        const tagsConverted: ITag[] = JSON.parse(tags);
+        setAllTags(tagsConverted);
       },
       (errorMessage: string) => setErrorMessage(errorMessage)
     );

@@ -2,8 +2,8 @@ package com.viseo.apph;
 
 import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.controller.TagController;
-import com.viseo.apph.dao.TagDAO;
-import com.viseo.apph.dao.UserDAO;
+import com.viseo.apph.dao.TagDao;
+import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.IResponseDTO;
@@ -40,13 +40,13 @@ public class TagTest {
     TagController tagController;
 
     private void createTagController() {
-        TagDAO tagDAO = new TagDAO();
-        inject(tagDAO, "em", em);
-        UserDAO userDAO = new UserDAO();
-        inject(userDAO, "em", em);
+        TagDao tagDao = new TagDao();
+        inject(tagDao, "em", em);
+        UserDao userDao = new UserDao();
+        inject(userDao, "em", em);
         tagService = new TagService();
-        inject(tagService, "tagDAO", tagDAO);
-        inject(tagService, "userDAO", userDAO);
+        inject(tagService, "tagDao", tagDao);
+        inject(tagService, "userDao", userDao);
         tagController = new TagController();
         inject(tagController, "tagService", tagService);
     }

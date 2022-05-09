@@ -1,7 +1,7 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.dao.FolderDAO;
-import com.viseo.apph.dao.UserDAO;
+import com.viseo.apph.dao.FolderDao;
+import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.service.UserService;
@@ -39,14 +39,14 @@ public class AuthTest {
     NoResultException noResultException;
 
     private void createAuthController() {
-        UserDAO userDAO = new UserDAO();
-        FolderDAO folderDAO = new FolderDAO();
-        inject(userDAO, "em", em);
-        inject(folderDAO, "em", em);
+        UserDao userDao = new UserDao();
+        FolderDao folderDao = new FolderDao();
+        inject(userDao, "em", em);
+        inject(folderDao, "em", em);
         userService = new UserService();
         inject(userService, "encoder", passwordEncoder);
-        inject(userService, "userDAO", userDAO);
-        inject(userService, "folderDAO", folderDAO);
+        inject(userService, "userDao", userDao);
+        inject(userService, "folderDao", folderDao);
         authController = new AuthController();
         inject(authController, "userService", userService);
     }

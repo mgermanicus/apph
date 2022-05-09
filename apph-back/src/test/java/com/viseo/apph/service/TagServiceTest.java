@@ -3,10 +3,9 @@ package com.viseo.apph.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.viseo.apph.dao.TagDAO;
+import com.viseo.apph.dao.TagDao;
 import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,10 +28,10 @@ public class TagServiceTest {
     TagService tagService;
 
     private void createPhotoService() {
-        TagDAO tagDAO = new TagDAO();
-        setEntityManager(tagDAO, em);
+        TagDao tagDao = new TagDao();
+        setEntityManager(tagDao, em);
         tagService = new TagService();
-        tagService.tagDAO = tagDAO;
+        tagService.tagDao = tagDao;
     }
 
     void setEntityManager(Object dao, EntityManager em) {

@@ -11,7 +11,9 @@ import com.viseo.apph.service.PhotoService;
 import com.viseo.apph.service.TagService;
 import com.viseo.apph.service.UserService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import javax.persistence.NoResultException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Set;
+import java.util.HashSet;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -42,19 +44,27 @@ public class PhotoController {
             return ResponseEntity.ok(response);
         } catch (NoResultException nre) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("L'utilisateur n'existe pas."));
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User does not exist"));
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Argument illégal."));
+        } catch (SignatureException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Token not valid"));
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Token expired"));
         }
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<IResponseDTO> upload(@RequestHeader("Authorization") String token, @ModelAttribute PhotoRequest photoRequest) {
+    public ResponseEntity<IResponseDTO> upload(@RequestHeader("Authentication") String token, @ModelAttribute PhotoRequest photoRequest) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             User user = userService.getUser(claims);
-            Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
+            System.out.println(photoRequest.getTitle());
+            System.out.println(photoRequest.getTags());
+            //Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
             String format = photoService.getFormat(photoRequest.getFile());
-            Photo photo = photoService.addPhoto(photoRequest.getTitle(), allTags);
+            Photo photo = photoService.addPhoto(photoRequest.getTitle(), format, new HashSet<Tag>(), claims.get("login").toString());
             return ResponseEntity.ok(new MessageResponse(photoService.saveWithName(photoRequest.getFile(), photo.getId() + format)));
         } catch (IOException | S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));

@@ -1,7 +1,6 @@
 package com.viseo.apph.dao;
 
 import com.viseo.apph.domain.Tag;
-import com.viseo.apph.domain.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -10,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class TagDAO {
+public class TagDao {
     @PersistenceContext
     EntityManager em;
 

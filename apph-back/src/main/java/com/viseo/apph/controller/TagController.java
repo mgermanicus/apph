@@ -2,9 +2,7 @@ package com.viseo.apph.controller;
 
 import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.Tag;
-import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.dto.MessageResponse;
-import com.viseo.apph.dto.TagResponse;
 import com.viseo.apph.service.TagService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -25,11 +23,11 @@ public class TagController {
     private TagService tagService;
 
     @GetMapping("/")
-    public ResponseEntity<IResponseDTO> getTags(@RequestHeader("Authentication") String token) {
+    public ResponseEntity getTags(@RequestHeader("Authentication") String token) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             List<Tag> tags = tagService.getTags(claims.get("login").toString());
-            return ResponseEntity.ok(new TagResponse(tags));
+            return ResponseEntity.ok(tags);
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User does not exist"));
         } catch (SignatureException e) {

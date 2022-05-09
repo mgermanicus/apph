@@ -104,9 +104,9 @@ public class DataBaseConfig {
         em.persist(elieT1);
         em.persist(elieT2);
         //Photo
-        Photo photo1 = new Photo().setFormat(".jpeg").setUser(alexandre).setSize(1200).setTags(elieT1).setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo photo1 = new Photo().setFormat(".jpeg").setUser(alexandre).setSize(1200).addTag(elieT1).setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setShootingDate(new Date());
         // NOTE : you need a file named 1.jpeg in your S3 folder with this photo in the database
-        Photo photo2 = new Photo().setFormat(".png").setUser(alexandre).setSize(1300).setTags(elieT1).setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setShootingDate(new Date());
+        Photo photo2 = new Photo().setFormat(".png").setUser(alexandre).setSize(1300).addTag(elieT1).setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setShootingDate(new Date());
         // NOTE : you need a file named 2.png in your S3 folder with this photo in the database
         em.persist(photo1);
         em.persist(photo2);

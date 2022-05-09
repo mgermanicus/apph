@@ -2,7 +2,7 @@ package com.viseo.apph;
 
 import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.controller.UserController;
-import com.viseo.apph.dao.UserDAO;
+import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.service.UserService;
 import io.jsonwebtoken.Jwts;
@@ -35,10 +35,10 @@ public class UserTest {
     UserController userController;
 
     private void createUserController() {
-        UserDAO userDAO = new UserDAO();
-        inject(userDAO, "em", em);
+        UserDao userDao = new UserDao();
+        inject(userDao, "em", em);
         userService = new UserService();
-        inject(userService, "userDAO", userDAO);
+        inject(userService, "userDao", userDao);
         userController = new UserController();
         inject(userController, "userService", userService);
     }

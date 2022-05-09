@@ -88,9 +88,10 @@ public class PhotoControllerTest {
         String title = "Test@";
         PhotoRequest photoRequest = new PhotoRequest().setTitle(title).setFile(null);
         String jws = Jwts.builder().claim("id", 1).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(photoService.getPhotoByRequest(photoRequest, 1L)).thenThrow(new InvalidFileException("error"));
+        when(photoService.getFormat(any())).thenThrow(new InvalidFileException("error"));
         // When
         ResponseEntity<IResponseDTO> responseEntity = photoController.upload(jws, photoRequest);
+        ResponseEntity<IResponseDTO> responseEntity = photoController.upload(jws, null, name, gson.toJson(tags));
         // Then
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.toString(), responseEntity.getStatusCode().toString());
     }

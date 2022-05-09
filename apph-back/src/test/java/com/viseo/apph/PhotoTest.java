@@ -4,6 +4,8 @@ import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.controller.PhotoController;
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
+import com.viseo.apph.dao.UserDao;
+import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
@@ -35,27 +37,28 @@ public class PhotoTest {
     EntityManager em;
     @Mock
     TypedQuery<Photo> photoTypedQuery;
-
     @Mock
     TypedQuery<User> userTypedQuery;
     @Mock
     S3Dao s3Dao;
 
     S3Client s3Client;
-
     PhotoService photoService;
     PhotoController photoController;
 
 
     private void createPhotoController() {
         PhotoDao photoDao = new PhotoDao();
-        UserDAO userDAO = new UserDAO();
+        UserDao userDao = new UserDao();
         inject(photoDao, "em", em);
-        inject(userDAO, "em", em);
+        inject(userDao, "em", em);
+        S3Dao s3Dao = new S3Dao();
+        s3Client = mock(S3Client.class, RETURNS_DEEP_STUBS);
+        inject(s3Dao, "s3Client", s3Client);
         photoService = new PhotoService();
         inject(photoService, "photoDao", photoDao);
         inject(photoService, "s3Dao", s3Dao);
-        inject(photoService, "userDAO", userDAO);
+        inject(photoService, "userDao", userDao);
         photoController = new PhotoController();
         inject(photoController, "photoService", photoService);
     }
