@@ -24,8 +24,8 @@ public class PhotoResponse implements IResponseDTO {
     String url;
     @JsonProperty("data")
     byte[] data;
-    @JsonProperty("extension")
-    String extension;
+    @JsonProperty("format")
+    String format;
 
     public long getId() {
         return id;
@@ -108,12 +108,12 @@ public class PhotoResponse implements IResponseDTO {
         return this;
     }
 
-    public String getExtension() {
-        return extension;
+    public String getFormat() {
+        return format;
     }
 
-    public PhotoResponse setExtension(String extension) {
-        this.extension = extension;
+    public PhotoResponse setFormat(String format) {
+        this.format = format;
         return this;
     }
 }

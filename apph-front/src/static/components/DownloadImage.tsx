@@ -9,11 +9,11 @@ export const DownloadImage = ({ id }: { id: number }): JSX.Element => {
     PhotoService.downloadImage(
       id,
       (photo: IPhoto) => {
-        const imageBase64 = `data:image/${photo.extension};base64,${photo.data}`;
+        const imageBase64 = `data:image/${photo.format};base64,${photo.data}`;
         const a = document.createElement('a');
         const event = new MouseEvent('click');
         a.href = imageBase64;
-        a.download = photo.title + '.' + photo.extension;
+        a.download = photo.title + '.' + photo.format;
         a.dispatchEvent(event);
       },
       (errorMessage) => {

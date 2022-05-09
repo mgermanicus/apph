@@ -52,7 +52,7 @@ public class PhotoController {
         try {
             int userId = tokenManager.getIdOfToken(token);
             Photo photo = photoService.getPhoto(photoRequest.getId(), userId);
-            PhotoResponse photoResponse = photoService.download(photoRequest.getId()).setTitle(photo.getTitle()).setExtension(photo.getExtension());
+            PhotoResponse photoResponse = photoService.download(photoRequest.getId()).setTitle(photo.getTitle()).setFormat(photo.getFormat());
             return ResponseEntity.ok(photoResponse);
         } catch (S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du téléchargement"));

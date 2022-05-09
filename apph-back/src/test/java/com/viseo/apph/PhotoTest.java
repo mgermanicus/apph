@@ -66,7 +66,7 @@ public class PhotoTest {
         String title = "test";
         String extension = "jpg";
         byte[] fileByteArray = "".getBytes();
-        Photo photo = (Photo) new Photo().setExtension(extension).setTitle(title).setIdUser(idUser).setId(id);
+        Photo photo = (Photo) new Photo().setFormat(extension).setTitle(title).setIdUser(idUser).setId(id);
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
         String token = Jwts.builder().claim("id", idUser).setExpiration(
                 new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
@@ -81,7 +81,7 @@ public class PhotoTest {
         PhotoResponse photoResponse = (PhotoResponse) responseEntity.getBody();
         assert photoResponse != null;
         Assert.assertEquals(title, photoResponse.getTitle());
-        Assert.assertEquals(extension, photoResponse.getExtension());
+        Assert.assertEquals(extension, photoResponse.getFormat());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class PhotoTest {
         createPhotoController();
         long id = 1L;
         int idUser = 200;
-        Photo photo = (Photo) new Photo().setExtension("png").setTitle("test").setIdUser(idUser).setId(id);
+        Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setIdUser(idUser).setId(id);
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
         String token = Jwts.builder().claim("id", idUser).setExpiration(
                 new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
@@ -109,7 +109,7 @@ public class PhotoTest {
         createPhotoController();
         long id = 1L;
         int idUser = 2;
-        Photo photo = (Photo) new Photo().setExtension("png").setTitle("test").setIdUser(idUser).setId(id);
+        Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setIdUser(idUser).setId(id);
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
         String token = Jwts.builder().claim("id", 1).setExpiration(
                 new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
