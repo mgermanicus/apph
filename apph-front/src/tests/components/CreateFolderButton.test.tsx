@@ -3,9 +3,9 @@ import { render } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 import { CreateFolderButton } from '../../static/components/CreateFolderButton';
 import {
-  JWS_TOKEN,
   clickButton,
   fillText,
+  JWS_TOKEN,
   triggerRequestFailure,
   triggerRequestSuccess
 } from '../utils';

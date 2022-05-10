@@ -1,7 +1,10 @@
 import Server from './Server';
 import { imageFileCheck } from '../utils';
 import Cookies from 'universal-cookie';
+import { IPhoto } from '../utils/types/Photo';
+import { IMessage } from '../utils/types/Message';
 import { IPagination } from '../utils/types/Pagination';
+
 const cookies = new Cookies();
 export default class PhotoService {
   static uploadImage(
@@ -53,5 +56,31 @@ export default class PhotoService {
       handleError(JSON.parse(errorMessage).message);
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
+
+  static downloadImage(
+    id: number,
+    handleSuccess: (photo: IPhoto) => void,
+    handleError: (errorMessage: IMessage) => void
+  ) {
+    const URL = `/photo/download`;
+    const userInfos = cookies.get('user');
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: userInfos?.token
+      },
+      body: JSON.stringify({
+        id
+      })
+    };
+    const successFunction = (photo: string) => {
+      handleSuccess(JSON.parse(photo));
+    };
+    const failFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage));
+    };
+    return Server.request(URL, requestOptions, successFunction, failFunction);
   }
 }

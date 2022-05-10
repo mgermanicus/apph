@@ -23,4 +23,8 @@ public class PhotoDao {
                 .setParameter("user", user)
                 .getResultList();
     }
+
+    public Photo getPhoto(long id) {
+        return em.find(Photo.class, id);
+    }
 }

@@ -5,14 +5,17 @@ import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.dto.PaginationResponse;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
+import com.viseo.apph.exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,12 +33,7 @@ public class PhotoService {
     S3Dao s3Dao;
 
     @Transactional
-    public Photo addPhoto(String title, String format, long userId) {
-        User user = userDAO.getUserById(userId);
-        Photo photo = new Photo()
-                .setTitle(title)
-                .setFormat(format)
-                .setUser(user);
+    public Photo addPhoto(Photo photo) {
         return photoDao.addPhoto(photo);
     }
 
@@ -57,9 +55,9 @@ public class PhotoService {
         int endIndex = page * pageSize;
         PaginationResponse response = new PaginationResponse().setTotalSize(userPhotos.size());
         List<PhotoResponse> responseList = userPhotos.subList(startIndex, Math.min(endIndex, userPhotos.size())).stream()
-                .map(photo -> new PhotoResponse()
+                .map( photo -> new PhotoResponse()
                         .setId(photo.getId())
-                        .setTitle(photo.getTitle())
+                    .setTitle(photo.getTitle())
                         .setCreationDate(photo.getCreationDate())
                         .setSize(photo.getSize())
                         .setTags(photo.getTags())
@@ -75,5 +73,31 @@ public class PhotoService {
 
     public String saveWithName(MultipartFile file, String name) throws InvalidFileException, IOException {
         return s3Dao.upload(file, name);
+    }
+
+    public PhotoResponse download(long id) {
+        byte[] photoByte = s3Dao.download(id + "");
+        return new PhotoResponse().setData(photoByte);
+    }
+
+    public Photo getPhotoById(long id, long idUser) throws FileNotFoundException, UnauthorizedException {
+        System.out.println("photo id : " + id);
+        Photo photo = photoDao.getPhoto(id);
+        if (photo == null)
+            throw new FileNotFoundException();
+        if (idUser == photo.getUser().getId()) {
+            return photo;
+        } else {
+            throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
+        }
+    }
+
+    public Photo getPhotoByRequest(PhotoRequest photoRequest, long userId) throws InvalidFileException {
+        User user = userDAO.getUserById(userId);
+        return new Photo()
+                .setTitle(photoRequest.getTitle())
+                .setFormat(getFormat(photoRequest.getFile()))
+                .setUser(user)
+                .setSize((photoRequest.getFile().getSize() + .0F) / 1000);
     }
 }

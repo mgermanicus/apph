@@ -3,17 +3,14 @@ package com.viseo.apph;
 import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.controller.PhotoController;
 import com.viseo.apph.dao.PhotoDao;
+import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.IResponseDTO;
-import com.viseo.apph.dto.MessageResponse;
-import com.viseo.apph.dto.PaginationResponse;
-import com.viseo.apph.dto.PhotoResponse;
+import com.viseo.apph.dto.*;
 import com.viseo.apph.service.PhotoService;
 import io.jsonwebtoken.Jwts;
 import org.junit.Assert;
-import com.viseo.apph.dao.S3Dao;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -21,14 +18,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.Consumer;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,6 +38,8 @@ public class PhotoTest {
 
     @Mock
     TypedQuery<User> userTypedQuery;
+    @Mock
+    S3Dao s3Dao;
 
     S3Client s3Client;
 
@@ -55,9 +52,6 @@ public class PhotoTest {
         UserDAO userDAO = new UserDAO();
         inject(photoDao, "em", em);
         inject(userDAO, "em", em);
-        S3Dao s3Dao = new S3Dao();
-        s3Client = mock(S3Client.class, RETURNS_DEEP_STUBS);
-        inject(s3Dao, "s3Client", s3Client);
         photoService = new PhotoService();
         inject(photoService, "photoDao", photoDao);
         inject(photoService, "s3Dao", s3Dao);
@@ -91,7 +85,7 @@ public class PhotoTest {
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
         when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
         when(userTypedQuery.getSingleResult()).thenReturn(robert);
-        when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
+        when(s3Dao.getPhotoUrl(any())).thenReturn("testUrl");
         //WHEN
         ResponseEntity<IResponseDTO> responseEntity = photoController.getUserPhotos(token, 5, 1);
         //THEN
@@ -123,7 +117,7 @@ public class PhotoTest {
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
         when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
         when(userTypedQuery.getSingleResult()).thenReturn(robert);
-        when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
+        when(s3Dao.getPhotoUrl(any())).thenReturn("testUrl");
         //WHEN
         ResponseEntity<IResponseDTO> responseEntity = photoController.getUserPhotos(token, 5, 1);
         //THEN
@@ -183,5 +177,51 @@ public class PhotoTest {
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("Argument illégal.", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testDownload() {
+        // GIVEN
+        createPhotoController();
+        long id = 1L;
+        long idUser = 2;
+        String title = "test";
+        String extension = "jpg";
+        byte[] fileByteArray = "".getBytes();
+        User user = (User) new User().setId(idUser);
+        Photo photo = (Photo) new Photo().setFormat(extension).setTitle(title).setUser(user).setId(id);
+        PhotoRequest photoRequest = new PhotoRequest().setId(id);
+        String token = Jwts.builder().claim("id", idUser).setExpiration(
+                new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        //WHEN
+        when(em.find(any(), anyLong())).thenReturn(photo);
+        when(s3Dao.download(anyString())).thenReturn(fileByteArray);
+        ResponseEntity<IResponseDTO> responseEntity = photoController.download(token, photoRequest);
+        // Then
+        verify(em, times(1)).find(Photo.class, id);
+        //verify(s3Dao, times(1)).download(id + "");
+        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        PhotoResponse photoResponse = (PhotoResponse) responseEntity.getBody();
+        assert photoResponse != null;
+        Assert.assertEquals(title, photoResponse.getTitle());
+        Assert.assertEquals(extension, photoResponse.getFormat());
+    }
+
+    @Test
+    public void testDownloadUserNotAllowed() {
+        // GIVEN
+        createPhotoController();
+        long id = 1L;
+        int idUser = 2;
+        User user = (User) new User().setId(idUser);
+        Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(id);
+        PhotoRequest photoRequest = new PhotoRequest().setId(id);
+        String token = Jwts.builder().claim("id", 1).setExpiration(
+                new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        //WHEN
+        when(em.find(Photo.class, id)).thenReturn(photo);
+        ResponseEntity<IResponseDTO> responseEntity = photoController.download(token, photoRequest);
+        // Then
+        Assert.assertTrue(responseEntity.getStatusCode().isError());
     }
 }

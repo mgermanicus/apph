@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Alert, Collapse, IconButton } from '@mui/material';
+import { Alert, Collapse, IconButton, Stack } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ITable } from '../../utils/types/table';
 import PhotoService from '../../services/PhotoService';
 import PhotoDetails from './PhotoDetails';
+import { DownloadImage } from './DownloadImage';
 import { IPagination } from '../../utils/types/Pagination';
 
 const columns: GridColDef[] = [
@@ -43,7 +44,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'size',
-    headerName: 'Taille',
+    headerName: 'Taille(Ko)',
     type: 'number',
     flex: 1,
     align: 'center',
@@ -73,10 +74,14 @@ const columns: GridColDef[] = [
   {
     field: 'actions',
     headerName: 'Actions',
-    flex: 1,
+    flex: 3,
     align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => params.row.details
+    renderCell: (params) => (
+      <Stack spacing={2} direction="row">
+        {params.row.details} <DownloadImage id={+params.id} />
+      </Stack>
+    )
   }
 ];
 export const PhotoTable = () => {
@@ -142,6 +147,7 @@ export const PhotoTable = () => {
           setPageSize(size);
           setPage(newPage);
         }}
+        columnBuffer={8}
       />
       <Collapse in={errorMessage !== ''}>
         <Alert

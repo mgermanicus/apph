@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 
-import java.io.IOException;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
@@ -31,31 +30,28 @@ public class PhotoControllerTest {
     PhotoController photoController;
 
     @Test
-    public void testUpload() throws InvalidFileException, IOException {
+    public void testUpload() {
         // Given
         MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
         String title = "Test@";
-        String format = ".png";
         PhotoRequest photoRequest = new PhotoRequest().setTitle(title).setFile(file);
         String jws = Jwts.builder().claim("id", 1).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         Photo photo = (Photo) new Photo().setId(1L);
         // When
-        when(photoService.addPhoto(title, format, 1)).thenReturn(photo);
-        when(photoService.getFormat(file)).thenReturn(format);
+        when(photoService.addPhoto(any())).thenReturn(photo);
         ResponseEntity<IResponseDTO> responseEntity = photoController.upload(jws, photoRequest);
         // Then
-        verify(photoService, times(1)).addPhoto(title, format, 1);
-        assertEquals(responseEntity.getStatusCode().toString()
-                , HttpStatus.OK.toString());
+        verify(photoService, times(1)).addPhoto(any());
+        assertEquals(responseEntity.getStatusCode().toString(), HttpStatus.OK.toString());
     }
 
     @Test
-    public void testUploadException() throws InvalidFileException, IOException {
+    public void testUploadException() throws InvalidFileException {
         // Given
         String title = "Test@";
         PhotoRequest photoRequest = new PhotoRequest().setTitle(title).setFile(null);
         String jws = Jwts.builder().claim("id", 1).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(photoService.getFormat(any())).thenThrow(new InvalidFileException("error"));
+        when(photoService.getPhotoByRequest(photoRequest, 1L)).thenThrow(new InvalidFileException("error"));
         // When
         ResponseEntity<IResponseDTO> responseEntity = photoController.upload(jws, photoRequest);
         // Then
