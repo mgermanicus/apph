@@ -71,10 +71,8 @@ public class PhotoServiceTest {
         Set<Tag> tags = new HashSet<>();
         String format = ".png";
         // WHEN
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "toto")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(user);
-        photoService.addPhoto(name, format, tags, user.getLogin());
+        Photo photo = new Photo().setTags(tags).setTitle(name).setUser(user);
+        photoService.addPhoto(photo);
         // THEN
         verify(em, times(1)).persist(any(Photo.class));
     }

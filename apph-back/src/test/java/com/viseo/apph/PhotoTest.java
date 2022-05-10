@@ -9,7 +9,6 @@ import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.*;
-import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.PhotoService;
 import com.viseo.apph.service.TagService;
 import com.viseo.apph.service.UserService;
@@ -25,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -32,6 +32,7 @@ import javax.persistence.TypedQuery;
 import java.lang.reflect.Field;
 import java.security.Key;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,8 +46,6 @@ public class PhotoTest {
     TypedQuery<Photo> typedQueryPhoto;
     @Mock
     TypedQuery<User> typedQueryUser;
-    @Mock
-    TypedQuery<Tag> typedQueryTag;
     @Mock
     S3Dao s3Dao;
 
@@ -85,6 +84,19 @@ public class PhotoTest {
         inject(photoController, "tagService", tagService);
     }
 
+    private void createPhotoControllerWithoutS3() {
+        PhotoDao photoDao = new PhotoDao();
+        UserDao userDao = new UserDao();
+        inject(photoDao, "em", em);
+        inject(userDao, "em", em);
+        photoService = new PhotoService();
+        inject(photoService, "photoDao", photoDao);
+        inject(photoService, "s3Dao", s3Dao);
+        inject(photoService, "userDao", userDao);
+        photoController = new PhotoController();
+        inject(photoController, "photoService", photoService);
+    }
+
     void inject(Object component, String field, Object injected) {
         try {
             Field compField = component.getClass().getDeclaredField(field);
@@ -96,7 +108,7 @@ public class PhotoTest {
     }
 
     @Test
-    public void TestUploadPhoto() throws InvalidFileException {
+    public void TestUploadPhoto() {
         //GIVEN
         createPhotoController();
         MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
@@ -224,7 +236,7 @@ public class PhotoTest {
     @Test
     public void testDownload() {
         // GIVEN
-        createPhotoController();
+        createPhotoControllerWithoutS3();
         long id = 1L;
         long idUser = 2;
         String title = "test";

@@ -110,9 +110,9 @@ const PhotoDetails = ({
                 <Typography sx={detailTypoStyle}>
                   {tags.map((tag, index) => {
                     if (index !== tags.length - 1) {
-                      return tag + ', ';
+                      return tag.name + ', ';
                     }
-                    return tag;
+                    return tag.name;
                   })}
                 </Typography>
               </Box>

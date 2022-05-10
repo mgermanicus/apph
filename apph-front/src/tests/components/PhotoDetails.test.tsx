@@ -2,6 +2,7 @@ import { render } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 import PhotoDetails from '../../static/components/PhotoDetails';
 import { clickButton } from '../utils';
+import { ITag } from '../../utils';
 
 describe('Test du composant PhotoDetails', () => {
   beforeEach(() => {
@@ -17,7 +18,7 @@ describe('Test du composant PhotoDetails', () => {
       creationDate: new Date(),
       shootingDate: new Date(),
       size: 0,
-      tags: ['testTag']
+      tags: [{ id: 1, name: 'testTag' }] as ITag[]
     };
     render(
       <PhotoDetails

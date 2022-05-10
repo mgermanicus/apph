@@ -1,5 +1,5 @@
 import Server from './Server';
-import { imageFileCheck, IPagination, ITag } from '../utils';
+import { imageFileCheck, IMessage, IPagination, IPhoto, ITag } from '../utils';
 import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();

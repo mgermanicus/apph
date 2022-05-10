@@ -60,9 +60,10 @@ public class PhotoController {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             User user = userService.getUser(claims);
+            Photo photoByRequest = photoService.getPhotoByRequest(photoRequest, claims.get("login").toString());
             Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
             String format = photoService.getFormat(photoRequest.getFile());
-            Photo photo = photoService.addPhoto(photoRequest.getTitle(), format, allTags, claims.get("login").toString());
+            Photo photo = photoService.addPhoto(photoByRequest.setTags(allTags));
             return ResponseEntity.ok(new MessageResponse(photoService.saveWithName(photoRequest.getFile(), photo.getId() + format)));
         } catch (IOException | S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
@@ -75,7 +76,7 @@ public class PhotoController {
     public ResponseEntity<IResponseDTO> download(@RequestHeader("Authorization") String token, @RequestBody PhotoRequest photoRequest) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            Photo photo = photoService.getPhotoById(photoRequest.getId(), claims.get("login").toString());
+            Photo photo = photoService.getPhotoById(photoRequest.getId(), (int)claims.get("id"));
             PhotoResponse photoResponse = photoService.download(photoRequest.getId() + photo.getFormat()).setTitle(photo.getTitle()).setFormat(photo.getFormat());
             return ResponseEntity.ok(photoResponse);
         } catch (S3Exception e) {
