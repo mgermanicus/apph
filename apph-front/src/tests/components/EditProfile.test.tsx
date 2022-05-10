@@ -11,6 +11,7 @@ import { screen } from '@testing-library/dom';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../../services/AuthService';
 import Server from '../../services/Server';
+import { wrapper } from '../utils/components/CustomWrapper';
 
 const mockedUsedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -41,7 +42,7 @@ describe('Test EditProfile', () => {
       '/user/': { body: JSON.stringify(user) },
       '/user/edit/': { body: editedUserToken }
     });
-    render(<EditProfile />);
+    render(<EditProfile />, { wrapper });
     //WHEN
     fillText(/Nom/, editedUser.lastname);
     fillText(/Prénom/, editedUser.firstname);
@@ -49,9 +50,6 @@ describe('Test EditProfile', () => {
     fillPassword(/Confirmer le mot de passe/, 'P@ssw0rd');
     clickButton(/Valider/);
     //THEN
-    expect(
-      screen.getByText(/Le profil a bien été modifié/)
-    ).toBeInTheDocument();
     expect(spyUpdateUserCookie).toBeCalledWith(editedUserToken);
   });
 
@@ -71,7 +69,7 @@ describe('Test EditProfile', () => {
       '/user/': { body: JSON.stringify(user) },
       '/user/edit': { body: 'edited user token' }
     });
-    render(<EditProfile />);
+    render(<EditProfile />, { wrapper });
     //WHEN
     fillText(/Login/, editedUser.login);
     clickButton(/Valider/);
@@ -96,7 +94,8 @@ describe('Test EditProfile', () => {
     fakeRequest({
       '/user/': { body: JSON.stringify(user) }
     });
-    render(<EditProfile />);
+    render(<EditProfile />, { wrapper });
+    screen.debug();
     //WHEN
     fillText(/Login/, editedUser.login);
     clickButton(/Valider/);
@@ -126,7 +125,7 @@ describe('Test EditProfile', () => {
       '/user/': { body: JSON.stringify(user) },
       '/user/edit/': { body: 'edited user token' }
     });
-    render(<EditProfile />);
+    render(<EditProfile />, { wrapper });
     //WHEN
     fillText(/Login/, editedUser.login);
     clickButton(/Valider/);
@@ -146,7 +145,7 @@ describe('Test EditProfile', () => {
     fakeRequest({
       '/user/': { body: JSON.stringify(user) }
     });
-    render(<EditProfile />);
+    render(<EditProfile />, { wrapper });
     //WHEN
     fillPassword(/Mot de passe/, 'P@ssw0rd');
     fillPassword(/Confirmer le mot de passe/, 'WrongP@ssw0rd');
@@ -178,7 +177,7 @@ describe('Test EditProfile', () => {
     fakeRequest({
       '/user/': { body: JSON.stringify(user) }
     });
-    render(<EditProfile />);
+    render(<EditProfile />, { wrapper });
     //WHEN
     fillText(/Nom/, editedUser.lastname);
     fillText(/Prénom/, editedUser.firstname);
@@ -196,7 +195,7 @@ describe('Test EditProfile', () => {
     fakeRequest({
       '/user/': { error: 'Cannot get user data' }
     });
-    render(<EditProfile />);
+    render(<EditProfile />, { wrapper });
     //WHEN
     //THEN
     expect(screen.getByText(/Cannot get user data/)).toBeInTheDocument();
@@ -213,7 +212,7 @@ describe('Test EditProfile', () => {
       '/user/': { body: JSON.stringify(user) },
       '/user/edit/': { error: 'Cannot edit user' }
     });
-    render(<EditProfile />);
+    render(<EditProfile />, { wrapper });
     //WHEN
     fillText(/Prénom/, 'Jean');
     clickButton(/Valider/);

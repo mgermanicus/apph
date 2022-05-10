@@ -15,6 +15,8 @@ import { IUserRequest, IUser } from '../../utils/types';
 import AuthService from '../../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmationDialog } from './ConfirmationDialog';
+import { changeCurrentUser } from '../../redux/slices/userSlice';
+import { useDispatch } from 'react-redux';
 
 export const EditProfile = () => {
   const navigate = useNavigate();
@@ -32,6 +34,8 @@ export const EditProfile = () => {
   const [errorOccured, setErrorOccured] = useState(false);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const classes = makeCardStyles();
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     (async () => {
@@ -74,8 +78,14 @@ export const EditProfile = () => {
           navigate(0);
         } else {
           AuthService.updateUserCookie(newToken);
+          dispatch(
+            changeCurrentUser({
+              firstname: firstName,
+              login,
+              lastname: lastName
+            })
+          );
           setErrorOccured(false);
-          displayAlert('Le profil a bien été modifié.');
           navigate('/me');
         }
       },
@@ -124,7 +134,7 @@ export const EditProfile = () => {
               label="Login"
               value={login}
               onChange={(e) => setLogin(e.target.value)}
-              type="email"              
+              type="email"
             />
             <TextField
               type="password"

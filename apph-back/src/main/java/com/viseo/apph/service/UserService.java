@@ -52,11 +52,6 @@ public class UserService {
     }
 
     @Transactional
-    public User getUserById(long id) {
-        return userDAO.getUserById(id);
-    }
-
-    @Transactional
     public String editUser(long userId, UserRequest request, Claims claims) throws NotFoundException {
         User user = userDAO.getUserById(userId);
         Key key = JwtConfig.getKey();
