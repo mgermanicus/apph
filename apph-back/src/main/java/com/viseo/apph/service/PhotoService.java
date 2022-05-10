@@ -5,8 +5,8 @@ import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.dto.PaginationResponse;
+import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.exception.UnauthorizedException;
@@ -81,7 +81,6 @@ public class PhotoService {
     }
 
     public Photo getPhotoById(long id, long idUser) throws FileNotFoundException, UnauthorizedException {
-        System.out.println("photo id : " + id);
         Photo photo = photoDao.getPhoto(id);
         if (photo == null)
             throw new FileNotFoundException();
