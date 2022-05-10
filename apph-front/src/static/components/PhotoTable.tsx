@@ -74,10 +74,14 @@ const columns: GridColDef[] = [
   {
     field: 'actions',
     headerName: 'Actions',
-    flex: 1,
+    flex: 3,
     align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => params.row.details + <DownloadImage id={+params.id} />
+    renderCell: (params) => (
+      <>
+        {params.row.details} <DownloadImage id={+params.id} />
+      </>
+    )
   }
 ];
 export const DataTable = () => {

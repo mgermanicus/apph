@@ -41,11 +41,14 @@ describe('Create download button tests', () => {
     //GIVEN
     const id = 100;
     render(<DownloadImage id={id} />);
-    const serverError = 'Une erreur est survenue lors du téléchargement';
+    const serverError =
+      '{ "message": "Une erreur est survenue lors du téléchargement" }';
     triggerRequestFailure(serverError);
     //WHEN
     clickButton(/Télécharger/);
     //THEN
-    expect(screen.getByText(new RegExp(serverError))).toBeInTheDocument();
+    expect(
+      screen.getByText('Une erreur est survenue lors du téléchargement')
+    ).toBeInTheDocument();
   });
 });

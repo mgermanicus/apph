@@ -82,7 +82,7 @@ public class PhotoService {
         Photo photo = photoDao.getPhoto(id);
         if (photo == null)
             throw new FileNotFoundException();
-        if (idUser == photo.getIdUser()) {
+        if (idUser == photo.getUser().getId()) {
             return photo;
         } else {
             throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");

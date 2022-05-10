@@ -3,6 +3,7 @@ import { imageFileCheck } from '../utils';
 import Cookies from 'universal-cookie';
 import { ITable } from '../utils/types/table';
 import { IPhoto } from '../utils/types/Photo';
+import { IMessage } from '../utils/types/Message';
 
 const cookies = new Cookies();
 export default class PhotoService {
@@ -58,7 +59,7 @@ export default class PhotoService {
   static downloadImage(
     id: number,
     handleSuccess: (photo: IPhoto) => void,
-    handleError: (errorMessage: string) => void
+    handleError: (errorMessage: IMessage) => void
   ) {
     const URL = `/photo/download`;
     const userInfos = cookies.get('user');
@@ -75,6 +76,9 @@ export default class PhotoService {
     const successFunction = (photo: string) => {
       handleSuccess(JSON.parse(photo));
     };
-    return Server.request(URL, requestOptions, successFunction, handleError);
+    const failFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage));
+    };
+    return Server.request(URL, requestOptions, successFunction, failFunction);
   }
 }

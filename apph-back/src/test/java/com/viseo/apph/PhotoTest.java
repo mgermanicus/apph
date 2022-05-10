@@ -6,6 +6,7 @@ import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.dto.PhotoResponse;
@@ -19,7 +20,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,6 +39,8 @@ public class PhotoTest {
     EntityManager em;
     @Mock
     TypedQuery<Photo> typedQuery;
+    @Mock
+    S3Dao s3Dao;
 
     S3Client s3Client;
 
@@ -52,9 +53,6 @@ public class PhotoTest {
         UserDAO userDAO = new UserDAO();
         inject(photoDao, "em", em);
         inject(userDAO, "em", em);
-        S3Dao s3Dao = new S3Dao();
-        s3Client = mock(S3Client.class, RETURNS_DEEP_STUBS);
-        inject(s3Dao, "s3Client", s3Client);
         photoService = new PhotoService();
         inject(photoService, "photoDao", photoDao);
         inject(photoService, "s3Dao", s3Dao);
@@ -84,7 +82,7 @@ public class PhotoTest {
         when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQuery);
         when(typedQuery.setParameter(eq("user"), any())).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(listPhoto);
-        when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
+        when(s3Dao.getPhotoUrl(any())).thenReturn("testUrl");
         //WHEN
         List<PhotoResponse> result =  photoController.getUserPhotos(token).getBody();
         //THEN
@@ -118,7 +116,8 @@ public class PhotoTest {
         String title = "test";
         String extension = "jpg";
         byte[] fileByteArray = "".getBytes();
-        Photo photo = (Photo) new Photo().setFormat(extension).setTitle(title).setIdUser(idUser).setId(id);
+        User user = (User) new User().setId(idUser);
+        Photo photo = (Photo) new Photo().setFormat(extension).setTitle(title).setUser(user).setId(id);
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
         String token = Jwts.builder().claim("id", idUser).setExpiration(
                 new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
@@ -142,7 +141,8 @@ public class PhotoTest {
         createPhotoController();
         long id = 1L;
         int idUser = 2;
-        Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setIdUser(idUser).setId(id);
+        User user = (User) new User().setId(idUser);
+        Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(id);
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
         String token = Jwts.builder().claim("id", 1).setExpiration(
                 new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
