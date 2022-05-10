@@ -3,18 +3,14 @@ package com.viseo.apph;
 import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.controller.PhotoController;
 import com.viseo.apph.dao.PhotoDao;
+import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.IResponseDTO;
-import com.viseo.apph.dto.PhotoRequest;
-import com.viseo.apph.dto.MessageResponse;
-import com.viseo.apph.dto.PaginationResponse;
-import com.viseo.apph.dto.PhotoResponse;
+import com.viseo.apph.dto.*;
 import com.viseo.apph.service.PhotoService;
 import io.jsonwebtoken.Jwts;
 import org.junit.Assert;
-import com.viseo.apph.dao.S3Dao;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -121,7 +117,7 @@ public class PhotoTest {
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
         when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
         when(userTypedQuery.getSingleResult()).thenReturn(robert);
-        when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
+        when(s3Dao.getPhotoUrl(any())).thenReturn("testUrl");
         //WHEN
         ResponseEntity<IResponseDTO> responseEntity = photoController.getUserPhotos(token, 5, 1);
         //THEN

@@ -1,7 +1,6 @@
 import Server from './Server';
 import { imageFileCheck } from '../utils';
 import Cookies from 'universal-cookie';
-import { ITable } from '../utils/types/table';
 import { IPhoto } from '../utils/types/Photo';
 import { IMessage } from '../utils/types/Message';
 import { IPagination } from '../utils/types/Pagination';

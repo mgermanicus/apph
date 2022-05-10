@@ -33,11 +33,11 @@ describe('Tests du composant PhotoTable.tsx', () => {
   test('Tests button display when grid rendered', async () => {
     //GIVEN
     triggerRequestSuccess(
-      '[{"id":1,"title": "photo1","description": "photo test 1","creationDate": "2022-04-29T12:50:27.973+00:00","shootingDate": "2022-04-29T12:50:27.973+00:00","size": 1200,"tags": ["img"],"url": "fakes url"},' +
-        '{"id":2,"title": "photo2","description": "photo test 2","creationDate": "1970-01-02T11:58:58.983+00:00","shootingDate": "2022-04-29T12:50:27.973+00:00","tags": ["img2"],"url": "fake url"}] '
+      '{"photoList":[{"id":3,"id":1,"title":"photo1","description":"photo test 1","creationDate":"2022-05-09T08:30:00.814+00:00","shootingDate":"2022-05-09T08:30:00.814+00:00","size":1300.0,"tags":["img1"],"url":"fake url"},' +
+        '{"id":2,"id":4,"title":"photo2","description":"photo test 2","creationDate":"2022-05-09T08:30:00.814+00:00","shootingDate":"2022-05-09T08:30:00.814+00:00","size":1300.0,"tags":["img2"],"url":"fake url"}],"totalSize":3}'
     );
     // When
-    render(<DataTable />);
+    render(<PhotoTable />);
     // Then
     await waitFor(() => {
       expect(screen.getAllByText(/Télécharger/)[0]).toBeInTheDocument();

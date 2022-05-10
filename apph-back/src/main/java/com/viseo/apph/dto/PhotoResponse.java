@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import java.util.Set;
 
-public class PhotoResponse {
+public class PhotoResponse implements IResponseDTO {
     @JsonProperty("id")
     long id;
     @JsonProperty("title")
