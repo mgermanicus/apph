@@ -29,11 +29,11 @@ public class UserController {
             return ResponseEntity.ok(new User().setLogin(userDetails.getLogin()).setFirstname(userDetails.getFirstname())
                     .setLastname(userDetails.getLastname()));
         } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User does not exist");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("L'utilisateur n'existe pas");
         } catch (SignatureException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token not valid");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token non valide");
         } catch (ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token expired");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token expiré");
         }
     }
 }
