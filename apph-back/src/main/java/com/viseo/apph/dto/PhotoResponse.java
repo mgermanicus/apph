@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import java.util.Set;
 
-public class PhotoResponse implements IResponseDTO {
-
+public class PhotoResponse {
     @JsonProperty("id")
     long id;
     @JsonProperty("title")
@@ -27,6 +26,10 @@ public class PhotoResponse implements IResponseDTO {
     byte[] data;
     @JsonProperty("format")
     String format;
+
+    public PhotoResponse() {
+
+    }
 
     public long getId() {
         return id;

@@ -4,6 +4,7 @@ import Cookies from 'universal-cookie';
 import { ITable } from '../utils/types/table';
 import { IPhoto } from '../utils/types/Photo';
 import { IMessage } from '../utils/types/Message';
+import { IPagination } from '../utils/types/Pagination';
 
 const cookies = new Cookies();
 export default class PhotoService {
@@ -32,12 +33,15 @@ export default class PhotoService {
       handleError
     );
   }
-
   static getData(
-    handleSuccess: (tab: Array<ITable>) => void,
+    pageSize: number,
+    page: number,
+    handleSuccess: (pagination: IPagination) => void,
     handleError: (errorMessage: string) => void
   ) {
-    const URL = `/photo/infos`;
+    const URL = `/photo/infos?pageSize=${encodeURIComponent(
+      pageSize
+    )}&page=${encodeURIComponent(page)}`;
     const userInfos = cookies.get('user');
     const requestOptions = {
       method: 'GET',
@@ -47,11 +51,10 @@ export default class PhotoService {
       }
     };
     const successFunction = (val: string) => {
-      const tab: Array<ITable> = JSON.parse(val);
-      handleSuccess(tab);
+      handleSuccess(JSON.parse(val));
     };
     const errorFunction = (errorMessage: string) => {
-      handleError(errorMessage);
+      handleError(JSON.parse(errorMessage).message);
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }

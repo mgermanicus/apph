@@ -1,17 +1,24 @@
 package com.viseo.apph.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class FolderResponse implements IResponseDTO {
+    @JsonProperty("id")
     long id;
 
+    @JsonProperty("version")
     long version;
 
+    @JsonProperty("name")
     String name;
 
+    @JsonProperty("parentFolderId")
     Long parentFolderId;
 
+    @JsonProperty("childrenFolders")
     List<FolderResponse> childrenFolders;
 
     public FolderResponse() {
