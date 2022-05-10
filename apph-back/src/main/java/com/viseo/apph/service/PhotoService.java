@@ -57,6 +57,7 @@ public class PhotoService {
         List<PhotoResponse> usersPhotoResponse = new ArrayList<>();
         for(Photo photo:usersPhoto) {
             PhotoResponse photoResponse = new PhotoResponse()
+                    .setId(photo.getId())
                     .setTitle(photo.getTitle())
                     .setCreationDate(photo.getCreationDate())
                     .setSize(photo.getSize())
@@ -79,6 +80,7 @@ public class PhotoService {
     }
 
     public Photo getPhoto(long id, long idUser) throws FileNotFoundException, UnauthorizedException {
+        System.out.println("photo id : " + id);
         Photo photo = photoDao.getPhoto(id);
         if (photo == null)
             throw new FileNotFoundException();
