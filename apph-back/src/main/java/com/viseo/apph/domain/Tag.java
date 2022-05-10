@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 
 @Entity
-@Table(name="tags", uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "user_id" }) })
+@Table(name = "tags", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "user_id"})})
 public class Tag extends BaseEntity {
     String name;
 

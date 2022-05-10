@@ -1,8 +1,8 @@
 package com.viseo.apph.service;
 
+import com.viseo.apph.dao.FolderDao;
 import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Folder;
-import com.viseo.apph.dao.FolderDao;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FolderRequest;
 import com.viseo.apph.dto.FolderResponse;

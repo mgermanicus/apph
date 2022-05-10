@@ -23,7 +23,7 @@ public class TagController {
     private TagService tagService;
 
     @GetMapping("/")
-    public ResponseEntity getTags(@RequestHeader("Authentication") String token) {
+    public ResponseEntity getTags(@RequestHeader("Authorization") String token) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             List<Tag> tags = tagService.getTags(claims.get("login").toString());

@@ -23,7 +23,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import javax.persistence.NoResultException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.Set;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -56,7 +56,7 @@ public class PhotoController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<IResponseDTO> upload(@RequestHeader("Authentication") String token, @ModelAttribute PhotoRequest photoRequest) {
+    public ResponseEntity<IResponseDTO> upload(@RequestHeader("Authorization") String token, @ModelAttribute PhotoRequest photoRequest) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             User user = userService.getUser(claims);

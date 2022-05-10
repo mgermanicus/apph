@@ -4,22 +4,17 @@ import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Photo;
-import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.PaginationResponse;
-import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
-import com.viseo.apph.exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,7 +52,7 @@ public class PhotoService {
         int endIndex = page * pageSize;
         PaginationResponse response = new PaginationResponse().setTotalSize(userPhotos.size());
         List<PhotoResponse> responseList = userPhotos.subList(startIndex, Math.min(endIndex, userPhotos.size())).stream()
-                .map( photo -> new PhotoResponse()
+                .map(photo -> new PhotoResponse()
                         .setId(photo.getId())
                         .setTitle(photo.getTitle())
                         .setCreationDate(photo.getCreationDate())
@@ -66,7 +61,7 @@ public class PhotoService {
                         .setDescription(photo.getDescription())
                         .setShootingDate(photo.getShootingDate())
                         .setUrl(s3Dao.getPhotoUrl(photo))
-                        ).collect(Collectors.toList());
+                ).collect(Collectors.toList());
         for (PhotoResponse photo : responseList) {
             response.addPhoto(photo);
         }

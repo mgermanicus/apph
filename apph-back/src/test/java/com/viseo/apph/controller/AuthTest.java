@@ -88,7 +88,7 @@ public class AuthTest {
         //WHEN
         ResponseEntity responseEntity = authController.login(userRequest);
         //THEN
-        assertEquals(HttpStatus.UNAUTHORIZED,responseEntity.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
     }
 
     @Test
@@ -103,12 +103,11 @@ public class AuthTest {
         //WHEN
         ResponseEntity responseEntity = authController.login(userRequest);
         //THEN
-        assertEquals(HttpStatus.UNAUTHORIZED,responseEntity.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
     }
 
     @Test
-    public void testRegister()
-    {
+    public void testRegister() {
         //GIVEN
         createAuthController();
         UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
@@ -117,18 +116,17 @@ public class AuthTest {
         //WHEN
         ResponseEntity responseEntity = authController.register(userRequest);
         //THEN
-        Assert.assertTrue( responseEntity.getStatusCode().is2xxSuccessful());
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
-    public void testRegisterFailUserExist()
-    {
+    public void testRegisterFailUserExist() {
         //GIVEN
         createAuthController();
         UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
-        when(typedQuery.setParameter("login","tintin")).thenReturn(typedQuery);
+        when(typedQuery.setParameter("login", "tintin")).thenReturn(typedQuery);
         doThrow(new DataIntegrityViolationException("test")).when(em).persist(any());
         //WHEN
         ResponseEntity responseEntity = authController.register(userRequest);

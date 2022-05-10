@@ -21,8 +21,8 @@ public class GlobalExceptionHandlerTest {
     MaxUploadSizeExceededException maxUploadSizeExceededException;
 
     @Test
-    public void testHandleMultipartException(){
+    public void testHandleMultipartException() {
         ResponseEntity<IResponseDTO> responseEntity = globalExceptionHandler.handleMultipartException(maxUploadSizeExceededException);
-        assertEquals(HttpStatus.PAYLOAD_TOO_LARGE,responseEntity.getStatusCode());
+        assertEquals(HttpStatus.PAYLOAD_TOO_LARGE, responseEntity.getStatusCode());
     }
 }

@@ -1,8 +1,4 @@
 import Server from './Server';
-import { imageFileCheck } from '../utils';
-import { ITable } from '../utils/types/table';
-import { ITag } from '../utils/types/Tag';
-
 import { imageFileCheck, IPagination, ITag } from '../utils';
 import Cookies from 'universal-cookie';
 
@@ -24,7 +20,7 @@ export default class PhotoService {
     const requestOptions = {
       method: 'POST',
       headers: {
-        Authentication: userInfos?.token
+        Authorization: userInfos?.token
       },
       body: formData
     };
@@ -50,7 +46,7 @@ export default class PhotoService {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authentication: userInfos?.token
+        Authorization: userInfos?.token
       }
     };
     const successFunction = (val: string) => {
