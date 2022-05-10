@@ -87,7 +87,7 @@ export const PhotoTable = () => {
   const [totalSize, setTotalSize] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
-  useEffect(() => {
+  const getData = () => {
     setLoading(true);
     PhotoService.getData(
       pageSize,
@@ -116,6 +116,12 @@ export const PhotoTable = () => {
         setLoading(false);
       }
     );
+  };
+
+  useEffect(() => {
+    getData();
+    const timer = setInterval(getData, 3000);
+    return () => clearInterval(timer);
   }, [page, pageSize]);
 
   return (
