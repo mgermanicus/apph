@@ -27,7 +27,7 @@ public class FolderController {
 
     @ResponseBody
     @GetMapping("/")
-    public ResponseEntity<IResponseDTO> getFoldersByUser(@RequestHeader("Authentication") String token) {
+    public ResponseEntity<IResponseDTO> getFoldersByUser(@RequestHeader("Authorization") String token) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             FolderResponse folder = folderService.getFoldersByUser(claims.get("login").toString());
@@ -41,7 +41,7 @@ public class FolderController {
 
     @ResponseBody
     @PostMapping("/add")
-    public ResponseEntity<IResponseDTO> createFolder(@RequestHeader("Authentication") String token, @RequestBody FolderRequest request) {
+    public ResponseEntity<IResponseDTO> createFolder(@RequestHeader("Authorization") String token, @RequestBody FolderRequest request) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             FolderResponse folder = folderService.createFolder(claims.get("login").toString(), request);

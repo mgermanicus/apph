@@ -25,3 +25,13 @@ export function fakeUploadRequestParams(file: File, title: string) {
   };
   return { URL: `/photo/upload`, requestOptions };
 }
+
+export function fakeDownloadRequestParams(id: number) {
+  const requestOptions = {
+    method: 'POST',
+    body: JSON.stringify({
+      id
+    })
+  };
+  return { URL: `/photo/download`, requestOptions };
+}

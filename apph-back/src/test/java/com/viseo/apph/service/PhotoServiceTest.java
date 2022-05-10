@@ -62,8 +62,9 @@ public class PhotoServiceTest {
         createPhotoService();
         String name = "Test@";
         String format = ".png";
+        Photo photo = new Photo().setTitle(name).setFormat(format);
         // WHEN
-        photoService.addPhoto(name, format, 1);
+        photoService.addPhoto(photo);
         // THEN
         verify(em, times(1)).persist(any(Photo.class));
     }

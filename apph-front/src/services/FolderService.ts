@@ -14,7 +14,7 @@ export class FolderService {
       method: 'Get',
       headers: {
         'Content-Type': 'application/json',
-        Authentication: user.token
+        Authorization: user.token
       }
     };
     const successFunction = (folder: string) => {
@@ -42,7 +42,7 @@ export class FolderService {
       method: 'Post',
       headers: {
         'Content-Type': 'application/json',
-        Authentication: user.token
+        Authorization: user.token
       },
       body: JSON.stringify({
         name,

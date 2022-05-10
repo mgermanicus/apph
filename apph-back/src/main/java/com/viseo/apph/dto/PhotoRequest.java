@@ -1,11 +1,24 @@
 package com.viseo.apph.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.web.multipart.MultipartFile;
 
 public class PhotoRequest {
+    @JsonProperty("id")
+    long id;
+
     String title;
 
     MultipartFile file;
+
+    public long getId() {
+        return id;
+    }
+
+    public PhotoRequest setId(long id) {
+        this.id = id;
+        return this;
+    }
 
     public String getTitle() {
         return title;

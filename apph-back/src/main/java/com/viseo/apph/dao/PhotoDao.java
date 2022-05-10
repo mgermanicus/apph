@@ -5,7 +5,6 @@ import com.viseo.apph.domain.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
@@ -23,5 +22,9 @@ public class PhotoDao {
         return em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)
                 .setParameter("user", user)
                 .getResultList();
+    }
+
+    public Photo getPhoto(long id) {
+        return em.find(Photo.class, id);
     }
 }
