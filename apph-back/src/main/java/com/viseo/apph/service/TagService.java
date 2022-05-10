@@ -41,7 +41,7 @@ public class TagService {
         List<Tag> tags = Arrays.stream(parsedTags).filter(tag -> tag.getId() != 0).collect(Collectors.toList());
         Set<Tag> allTags = new HashSet<>(tags);
         for (Tag tag : tagsToCreate) {
-            Tag newTag = tagDao.createTag(new Tag().setName(tag.getName().substring(12)).setUser(user));
+            Tag newTag = tagDao.createTag(new Tag().setName(tag.getName().substring(14)).setUser(user));
             allTags.add(newTag);
         }
         return allTags;

@@ -1,5 +1,5 @@
 import Server from './Server';
-import { getTokenHeader, imageFileCheck } from '../utils';
+import { imageFileCheck } from '../utils';
 import { ITable } from '../utils/types/table';
 import { ITag } from '../utils/types/Tag';
 
@@ -50,7 +50,7 @@ export default class PhotoService {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: userInfos?.token
+        Authentication: userInfos?.token
       }
     };
     const successFunction = (val: string) => {

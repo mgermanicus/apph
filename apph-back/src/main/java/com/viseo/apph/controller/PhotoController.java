@@ -60,11 +60,9 @@ public class PhotoController {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             User user = userService.getUser(claims);
-            System.out.println(photoRequest.getTitle());
-            System.out.println(photoRequest.getTags());
-            //Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
+            Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
             String format = photoService.getFormat(photoRequest.getFile());
-            Photo photo = photoService.addPhoto(photoRequest.getTitle(), format, new HashSet<Tag>(), claims.get("login").toString());
+            Photo photo = photoService.addPhoto(photoRequest.getTitle(), format, allTags, claims.get("login").toString());
             return ResponseEntity.ok(new MessageResponse(photoService.saveWithName(photoRequest.getFile(), photo.getId() + format)));
         } catch (IOException | S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));

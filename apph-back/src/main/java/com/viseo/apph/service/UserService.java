@@ -44,9 +44,4 @@ public class UserService {
         String login = claims.get("login").toString();
         return userDao.getUserByLogin(login);
     }
-
-    @Transactional
-    public User getUserById(long id) {
-        return userDao.getUserById(id);
-    }
 }
