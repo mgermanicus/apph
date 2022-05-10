@@ -11,7 +11,7 @@ accessKey=YourAccessKey
 secretKey=YourSecretKey
 bucketName=BucketName
 region=region
-user=${your_name}/
+s3user=${your_name}/
 ```
 
 ## Run project

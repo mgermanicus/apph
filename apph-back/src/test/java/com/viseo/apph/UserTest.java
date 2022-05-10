@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.lang.reflect.Field;
 import java.security.Key;
@@ -32,9 +31,9 @@ public class UserTest {
     @Mock
     EntityManager em;
     @Mock
-    TypedQuery typedQuery;
+    TypedQuery<User> typedQuery;
     @Mock
-    TypedQuery existByLoginQuery;
+    TypedQuery<Long> existByLoginQuery;
     @Mock
     PasswordEncoder passwordEncoder;
 
