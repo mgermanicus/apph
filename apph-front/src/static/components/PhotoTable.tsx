@@ -6,6 +6,7 @@ import { Alert, Collapse, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ITable } from '../../utils/types/table';
 import PhotoService from '../../services/PhotoService';
+import PhotoDetails from './PhotoDetails';
 import { DownloadImage } from './DownloadImage';
 
 const columns: GridColDef[] = [
@@ -29,7 +30,8 @@ const columns: GridColDef[] = [
     type: 'date',
     flex: 2.2,
     align: 'center',
-    headerAlign: 'center'
+    headerAlign: 'center',
+    renderCell: (params) => params.row.creationDate?.toLocaleString()
   },
   {
     field: 'shootingDate',
@@ -37,7 +39,8 @@ const columns: GridColDef[] = [
     type: 'date',
     flex: 2.2,
     align: 'center',
-    headerAlign: 'center'
+    headerAlign: 'center',
+    renderCell: (params) => params.row.shootingDate?.toLocaleString()
   },
   {
     field: 'size',
@@ -52,7 +55,14 @@ const columns: GridColDef[] = [
     headerName: 'Tags',
     flex: 1.5,
     align: 'center',
-    headerAlign: 'center'
+    headerAlign: 'center',
+    renderCell: (params) =>
+      params.row.tags.map((tag: string, index: number) => {
+        if (index !== params.row.tags.length - 1) {
+          return tag + ', ';
+        }
+        return tag;
+      })
   },
   {
     field: 'url',
@@ -62,27 +72,49 @@ const columns: GridColDef[] = [
     headerAlign: 'center'
   },
   {
-    field: 'action',
+    field: 'actions',
     headerName: 'Actions',
-    flex: 2,
+    flex: 1,
     align: 'center',
-    renderCell: (params) => <DownloadImage id={+params.id} />,
-    headerAlign: 'center'
+    headerAlign: 'center',
+    renderCell: (params) => params.row.details + <DownloadImage id={+params.id} />
   }
 ];
 export const DataTable = () => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState('');
-  useEffect(() => {
+
+  const getData = () => {
     PhotoService.getData(
       (tab) => {
+        tab.forEach(
+          (row) =>
+            (row.details = (
+              <PhotoDetails
+                photoSrc={row.url}
+                title={row.title}
+                description={row.description}
+                creationDate={row.creationDate}
+                shootingDate={row.shootingDate}
+                size={row.size}
+                tags={row.tags}
+              />
+            ))
+        );
         setData(tab);
       },
       (errorMessage: string) => {
         setErrorMessage(errorMessage);
       }
     );
+  };
+
+  useEffect(() => {
+    getData();
+    const timer = setInterval(getData, 3000);
+    return () => clearInterval(timer);
   }, []);
+
   return (
     <div style={{ height: 400, width: '100%' }}>
       <UploadImage />

@@ -4,6 +4,7 @@ import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.controller.PhotoController;
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
+import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.dto.PhotoRequest;
@@ -17,44 +18,95 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PhotoTest {
-
     @Mock
     EntityManager em;
-
     @Mock
-    S3Dao s3Dao;
+    TypedQuery<Photo> typedQuery;
+
+    S3Client s3Client;
 
     PhotoService photoService;
     PhotoController photoController;
 
+
     private void createPhotoController() {
         PhotoDao photoDao = new PhotoDao();
+        UserDAO userDAO = new UserDAO();
         inject(photoDao, "em", em);
+        inject(userDAO, "em", em);
+        S3Dao s3Dao = new S3Dao();
+        s3Client = mock(S3Client.class, RETURNS_DEEP_STUBS);
+        inject(s3Dao, "s3Client", s3Client);
         photoService = new PhotoService();
-        inject(photoService, "s3Dao", s3Dao);
         inject(photoService, "photoDao", photoDao);
+        inject(photoService, "s3Dao", s3Dao);
+        inject(photoService, "userDAO", userDAO);
         photoController = new PhotoController();
         inject(photoController, "photoService", photoService);
     }
 
-    void inject(Object component, String field, Object injected) {
+    void inject(Object component,String field, Object injected) {
         try {
             Field compField = component.getClass().getDeclaredField(field);
             compField.setAccessible(true);
-            compField.set(component, injected);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
+            compField.set(component,injected);
+        }
+        catch(IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void TestGetUserPhotosUrl() {
+        //GIVEN
+        createPhotoController();
+        String token = Jwts.builder().claim("id", 1L).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        List<Photo> listPhoto = new ArrayList<>();
+        listPhoto.add(new Photo());
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQuery);
+        when(typedQuery.setParameter(eq("user"), any())).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(listPhoto);
+        when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
+        //WHEN
+        List<PhotoResponse> result =  photoController.getUserPhotos(token).getBody();
+        //THEN
+        assert(Objects.equals(Objects.requireNonNull(result).get(0).getUrl(), "testUrl"));
+    }
+
+
+    @Test
+    public void testGetInfos()
+    {
+        //GIVEN
+        createPhotoController();
+        String token = Jwts.builder().claim("id", 1L).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        List<Photo> listPhoto = new ArrayList<>();
+        listPhoto.add(new Photo());
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQuery);
+        when(typedQuery.setParameter(eq("user"), any())).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(listPhoto);
+        //WHEN
+        ResponseEntity<List<PhotoResponse>> responseEntity = photoController.getUserPhotos(token);
+        //THEN
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
@@ -82,25 +134,6 @@ public class PhotoTest {
         assert photoResponse != null;
         Assert.assertEquals(title, photoResponse.getTitle());
         Assert.assertEquals(extension, photoResponse.getFormat());
-    }
-
-    @Test
-    public void testDownloadServerNotWork() {
-        // GIVEN
-        createPhotoController();
-        long id = 1L;
-        int idUser = 200;
-        Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setIdUser(idUser).setId(id);
-        PhotoRequest photoRequest = new PhotoRequest().setId(id);
-        String token = Jwts.builder().claim("id", idUser).setExpiration(
-                new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-
-        //WHEN
-        when(em.find(Photo.class, id)).thenReturn(photo);
-        doThrow(S3Exception.class).when(s3Dao).download(anyString());
-        ResponseEntity<IResponseDTO> responseEntity = photoController.download(token, photoRequest);
-        // Then
-        Assert.assertTrue(responseEntity.getStatusCode().isError());
     }
 
     @Test

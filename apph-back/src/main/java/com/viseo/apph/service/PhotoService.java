@@ -2,7 +2,9 @@ package com.viseo.apph.service;
 
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
+import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.exception.UnauthorizedException;
@@ -25,10 +27,16 @@ public class PhotoService {
     @Autowired
     S3Dao s3Dao;
 
+    @Autowired
+    UserDAO userDAO;
+
     @Transactional
-    public Photo addPhoto(String title) {
+    public Photo addPhoto(String title, String format, long userId) {
+        User user = userDAO.getUserById(userId);
         Photo photo = new Photo()
-                .setTitle(title);
+                .setTitle(title)
+                .setFormat(format)
+                .setUser(user);
         return photoDao.addPhoto(photo);
     }
 
@@ -44,9 +52,10 @@ public class PhotoService {
 
     @Transactional
     public List<PhotoResponse> getUserPhotos(long idUser) {
-        List<Photo> usersPhoto = photoDao.getUserPhotos(idUser);
-        List<PhotoResponse> usersPhotoResponse = new ArrayList<PhotoResponse>();
-        for (Photo photo : usersPhoto) {
+        User user = userDAO.getUserById(idUser);
+        List<Photo> usersPhoto = photoDao.getUserPhotos(user);
+        List<PhotoResponse> usersPhotoResponse = new ArrayList<>();
+        for(Photo photo:usersPhoto) {
             PhotoResponse photoResponse = new PhotoResponse()
                     .setTitle(photo.getTitle())
                     .setCreationDate(photo.getCreationDate())
@@ -54,7 +63,7 @@ public class PhotoService {
                     .setTags(photo.getTags())
                     .setDescription(photo.getDescription())
                     .setShootingDate(photo.getShootingDate())
-                    .setUrl("fake url"); //TODO RECUPERER LE VRAI URL
+                    .setUrl(s3Dao.getPhotoUrl(photo));
             usersPhotoResponse.add(photoResponse);
         }
         return usersPhotoResponse;
