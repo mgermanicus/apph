@@ -21,7 +21,7 @@ public class UserController {
     UserService userService;
 
     @GetMapping("/")
-    public ResponseEntity getUserInfo(@RequestHeader("Authentication") String token) {
+    public ResponseEntity getUserInfo(@RequestHeader("Authorization") String token) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             User user = userService.getUser(claims);
