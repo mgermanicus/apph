@@ -103,9 +103,7 @@ const PhotoDetails = ({
               </Box>
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>Taille:</Typography>
-                <Typography sx={detailTypoStyle}>
-                  {size} bananes (à changer)
-                </Typography>
+                <Typography sx={detailTypoStyle}>{size} Ko</Typography>
               </Box>
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>Tags:</Typography>
