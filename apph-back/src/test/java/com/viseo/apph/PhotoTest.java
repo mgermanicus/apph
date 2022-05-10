@@ -14,7 +14,6 @@ import com.viseo.apph.service.PhotoService;
 import io.jsonwebtoken.Jwts;
 import org.junit.Assert;
 import com.viseo.apph.dao.S3Dao;
-import com.viseo.apph.dto.PhotoResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,10 +27,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.assertTrue;
@@ -85,17 +81,23 @@ public class PhotoTest {
     public void TestGetUserPhotosUrl() {
         //GIVEN
         createPhotoController();
-        String token = Jwts.builder().claim("id", 1L).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        String token = Jwts.builder().claim("login", robert.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         List<Photo> listPhoto = new ArrayList<>();
         listPhoto.add(new Photo());
         when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(photoTypedQuery);
-        when(photoTypedQuery.setParameter(eq("user"), any())).thenReturn(photoTypedQuery);
+        when(photoTypedQuery.setParameter("user", robert)).thenReturn(photoTypedQuery);
         when(photoTypedQuery.getResultList()).thenReturn(listPhoto);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
+        when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
+        when(userTypedQuery.getSingleResult()).thenReturn(robert);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
         //WHEN
-        List<PhotoResponse> result =  photoController.getUserPhotos(token).getBody();
+        ResponseEntity<IResponseDTO> responseEntity = photoController.getUserPhotos(token, 5, 1);
         //THEN
-        assert(Objects.equals(Objects.requireNonNull(result).get(0).getUrl(), "testUrl"));
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        PaginationResponse paginationResponse = (PaginationResponse) responseEntity.getBody();
+        assert(Objects.equals(Objects.requireNonNull(Objects.requireNonNull(paginationResponse).getPhotoList()).get(0).getUrl(), "testUrl"));
     }
 
 
@@ -107,7 +109,7 @@ public class PhotoTest {
         List<Photo> listPhoto = new ArrayList<>();
         Date creationDate = new Date();
         Date shootingDate = new Date();
-        listPhoto.add((Photo) new Photo().setSize(10).setTitle("photo 1").setCreationDate(creationDate).setShootingDate(shootingDate).setDescription("description").setTags("tag").setId(1L));
+        listPhoto.add((Photo) new Photo().setSize(10).setTitle("photo 1").setCreationDate(creationDate).setShootingDate(shootingDate).setDescription("description").setTags(Collections.singleton("tag")).setId(1L));
         listPhoto.add(new Photo());
         listPhoto.add(new Photo());
         listPhoto.add(new Photo());
@@ -115,17 +117,19 @@ public class PhotoTest {
         listPhoto.add(new Photo());
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         String token = Jwts.builder().claim("login", robert.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)).thenReturn(photoTypedQuery);
-        when(photoTypedQuery.setParameter(eq("user"), any())).thenReturn(photoTypedQuery);
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(photoTypedQuery);
+        when(photoTypedQuery.setParameter("user", robert)).thenReturn(photoTypedQuery);
         when(photoTypedQuery.getResultList()).thenReturn(listPhoto);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
         when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
         when(userTypedQuery.getSingleResult()).thenReturn(robert);
+        when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
         //WHEN
         ResponseEntity<IResponseDTO> responseEntity = photoController.getUserPhotos(token, 5, 1);
         //THEN
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         PaginationResponse paginationResponse = (PaginationResponse) responseEntity.getBody();
+        assert paginationResponse != null;
         Assert.assertEquals(6, paginationResponse.getTotalSize());
         Assert.assertEquals(5, paginationResponse.getPhotoList().size());
         PhotoResponse photo = paginationResponse.getPhotoList().get(0);
@@ -134,9 +138,9 @@ public class PhotoTest {
         Assert.assertEquals(creationDate, photo.getCreationDate());
         Assert.assertEquals(shootingDate, photo.getShootingDate());
         Assert.assertEquals("description", photo.getDescription());
-        Assert.assertEquals("tag", photo.getTags());
+        Assert.assertTrue(photo.getTags().contains("tag"));
         Assert.assertEquals(1, photo.getId());
-        Assert.assertEquals("fake url", photo.getUrl());
+        Assert.assertEquals("testUrl", photo.getUrl());
     }
 
     @Test
@@ -166,8 +170,8 @@ public class PhotoTest {
         listPhoto.add(new Photo());
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         String token = Jwts.builder().claim("login", robert.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT p FROM Photo p WHERE p.idUser=:idUser", Photo.class)).thenReturn(photoTypedQuery);
-        when(photoTypedQuery.setParameter("idUser", 1L)).thenReturn(photoTypedQuery);
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(photoTypedQuery);
+        when(photoTypedQuery.setParameter("user", robert)).thenReturn(photoTypedQuery);
         when(photoTypedQuery.getResultList()).thenReturn(listPhoto);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
         when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);

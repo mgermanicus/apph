@@ -15,8 +15,6 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @Component
 public class DataBaseConfig {
@@ -107,18 +105,18 @@ public class DataBaseConfig {
         em.persist(photo1);
         em.persist(photo2);
         //Elie's Photo
-        Photo eliePhoto1 = new Photo().setIdUser(elie.getId()).setSize(1300).setTags("img1").setTitle("photo1").setDescription("photo test 1").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto2 = new Photo().setIdUser(elie.getId()).setSize(1300).setTags("img2").setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto3 = new Photo().setIdUser(elie.getId()).setSize(1300).setTags("img3").setTitle("photo3").setDescription("photo test 3").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto4 = new Photo().setIdUser(elie.getId()).setSize(1300).setTags("img4").setTitle("photo4").setDescription("photo test 4").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto5 = new Photo().setIdUser(elie.getId()).setSize(1300).setTags("img5").setTitle("photo5").setDescription("photo test 5").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto6 = new Photo().setIdUser(elie.getId()).setSize(1300).setTags("img6").setTitle("photo6").setDescription("photo test 6").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto7 = new Photo().setIdUser(elie.getId()).setSize(1300).setTags("img7").setTitle("photo7").setDescription("photo test 7").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto8 = new Photo().setIdUser(elie.getId()).setSize(1300).setTags("img8").setTitle("photo8").setDescription("photo test 8").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto9 = new Photo().setIdUser(elie.getId()).setSize(1300).setTags("img9").setTitle("photo9").setDescription("photo test 9").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto10 = new Photo().setIdUser(elie.getId()).setSize(1300).setTags("img10").setTitle("photo10").setDescription("photo test 10").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto11 = new Photo().setIdUser(elie.getId()).setSize(1300).setTags("img11").setTitle("photo11").setDescription("photo test 11").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto12 = new Photo().setIdUser(elie.getId()).setSize(1300).setTags("img12").setTitle("photo12").setDescription("photo test 12").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto1 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img1")).setTitle("photo1").setDescription("photo test 1").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto2 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img2")).setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto3 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img3")).setTitle("photo3").setDescription("photo test 3").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto4 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img4")).setTitle("photo4").setDescription("photo test 4").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto5 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img5")).setTitle("photo5").setDescription("photo test 5").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto6 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img6")).setTitle("photo6").setDescription("photo test 6").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto7 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img7")).setTitle("photo7").setDescription("photo test 7").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto8 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img8")).setTitle("photo8").setDescription("photo test 8").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto9 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img9")).setTitle("photo9").setDescription("photo test 9").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto10 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img10")).setTitle("photo10").setDescription("photo test 10").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto11 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img11")).setTitle("photo11").setDescription("photo test 11").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto12 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img12")).setTitle("photo12").setDescription("photo test 12").setCreationDate(new Date()).setShootingDate(new Date());
         em.persist(eliePhoto1);
         em.persist(eliePhoto2);
         em.persist(eliePhoto3);

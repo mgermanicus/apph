@@ -4,6 +4,7 @@ import com.viseo.apph.domain.Photo;
 import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.dto.PaginationResponse;
+import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.PhotoService;
 import org.springframework.beans.factory.annotation.Autowired;

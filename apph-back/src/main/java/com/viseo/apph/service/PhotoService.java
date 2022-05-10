@@ -29,9 +29,6 @@ public class PhotoService {
     @Autowired
     S3Dao s3Dao;
 
-    @Autowired
-    UserDAO userDAO;
-
     @Transactional
     public Photo addPhoto(String title, String format, long userId) {
         User user = userDAO.getUserById(userId);
