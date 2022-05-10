@@ -29,7 +29,7 @@ export const DownloadImage = ({ id }: { id: number }): JSX.Element => {
         const a = document.createElement('a');
         const event = new MouseEvent('click');
         a.href = imageBase64;
-        a.download = photo.title + '.' + photo.format;
+        a.download = photo.title + photo.format;
         a.dispatchEvent(event);
       },
       (error: IMessage) => {
