@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { UploadImage } from './UploadImage';
-import { Alert, Collapse, IconButton } from '@mui/material';
+import { Alert, Collapse, IconButton, Stack } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ITable } from '../../utils/types/table';
 import PhotoService from '../../services/PhotoService';
@@ -44,7 +44,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'size',
-    headerName: 'Taille',
+    headerName: 'Taille(Ko)',
     type: 'number',
     flex: 1,
     align: 'center',
@@ -78,9 +78,9 @@ const columns: GridColDef[] = [
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => (
-      <>
+      <Stack spacing={2} direction="row">
         {params.row.details} <DownloadImage id={+params.id} />
-      </>
+      </Stack>
     )
   }
 ];

@@ -38,9 +38,9 @@ public class PhotoController {
     public ResponseEntity<IResponseDTO> upload(@RequestHeader("Authorization") String token, @ModelAttribute PhotoRequest photoRequest) {
         try {
             long userId = tokenManager.getIdOfToken(token);
-            String format = photoService.getFormat(photoRequest.getFile());
-            Photo photo = photoService.addPhoto(photoRequest.getTitle(), format, userId);
-            return ResponseEntity.ok(new MessageResponse(photoService.saveWithName(photoRequest.getFile(), photo.getId() + format)));
+            Photo photoByRequest = photoService.getPhotoByRequest(photoRequest, userId);
+            Photo photo = photoService.addPhoto(photoByRequest);
+            return ResponseEntity.ok(new MessageResponse(photoService.saveWithName(photoRequest.getFile(), photo.getId() + photo.getFormat())));
         } catch (IOException | S3Exception | IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
         } catch (InvalidFileException e) {
@@ -52,7 +52,7 @@ public class PhotoController {
     public ResponseEntity<IResponseDTO> download(@RequestHeader("Authorization") String token, @RequestBody PhotoRequest photoRequest) {
         try {
             int userId = tokenManager.getIdOfToken(token);
-            Photo photo = photoService.getPhoto(photoRequest.getId(), userId);
+            Photo photo = photoService.getPhotoById(photoRequest.getId(), userId);
             PhotoResponse photoResponse = photoService.download(photoRequest.getId()).setTitle(photo.getTitle()).setFormat(photo.getFormat());
             return ResponseEntity.ok(photoResponse);
         } catch (S3Exception e) {

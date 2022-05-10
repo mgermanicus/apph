@@ -15,8 +15,6 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @Component
 public class DataBaseConfig {

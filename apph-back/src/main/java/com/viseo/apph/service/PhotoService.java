@@ -5,6 +5,7 @@ import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.exception.UnauthorizedException;
@@ -31,12 +32,7 @@ public class PhotoService {
     UserDAO userDAO;
 
     @Transactional
-    public Photo addPhoto(String title, String format, long userId) {
-        User user = userDAO.getUserById(userId);
-        Photo photo = new Photo()
-                .setTitle(title)
-                .setFormat(format)
-                .setUser(user);
+    public Photo addPhoto(Photo photo) {
         return photoDao.addPhoto(photo);
     }
 
@@ -55,7 +51,7 @@ public class PhotoService {
         User user = userDAO.getUserById(idUser);
         List<Photo> usersPhoto = photoDao.getUserPhotos(user);
         List<PhotoResponse> usersPhotoResponse = new ArrayList<>();
-        for(Photo photo:usersPhoto) {
+        for (Photo photo : usersPhoto) {
             PhotoResponse photoResponse = new PhotoResponse()
                     .setId(photo.getId())
                     .setTitle(photo.getTitle())
@@ -79,7 +75,7 @@ public class PhotoService {
         return new PhotoResponse().setData(photoByte);
     }
 
-    public Photo getPhoto(long id, long idUser) throws FileNotFoundException, UnauthorizedException {
+    public Photo getPhotoById(long id, long idUser) throws FileNotFoundException, UnauthorizedException {
         System.out.println("photo id : " + id);
         Photo photo = photoDao.getPhoto(id);
         if (photo == null)
@@ -89,5 +85,14 @@ public class PhotoService {
         } else {
             throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
         }
+    }
+
+    public Photo getPhotoByRequest(PhotoRequest photoRequest, long userId) throws InvalidFileException {
+        User user = userDAO.getUserById(userId);
+        return new Photo()
+                .setTitle(photoRequest.getTitle())
+                .setFormat(getFormat(photoRequest.getFile()))
+                .setUser(user)
+                .setSize((photoRequest.getFile().getSize() + .0F) / 1000);
     }
 }
