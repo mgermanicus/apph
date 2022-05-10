@@ -65,7 +65,7 @@ public class PhotoService {
                         .setShootingDate(photo.getShootingDate())
                         .setUrl(s3Dao.getPhotoUrl(photo))
                         ).collect(Collectors.toList());
-        for (PhotoResponse photo :responseList) {
+        for (PhotoResponse photo : responseList) {
             response.addPhoto(photo);
         }
         return response;
@@ -75,8 +75,8 @@ public class PhotoService {
         return s3Dao.upload(file, name);
     }
 
-    public PhotoResponse download(long id) {
-        byte[] photoByte = s3Dao.download(id + "");
+    public PhotoResponse download(String name) {
+        byte[] photoByte = s3Dao.download(name);
         return new PhotoResponse().setData(photoByte);
     }
 
