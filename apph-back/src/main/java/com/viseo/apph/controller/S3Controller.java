@@ -1,6 +1,6 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.dto.IResponseDTO;
+import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.S3Service;
@@ -26,7 +26,7 @@ public class S3Controller {
 
     @PostMapping("/upload")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<IResponseDTO> upload(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<IResponseDto> upload(@RequestParam("file") MultipartFile file) {
         try {
             return ResponseEntity.ok(new MessageResponse(s3s.save(file)));
         } catch (IOException e) {

@@ -1,7 +1,7 @@
 package com.viseo.apph.service;
 
-import com.viseo.apph.dao.FolderDAO;
-import com.viseo.apph.dao.UserDAO;
+import com.viseo.apph.dao.FolderDao;
+import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.ERole;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Role;
@@ -20,10 +20,10 @@ import java.util.Set;
 @Service
 public class UserService {
     @Autowired
-    UserDAO userDAO;
+    UserDao userDao;
 
     @Autowired
-    FolderDAO folderDAO;
+    FolderDao folderDao;
 
     PasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -32,14 +32,14 @@ public class UserService {
         Set<Role> set = new HashSet<Role>();
         set.add((new Role(ERole.ROLE_USER)));
         User newUser = new User().setLogin(userRequest.getLogin()).setPassword(encoder.encode(userRequest.getPassword())).setFirstname(userRequest.getFirstName()).setLastname(userRequest.getLastName()).setRoles(set);
-        userDAO.createUser(newUser);
+        userDao.createUser(newUser);
         Folder rootFolder = new Folder().setName(newUser.getFirstname()).setParentFolderId(null).setUser(newUser);
-        folderDAO.createFolder(rootFolder);
+        folderDao.createFolder(rootFolder);
     }
 
     @Transactional
     public User login(UserRequest userRequest) throws IllegalArgumentException {
-        User user = userDAO.getUserByLogin(userRequest.getLogin());
+        User user = userDao.getUserByLogin(userRequest.getLogin());
         if (encoder.matches(userRequest.getPassword(), user.getPassword()))
             return user;
         throw new IllegalArgumentException();
@@ -48,11 +48,11 @@ public class UserService {
     @Transactional
     public User getUser(Claims claims) {
         String login = claims.get("login").toString();
-        return userDAO.getUserByLogin(login);
+        return userDao.getUserByLogin(login);
     }
 
     @Transactional
     public User getUserById(long id) {
-        return userDAO.getUserById(id);
+        return userDao.getUserById(id);
     }
 }

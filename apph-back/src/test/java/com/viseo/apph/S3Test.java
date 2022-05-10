@@ -1,16 +1,12 @@
 package com.viseo.apph;
 
 import com.viseo.apph.controller.S3Controller;
-import com.viseo.apph.controller.UserController;
 import com.viseo.apph.dao.S3Dao;
-import com.viseo.apph.dao.UserDAO;
-import com.viseo.apph.dto.IResponseDTO;
+import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.S3Service;
-import com.viseo.apph.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
@@ -68,7 +64,7 @@ public class S3Test {
         PutObjectResponse por = PutObjectResponse.builder().eTag("test").build();
         when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class))).thenReturn(por);
         // When
-        ResponseEntity<IResponseDTO> responseEntity = s3Controller.upload(file);
+        ResponseEntity<IResponseDto> responseEntity = s3Controller.upload(file);
         // Then
         verify(s3Client, times(1)).putObject(any(PutObjectRequest.class), any(RequestBody.class));
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -82,7 +78,7 @@ public class S3Test {
         PutObjectResponse por = PutObjectResponse.builder().eTag("test").build();
         when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class))).thenReturn(por);
         // When
-        ResponseEntity<IResponseDTO> responseEntity = s3Controller.upload(null);
+        ResponseEntity<IResponseDto> responseEntity = s3Controller.upload(null);
         // Then
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertThrows(InvalidFileException.class, () -> s3Service.saveWithName(file, null));

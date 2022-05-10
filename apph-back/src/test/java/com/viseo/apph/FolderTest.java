@@ -1,6 +1,28 @@
 package com.viseo.apph;
 
 /*
+import com.viseo.apph.controller.FolderController;
+import com.viseo.apph.dao.FolderDao;
+import com.viseo.apph.dao.UserDao;
+import com.viseo.apph.domain.Folder;
+import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.FolderResponse;
+import com.viseo.apph.service.FolderService;
+import io.jsonwebtoken.Jwts;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.ResponseEntity;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.lang.reflect.Field;
+import java.util.Date;
+
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
 public class FolderTest {
     @Mock
@@ -13,13 +35,13 @@ public class FolderTest {
     FolderController folderController;
 
     private void createFolderController() {
-        FolderDAO folderDAO = new FolderDAO();
-        inject(folderDAO, "em", em);
-        UserDAO userDAO = new UserDAO();
-        inject(userDAO, "em", em);
+        FolderDao folderDao = new FolderDao();
+        inject(folderDao, "em", em);
+        UserDao userDao = new UserDao();
+        inject(userDao, "em", em);
         folderService = new FolderService();
-        inject(folderService, "folderDAO", folderDAO);
-        inject(folderService, "userDAO", userDAO);
+        inject(folderService, "folderDao", folderDao);
+        inject(folderService, "userDao", userDao);
         folderController = new FolderController();
         inject(folderController, "folderService", folderService);
     }

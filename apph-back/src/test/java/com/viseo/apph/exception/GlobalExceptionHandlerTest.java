@@ -1,6 +1,6 @@
 package com.viseo.apph.exception;
 
-import com.viseo.apph.dto.IResponseDTO;
+import com.viseo.apph.dto.IResponseDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -22,7 +22,7 @@ public class GlobalExceptionHandlerTest {
 
     @Test
     public void testHandleMultipartException(){
-        ResponseEntity<IResponseDTO> responseEntity = globalExceptionHandler.handleMultipartException(maxUploadSizeExceededException);
+        ResponseEntity<IResponseDto> responseEntity = globalExceptionHandler.handleMultipartException(maxUploadSizeExceededException);
         assertEquals(HttpStatus.PAYLOAD_TOO_LARGE,responseEntity.getStatusCode());
     }
 }

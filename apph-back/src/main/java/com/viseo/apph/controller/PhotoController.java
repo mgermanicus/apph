@@ -1,7 +1,7 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.Photo;
-import com.viseo.apph.dto.IResponseDTO;
+import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
@@ -41,7 +41,7 @@ public class PhotoController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/upload")
-    public ResponseEntity<IResponseDTO> upload(MultipartFile file, String name) {
+    public ResponseEntity<IResponseDto> upload(MultipartFile file, String name) {
         try {
             String format = photoService.getFormat(file);
             Photo photo = photoService.addPhoto(name);

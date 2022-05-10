@@ -2,7 +2,7 @@ package com.viseo.apph.controller;
 
 import com.viseo.apph.dto.FolderRequest;
 import com.viseo.apph.dto.FolderResponse;
-import com.viseo.apph.dto.IResponseDTO;
+import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.exception.UnauthorizedException;
@@ -28,7 +28,7 @@ public class FolderController {
     @ResponseBody
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/")
-    public ResponseEntity<IResponseDTO> getFoldersByUser() {
+    public ResponseEntity<IResponseDto> getFoldersByUser() {
         try {
             UserDetailsImpl userDetails =
                     (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -44,7 +44,7 @@ public class FolderController {
     @ResponseBody
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/add")
-    public ResponseEntity<IResponseDTO> createFolder(@RequestBody FolderRequest request) {
+    public ResponseEntity<IResponseDto> createFolder(@RequestBody FolderRequest request) {
         try {
             UserDetailsImpl userDetails =
                     (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

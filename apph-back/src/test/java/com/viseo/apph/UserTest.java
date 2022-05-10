@@ -12,10 +12,10 @@ public class UserTest {
     UserController userController;
 
     private void createUserController() {
-        UserDAO userDAO = new UserDAO();
-        inject(userDAO, "em", em);
+        UserDao userDao = new UserDao();
+        inject(userDao, "em", em);
         userService = new UserService();
-        inject(userService, "userDAO", userDAO);
+        inject(userService, "userDao", userDao);
         userController = new UserController();
         inject(userController, "userService", userService);
     }

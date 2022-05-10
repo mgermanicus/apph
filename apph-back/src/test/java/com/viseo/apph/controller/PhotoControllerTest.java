@@ -1,7 +1,7 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.Photo;
-import com.viseo.apph.dto.IResponseDTO;
+import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.PhotoService;
 import com.viseo.apph.service.S3Service;
@@ -18,7 +18,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
-/*
+
 @RunWith(MockitoJUnitRunner.class)
 public class PhotoControllerTest {
     @Mock
@@ -38,7 +38,7 @@ public class PhotoControllerTest {
         Photo photo = new Photo();
         // When
         when(photoService.addPhoto(name)).thenReturn(photo);
-        ResponseEntity<IResponseDTO> responseEntity = photoController.upload(file, name);
+        ResponseEntity<IResponseDto> responseEntity = photoController.upload(file, name);
         // Then
         verify(photoService, times(1)).addPhoto(any());
         assertEquals(responseEntity.getStatusCode().toString()
@@ -53,9 +53,8 @@ public class PhotoControllerTest {
         Photo photo = new Photo();
         when(photoService.getFormat(any())).thenThrow(new InvalidFileException("error"));
         // When
-        ResponseEntity<IResponseDTO> responseEntity = photoController.upload(null, name);
+        ResponseEntity<IResponseDto> responseEntity = photoController.upload(null, name);
         // Then
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.toString(), responseEntity.getStatusCode().toString());
     }
 }
-*/

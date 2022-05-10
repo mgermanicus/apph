@@ -1,6 +1,6 @@
 package com.viseo.apph.exception;
 
-import com.viseo.apph.dto.IResponseDTO;
+import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.MessageResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
     //CommonsMultipartResolver
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     @ResponseStatus(value = HttpStatus.PAYLOAD_TOO_LARGE)
-    public ResponseEntity<IResponseDTO> handleMultipartException(MaxUploadSizeExceededException e) {
+    public ResponseEntity<IResponseDto> handleMultipartException(MaxUploadSizeExceededException e) {
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(new MessageResponse(e.getMessage()));
     }
 

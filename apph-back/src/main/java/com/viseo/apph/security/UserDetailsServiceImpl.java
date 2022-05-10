@@ -1,6 +1,6 @@
 package com.viseo.apph.security;
 
-import com.viseo.apph.dao.UserDAO;
+import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
-    UserDAO userRepository;
+    UserDao userRepository;
 
     @Override
     @Transactional
