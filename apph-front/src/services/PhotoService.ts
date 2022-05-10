@@ -2,6 +2,7 @@ import Server from './Server';
 import { imageFileCheck } from '../utils';
 import Cookies from 'universal-cookie';
 import { ITable } from '../utils/types/table';
+
 const cookies = new Cookies();
 export default class PhotoService {
   static uploadImage(
@@ -11,11 +12,15 @@ export default class PhotoService {
     handleError: (errorMessage: string) => void
   ) {
     if (!imageFileCheck(imageFile, handleError)) return;
+    const userInfos = cookies.get('user');
     const formData = new FormData();
     formData.append('file', imageFile);
-    formData.append('name', title);
+    formData.append('title', title);
     const requestOptions = {
       method: 'POST',
+      headers: {
+        Authorization: userInfos?.token
+      },
       body: formData
     };
     return Server.request(
@@ -35,7 +40,7 @@ export default class PhotoService {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        token: userInfos?.token
+        Authorization: userInfos?.token
       }
     };
     const successFunction = (val: string) => {

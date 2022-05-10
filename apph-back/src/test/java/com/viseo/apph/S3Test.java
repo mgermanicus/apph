@@ -1,16 +1,12 @@
 package com.viseo.apph;
 
 import com.viseo.apph.controller.S3Controller;
-import com.viseo.apph.controller.UserController;
 import com.viseo.apph.dao.S3Dao;
-import com.viseo.apph.dao.UserDAO;
 import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.service.S3Service;
-import com.viseo.apph.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
@@ -22,7 +18,6 @@ import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertEquals;
@@ -75,7 +70,7 @@ public class S3Test {
     }
 
     @Test
-    public void testUploadException() throws InvalidFileException, IOException {
+    public void testUploadException() {
         // Given
         createUserController();
         MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
