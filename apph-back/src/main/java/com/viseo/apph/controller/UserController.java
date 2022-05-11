@@ -43,7 +43,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.PUT, produces = "application/json")
-    public ResponseEntity editUserInfo(@RequestHeader("Authentication") String token, @RequestBody UserRequest request) {
+    public ResponseEntity editUserInfo(@RequestHeader("Authorization") String token, @RequestBody UserRequest request) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             User user = userService.getUser(claims);
