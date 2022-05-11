@@ -33,7 +33,7 @@ export const App = () => {
     } catch (e) {
       alert('Session expirée, veuillez-vous reconnecter.');
     }
-  }, [authenticated]);
+  }, []);
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>

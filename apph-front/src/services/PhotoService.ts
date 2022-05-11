@@ -1,15 +1,13 @@
 import Server from './Server';
-import { imageFileCheck } from '../utils';
+import { imageFileCheck, IMessage, IPagination, IPhoto, ITag } from '../utils';
 import Cookies from 'universal-cookie';
-import { IPhoto } from '../utils/types/Photo';
-import { IMessage } from '../utils/types/Message';
-import { IPagination } from '../utils/types/Pagination';
 
 const cookies = new Cookies();
 export default class PhotoService {
   static uploadImage(
     title: string,
     imageFile: File,
+    selectedTags: ITag[],
     handleSuccess: () => void,
     handleError: (errorMessage: string) => void
   ) {
@@ -17,6 +15,7 @@ export default class PhotoService {
     const userInfos = cookies.get('user');
     const formData = new FormData();
     formData.append('file', imageFile);
+    formData.append('tags', JSON.stringify(selectedTags));
     formData.append('title', title);
     const requestOptions = {
       method: 'POST',
@@ -32,6 +31,7 @@ export default class PhotoService {
       handleError
     );
   }
+
   static getData(
     pageSize: number,
     page: number,

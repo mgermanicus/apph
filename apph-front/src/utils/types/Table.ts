@@ -1,3 +1,5 @@
+import { ITag } from './Tag';
+
 export interface ITable {
   id: number;
   size: number;
@@ -6,7 +8,7 @@ export interface ITable {
   description: string;
   title: string;
   url: string;
-  tags: string[];
+  tags: ITag[];
   details: JSX.Element;
 }
 
@@ -17,5 +19,5 @@ export interface IPhotoDetails {
   creationDate: Date;
   shootingDate: Date;
   size: number;
-  tags: string[];
+  tags: ITag[];
 }

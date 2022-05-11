@@ -8,7 +8,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 @Repository
-public class UserDAO {
+public class UserDao {
     @PersistenceContext
     EntityManager em;
 
@@ -20,9 +20,5 @@ public class UserDAO {
         return em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)
                 .setParameter("login", login)
                 .getSingleResult();
-    }
-
-    public User getUserById(long userId) {
-        return em.find(User.class, userId);
     }
 }

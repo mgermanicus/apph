@@ -1,7 +1,7 @@
 package com.viseo.apph.service;
 
-import com.viseo.apph.dao.FolderDAO;
-import com.viseo.apph.dao.UserDAO;
+import com.viseo.apph.dao.FolderDao;
+import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FolderRequest;
@@ -22,15 +22,15 @@ public class FolderService {
     Logger logger = LoggerFactory.getLogger(FolderService.class);
 
     @Autowired
-    FolderDAO folderDAO;
+    FolderDao folderDao;
 
     @Autowired
-    UserDAO userDAO;
+    UserDao userDao;
 
     @Transactional
     public FolderResponse getFoldersByUser(String login) throws NotFoundException {
-        User user = userDAO.getUserByLogin(login);
-        List<Folder> folderList = folderDAO.getFolderByUser(user.getId());
+        User user = userDao.getUserByLogin(login);
+        List<Folder> folderList = folderDao.getFolderByUser(user.getId());
         Folder parentFolder = getParentFolder(folderList);
         FolderResponse parentFolderResponse = new FolderResponse()
                 .setId(parentFolder.getId())
@@ -46,8 +46,8 @@ public class FolderService {
             logger.error("Cannot create a root folder.");
             throw new UnauthorizedException("Impossible de créer un dossier racine.");
         }
-        Folder parentFolder = folderDAO.getFolderById(request.getParentFolderId());
-        User user = userDAO.getUserByLogin(login);
+        Folder parentFolder = folderDao.getFolderById(request.getParentFolderId());
+        User user = userDao.getUserByLogin(login);
         if (parentFolder == null) {
             logger.error("Parent folder not found.");
             throw new NotFoundException("Dossier parent introuvable.");
@@ -57,7 +57,7 @@ public class FolderService {
             throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
         }
         Folder folder = new Folder().setName(request.getName()).setParentFolderId(request.getParentFolderId()).setUser(user);
-        folderDAO.createFolder(folder);
+        folderDao.createFolder(folder);
         return getFoldersByUser(login);
     }
 

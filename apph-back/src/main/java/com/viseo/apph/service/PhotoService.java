@@ -2,8 +2,9 @@ package com.viseo.apph.service;
 
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
-import com.viseo.apph.dao.UserDAO;
+import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.PaginationResponse;
 import com.viseo.apph.dto.PhotoRequest;
@@ -18,6 +19,7 @@ import javax.transaction.Transactional;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +29,7 @@ public class PhotoService {
     PhotoDao photoDao;
 
     @Autowired
-    UserDAO userDAO;
+    UserDao userDao;
 
     @Autowired
     S3Dao s3Dao;
@@ -49,22 +51,22 @@ public class PhotoService {
 
     @Transactional
     public PaginationResponse getUserPhotos(String userLogin, int pageSize, int page) {
-        User user = userDAO.getUserByLogin(userLogin);
+        User user = userDao.getUserByLogin(userLogin);
         List<Photo> userPhotos = photoDao.getUserPhotos(user);
         int startIndex = (page - 1) * pageSize;
         int endIndex = page * pageSize;
         PaginationResponse response = new PaginationResponse().setTotalSize(userPhotos.size());
         List<PhotoResponse> responseList = userPhotos.subList(startIndex, Math.min(endIndex, userPhotos.size())).stream()
-                .map( photo -> new PhotoResponse()
+                .map(photo -> new PhotoResponse()
                         .setId(photo.getId())
-                    .setTitle(photo.getTitle())
+                        .setTitle(photo.getTitle())
                         .setCreationDate(photo.getCreationDate())
                         .setSize(photo.getSize())
                         .setTags(photo.getTags())
                         .setDescription(photo.getDescription())
                         .setShootingDate(photo.getShootingDate())
                         .setUrl(s3Dao.getPhotoUrl(photo))
-                        ).collect(Collectors.toList());
+                ).collect(Collectors.toList());
         for (PhotoResponse photo : responseList) {
             response.addPhoto(photo);
         }
@@ -91,8 +93,8 @@ public class PhotoService {
         }
     }
 
-    public Photo getPhotoByRequest(PhotoRequest photoRequest, long userId) throws InvalidFileException {
-        User user = userDAO.getUserById(userId);
+    public Photo getPhotoByRequest(PhotoRequest photoRequest, String login) throws InvalidFileException {
+        User user = userDao.getUserByLogin(login);
         return new Photo()
                 .setTitle(photoRequest.getTitle())
                 .setFormat(getFormat(photoRequest.getFile()))

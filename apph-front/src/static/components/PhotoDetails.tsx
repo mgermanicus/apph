@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { IPhotoDetails } from '../../utils/types/table';
+import { IPhotoDetails } from '../../utils';
 
 const modalStyle = {
   position: 'absolute',
@@ -110,9 +110,9 @@ const PhotoDetails = ({
                 <Typography sx={detailTypoStyle}>
                   {tags.map((tag, index) => {
                     if (index !== tags.length - 1) {
-                      return tag + ', ';
+                      return tag.name + ', ';
                     }
-                    return tag;
+                    return tag.name;
                   })}
                 </Typography>
               </Box>
