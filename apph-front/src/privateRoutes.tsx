@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { IUser } from './utils';
 import { EditProfile } from './static/components/EditProfile';
 import { MyPhotoPage } from './static/pages/MyPhotoPage';
+import { AdvancedResearchPage } from './static/pages/AdvancedResearchPage';
 
 export const PrivateRoutes = ({
   authenticated
@@ -82,9 +83,7 @@ export const PrivateRoutes = ({
         <Route
           path="/research"
           element={needAuthenticationRoute(
-            <PrivatePageContainer
-              element={<TODOPage todo="Page: Rechercher Avancée" />}
-            />
+            <PrivatePageContainer element={<AdvancedResearchPage />} />
           )}
         />
         <Route path="*" element={<Navigate to="/" />} />
