@@ -2,8 +2,8 @@ import { render, waitFor } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 import * as React from 'react';
 import { PhotoTable } from '../../static/components/PhotoTable';
-import { wrapper } from '../utils/components/CustomWrapper';
 import { IPagination } from '../../utils';
+import { wrapper } from '../utils/components/CustomWrapper';
 
 describe('Tests du composant PhotoTable.tsx', () => {
   beforeEach(() => {
