@@ -73,13 +73,12 @@ export const UploadImage = (): JSX.Element => {
     }
     const files = fileInput.current?.files;
     if (files) {
-      const file = files[0];
       setUploadStatus('uploading');
-      PhotoService.uploadImage(
+      PhotoService.uploadImages(
         title,
         description,
         shootingDate,
-        file,
+        files,
         selectedTags,
         '-1',
         () => {
@@ -231,7 +230,8 @@ export const UploadImage = (): JSX.Element => {
                     inputProps={{
                       type: 'file',
                       accept: 'image/*',
-                      'data-testid': 'file-input'
+                      'data-testid': 'file-input',
+                      multiple: true
                     }}
                     required
                   />

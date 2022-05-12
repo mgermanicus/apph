@@ -11,16 +11,17 @@ import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();
 export default class PhotoService {
-  static uploadImage(
+  static uploadImages(
     title: string,
     description: string,
     shootingDate: Date,
-    imageFile: File,
+    imageFiles: FileList,
     selectedTags: ITag[],
     folderId: string,
     handleSuccess: () => void,
     handleError: (errorMessage: string) => void
   ) {
+    const imageFile = imageFiles[0]; //TODO upload all files
     if (!imageFileCheck(imageFile, handleError)) return;
     const userInfos = cookies.get('user');
     const formData = new FormData();
