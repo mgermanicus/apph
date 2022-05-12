@@ -57,8 +57,9 @@ export default class PhotoService {
     shootingDate: Date,
     imageFiles: FileList,
     selectedTags: ITag[],
-    handleSuccess: () => void,
-    handleError: (errorMessage: string) => void
+    folderId: string,
+    handleSuccess: (() => void)[],
+    handleError: ((errorMessage: string) => void)[]
   ) {
     const promises = [];
     for (let i = 0; i < imageFiles.length; i++) {
@@ -70,8 +71,9 @@ export default class PhotoService {
           shootingDate,
           file,
           selectedTags,
-          handleSuccess,
-          handleError
+          folderId,
+          handleSuccess[i],
+          handleError[i]
         )
       );
     }
