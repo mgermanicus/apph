@@ -11,17 +11,16 @@ import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();
 export default class PhotoService {
-  static uploadImages(
+  static uploadImage(
     title: string,
     description: string,
     shootingDate: Date,
-    imageFiles: FileList,
+    imageFile: File,
     selectedTags: ITag[],
     folderId: string,
     handleSuccess: () => void,
     handleError: (errorMessage: string) => void
   ) {
-    const imageFile = imageFiles[0]; //TODO upload all files
     if (!imageFileCheck(imageFile, handleError)) return;
     const userInfos = cookies.get('user');
     const formData = new FormData();
@@ -50,6 +49,32 @@ export default class PhotoService {
       handleSuccess,
       errorFunction
     );
+  }
+
+  static uploadImages(
+    title: string,
+    description: string,
+    shootingDate: Date,
+    imageFiles: FileList,
+    selectedTags: ITag[],
+    handleSuccess: () => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const promises = [];
+    for (let i = 0; i < imageFiles.length; i++) {
+      const file = imageFiles[i];
+      promises.push(
+        this.uploadImage(
+          imageFiles.length > 1 ? `${title}_${i + 1}` : title,
+          description,
+          shootingDate,
+          file,
+          selectedTags,
+          handleSuccess,
+          handleError
+        )
+      );
+    }
   }
 
   static getData(
