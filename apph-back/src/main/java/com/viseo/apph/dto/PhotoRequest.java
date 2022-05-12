@@ -2,16 +2,18 @@ package com.viseo.apph.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.viseo.apph.domain.Tag;
 import org.springframework.web.multipart.MultipartFile;
 
 public class PhotoRequest {
     @JsonProperty("id")
     long id;
     String title;
+    String description;
     MultipartFile file;
     @JsonValue
     String tags;
+    @JsonValue
+    String shootingDate;
 
     public long getId() {
         return id;
@@ -28,6 +30,24 @@ public class PhotoRequest {
 
     public PhotoRequest setTitle(String title) {
         this.title = title;
+        return this;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public PhotoRequest setDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public String getShootingDate() {
+        return shootingDate;
+    }
+
+    public PhotoRequest setShootingDate(String shootingDate) {
+        this.shootingDate = shootingDate;
         return this;
     }
 

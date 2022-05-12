@@ -6,6 +6,8 @@ const cookies = new Cookies();
 export default class PhotoService {
   static uploadImage(
     title: string,
+    description: string,
+    shootingDate: Date,
     imageFile: File,
     selectedTags: ITag[],
     handleSuccess: () => void,
@@ -17,6 +19,11 @@ export default class PhotoService {
     formData.append('file', imageFile);
     formData.append('tags', JSON.stringify(selectedTags));
     formData.append('title', title);
+    formData.append('description', description);
+    formData.append(
+      'shootingDate',
+      JSON.stringify(shootingDate.toLocaleString())
+    );
     const requestOptions = {
       method: 'POST',
       headers: {

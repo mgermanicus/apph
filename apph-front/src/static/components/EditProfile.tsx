@@ -8,10 +8,9 @@ import {
   Stack,
   TextField
 } from '@mui/material';
-import { makeCardStyles } from '../../utils/theme';
+import { makeCardStyles, IUser, IUserRequest } from '../../utils';
 import { FormEvent, useEffect, useState } from 'react';
 import UserService from '../../services/UserService';
-import { IUserRequest, IUser } from '../../utils/types';
 import AuthService from '../../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmationDialog } from './ConfirmationDialog';
