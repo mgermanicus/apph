@@ -85,7 +85,7 @@ public class PhotoController {
     public ResponseEntity<IResponseDTO> download(@RequestHeader("Authorization") String token, @RequestBody PhotoRequest photoRequest) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            Photo photo = photoService.getPhotoById(photoRequest.getId(), (long) claims.get("id"));
+            Photo photo = photoService.getPhotoById(photoRequest.getId(), Long.valueOf((int) claims.get("id")));
             PhotoResponse photoResponse = photoService.download(photoRequest.getId() + photo.getFormat()).setTitle(photo.getTitle()).setFormat(photo.getFormat());
             return ResponseEntity.ok(photoResponse);
         } catch (S3Exception e) {
