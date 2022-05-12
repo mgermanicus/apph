@@ -1,5 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react';
 import Server from '../../services/Server';
+import { FakeRequestResults } from './types/FakeRequestResults';
+import AuthService from '../../services/AuthService';
 
 export function fillText(label: RegExp, value: string) {
   const textInput = screen.getByRole('textbox', { name: label });
@@ -68,6 +70,31 @@ export function spyRequestSuccess() {
   Server.request = spy;
   return spy;
 }
+
+export const fakeRequest = (requestResults: FakeRequestResults) => {
+  Server.request = jest.fn(
+    (
+      URL: string,
+      requestOptions: RequestInit,
+      successFunction: (body: string) => void | undefined,
+      errorFunction: (error: string) => void
+    ) => {
+      const result = requestResults[URL];
+      if (result.error) {
+        errorFunction(result.error);
+      } else if (result.body) {
+        successFunction(result.body);
+      }
+      return Promise.resolve();
+    }
+  );
+};
+
+export const spyCookies = () => {
+  const spyUpdateUserCookie = jest.fn();
+  AuthService.updateUserCookie = spyUpdateUserCookie;
+  return spyUpdateUserCookie;
+};
 
 export function spyRequestSuccessBody(body: string) {
   const spy = jest.fn(
