@@ -1,4 +1,4 @@
-import { IFolder } from '../utils/types/Folder';
+import { IFolder } from '../utils';
 import Server from './Server';
 import Cookies from 'universal-cookie';
 

@@ -1,11 +1,14 @@
 import {
   Alert,
+  Autocomplete,
   Avatar,
   Box,
   Button,
   Container,
+  createFilterOptions,
   CssBaseline,
   Dialog,
+  FilterOptionsState,
   Input,
   LinearProgress,
   Stack,
@@ -14,8 +17,12 @@ import {
 } from '@mui/material';
 import PhotoService from '../../services/PhotoService';
 import { UploadStatus } from '../../utils';
-import { createRef, FormEvent, useState } from 'react';
+import { createRef, FormEvent, useEffect, useState } from 'react';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import { ITag } from '../../utils/types/Tag';
+import TagService from '../../services/TagService';
+
+const filter = createFilterOptions<ITag>();
 
 const displayAlert = (
   uploadStatus: UploadStatus,
@@ -32,18 +39,24 @@ const displayAlert = (
 };
 
 export const UploadImage = (): JSX.Element => {
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState<string>('');
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>('none');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const fileInput = createRef<HTMLInputElement>();
-  const [open, setOpen] = useState(false);
-
+  const [open, setOpen] = useState<boolean>(false);
+  const [allTags, setAllTags] = useState<ITag[]>([]);
+  const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const handleClickOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
+    setErrorMessage('');
+    setTitle('');
+    setSelectedTags([]);
+    setUploadStatus('none');
   };
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const files = fileInput.current?.files;
@@ -53,6 +66,7 @@ export const UploadImage = (): JSX.Element => {
       PhotoService.uploadImage(
         title,
         file,
+        selectedTags,
         () => {
           setUploadStatus('success');
         },
@@ -63,6 +77,31 @@ export const UploadImage = (): JSX.Element => {
       );
     }
   };
+
+  const filterTags = (options: ITag[], params: FilterOptionsState<ITag>) => {
+    const filtered = filter(
+      options?.filter((tag) => tag.name !== null),
+      params
+    );
+    const { inputValue } = params;
+    const isExisting = options.some((option) => inputValue === option.name);
+    if (inputValue !== '' && !isExisting) {
+      filtered.push({
+        name: `+ Add New Tag ${inputValue}`
+      });
+    }
+    return filtered;
+  };
+
+  useEffect(() => {
+    TagService.getAllTags(
+      (tags: string) => {
+        const tagsConverted: ITag[] = JSON.parse(tags);
+        setAllTags(tagsConverted);
+      },
+      (errorMessage: string) => setErrorMessage(errorMessage)
+    );
+  }, []);
 
   return (
     <Box sx={{ m: 1 }}>
@@ -109,6 +148,25 @@ export const UploadImage = (): JSX.Element => {
                     name="title"
                     autoComplete="title"
                     autoFocus
+                  />
+                  <Autocomplete
+                    data-testid="#autocomplete"
+                    multiple
+                    limitTags={2}
+                    id="tags"
+                    size="small"
+                    options={allTags}
+                    onChange={(event, tags) => setSelectedTags(tags)}
+                    filterOptions={(options, params) =>
+                      filterTags(options, params)
+                    }
+                    isOptionEqualToValue={(tag, value) =>
+                      tag.name === value.name
+                    }
+                    getOptionLabel={(tag) => tag.name}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Tags" />
+                    )}
                   />
                   <Input
                     fullWidth

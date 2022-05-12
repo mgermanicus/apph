@@ -1,7 +1,7 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.dao.FolderDAO;
-import com.viseo.apph.dao.UserDAO;
+import com.viseo.apph.dao.FolderDao;
+import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.service.UserService;
@@ -39,14 +39,14 @@ public class AuthTest {
     NoResultException noResultException;
 
     private void createAuthController() {
-        UserDAO userDAO = new UserDAO();
-        FolderDAO folderDAO = new FolderDAO();
-        inject(userDAO, "em", em);
-        inject(folderDAO, "em", em);
+        UserDao userDao = new UserDao();
+        FolderDao folderDao = new FolderDao();
+        inject(userDao, "em", em);
+        inject(folderDao, "em", em);
         userService = new UserService();
         inject(userService, "encoder", passwordEncoder);
-        inject(userService, "userDAO", userDAO);
-        inject(userService, "folderDAO", folderDAO);
+        inject(userService, "userDao", userDao);
+        inject(userService, "folderDao", folderDao);
         authController = new AuthController();
         inject(authController, "userService", userService);
     }
@@ -88,7 +88,7 @@ public class AuthTest {
         //WHEN
         ResponseEntity responseEntity = authController.login(userRequest);
         //THEN
-        assertEquals(HttpStatus.UNAUTHORIZED,responseEntity.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
     }
 
     @Test
@@ -103,12 +103,11 @@ public class AuthTest {
         //WHEN
         ResponseEntity responseEntity = authController.login(userRequest);
         //THEN
-        assertEquals(HttpStatus.UNAUTHORIZED,responseEntity.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
     }
 
     @Test
-    public void testRegister()
-    {
+    public void testRegister() {
         //GIVEN
         createAuthController();
         UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
@@ -117,18 +116,17 @@ public class AuthTest {
         //WHEN
         ResponseEntity responseEntity = authController.register(userRequest);
         //THEN
-        Assert.assertTrue( responseEntity.getStatusCode().is2xxSuccessful());
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
-    public void testRegisterFailUserExist()
-    {
+    public void testRegisterFailUserExist() {
         //GIVEN
         createAuthController();
         UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
-        when(typedQuery.setParameter("login","tintin")).thenReturn(typedQuery);
+        when(typedQuery.setParameter("login", "tintin")).thenReturn(typedQuery);
         doThrow(new DataIntegrityViolationException("test")).when(em).persist(any());
         //WHEN
         ResponseEntity responseEntity = authController.register(userRequest);

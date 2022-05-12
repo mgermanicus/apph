@@ -2,8 +2,8 @@ package com.viseo.apph;
 
 import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.controller.FolderController;
-import com.viseo.apph.dao.FolderDAO;
-import com.viseo.apph.dao.UserDAO;
+import com.viseo.apph.dao.FolderDao;
+import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FolderRequest;
@@ -48,24 +48,23 @@ public class FolderTest {
     FolderController folderController;
 
     private void createFolderController() {
-        FolderDAO folderDAO = new FolderDAO();
-        inject(folderDAO, "em", em);
-        UserDAO userDAO = new UserDAO();
-        inject(userDAO, "em", em);
+        FolderDao folderDao = new FolderDao();
+        inject(folderDao, "em", em);
+        UserDao userDao = new UserDao();
+        inject(userDao, "em", em);
         folderService = new FolderService();
-        inject(folderService, "folderDAO", folderDAO);
-        inject(folderService, "userDAO", userDAO);
+        inject(folderService, "folderDao", folderDao);
+        inject(folderService, "userDao", userDao);
         folderController = new FolderController();
         inject(folderController, "folderService", folderService);
     }
 
-    void inject(Object component,String field, Object injected) {
+    void inject(Object component, String field, Object injected) {
         try {
             Field compField = component.getClass().getDeclaredField(field);
             compField.setAccessible(true);
-            compField.set(component,injected);
-        }
-        catch(IllegalAccessException | NoSuchFieldException e) {
+            compField.set(component, injected);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }
     }

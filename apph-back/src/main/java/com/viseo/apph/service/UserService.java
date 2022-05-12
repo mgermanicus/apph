@@ -1,8 +1,8 @@
 package com.viseo.apph.service;
 
 import com.viseo.apph.config.JwtConfig;
-import com.viseo.apph.dao.FolderDAO;
-import com.viseo.apph.dao.UserDAO;
+import com.viseo.apph.dao.FolderDao;
+import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.exception.NotFoundException;
@@ -22,24 +22,24 @@ import java.security.Key;
 @Service
 public class UserService {
     @Autowired
-    UserDAO userDAO;
+    UserDao userDao;
 
     @Autowired
-    FolderDAO folderDAO;
+    FolderDao folderDao;
 
     PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Transactional
     public void registerUser(UserRequest userRequest) {
         User newUser = new User().setLogin(userRequest.getLogin()).setPassword(encoder.encode(userRequest.getPassword())).setFirstname(userRequest.getFirstName()).setLastname(userRequest.getLastName());
-        userDAO.createUser(newUser);
+        userDao.createUser(newUser);
         Folder rootFolder = new Folder().setName(newUser.getFirstname()).setParentFolderId(null).setUser(newUser);
-        folderDAO.createFolder(rootFolder);
+        folderDao.createFolder(rootFolder);
     }
 
     @Transactional
     public User login(UserRequest userRequest) throws IllegalArgumentException {
-        User user = userDAO.getUserByLogin(userRequest.getLogin());
+        User user = userDao.getUserByLogin(userRequest.getLogin());
         if (encoder.matches(userRequest.getPassword(), user.getPassword()))
             return user;
         throw new IllegalArgumentException();
@@ -48,12 +48,12 @@ public class UserService {
     @Transactional
     public User getUser(Claims claims) {
         String login = claims.get("login").toString();
-        return userDAO.getUserByLogin(login);
+        return userDao.getUserByLogin(login);
     }
 
     @Transactional
     public String editUser(long userId, UserRequest request, Claims claims) throws NotFoundException {
-        User user = userDAO.getUserById(userId);
+        User user = userDao.getUserById(userId);
         Key key = JwtConfig.getKey();
         JwtBuilder newClaims = Jwts.builder().setClaims(claims);
         if (user == null) throw new NotFoundException("");
@@ -68,7 +68,7 @@ public class UserService {
         if (request.getPassword() != null)
             user.setPassword(encoder.encode(request.getPassword()));
         if (request.getLogin() != null) {
-            if (userDAO.existByLogin(request.getLogin()))
+            if (userDao.existByLogin(request.getLogin()))
                 throw new DataIntegrityViolationException("");
             user.setLogin(request.getLogin());
             newClaims.claim("login", request.getLogin());

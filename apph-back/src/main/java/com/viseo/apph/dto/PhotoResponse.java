@@ -1,6 +1,7 @@
 package com.viseo.apph.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.viseo.apph.domain.Tag;
 
 import java.util.Date;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class PhotoResponse implements IResponseDTO {
     @JsonProperty("size")
     float size;
     @JsonProperty("tags")
-    Set<String> tags;
+    Set<Tag> tags;
     @JsonProperty("url")
     String url;
     @JsonProperty("data")
@@ -85,11 +86,11 @@ public class PhotoResponse implements IResponseDTO {
         return this;
     }
 
-    public Set<String> getTags() {
+    public Set<Tag> getTags() {
         return tags;
     }
 
-    public PhotoResponse setTags(Set<String> tags) {
+    public PhotoResponse setTags(Set<Tag> tags) {
         this.tags = tags;
         return this;
     }

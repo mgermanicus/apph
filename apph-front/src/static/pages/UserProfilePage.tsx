@@ -24,7 +24,7 @@ export const UserProfilePage = (): JSX.Element => {
         }
       );
     })();
-  }, [firstname, lastname, email]);
+  }, []);
 
   return (
     <>

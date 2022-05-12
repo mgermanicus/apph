@@ -2,6 +2,7 @@ package com.viseo.apph.config;
 
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -97,26 +98,31 @@ public class DataBaseConfig {
         em.persist(larbiRoot);
         em.persist(doryanRoot);
         em.persist(manonRoot);
+        //Elie's tags
+        Tag elieT1 = new Tag().setName("Elie_T1").setUser(elie);
+        Tag elieT2 = new Tag().setName("Elie_T2").setUser(elie);
+        em.persist(elieT1);
+        em.persist(elieT2);
         //Photo
-        Photo photo1 = new Photo().setFormat(".jpeg").setUser(alexandre).setSize(1200).setTags(Collections.singleton("img")).setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo photo1 = new Photo().setFormat(".jpeg").setUser(alexandre).setSize(1200).addTag(elieT1).setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setShootingDate(new Date());
         // NOTE : you need a file named 1.jpeg in your S3 folder with this photo in the database
-        Photo photo2 = new Photo().setFormat(".png").setUser(alexandre).setSize(1300).setTags(Collections.singleton("img2")).setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setShootingDate(new Date());
+        Photo photo2 = new Photo().setFormat(".png").setUser(alexandre).setSize(1300).addTag(elieT1).setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setShootingDate(new Date());
         // NOTE : you need a file named 2.png in your S3 folder with this photo in the database
         em.persist(photo1);
         em.persist(photo2);
         //Elie's Photo
-        Photo eliePhoto1 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img1")).setTitle("photo1").setDescription("photo test 1").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto2 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img2")).setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto3 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img3")).setTitle("photo3").setDescription("photo test 3").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto4 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img4")).setTitle("photo4").setDescription("photo test 4").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto5 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img5")).setTitle("photo5").setDescription("photo test 5").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto6 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img6")).setTitle("photo6").setDescription("photo test 6").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto7 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img7")).setTitle("photo7").setDescription("photo test 7").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto8 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img8")).setTitle("photo8").setDescription("photo test 8").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto9 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img9")).setTitle("photo9").setDescription("photo test 9").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto10 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img10")).setTitle("photo10").setDescription("photo test 10").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto11 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img11")).setTitle("photo11").setDescription("photo test 11").setCreationDate(new Date()).setShootingDate(new Date());
-        Photo eliePhoto12 = new Photo().setUser(elie).setSize(1300).setTags(Collections.singleton("img12")).setTitle("photo12").setDescription("photo test 12").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto1 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo1").setDescription("photo test 1").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto2 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto3 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo3").setDescription("photo test 3").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto4 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo4").setDescription("photo test 4").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto5 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo5").setDescription("photo test 5").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto6 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo6").setDescription("photo test 6").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto7 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo7").setDescription("photo test 7").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto8 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo8").setDescription("photo test 8").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto9 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo9").setDescription("photo test 9").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto10 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo10").setDescription("photo test 10").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto11 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo11").setDescription("photo test 11").setCreationDate(new Date()).setShootingDate(new Date());
+        Photo eliePhoto12 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo12").setDescription("photo test 12").setCreationDate(new Date()).setShootingDate(new Date());
         em.persist(eliePhoto1);
         em.persist(eliePhoto2);
         em.persist(eliePhoto3);
