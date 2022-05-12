@@ -42,7 +42,7 @@ export const EditProfile = () => {
       await UserService.getUser(
         (user: string) => {
           const userConverted: IUser = JSON.parse(user);
-          setUser((user) => ({ ...userConverted }));
+          setUser(userConverted);
           setFirstName(userConverted.firstname);
           setLastName(userConverted.lastname);
           setLogin(userConverted.login);
@@ -156,7 +156,7 @@ export const EditProfile = () => {
               }
             />
             <Button type="submit">Valider</Button>
-            <Button color="error" onClick={(e) => resetChanges()}>
+            <Button color="error" onClick={resetChanges}>
               Annuler les modifications
             </Button>
             {alertMessage ? (
