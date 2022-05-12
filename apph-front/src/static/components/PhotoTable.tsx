@@ -4,7 +4,6 @@ import { DataGrid, GridColDef, GridSelectionModel } from '@mui/x-data-grid';
 import { Alert, Collapse, IconButton, Stack } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { IPagination, ITable, ITag } from '../../utils';
-import PhotoService from '../../services/PhotoService';
 import PhotoDetails from './PhotoDetails';
 import { DownloadImage } from './DownloadImage';
 import { useDispatch } from 'react-redux';
@@ -86,7 +85,16 @@ const columns: GridColDef[] = [
   }
 ];
 
-export const PhotoTable = () => {
+interface photoTableProps {
+  getPhotos: (
+    pageSize: number,
+    page: number,
+    handleSuccess: (pagination: IPagination) => void,
+    handleError: (errorMessage: string) => void
+  ) => void;
+}
+
+export const PhotoTable = ({ getPhotos }: photoTableProps) => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [pageSize, setPageSize] = useState<number>(5);
@@ -97,40 +105,36 @@ export const PhotoTable = () => {
 
   const dispatch = useDispatch();
 
-  const getData = () => {
-    setLoading(true);
-    PhotoService.getData(
-      pageSize,
-      page + 1,
-      (pagination: IPagination) => {
-        pagination.photoList.forEach(
-          (row) =>
-            (row.details = (
-              <PhotoDetails
-                photoSrc={row.url}
-                title={row.title}
-                description={row.description}
-                creationDate={row.creationDate}
-                shootingDate={row.shootingDate}
-                size={row.size}
-                tags={row.tags}
-              />
-            ))
-        );
-        setData(pagination.photoList);
-        setTotalSize(pagination.totalSize);
-        setLoading(false);
-      },
-      (error: string) => {
-        setErrorMessage(error);
-        setLoading(false);
-      }
+  const handleSuccess = (pagination: IPagination) => {
+    pagination.photoList.forEach(
+      (row) =>
+        (row.details = (
+          <PhotoDetails
+            photoSrc={row.url}
+            title={row.title}
+            description={row.description}
+            creationDate={row.creationDate}
+            shootingDate={row.shootingDate}
+            size={row.size}
+            tags={row.tags}
+          />
+        ))
     );
+    setData(pagination.photoList);
+    setTotalSize(pagination.totalSize);
+    setLoading(false);
+  };
+
+  const handleError = (error: string) => {
+    setErrorMessage(error);
+    setLoading(false);
   };
 
   useEffect(() => {
-    getData();
-    const timer = setInterval(getData, 3000);
+    getPhotos(pageSize, page + 1, handleSuccess, handleError);
+    const timer = setInterval(() => {
+      getPhotos(pageSize, page + 1, handleSuccess, handleError);
+    }, 3000);
     return () => clearInterval(timer);
   }, [page, pageSize]);
 

@@ -9,7 +9,7 @@ export interface ITable {
   title: string;
   url: string;
   tags: ITag[];
-  details: JSX.Element;
+  details?: JSX.Element;
 }
 
 export interface IPhotoDetails {
