@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { PhotoTable } from '../components/PhotoTable';
+import { IPagination } from '../../utils';
+import PhotoService from '../../services/PhotoService';
 import { UploadImage } from '../components/UploadImage';
 import { Box, ButtonGroup } from '@mui/material';
 import { DeleteImage } from '../components/DeleteImage';
@@ -18,6 +20,15 @@ export const MyPhotoPage = (): JSX.Element => {
     setSelectedIds(selected.map((photo: IPhoto) => +photo['id']));
   }, [selected]);
 
+  const getPhotos = (
+    pageSize: number,
+    page: number,
+    handleSuccess: (pagination: IPagination) => void,
+    handleError: (errorMessage: string) => void
+  ) => {
+    PhotoService.getData(pageSize, page, handleSuccess, handleError);
+  };
+
   return (
     <>
       <ButtonGroup variant="outlined" aria-label="outlined button group">
@@ -26,7 +37,7 @@ export const MyPhotoPage = (): JSX.Element => {
           <DeleteImage ids={selectedIds} />
         </Box>
       </ButtonGroup>
-      <PhotoTable />
+      <PhotoTable getPhotos={getPhotos} />
     </>
   );
 };

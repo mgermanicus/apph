@@ -10,7 +10,7 @@ export interface ITable {
   url: string;
   tags: ITag[];
   format: string;
-  details: JSX.Element;
+  details?: JSX.Element;
 }
 
 export interface IPhotoDetails {
