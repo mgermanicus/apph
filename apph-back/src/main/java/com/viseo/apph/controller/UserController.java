@@ -2,6 +2,7 @@ package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.User;
 import com.viseo.apph.security.UserDetailsImpl;
+import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -20,20 +21,17 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    static Utils utils = new Utils(){};
+
     @GetMapping("/")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity getUserInfo() {
         try {
-            UserDetailsImpl userDetails =
-                    (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            return ResponseEntity.ok(new User().setLogin(userDetails.getLogin()).setFirstname(userDetails.getFirstname())
-                    .setLastname(userDetails.getLastname()));
-        } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("L'utilisateur n'existe pas");
-        } catch (SignatureException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token non valide");
-        } catch (ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token expiré");
+            User user = utils.getUser();
+            return ResponseEntity.ok(new User().setLogin(user.getLogin()).setFirstname(user.getFirstname())
+                    .setLastname(user.getLastname()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("L'utilisateur n'est pas authentifié");
         }
     }
 }

@@ -1,18 +1,29 @@
 package com.viseo.apph.controller;
-/*
+
 import com.viseo.apph.dao.FolderDao;
 import com.viseo.apph.dao.UserDao;
+import com.viseo.apph.domain.ERole;
+import com.viseo.apph.domain.Role;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.LoginRequest;
 import com.viseo.apph.dto.UserRequest;
+import com.viseo.apph.security.JwtUtils;
+import com.viseo.apph.security.UserDetailsImpl;
 import com.viseo.apph.service.UserService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.EntityManager;
@@ -20,11 +31,14 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
+import static com.viseo.apph.utils.Utils.inject;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class AuthTest {
@@ -37,7 +51,7 @@ public class AuthTest {
     @Mock
     PasswordEncoder passwordEncoder;
     @Mock
-    NoResultException noResultException;
+    AuthenticationManager authenticationManager;
 
     private void createAuthController() {
         UserDao userDao = new UserDao();
@@ -52,64 +66,36 @@ public class AuthTest {
         inject(authController, "userService", userService);
     }
 
-    void inject(Object component, String field, Object injected) {
-        try {
-            Field compField = component.getClass().getDeclaredField(field);
-            compField.setAccessible(true);
-            compField.set(component, injected);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Test
     public void testLogin() {
         //GIVEN
         createAuthController();
-        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
-        when(typedQuery.setParameter("login", "tintin")).thenReturn(typedQuery);
-        when(passwordEncoder.matches("password", "password")).thenReturn(true);
+        Set<Role> set = new HashSet<Role>();
+        set.add(new Role(ERole.ROLE_USER));
+        User user = (User) new User().setLogin("tintin")
+                .setPassword("P@ssw0rd")
+                .setLastname("test")
+                .setFirstname("test")
+                .setRoles(set)
+                .setId(1);
+        UserDetailsImpl userDetails = UserDetailsImpl.build(user);
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        authController.authenticationManager = authenticationManager;
+        authController.jwtUtils = new JwtUtils();
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        Mockito.mockStatic(SecurityContextHolder.class).when(SecurityContextHolder::getContext).thenReturn(securityContext);
+        LoginRequest loginRequest = new LoginRequest().setUsername("tintin").setPassword("P@ssw0rd");
+
         //WHEN
-        ResponseEntity responseEntity = authController.login(userRequest);
+        ResponseEntity responseEntity = authController.login(loginRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
-    public void testFailLoginUserNotFind() {
-        //GIVEN
-        createAuthController();
-        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
-        when(typedQuery.setParameter("login", "tintin")).thenThrow(noResultException);
-        when(passwordEncoder.matches("password", "password")).thenReturn(true);
-        //WHEN
-        ResponseEntity responseEntity = authController.login(userRequest);
-        //THEN
-        assertEquals(HttpStatus.UNAUTHORIZED,responseEntity.getStatusCode());
-    }
-
-    @Test
-    public void testFailLoginPasswordNotMatch() {
-        //GIVEN
-        createAuthController();
-        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
-        when(typedQuery.setParameter("login", "tintin")).thenReturn(typedQuery);
-        when(passwordEncoder.matches("password", "fakePassword")).thenReturn(false);
-        //WHEN
-        ResponseEntity responseEntity = authController.login(userRequest);
-        //THEN
-        assertEquals(HttpStatus.UNAUTHORIZED,responseEntity.getStatusCode());
-    }
-
-    @Test
-    public void testRegister()
-    {
+    public void testRegister() {
         //GIVEN
         createAuthController();
         UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
@@ -118,23 +104,22 @@ public class AuthTest {
         //WHEN
         ResponseEntity responseEntity = authController.register(userRequest);
         //THEN
-        Assert.assertTrue( responseEntity.getStatusCode().is2xxSuccessful());
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
-    public void testRegisterFailUserExist()
-    {
+    public void testRegisterFailUserExist() {
         //GIVEN
         createAuthController();
         UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
-        when(typedQuery.setParameter("login","tintin")).thenReturn(typedQuery);
+        when(typedQuery.setParameter("login", "tintin")).thenReturn(typedQuery);
         doThrow(new DataIntegrityViolationException("test")).when(em).persist(any());
         //WHEN
         ResponseEntity responseEntity = authController.register(userRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().isError());
+
     }
 }
-*/

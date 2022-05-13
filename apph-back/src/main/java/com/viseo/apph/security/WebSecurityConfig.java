@@ -19,15 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    /*  @Override
-     protected void configure(HttpSecurity http) throws Exception {
-
-        http.cors().and()
-                 .antMatcher("/s3/**")
-                 .authorizeRequests()
-                 .antMatchers("/folder/**").permitAll()
-                 .anyRequest().authenticated();
-     }*/
     @Autowired
     UserDetailsServiceImpl userDetailsService;
     @Autowired
@@ -46,7 +37,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-        ;//Peut etre ajouter password encoder
     }
 
     @Bean

@@ -1,18 +1,19 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.security.UserDetailsImpl;
+import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.PhotoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.S3Exception;
@@ -26,15 +27,14 @@ import java.util.List;
 public class PhotoController {
     @Autowired
     PhotoService photoService;
-    @Autowired
-    JwtUtils jwtUtils;
+
+    static Utils utils = new Utils() {};
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping(value = "/infos", produces = "application/json")
     public ResponseEntity<List<PhotoResponse>> getUserPhotos() {
-        UserDetailsImpl userDetails =
-                (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long userId = userDetails.getId();
+       User user = utils.getUser();
+        long userId = user.getId();
         List<PhotoResponse> infoPhotos = photoService.getUserPhotos(userId);
         return ResponseEntity.ok(infoPhotos);
     }
