@@ -24,6 +24,8 @@ import { createRef, FormEvent, useEffect, useState } from 'react';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import TagService from '../../services/TagService';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
+import { useDispatch, useSelector } from 'react-redux';
+import { setTagList } from '../../redux/slices/tagSlice';
 import { Upload } from '@mui/icons-material';
 
 const filter = createFilterOptions<ITag>();
@@ -76,12 +78,10 @@ const UploadList = ({
 
 export const UploadImage = (): JSX.Element => {
   const fileInput = createRef<HTMLInputElement>();
+  const dispatch = useDispatch();
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [shootingDate, setShootingDate] = useState<Date>(new Date());
-  const [uploadStatus, setUploadStatus] = useState<UploadStatus>({
-    type: StatusType.None
-  });
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
   const tagsInput = createRef<HTMLInputElement>();
@@ -90,11 +90,12 @@ export const UploadImage = (): JSX.Element => {
     type: StatusType.None
   });
   const [uploadStatuses, setUploadStatuses] = useState<UploadStatus[]>([]);
-  const [allTags, setAllTags] = useState<ITag[]>([]);
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
+  const tagList = useSelector(({ tagList }: { tagList: ITag[] }) => tagList);
   const handleClickOpen = () => {
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
     setErrorMessage('');
@@ -118,6 +119,7 @@ export const UploadImage = (): JSX.Element => {
           },
           ...statuses.slice(i + 1)
         ]);
+        getTagList();
       });
       handleError.push((errorMessage: string) => {
         setUploadStatuses((statuses) => [
@@ -176,14 +178,18 @@ export const UploadImage = (): JSX.Element => {
   };
 
   useEffect(() => {
+    getTagList();
+  }, []);
+
+  const getTagList = () => {
     TagService.getAllTags(
       (tags: string) => {
         const tagsConverted: ITag[] = JSON.parse(tags);
-        setAllTags(tagsConverted);
+        dispatch(setTagList(tagsConverted));
       },
       (errorMessage: string) => setErrorMessage(errorMessage)
     );
-  }, []);
+  };
 
   return (
     <Box sx={{ m: 1 }}>
@@ -265,7 +271,7 @@ export const UploadImage = (): JSX.Element => {
                     limitTags={2}
                     id="tags"
                     size="small"
-                    options={allTags}
+                    options={tagList}
                     onChange={(event, tags) => {
                       setSelectedTags(tags);
                       tagsInput.current?.setCustomValidity('');
