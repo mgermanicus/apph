@@ -4,7 +4,6 @@ import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Photo;
-import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.PaginationResponse;
 import com.viseo.apph.dto.PhotoRequest;
@@ -18,8 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -97,6 +96,8 @@ public class PhotoService {
         User user = userDao.getUserByLogin(login);
         return new Photo()
                 .setTitle(photoRequest.getTitle())
+                .setDescription(photoRequest.getDescription())
+                .setCreationDate(new Date())
                 .setFormat(getFormat(photoRequest.getFile()))
                 .setUser(user)
                 .setSize((photoRequest.getFile().getSize() + .0F) / 1000);

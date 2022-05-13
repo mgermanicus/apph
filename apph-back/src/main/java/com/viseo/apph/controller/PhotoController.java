@@ -1,5 +1,7 @@
 package com.viseo.apph.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.Tag;
@@ -23,6 +25,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import javax.persistence.NoResultException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Set;
 
 @RestController
@@ -61,6 +64,12 @@ public class PhotoController {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
             User user = userService.getUser(claims);
             Photo photoByRequest = photoService.getPhotoByRequest(photoRequest, claims.get("login").toString());
+            if (photoRequest.getShootingDate() != null) {
+                GsonBuilder builder = new GsonBuilder();
+                Gson gson = builder.create();
+                Date shootingDate = gson.fromJson(photoRequest.getShootingDate(), Date.class);
+                photoByRequest.setShootingDate(shootingDate);
+            }
             Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
             String format = photoService.getFormat(photoRequest.getFile());
             Photo photo = photoService.addPhoto(photoByRequest.setTags(allTags));
@@ -76,7 +85,7 @@ public class PhotoController {
     public ResponseEntity<IResponseDTO> download(@RequestHeader("Authorization") String token, @RequestBody PhotoRequest photoRequest) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            Photo photo = photoService.getPhotoById(photoRequest.getId(), (int)claims.get("id"));
+            Photo photo = photoService.getPhotoById(photoRequest.getId(), Long.valueOf((int) claims.get("id")));
             PhotoResponse photoResponse = photoService.download(photoRequest.getId() + photo.getFormat()).setTitle(photo.getTitle()).setFormat(photo.getFormat());
             return ResponseEntity.ok(photoResponse);
         } catch (S3Exception e) {

@@ -87,13 +87,13 @@ public class Photo extends BaseEntity {
         return tags;
     }
 
-    public Photo addTag(Tag tag) {
-        this.tags.add(tag);
+    public Photo setTags(Set<Tag> tags) {
+        this.tags = tags;
         return this;
     }
 
-    public Photo setTags(Set<Tag> tags) {
-        this.tags = tags;
+    public Photo addTag(Tag tag) {
+        this.tags.add(tag);
         return this;
     }
 

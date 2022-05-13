@@ -15,12 +15,13 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import PhotoService from '../../services/PhotoService';
-import { UploadStatus } from '../../utils';
+import { ITag, UploadStatus } from '../../utils';
 import { createRef, FormEvent, useEffect, useState } from 'react';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import { ITag } from '../../utils/types/Tag';
 import TagService from '../../services/TagService';
+import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
 
 const filter = createFilterOptions<ITag>();
 
@@ -40,6 +41,8 @@ const displayAlert = (
 
 export const UploadImage = (): JSX.Element => {
   const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [shootingDate, setShootingDate] = useState<Date>(new Date());
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>('none');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const fileInput = createRef<HTMLInputElement>();
@@ -53,6 +56,8 @@ export const UploadImage = (): JSX.Element => {
     setOpen(false);
     setErrorMessage('');
     setTitle('');
+    setDescription('');
+    setShootingDate(new Date());
     setSelectedTags([]);
     setUploadStatus('none');
   };
@@ -65,10 +70,13 @@ export const UploadImage = (): JSX.Element => {
       setUploadStatus('uploading');
       PhotoService.uploadImage(
         title,
+        description,
+        shootingDate,
         file,
         selectedTags,
         () => {
           setUploadStatus('success');
+          handleClose();
         },
         (errorMessage) => {
           setUploadStatus('error');
@@ -149,6 +157,28 @@ export const UploadImage = (): JSX.Element => {
                     autoComplete="title"
                     autoFocus
                   />
+                  <TextField
+                    required
+                    fullWidth
+                    value={description}
+                    onChange={(event) => setDescription(event.target.value)}
+                    id="description"
+                    label="Description"
+                    name="description"
+                    autoComplete="description"
+                    autoFocus
+                  />
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DesktopDatePicker
+                      label="Date de prise en vue"
+                      value={shootingDate}
+                      onChange={(date) => {
+                        if (date) setShootingDate(date);
+                        else setShootingDate(new Date());
+                      }}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                  </LocalizationProvider>
                   <Autocomplete
                     data-testid="#autocomplete"
                     multiple
@@ -165,7 +195,16 @@ export const UploadImage = (): JSX.Element => {
                     }
                     getOptionLabel={(tag) => tag.name}
                     renderInput={(params) => (
-                      <TextField {...params} label="Tags" />
+                      <TextField
+                        required
+                        {...params}
+                        inputProps={{
+                          ...params.inputProps,
+                          autoComplete: 'new-password',
+                          required: selectedTags.length === 0
+                        }}
+                        label="Tags"
+                      />
                     )}
                   />
                   <Input
