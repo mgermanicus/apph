@@ -40,7 +40,7 @@ public class PhotoService {
     public String addPhoto(String userLogin, PhotoRequest photoRequest) throws InvalidFileException, IOException {
         User user = userDao.getUserByLogin(userLogin);
         Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
-        Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
+        Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
         Photo photo = new Photo()
                 .setTitle(photoRequest.getTitle())
                 .setFormat(getFormat(photoRequest.getFile()))

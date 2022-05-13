@@ -117,7 +117,7 @@ public class PhotoTest {
         tags.add(tag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson(new Date()));
+        photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57"));
         User user = new User().setLogin("toto").setPassword("password");
         String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
@@ -248,9 +248,9 @@ public class PhotoTest {
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
         String token = Jwts.builder().claim("id", idUser).setExpiration(
                 new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        //WHEN
         when(em.find(any(), anyLong())).thenReturn(photo);
         when(s3Dao.download(any())).thenReturn(fileByteArray);
+        //WHEN
         ResponseEntity<IResponseDTO> responseEntity = photoController.download(token, photoRequest);
         // Then
         verify(em, times(1)).find(Photo.class, id);
@@ -263,7 +263,7 @@ public class PhotoTest {
 
     @Test
     public void testDownloadUserNotAllowed() {
-        // GIVEN
+        //GIVEN
         createPhotoController();
         long id = 1L;
         int idUser = 2;
@@ -275,7 +275,7 @@ public class PhotoTest {
         //WHEN
         when(em.find(Photo.class, id)).thenReturn(photo);
         ResponseEntity<IResponseDTO> responseEntity = photoController.download(token, photoRequest);
-        // Then
+        //THEN
         Assert.assertTrue(responseEntity.getStatusCode().isError());
     }
 
