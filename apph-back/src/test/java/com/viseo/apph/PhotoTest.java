@@ -34,7 +34,7 @@ import java.security.Key;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -81,7 +81,7 @@ public class PhotoTest {
         photoController = new PhotoController();
         inject(photoController, "photoService", photoService);
         inject(photoController, "userService", userService);
-        inject(photoController, "tagService", tagService);
+        inject(photoService, "tagService", tagService);
     }
 
     private void createPhotoControllerWithoutS3() {
@@ -120,12 +120,13 @@ public class PhotoTest {
         photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags));
         User user = new User().setLogin("toto").setPassword("password");
         String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        //WHEN
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
         when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(user);
+        //WHEN
         ResponseEntity<IResponseDTO> responseEntity = photoController.upload(jws, photoRequest);
-        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        //THEN
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 
     @Test
@@ -249,11 +250,10 @@ public class PhotoTest {
                 new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         //WHEN
         when(em.find(any(), anyLong())).thenReturn(photo);
-        when(s3Dao.download(anyString())).thenReturn(fileByteArray);
+        when(s3Dao.download(any())).thenReturn(fileByteArray);
         ResponseEntity<IResponseDTO> responseEntity = photoController.download(token, photoRequest);
         // Then
         verify(em, times(1)).find(Photo.class, id);
-        //verify(s3Dao, times(1)).download(id + "");
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         PhotoResponse photoResponse = (PhotoResponse) responseEntity.getBody();
         assert photoResponse != null;
@@ -313,5 +313,24 @@ public class PhotoTest {
         ResponseEntity responseEntity = photoController.getUserPhotos(jws, 1, 1);
         //THEN
         Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void testFailInvalidFormat() {
+        //GIVEN
+        createPhotoController();
+        MockMultipartFile failFile = new MockMultipartFile("file", "orig", null, "bar".getBytes());
+        Set<Tag> tags = new HashSet<>();
+        Gson gson = new GsonBuilder().create();
+        photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(failFile).setTags(gson.toJson(tags));
+        User user = new User().setLogin("toto").setPassword("password");
+        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        //WHEN
+        ResponseEntity<IResponseDTO> responseEntity = photoController.upload(jws, photoRequest);
+        //THEN
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
     }
 }

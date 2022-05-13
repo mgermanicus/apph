@@ -32,8 +32,6 @@ public class PhotoController {
     @Autowired
     PhotoService photoService;
     @Autowired
-    TagService tagService;
-    @Autowired
     UserService userService;
 
     @GetMapping(value = "/infos", produces = "application/json")
@@ -59,16 +57,11 @@ public class PhotoController {
     public ResponseEntity<IResponseDTO> upload(@RequestHeader("Authorization") String token, @ModelAttribute PhotoRequest photoRequest) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            User user = userService.getUser(claims);
-            Photo photoByRequest = photoService.getPhotoByRequest(photoRequest, claims.get("login").toString());
-            Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
-            String format = photoService.getFormat(photoRequest.getFile());
-            Photo photo = photoService.addPhoto(photoByRequest.setTags(allTags));
-            return ResponseEntity.ok(new MessageResponse(photoService.saveWithName(photoRequest.getFile(), photo.getId() + format)));
+            return ResponseEntity.ok(new MessageResponse(photoService.addPhoto(claims.get("login").toString(), photoRequest)));
         } catch (IOException | S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
         } catch (InvalidFileException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Le format du fichier n'est pas valide"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Le format du fichier n'est pas valide"));
         }
     }
 
@@ -76,9 +69,7 @@ public class PhotoController {
     public ResponseEntity<IResponseDTO> download(@RequestHeader("Authorization") String token, @RequestBody PhotoRequest photoRequest) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            Photo photo = photoService.getPhotoById(photoRequest.getId(), (int)claims.get("id"));
-            PhotoResponse photoResponse = photoService.download(photoRequest.getId() + photo.getFormat()).setTitle(photo.getTitle()).setFormat(photo.getFormat());
-            return ResponseEntity.ok(photoResponse);
+            return ResponseEntity.ok(photoService.download((Long.valueOf((Integer) claims.get("id"))) , photoRequest));
         } catch (S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du téléchargement"));
         } catch (FileNotFoundException e) {
