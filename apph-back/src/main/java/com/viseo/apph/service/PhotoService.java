@@ -1,9 +1,11 @@
 package com.viseo.apph.service;
 
+import com.google.gson.GsonBuilder;
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.PaginationResponse;
 import com.viseo.apph.dto.PhotoRequest;
@@ -19,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,16 +29,29 @@ public class PhotoService {
 
     @Autowired
     PhotoDao photoDao;
-
     @Autowired
     UserDao userDao;
-
+    @Autowired
+    TagService tagService;
     @Autowired
     S3Dao s3Dao;
 
     @Transactional
-    public Photo addPhoto(Photo photo) {
-        return photoDao.addPhoto(photo);
+    public String addPhoto(String userLogin, PhotoRequest photoRequest) throws InvalidFileException, IOException {
+        User user = userDao.getUserByLogin(userLogin);
+        Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
+        Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
+        Photo photo = new Photo()
+                .setTitle(photoRequest.getTitle())
+                .setFormat(getFormat(photoRequest.getFile()))
+                .setUser(user)
+                .setSize((photoRequest.getFile().getSize() + .0F) / 1000)
+                .setDescription(photoRequest.getDescription())
+                .setCreationDate(new Date())
+                .setShootingDate(shootingDate)
+                .setTags(allTags);
+        photo = photoDao.addPhoto(photo);
+        return s3Dao.upload(photoRequest.getFile(), photo);
     }
 
     public String getFormat(MultipartFile file) throws InvalidFileException {
@@ -72,34 +88,15 @@ public class PhotoService {
         return response;
     }
 
-    public String saveWithName(MultipartFile file, String name) throws InvalidFileException, IOException {
-        return s3Dao.upload(file, name);
-    }
-
-    public PhotoResponse download(String name) {
-        byte[] photoByte = s3Dao.download(name);
-        return new PhotoResponse().setData(photoByte);
-    }
-
-    public Photo getPhotoById(long id, long idUser) throws FileNotFoundException, UnauthorizedException {
-        Photo photo = photoDao.getPhoto(id);
-        if (photo == null)
+    public PhotoResponse download(Long userId, PhotoRequest photoRequest) throws FileNotFoundException, UnauthorizedException {
+        Photo photo = photoDao.getPhoto(photoRequest.getId());
+        if (photo == null) {
             throw new FileNotFoundException();
-        if (idUser == photo.getUser().getId()) {
-            return photo;
-        } else {
+        }
+        if (userId != photo.getUser().getId()) {
             throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
         }
-    }
-
-    public Photo getPhotoByRequest(PhotoRequest photoRequest, String login) throws InvalidFileException {
-        User user = userDao.getUserByLogin(login);
-        return new Photo()
-                .setTitle(photoRequest.getTitle())
-                .setDescription(photoRequest.getDescription())
-                .setCreationDate(new Date())
-                .setFormat(getFormat(photoRequest.getFile()))
-                .setUser(user)
-                .setSize((photoRequest.getFile().getSize() + .0F) / 1000);
+        byte[] photoByte = s3Dao.download(photo);
+        return new PhotoResponse().setData(photoByte).setTitle(photo.getTitle()).setFormat(photo.getFormat());
     }
 }
