@@ -1,7 +1,5 @@
 package com.viseo.apph.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
@@ -14,7 +12,6 @@ import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.dto.PhotoResponse;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.exception.UnauthorizedException;
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
