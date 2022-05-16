@@ -25,6 +25,9 @@ public class Photo extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    Folder folder;
+
     public Photo() {
         super();
     }
@@ -103,6 +106,15 @@ public class Photo extends BaseEntity {
 
     public Photo setFormat(String format) {
         this.format = format;
+        return this;
+    }
+
+    public Photo setFolder(Folder folder) {
+        assert this.folder == null;
+        if (folder != null) {
+            this.folder = folder;
+            this.folder.photos.add(this);
+        }
         return this;
     }
 }

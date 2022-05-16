@@ -1,5 +1,6 @@
 package com.viseo.apph.dao;
 
+import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
 import org.springframework.stereotype.Repository;
@@ -30,5 +31,11 @@ public class PhotoDao {
 
     public void deletePhoto(Photo photo) {
         em.remove(photo);
+    }
+
+    public List<Photo> getPhotoByFolder(Folder folder) {
+        return em.createQuery("SELECT p FROM Photo p WHERE p.folder =: folder", Photo.class)
+                .setParameter("folder", folder)
+                .getResultList();
     }
 }

@@ -3,6 +3,7 @@ package com.viseo.apph.controller;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.*;
 import com.viseo.apph.exception.InvalidFileException;
+import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.exception.UnauthorizedException;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.PhotoService;
@@ -16,6 +17,9 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -39,6 +43,21 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User does not exist"));
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Argument illégal."));
+        }
+    }
+
+    @GetMapping(value = "/folder/{folderId}")
+    public ResponseEntity<IResponseDTO> getPhotoByFolder(@RequestHeader("Authorization") String token, @PathVariable long folderId) {
+        try {
+            Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
+            PhotoListResponse responseList = photoService.getPhotoByFolder(folderId, claims.get("login").toString());
+            return ResponseEntity.ok().body(responseList);
+        } catch (UnauthorizedException ue) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
+        } catch (NotFoundException nfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
+        } catch (NoResultException nre) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("L'utilisateur n'existe pas."));
         }
     }
 
