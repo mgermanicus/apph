@@ -52,7 +52,6 @@ describe('Tests du composant SignIn.tsx', () => {
     expect(cookies.get('user')).toStrictEqual(undefined);
   });
 
-
   it('checks when email fail', () => {
     //GIVEN
     cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');

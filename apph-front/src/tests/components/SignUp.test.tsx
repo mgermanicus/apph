@@ -57,8 +57,6 @@ describe('Tests du composant SignUp.tsx', () => {
     expect(useNavigate()).not.toBeCalled();
   });
 
-
-
   it('checks when the server sends an error if invalid confirm password', () => {
     //GIVEN
     cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
