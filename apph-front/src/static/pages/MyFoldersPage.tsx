@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SyntheticEvent, useEffect, useState } from 'react';
-import { IFolder } from '../../utils/types/Folder';
+import { IFolder } from '../../utils';
 import { FolderService } from '../../services/FolderService';
 import CircularProgress from '@mui/material/CircularProgress';
 import TreeView from '@mui/lab/TreeView';
@@ -9,12 +9,14 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import { Alert, Box } from '@mui/material';
 import { CreateFolderButton } from '../components/CreateFolderButton';
+import { DisplayPhoto } from '../components/DisplayPhoto';
 
 export const MyFoldersPage = (): JSX.Element => {
   const [rootFolder, setRootFolder] = useState<IFolder | null>(null);
   const [selectedFolder, setSelectedFolder] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState<boolean>(true);
+
   useEffect(() => {
     getFolders().catch(console.error);
   }, []);
@@ -76,12 +78,13 @@ export const MyFoldersPage = (): JSX.Element => {
             <FolderTree folder={rootFolder} />
           </TreeView>
         </Box>
-        {/*TODO display folder's content here*/}
         <div
           style={{
             width: '70%'
           }}
-        ></div>
+        >
+          <DisplayPhoto selectedFolder={selectedFolder} />
+        </div>
       </div>
     );
   }

@@ -1,5 +1,12 @@
 import Server from './Server';
-import { imageFileCheck, IMessage, IPagination, IPhoto, ITag } from '../utils';
+import {
+  imageFileCheck,
+  IMessage,
+  IPagination,
+  IPhoto,
+  ITable,
+  ITag
+} from '../utils';
 import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();
@@ -63,6 +70,33 @@ export default class PhotoService {
       handleError(JSON.parse(errorMessage).message);
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
+
+  static getFolderPhoto(
+    folderId: string,
+    handleSuccess: (photoList: ITable[]) => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const user = cookies.get('user');
+    const requestOptions = {
+      method: 'Get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: user.token
+      }
+    };
+    const successFunction = (photoList: string) => {
+      handleSuccess(JSON.parse(photoList).photoList);
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
+    return Server.request(
+      `/photo/folder/${folderId}`,
+      requestOptions,
+      successFunction,
+      errorFunction
+    );
   }
 
   static downloadImage(
