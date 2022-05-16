@@ -72,4 +72,16 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("L'utilisateur n'est pas autorisé à accéder à la ressource demandée"));
         }
     }
+
+    @DeleteMapping(value = "/delete")
+    public ResponseEntity<IResponseDTO> delete(@RequestHeader("Authorization") String token, @RequestBody PhotoRequest photoRequest) {
+        try {
+            User user = utils.getUser();
+            photoService.deletePhotos(user.getId(), photoRequest.getIds());
+            return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Suppression effectuée avec succès"));
+        } catch (S3Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du téléchargement"));
+        }
+
+    }
 }

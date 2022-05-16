@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridSelectionModel } from '@mui/x-data-grid';
 import { Alert, Collapse, IconButton, Stack } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { IPagination, ITable, ITag } from '../../utils';
 import PhotoService from '../../services/PhotoService';
 import PhotoDetails from './PhotoDetails';
 import { DownloadImage } from './DownloadImage';
+import { DeleteImage } from './DeleteImage';
 
 const columns: GridColDef[] = [
   {
@@ -83,6 +84,7 @@ const columns: GridColDef[] = [
     )
   }
 ];
+
 export const PhotoTable = () => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -90,6 +92,7 @@ export const PhotoTable = () => {
   const [page, setPage] = useState<number>(0);
   const [totalSize, setTotalSize] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectionModel, setSelectionModel] = useState<GridSelectionModel>([]);
 
   const getData = () => {
     setLoading(true);
@@ -130,6 +133,7 @@ export const PhotoTable = () => {
 
   return (
     <div style={{ height: 115 + pageSize * 52, width: '100%' }}>
+      <DeleteImage ids={selectionModel.map((id) => +id)} />
       <DataGrid
         pagination
         paginationMode="server"
@@ -147,6 +151,11 @@ export const PhotoTable = () => {
           setPage(newPage);
         }}
         columnBuffer={8}
+        onSelectionModelChange={(selection) => {
+          setSelectionModel(selection);
+        }}
+        selectionModel={selectionModel}
+        checkboxSelection={true}
       />
       <Collapse in={errorMessage !== ''}>
         <Alert

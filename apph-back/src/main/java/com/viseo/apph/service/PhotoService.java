@@ -97,4 +97,16 @@ public class PhotoService {
         byte[] photoByte = s3Dao.download(photo);
         return new PhotoResponse().setData(photoByte).setTitle(photo.getTitle()).setFormat(photo.getFormat());
     }
+    
+    @Transactional
+    public void deletePhotos(String userLogin, long[] ids) {
+        User user = userDao.getUserByLogin(userLogin);
+        for (long id : ids) {
+            Photo photo = photoDao.getPhoto(id);
+            if (photo != null && photo.getUser().getId() == user.getId()) {
+                s3Dao.delete(photo.getId() + photo.getFormat());
+                photoDao.deletePhoto(photo.getId());
+            }
+        }
+    }
 }
