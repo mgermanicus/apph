@@ -30,6 +30,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -240,5 +241,76 @@ public class PhotoTest {
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
         //THEN
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testDelete() {
+        //GIVEN
+        //TODO
+        createPhotoController();
+        long idPhoto = 1L;
+        long[] ids = {1L};
+        User user = (User) new User().setLogin("test@test").setId(2);
+        Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(idPhoto);
+        PhotoRequest photoRequest = new PhotoRequest().setIds(ids);
+        String token = Jwts.builder().claim("login", user.getLogin()).setExpiration(
+                new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        when(em.createQuery(anyString(), eq(User.class))).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter(anyString(), anyString())).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        when(em.find(Photo.class, ids[0])).thenReturn(photo);
+        //WHEN
+        ResponseEntity<IResponseDTO> responseEntity = photoController.delete(token, photoRequest);
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        //verify(s3Dao, times(1)).delete(anyString());
+        verify(em, times(1)).remove(any());
+    }
+
+    @Test
+    public void testDeleteUserNotAllowed() {
+        //GIVEN
+        createPhotoControllerWithoutS3();
+        long idPhoto = 1L;
+        long[] ids = {1L};
+        User user = (User) new User().setLogin("test@test").setId(2);
+        User userDiff = (User) new User().setLogin("test@test").setId(100);
+        Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(idPhoto);
+        PhotoRequest photoRequest = new PhotoRequest().setIds(ids);
+        String token = Jwts.builder().claim("login", user.getLogin()).setExpiration(
+                new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        when(em.createQuery(anyString(), eq(User.class))).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter(anyString(), anyString())).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(userDiff);
+        when(em.find(Photo.class, ids[0])).thenReturn(photo);
+        //WHEN
+        ResponseEntity<IResponseDTO> responseEntity = photoController.delete(token, photoRequest);
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        verify(s3Dao, times(0)).delete(anyString());
+        verify(em, times(0)).remove(any());
+    }
+
+    @Test
+    public void testDeleteServerDown() {
+        //GIVEN
+        createPhotoControllerWithoutS3();
+        long idPhoto = 1L;
+        long[] ids = {1L};
+        User user = (User) new User().setLogin("test@test").setId(2);
+        Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(idPhoto);
+        PhotoRequest photoRequest = new PhotoRequest().setIds(ids);
+        String token = Jwts.builder().claim("login", user.getLogin()).setExpiration(
+                new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        when(em.createQuery(anyString(), eq(User.class))).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter(anyString(), anyString())).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        when(em.find(Photo.class, ids[0])).thenReturn(photo);
+        when(s3Dao.delete(any())).thenThrow(S3Exception.class);
+        //WHEN
+        ResponseEntity<IResponseDTO> responseEntity = photoController.delete(token, photoRequest);
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().isError());
+        verify(s3Dao, times(1)).delete(anyString());
     }
 }

@@ -48,3 +48,13 @@ export function fakeDownloadRequestParams(id: number) {
   };
   return { URL: `/photo/download`, requestOptions };
 }
+
+export function fakeDeleteRequestParams(ids: number[]) {
+  const requestOptions = {
+    method: 'DELETE',
+    body: JSON.stringify({
+      ids
+    })
+  };
+  return { URL: `/photo/delete`, requestOptions };
+}
