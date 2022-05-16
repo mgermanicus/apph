@@ -82,6 +82,7 @@ export const UploadImage = (): JSX.Element => {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [shootingDate, setShootingDate] = useState<Date>(new Date());
+  const [uploadStatus, setUploadStatus] = useState<UploadStatus>();
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
   const tagsInput = createRef<HTMLInputElement>();
@@ -92,21 +93,8 @@ export const UploadImage = (): JSX.Element => {
   const [uploadStatuses, setUploadStatuses] = useState<UploadStatus[]>([]);
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const tagList = useSelector(({ tagList }: { tagList: ITag[] }) => tagList);
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
 
-  const handleClose = () => {
-    setOpen(false);
-    setErrorMessage('');
-    setTitle('');
-    setDescription('');
-    setShootingDate(new Date());
-    setSelectedTags([]);
-    setGlobalUploadStatus({ type: StatusType.None });
-  };
-
-  const uploadCallbacks = (nbFiles: number) => {
+  const createUploadCallbacks = (nbFiles: number) => {
     const handleSuccess = [];
     const handleError = [];
     for (let i = 0; i < nbFiles; i++) {
@@ -119,7 +107,6 @@ export const UploadImage = (): JSX.Element => {
           },
           ...statuses.slice(i + 1)
         ]);
-        getTagList();
       });
       handleError.push((errorMessage: string) => {
         setUploadStatuses((statuses) => [
@@ -135,6 +122,20 @@ export const UploadImage = (): JSX.Element => {
     return { handleSuccess, handleError };
   };
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setErrorMessage('');
+    setTitle('');
+    setDescription('');
+    setShootingDate(new Date());
+    setSelectedTags([]);
+    setGlobalUploadStatus({ type: StatusType.None });
+  };
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedTags.length < 1) {
@@ -148,17 +149,49 @@ export const UploadImage = (): JSX.Element => {
       setUploadStatuses(
         Array(fileList.length).fill({ type: StatusType.Uploading })
       );
-      const { handleSuccess, handleError } = uploadCallbacks(fileList.length);
-      PhotoService.uploadImages(
-        title,
+      const { handleSuccess, handleError } = createUploadCallbacks(
+        fileList.length
+      );
+
+      // We wait for the first upload to finish before sending the others because if new tags are created we need
+      // their id in the following requests
+      PhotoService.uploadImage(
+        fileList.length > 1 ? `${title}_1` : title,
         description,
         shootingDate,
-        fileList,
+        fileList[0],
         selectedTags,
         '-1',
-        handleSuccess,
-        handleError
-      );
+        handleSuccess[0],
+        handleError[0]
+      )?.then(() => {
+        TagService.getAllTags(
+          (tags: string) => {
+            const tagsConverted: ITag[] = JSON.parse(tags);
+            dispatch(setTagList(tagsConverted));
+            // Get the id of tags that have been created
+            const newSelectedTags = selectedTags.map(
+              (selectedTag) =>
+                tagsConverted.find(
+                  (tag) => `+ Add New Tag ${tag.name}` == selectedTag.name
+                ) ?? selectedTag
+            );
+            for (let i = 1; i < fileList.length; i++) {
+              PhotoService.uploadImage(
+                `${title}_${i + 1}`,
+                description,
+                shootingDate,
+                fileList[i],
+                newSelectedTags,
+                '-1',
+                handleSuccess[i],
+                handleError[i]
+              );
+            }
+          },
+          (errorMessage: string) => setErrorMessage(errorMessage)
+        );
+      });
     }
   };
 
