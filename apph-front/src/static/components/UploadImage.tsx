@@ -80,9 +80,9 @@ export const UploadImage = (): JSX.Element => {
         selectedTags,
         '-1',
         () => {
+          getTagList();
           setUploadStatus('success');
           handleClose();
-          getTagList();
         },
         (errorMessage) => {
           setUploadStatus('error');
