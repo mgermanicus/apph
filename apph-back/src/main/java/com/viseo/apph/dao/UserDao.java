@@ -25,4 +25,12 @@ public class UserDao {
     public User getUserById(long userId) {
         return em.find(User.class, userId);
     }
+
+
+    public boolean existByLogin(String login) {
+        Long count = em.createQuery("SELECT count(user) FROM User user WHERE user.login = :login", Long.class)
+                .setParameter("login", login)
+                .getSingleResult();
+        return !count.equals(0L);
+    }
 }

@@ -84,6 +84,18 @@ export default class AuthService {
     return cookies.get('user')?.token;
   }
 
+  static updateUserCookie = (newToken: string) => {
+    const decodedToken = jwtDecode(newToken) as {
+      id: number;
+      exp: number;
+    } & IUser;
+    cookies.set(
+      'user',
+      { token: newToken },
+      { expires: new Date(decodedToken.exp * 1000) }
+    );
+  };
+
   static isTokenValid() {
     return !!AuthService.getToken();
   }

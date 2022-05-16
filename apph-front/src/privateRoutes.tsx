@@ -7,7 +7,8 @@ import { MyFoldersPage } from './static/pages/MyFoldersPage';
 import { PrivatePageContainer } from './static/pages/PrivatePageContainer';
 import { useSelector } from 'react-redux';
 import { IUser } from './utils';
-import { DataTable } from './static/components/PhotoTable';
+import { EditProfile } from './static/components/EditProfile';
+import { MyPhotoPage } from './static/pages/MyPhotoPage';
 
 export const PrivateRoutes = ({
   authenticated
@@ -37,9 +38,15 @@ export const PrivateRoutes = ({
           )}
         />
         <Route
+          path="/me/edit"
+          element={needAuthenticationRoute(
+            <PrivatePageContainer element={<EditProfile />} />
+          )}
+        />
+        <Route
           path="/pictures"
           element={needAuthenticationRoute(
-            <PrivatePageContainer element={<DataTable />} />
+            <PrivatePageContainer element={<MyPhotoPage />} />
           )}
         />
         <Route

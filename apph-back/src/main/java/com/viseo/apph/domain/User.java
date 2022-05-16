@@ -1,5 +1,7 @@
 package com.viseo.apph.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,6 +25,13 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Folder> folders = new ArrayList<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    List<Tag> tags = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Photo> photos = new ArrayList<>();
 
     public User() {
         super();
@@ -95,6 +104,15 @@ public class User extends BaseEntity {
         if (this.folders.contains(folder)) {
             this.folders.remove(folder);
             folder.user = null;
+        }
+        return this;
+    }
+
+    public User addPhoto(Photo photo) {
+        assert photo != null;
+        if (!this.photos.contains(photo)) {
+            this.photos.add(photo);
+            photo.setUser(this);
         }
         return this;
     }

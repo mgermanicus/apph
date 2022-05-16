@@ -1,7 +1,6 @@
 import { render } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 import { UploadImage } from '../../static/components/UploadImage';
-
 import {
   clickButton,
   fakeFile,
@@ -12,6 +11,7 @@ import {
   spyRequestSuccess,
   triggerRequestFailure
 } from '../utils';
+import { ITag } from '../../utils';
 
 describe('Test UploadImage', () => {
   beforeEach(() => {
@@ -61,19 +61,24 @@ describe('Test UploadImage', () => {
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000, 'image/png');
     const title = 'Titre';
+    const description = 'Description';
+    const tags = [{ name: 'tag' }] as ITag[];
     const spyRequestFunction = spyRequestSuccess();
-    const requestParams = fakeUploadRequestParams(file, title);
+    const requestParams = fakeUploadRequestParams(
+      file,
+      title,
+      description,
+      new Date(),
+      tags
+    );
     //WHEN
     fillText(/Titre de la photo/, title);
     inputFile(file, fileInput);
     clickButton(/Ajouter/);
     //THEN
-    expect(
-      screen.getByText(/Votre fichier a bien été uploadé/)
-    ).toBeInTheDocument();
     expect(spyRequestFunction).toBeCalledWith(
       requestParams.URL,
-      requestParams.requestOptions,
+      expect.objectContaining(requestParams.requestOptions),
       expect.anything(),
       expect.anything()
     );

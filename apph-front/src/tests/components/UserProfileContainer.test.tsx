@@ -2,12 +2,20 @@ import { render, screen } from '@testing-library/react';
 import { UserProfilePage } from '../../static/pages/UserProfilePage';
 import * as React from 'react';
 import {
+  clickButton,
   JWS_TOKEN,
   triggerRequestFailure,
   triggerRequestSuccess
 } from '../utils';
 import Cookies from 'universal-cookie';
 import jwtDecode from 'jwt-decode';
+import { UserProfile } from '../../static/components/UserProfile';
+
+const mockedUsedNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockedUsedNavigate
+}));
 
 describe('UserAvatar Component Tests', () => {
   it('render when user is connected', () => {
@@ -40,5 +48,16 @@ describe('UserAvatar Component Tests', () => {
     //THEN
     const userName: HTMLDivElement = screen.getByText('Message: Token Expired');
     expect(userName.innerHTML).toEqual('Message: Token Expired');
+  });
+});
+
+describe('UserProfile test', () => {
+  it('tests navigation to edit page', () => {
+    //GIVEN
+    render(<UserProfile firstname="" lastname="" login="" />);
+    //WHEN
+    clickButton(/Modifier/);
+    //THEN
+    expect(mockedUsedNavigate).toBeCalledWith('/me/edit');
   });
 });

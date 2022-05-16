@@ -5,12 +5,12 @@ import {
   clickButton,
   fillPassword,
   fillText,
+  JWS_TOKEN,
   triggerRequestFailure,
   triggerRequestSuccess
-} from '../utils/library';
+} from '../utils';
 import cryptoJS from 'crypto-js';
 import { useNavigate } from 'react-router-dom';
-import { JWS_TOKEN } from '../utils/token';
 import { screen } from '@testing-library/dom';
 
 const mockedUsedNavigate = jest.fn();
@@ -38,23 +38,6 @@ describe('Tests du composant SignUp.tsx', () => {
     clickButton(/Créer votre compte/);
     //THEN
     expect(useNavigate()).toBeCalled();
-  });
-
-  it('checks when the server sends an error if invalid email', () => {
-    //GIVEN
-    cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
-    triggerRequestSuccess(JWS_TOKEN);
-    render(<SignUp />);
-    //WHEN
-    fillText(/Email/, 'badEmail');
-    fillPassword(/Mot de passe/, 'P@ssW0rd');
-    fillPassword(/Confirmer le mot de passe/, 'P@ssW0rd');
-    fillText(/Prénom/, 'Bob');
-    fillText(/Nom/, 'Dupont');
-    clickButton(/Créer votre compte/);
-    //THEN
-    expect(screen.getByText(/Email non valide./)).toBeInTheDocument();
-    expect(useNavigate()).not.toBeCalled();
   });
 
   it('checks when the server sends an error if invalid confirm password', () => {

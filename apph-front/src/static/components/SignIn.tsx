@@ -88,6 +88,7 @@ export const SignIn = () => {
             name="email"
             autoComplete="email"
             autoFocus
+            type="email"
           />
           <TextField
             margin="normal"

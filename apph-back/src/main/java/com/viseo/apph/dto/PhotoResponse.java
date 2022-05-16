@@ -1,11 +1,14 @@
 package com.viseo.apph.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.viseo.apph.domain.Tag;
 
 import java.util.Date;
+import java.util.Set;
 
-public class PhotoResponse {
-
+public class PhotoResponse implements IResponseDto {
+    @JsonProperty("id")
+    long id;
     @JsonProperty("title")
     String title;
     @JsonProperty("description")
@@ -17,12 +20,25 @@ public class PhotoResponse {
     @JsonProperty("size")
     float size;
     @JsonProperty("tags")
-    String tags;
+    Set<Tag> tags;
     @JsonProperty("url")
     String url;
+    @JsonProperty("data")
+    byte[] data;
+    @JsonProperty("format")
+    String format;
 
     public PhotoResponse() {
 
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public PhotoResponse setId(long id) {
+        this.id = id;
+        return this;
     }
 
     public String getTitle() {
@@ -70,11 +86,11 @@ public class PhotoResponse {
         return this;
     }
 
-    public String getTags() {
+    public Set<Tag> getTags() {
         return tags;
     }
 
-    public PhotoResponse setTags(String tags) {
+    public PhotoResponse setTags(Set<Tag> tags) {
         this.tags = tags;
         return this;
     }
@@ -85,6 +101,24 @@ public class PhotoResponse {
 
     public PhotoResponse setUrl(String url) {
         this.url = url;
+        return this;
+    }
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public PhotoResponse setData(byte[] data) {
+        this.data = data;
+        return this;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public PhotoResponse setFormat(String format) {
+        this.format = format;
         return this;
     }
 }

@@ -1,31 +1,40 @@
 package com.viseo.apph.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "photos")
 public class Photo extends BaseEntity {
 
     String title;
-    long idUser;
     String description;
     Date creationDate;
     Date shootingDate;
     float size;
-    String tags;
+    String format;
+
+    @ManyToMany
+    @JoinTable(name = "photo_tag",
+            joinColumns = @JoinColumn(name = "photo_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
+    Set<Tag> tags = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    User user;
 
     public Photo() {
         super();
     }
 
-    public long getIdUser() {
-        return idUser;
+    public User getUser() {
+        return user;
     }
 
-    public Photo setIdUser(long idUser) {
-        this.idUser = idUser;
+    public Photo setUser(User user) {
+        this.user = user;
         return this;
     }
 
@@ -74,12 +83,26 @@ public class Photo extends BaseEntity {
         return this;
     }
 
-    public String getTags() {
+    public Set<Tag> getTags() {
         return tags;
     }
 
-    public Photo setTags(String tags) {
+    public Photo setTags(Set<Tag> tags) {
         this.tags = tags;
+        return this;
+    }
+
+    public Photo addTag(Tag tag) {
+        this.tags.add(tag);
+        return this;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public Photo setFormat(String format) {
+        this.format = format;
         return this;
     }
 }

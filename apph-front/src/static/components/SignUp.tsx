@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -10,7 +11,6 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Alert, Collapse, IconButton, SxProps } from '@mui/material';
-import { useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../../services/AuthService';
@@ -44,12 +44,7 @@ export const SignUp = () => {
     const confirmPassword = data.get('confirmPassword')?.toString();
     const firstName = data.get('firstName')?.toString();
     const lastName = data.get('lastName')?.toString();
-    const emailValidator =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-    if (email && !emailValidator.test(email)) {
-      setErrorMessage('Email non valide.');
-    } else if (password && confirmPassword && password != confirmPassword) {
+    if (password && confirmPassword && password != confirmPassword) {
       setErrorMessage(
         'Ces mots de passe ne correspondent pas. Veuillez réessayer.'
       );

@@ -6,9 +6,11 @@ import com.viseo.apph.domain.ERole;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Role;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.dto.UserRequest;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,18 +43,37 @@ public class UserService {
     public User login(UserRequest userRequest) throws IllegalArgumentException {
         User user = userDao.getUserByLogin(userRequest.getLogin());
         if (encoder.matches(userRequest.getPassword(), user.getPassword()))
-            return user;
+          return user;
         throw new IllegalArgumentException();
-    }
-
-    @Transactional
-    public User getUser(Claims claims) {
-        String login = claims.get("login").toString();
-        return userDao.getUserByLogin(login);
     }
 
     @Transactional
     public User getUserById(long id) {
         return userDao.getUserById(id);
+    }
+
+    @Transactional
+    public String editUser(long userId, UserRequest request, Claims claims) throws NotFoundException {
+        User user = userDao.getUserById(userId);
+        Key key = JwtConfig.getKey();
+        JwtBuilder newClaims = Jwts.builder().setClaims(claims);
+        if (user == null) throw new NotFoundException("");
+        if (request.getFirstName() != null) {
+            user.setFirstname(request.getFirstName());
+            newClaims.claim("firstname", request.getFirstName());
+        }
+        if (request.getLastName() != null) {
+            user.setLastname(request.getLastName());
+            newClaims.claim("lastname", request.getLastName());
+        }
+        if (request.getPassword() != null)
+            user.setPassword(encoder.encode(request.getPassword()));
+        if (request.getLogin() != null) {
+            if (userDao.existByLogin(request.getLogin()))
+                throw new DataIntegrityViolationException("");
+            user.setLogin(request.getLogin());
+            newClaims.claim("login", request.getLogin());
+        }
+        return newClaims.setExpiration(claims.getExpiration()).signWith(key).compact();
     }
 }

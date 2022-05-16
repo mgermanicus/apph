@@ -6,6 +6,8 @@ import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FolderRequest;
 import com.viseo.apph.dto.FolderResponse;
+import com.viseo.apph.dto.IResponseDTO;
+import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.FolderService;
@@ -22,6 +24,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.viseo.apph.utils.Utils.inject;
@@ -35,7 +38,10 @@ public class FolderTest {
     EntityManager em;
 
     @Mock
-    TypedQuery typedQuery;
+    TypedQuery<User> userTypedQuery;
+
+    @Mock
+    TypedQuery<Folder> folderTypedQuery;
 
     @Mock Utils utils;
 
@@ -66,18 +72,18 @@ public class FolderTest {
         robert.addFolder(robertRoot).addFolder(robertChild1).addFolder(robertChild2);
         FolderController.utils = utils;
         when(utils.getUser()).thenReturn(robert);
-
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(robert);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("userId", 1L)).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(robert.getFolders());
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
+        when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
+        when(userTypedQuery.getSingleResult()).thenReturn(robert);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(folderTypedQuery);
+        when(folderTypedQuery.setParameter("userId", 1L)).thenReturn(folderTypedQuery);
+        when(folderTypedQuery.getResultList()).thenReturn(robert.getFolders());
         //WHEN
-        ResponseEntity responseEntity = folderController.getFoldersByUser();
+        ResponseEntity<IResponseDto> responseEntity = folderController.getFoldersByUser();
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         FolderResponse folderResponse = (FolderResponse) responseEntity.getBody();
+        assert folderResponse != null;
         Assert.assertEquals("Robert Root", folderResponse.getName());
         Assert.assertEquals(1, folderResponse.getId());
         Assert.assertEquals(0, folderResponse.getVersion());
@@ -91,14 +97,15 @@ public class FolderTest {
         createFolderController();
         FolderController.utils = utils;
         when(utils.getUser()).thenReturn((User)new User().setLogin("Not a User").setId(1));
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Not a User")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenThrow(new NoResultException());
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
+        when(userTypedQuery.setParameter("login", "Not a User")).thenReturn(userTypedQuery);
+        when(userTypedQuery.getSingleResult()).thenThrow(new NoResultException());
         //WHEN
-        ResponseEntity responseEntity = folderController.getFoldersByUser();
+        ResponseEntity<IResponseDto> responseEntity = folderController.getFoldersByUser();
         //THEN
-        Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.NOT_FOUND);
+        Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
         Assert.assertEquals("L'utilisateur n'existe pas.", messageResponse.getMessage());
     }
 
@@ -112,17 +119,18 @@ public class FolderTest {
         folders.add(folder);
         FolderController.utils = utils;
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(robert);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("userId", 1L)).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(folders);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
+        when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
+        when(userTypedQuery.getSingleResult()).thenReturn(robert);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(folderTypedQuery);
+        when(folderTypedQuery.setParameter("userId", 1L)).thenReturn(folderTypedQuery);
+        when(folderTypedQuery.getResultList()).thenReturn(folders);
         //WHEN
-        ResponseEntity responseEntity = folderController.getFoldersByUser();
+        ResponseEntity<IResponseDto> responseEntity = folderController.getFoldersByUser();
         //THEN
-        Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.NOT_FOUND);
+        Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
         Assert.assertEquals("Dossier parent introuvable.", messageResponse.getMessage());
     }
 
@@ -136,18 +144,18 @@ public class FolderTest {
         robert.addFolder(robertRoot);
         FolderController.utils = utils;
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(robert);
-        when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("userId", 1L)).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(robert.getFolders());
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
+        when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
+        when(userTypedQuery.getSingleResult()).thenReturn(robert);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(folderTypedQuery);
+        when(folderTypedQuery.setParameter("userId", 1L)).thenReturn(folderTypedQuery);
+        when(folderTypedQuery.getResultList()).thenReturn(robert.getFolders());
         //WHEN
-        ResponseEntity responseEntity = folderController.createFolder(request);
+        ResponseEntity<IResponseDto> responseEntity = folderController.createFolder(request);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         FolderResponse folderResponse = (FolderResponse) responseEntity.getBody();
+        assert folderResponse != null;
         Assert.assertEquals("Robert Root", folderResponse.getName());
     }
 
@@ -162,16 +170,17 @@ public class FolderTest {
         robert.addFolder(robertRoot).addFolder(robertChild);
         FolderController.utils = utils;
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(robert);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
+        when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
+        when(userTypedQuery.getSingleResult()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
         doThrow(new DataIntegrityViolationException("SQLException")).when(em).persist(any());
         //WHEN
-        ResponseEntity responseEntity = folderController.createFolder(request);
+        ResponseEntity<IResponseDto> responseEntity = folderController.createFolder(request);
         //THEN
-        Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.CONFLICT);
+        Assert.assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
         Assert.assertEquals("Le dossier existe déjà dans le dossier actuel.", messageResponse.getMessage());
     }
 
@@ -184,10 +193,11 @@ public class FolderTest {
         FolderController.utils = utils;
         when(utils.getUser()).thenReturn(robert);
         //WHEN
-        ResponseEntity responseEntity = folderController.createFolder(request);
+        ResponseEntity<IResponseDto> responseEntity = folderController.createFolder(request);
         //THEN
-        Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.UNAUTHORIZED);
+        Assert.assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
         Assert.assertEquals("Impossible de créer un dossier racine.", messageResponse.getMessage());
     }
 
@@ -202,15 +212,16 @@ public class FolderTest {
         robert.addFolder(robertRoot).addFolder(robertChild);
         FolderController.utils = utils;
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Robert")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(robert);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
+        when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
+        when(userTypedQuery.getSingleResult()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(null);
         //WHEN
-        ResponseEntity responseEntity = folderController.createFolder(request);
+        ResponseEntity<IResponseDto> responseEntity = folderController.createFolder(request);
         //THEN
-        Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.NOT_FOUND);
+        Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
         Assert.assertEquals("Dossier parent introuvable.", messageResponse.getMessage());
     }
 
@@ -225,15 +236,16 @@ public class FolderTest {
         robert.addFolder(robertRoot);
         FolderController.utils = utils;
         when(utils.getUser()).thenReturn(chris);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "Chris")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(chris);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
+        when(userTypedQuery.setParameter("login", "Chris")).thenReturn(userTypedQuery);
+        when(userTypedQuery.getSingleResult()).thenReturn(chris);
         when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
         //WHEN
-        ResponseEntity responseEntity = folderController.createFolder(request);
+        ResponseEntity<IResponseDto> responseEntity = folderController.createFolder(request);
         //THEN
-        Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.UNAUTHORIZED);
+        Assert.assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
         Assert.assertEquals("L'utilisateur n'a pas accès à ce dossier.", messageResponse.getMessage());
     }
 }

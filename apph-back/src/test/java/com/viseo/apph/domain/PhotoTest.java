@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class PhotoTest {
 
     @Test
-    public void testPhotoEntity(){
+    public void testPhotoEntity() {
         //GIVEN
         Photo photo = new Photo().setTitle("Photo");
         //THEN

@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { UploadImage } from './UploadImage';
-import { Alert, Collapse, IconButton } from '@mui/material';
+import { Alert, Collapse, IconButton, Stack } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { ITable } from '../../utils/types/table';
+import { IPagination, ITable, ITag } from '../../utils';
 import PhotoService from '../../services/PhotoService';
+import PhotoDetails from './PhotoDetails';
+import { DownloadImage } from './DownloadImage';
 
 const columns: GridColDef[] = [
   {
@@ -28,7 +29,8 @@ const columns: GridColDef[] = [
     type: 'date',
     flex: 2.2,
     align: 'center',
-    headerAlign: 'center'
+    headerAlign: 'center',
+    renderCell: (params) => params.row.creationDate?.toLocaleString()
   },
   {
     field: 'shootingDate',
@@ -36,11 +38,12 @@ const columns: GridColDef[] = [
     type: 'date',
     flex: 2.2,
     align: 'center',
-    headerAlign: 'center'
+    headerAlign: 'center',
+    renderCell: (params) => params.row.shootingDate?.toLocaleString()
   },
   {
     field: 'size',
-    headerName: 'Taille',
+    headerName: 'Taille(Ko)',
     type: 'number',
     flex: 1,
     align: 'center',
@@ -51,7 +54,14 @@ const columns: GridColDef[] = [
     headerName: 'Tags',
     flex: 1.5,
     align: 'center',
-    headerAlign: 'center'
+    headerAlign: 'center',
+    renderCell: (params) =>
+      params.row.tags.map((tag: ITag, index: number) => {
+        if (index !== params.row.tags.length - 1) {
+          return tag.name + ', ';
+        }
+        return tag.name;
+      })
   },
   {
     field: 'url',
@@ -59,29 +69,84 @@ const columns: GridColDef[] = [
     flex: 1,
     align: 'center',
     headerAlign: 'center'
+  },
+  {
+    field: 'actions',
+    headerName: 'Actions',
+    flex: 3,
+    align: 'center',
+    headerAlign: 'center',
+    renderCell: (params) => (
+      <Stack spacing={2} direction="row">
+        {params.row.details} <DownloadImage id={+params.id} />
+      </Stack>
+    )
   }
 ];
-export const DataTable = () => {
+export const PhotoTable = () => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
-  const [errorMessage, setErrorMessage] = useState('');
-  useEffect(() => {
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [pageSize, setPageSize] = useState<number>(5);
+  const [page, setPage] = useState<number>(0);
+  const [totalSize, setTotalSize] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const getData = () => {
+    setLoading(true);
     PhotoService.getData(
-      (tab) => {
-        setData(tab);
+      pageSize,
+      page + 1,
+      (pagination: IPagination) => {
+        pagination.photoList.forEach(
+          (row) =>
+            (row.details = (
+              <PhotoDetails
+                photoSrc={row.url}
+                title={row.title}
+                description={row.description}
+                creationDate={row.creationDate}
+                shootingDate={row.shootingDate}
+                size={row.size}
+                tags={row.tags}
+              />
+            ))
+        );
+        setData(pagination.photoList);
+        setTotalSize(pagination.totalSize);
+        setLoading(false);
       },
-      (errorMessage: string) => {
-        setErrorMessage(errorMessage);
+      (error: string) => {
+        setErrorMessage(error);
+        setLoading(false);
       }
     );
-  }, []);
+  };
+
+  useEffect(() => {
+    getData();
+    const timer = setInterval(getData, 3000);
+    return () => clearInterval(timer);
+  }, [page, pageSize]);
+
   return (
-    <div style={{ height: 400, width: '100%' }}>
-      <UploadImage />
+    <div style={{ height: 115 + pageSize * 52, width: '100%' }}>
       <DataGrid
+        pagination
+        paginationMode="server"
+        page={page}
+        loading={loading}
         rows={data}
+        rowCount={totalSize}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        pageSize={pageSize}
+        rowsPerPageOptions={[5, 10, 20]}
+        onPageChange={(pageIndex) => setPage(pageIndex)}
+        onPageSizeChange={(size) => {
+          const newPage = Math.trunc(pageSize / size) * page;
+          setPageSize(size);
+          setPage(newPage);
+        }}
+        columnBuffer={8}
       />
       <Collapse in={errorMessage !== ''}>
         <Alert

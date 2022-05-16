@@ -1,10 +1,10 @@
 import AuthService from '../services/AuthService';
 
-export const getTokenHeader = () => {
+export const getTokenHeader = (contentType = 'application/json') => {
   const token = AuthService.getToken();
   if (token) {
     return {
-      'Content-Type': 'application/json',
+      'Content-Type': contentType,
       Authorization: 'Bearer ' + token
     };
   }
