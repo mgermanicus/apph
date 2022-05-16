@@ -1,4 +1,4 @@
-import { TODOPage } from './TODOPage';
+import { FilterSelector } from '../components/FilterSelector';
 import { PhotoTable } from '../components/PhotoTable';
 
 export const AdvancedResearchPage = (): JSX.Element => {
@@ -8,8 +8,8 @@ export const AdvancedResearchPage = (): JSX.Element => {
 
   return (
     <>
-      <TODOPage todo={'filterSelector'} />
-      <PhotoTable getPhotos={getFilteredPhotos} />
+      <FilterSelector />
+      {/*<PhotoTable getPhotos={getFilteredPhotos} />*/}
     </>
   );
 };

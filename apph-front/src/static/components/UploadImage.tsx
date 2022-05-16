@@ -79,9 +79,9 @@ export const UploadImage = (): JSX.Element => {
         file,
         selectedTags,
         () => {
+          getTagList();
           setUploadStatus('success');
           handleClose();
-          getTagList();
         },
         (errorMessage) => {
           setUploadStatus('error');
