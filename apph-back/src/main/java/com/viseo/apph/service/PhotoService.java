@@ -43,7 +43,17 @@ public class PhotoService {
     S3Dao s3Dao;
 
     @Transactional
-    public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException {
+    public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException {
+        Folder folder;
+        if (photoRequest.getFolderId() == -1) {
+            folder = folderDao.getParentFolderByUser(user);
+        } else {
+            folder = folderDao.getFolderById(photoRequest.getFolderId());
+        }
+        if (folder == null)
+            throw new NotFoundException("Le dossier n'existe pas.");
+        if (folder.getUser().getId() != user.getId())
+            throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
         Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
         Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
         Photo photo = new Photo()
@@ -54,7 +64,8 @@ public class PhotoService {
                 .setDescription(photoRequest.getDescription())
                 .setCreationDate(new Date())
                 .setShootingDate(shootingDate)
-                .setTags(allTags);
+                .setTags(allTags)
+                .setFolder(folder);
         photo = photoDao.addPhoto(photo);
         return s3Dao.upload(photoRequest.getFile(), photo);
     }

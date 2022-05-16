@@ -17,6 +17,7 @@ export default class PhotoService {
     shootingDate: Date,
     imageFile: File,
     selectedTags: ITag[],
+    folderId: string,
     handleSuccess: () => void,
     handleError: (errorMessage: string) => void
   ) {
@@ -31,6 +32,7 @@ export default class PhotoService {
       'shootingDate',
       JSON.stringify(shootingDate.toLocaleString())
     );
+    formData.append('folderId', folderId);
     const requestOptions = {
       method: 'POST',
       headers: {
