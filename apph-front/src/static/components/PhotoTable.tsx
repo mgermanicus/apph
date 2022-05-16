@@ -1,13 +1,21 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { DataGrid, GridColDef, GridSelectionModel } from '@mui/x-data-grid';
-import { Alert, Collapse, IconButton, Stack } from '@mui/material';
+import {
+  Alert,
+  Box,
+  ButtonGroup,
+  Collapse,
+  IconButton,
+  Stack
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { IPagination, ITable, ITag } from '../../utils';
 import PhotoService from '../../services/PhotoService';
 import PhotoDetails from './PhotoDetails';
 import { DownloadImage } from './DownloadImage';
 import { DeleteImage } from './DeleteImage';
+import { UploadImage } from './UploadImage';
 
 const columns: GridColDef[] = [
   {
@@ -133,7 +141,12 @@ export const PhotoTable = () => {
 
   return (
     <div style={{ height: 115 + pageSize * 52, width: '100%' }}>
-      <DeleteImage ids={selectionModel.map((id) => +id)} />
+      <ButtonGroup variant="outlined" aria-label="outlined button group">
+        <UploadImage />
+        <Box sx={{ m: 1 }}>
+          <DeleteImage ids={selectionModel.map((id) => +id)} />
+        </Box>
+      </ButtonGroup>
       <DataGrid
         pagination
         paginationMode="server"

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { AlertColor, Button } from '@mui/material';
 import { ConfirmationDialog } from './ConfirmationDialog';
-import DeleteIcon from '@mui/icons-material/Delete';
 import PhotoService from '../../services/PhotoService';
 import { AlertSnackbar } from './AlertSnackbar';
 
@@ -46,7 +45,6 @@ export const DeleteImage = ({ ids }: { ids: number[] }): JSX.Element => {
       <Button
         variant="outlined"
         color="error"
-        startIcon={<DeleteIcon />}
         onClick={handleSubmit}
         id={`download-${ids}`}
       >
