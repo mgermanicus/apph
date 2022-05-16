@@ -150,7 +150,7 @@ export const PhotoTable = () => {
           setPageSize(size);
           setPage(newPage);
         }}
-        columnBuffer={8}
+        columnBuffer={9}
         onSelectionModelChange={(selection) => {
           setSelectionModel(selection);
         }}
