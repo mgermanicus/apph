@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -44,7 +44,11 @@ export const SignUp = () => {
     const confirmPassword = data.get('confirmPassword')?.toString();
     const firstName = data.get('firstName')?.toString();
     const lastName = data.get('lastName')?.toString();
-    if (password && confirmPassword && password != confirmPassword) {
+    const emailValidator =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!emailValidator.test(email ? email : '')) {
+      setErrorMessage('Email invalide.');
+    } else if (password && confirmPassword && password != confirmPassword) {
       setErrorMessage(
         'Ces mots de passe ne correspondent pas. Veuillez réessayer.'
       );
