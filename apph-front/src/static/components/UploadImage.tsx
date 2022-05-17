@@ -17,6 +17,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
+import DoneIcon from '@mui/icons-material/Done';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import PhotoService from '../../services/PhotoService';
 import { ITag, StatusType, UploadStatus } from '../../utils';
@@ -34,24 +35,36 @@ const UploadListItem = (props: { file: File; status: UploadStatus }) => {
   const uploadBody = () => {
     switch (props.status.type) {
       case StatusType.Success:
-        return <Alert severity="success">{props.status.message}</Alert>;
+        return <DoneIcon color={'success'} />;
       case StatusType.Error:
-        return <Alert severity="error">{props.status.message}</Alert>;
+        return (
+          <Typography color="error" variant="caption">
+            {props.status.message}
+          </Typography>
+        );
       case StatusType.Uploading:
-        return <LinearProgress />;
+        return (
+          <Box sx={{ width: '100%' }}>
+            <LinearProgress />
+          </Box>
+        );
       default:
         return <></>;
     }
   };
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Box sx={{ minWidth: 35 }}>
-        <Typography variant="body2" color="text.secondary">
-          {props.file.name}
-        </Typography>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}
+    >
+      <Box sx={{ mr: 2 }}>
+        <Typography color="text.secondary">{props.file.name}</Typography>
       </Box>
-      <Box sx={{ width: '100%', mr: 1 }}>{uploadBody()}</Box>
+      {uploadBody()}
     </Box>
   );
 };
@@ -82,8 +95,6 @@ export const UploadImage = (): JSX.Element => {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [shootingDate, setShootingDate] = useState<Date>(new Date());
-  const [uploadStatus, setUploadStatus] = useState<UploadStatus>();
-  const [errorMessage, setErrorMessage] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
   const tagsInput = createRef<HTMLInputElement>();
   const [files, setFiles] = useState<FileList>();
@@ -102,8 +113,7 @@ export const UploadImage = (): JSX.Element => {
         setUploadStatuses((statuses) => [
           ...statuses.slice(0, i),
           {
-            type: StatusType.Success,
-            message: 'Votre fichier a bien été uploadé'
+            type: StatusType.Success
           },
           ...statuses.slice(i + 1)
         ]);
@@ -128,12 +138,13 @@ export const UploadImage = (): JSX.Element => {
 
   const handleClose = () => {
     setOpen(false);
-    setErrorMessage('');
     setTitle('');
     setDescription('');
     setShootingDate(new Date());
     setSelectedTags([]);
     setGlobalUploadStatus({ type: StatusType.None });
+    setUploadStatuses([]);
+    setFiles(undefined);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -176,6 +187,7 @@ export const UploadImage = (): JSX.Element => {
                   (tag) => `+ Add New Tag ${tag.name}` == selectedTag.name
                 ) ?? selectedTag
             );
+            setSelectedTags(newSelectedTags);
             for (let i = 1; i < fileList.length; i++) {
               PhotoService.uploadImage(
                 `${title}_${i + 1}`,
@@ -189,10 +201,37 @@ export const UploadImage = (): JSX.Element => {
               );
             }
           },
-          (errorMessage: string) => setErrorMessage(errorMessage)
+          (errorMessage: string) =>
+            setGlobalUploadStatus({
+              type: StatusType.Error,
+              message: errorMessage
+            })
         );
       });
     }
+  };
+
+  const updateGlobalStatus = () => {
+    if (
+      !uploadStatuses.length ||
+      uploadStatuses.some(
+        (status) =>
+          status.type === StatusType.None ||
+          status.type === StatusType.Uploading
+      )
+    )
+      return;
+    if (uploadStatuses.some((status) => status.type === StatusType.Error)) {
+      setGlobalUploadStatus({
+        type: StatusType.Error,
+        message: "Certains fichiers n'ont pas pu être uploadés"
+      });
+      return;
+    }
+    setGlobalUploadStatus({
+      type: StatusType.Success,
+      message: 'Vos fichiers ont bien été uploadés'
+    });
   };
 
   const filterTags = (options: ITag[], params: FilterOptionsState<ITag>) => {
@@ -214,13 +253,21 @@ export const UploadImage = (): JSX.Element => {
     getTagList();
   }, []);
 
+  useEffect(() => {
+    updateGlobalStatus();
+  }, [uploadStatuses]);
+
   const getTagList = () => {
     TagService.getAllTags(
       (tags: string) => {
         const tagsConverted: ITag[] = JSON.parse(tags);
         dispatch(setTagList(tagsConverted));
       },
-      (errorMessage: string) => setErrorMessage(errorMessage)
+      (errorMessage: string) =>
+        setGlobalUploadStatus({
+          type: StatusType.Error,
+          message: errorMessage
+        })
     );
   };
 
@@ -346,8 +393,17 @@ export const UploadImage = (): JSX.Element => {
                     Ajouter
                   </Button>
                 </Stack>
-                <Collapse in={errorMessage != ''}>
-                  <Alert severity="error">{errorMessage}</Alert>
+                <Collapse in={!!globalUploadStatus.message}>
+                  <Alert
+                    sx={{ mt: 2 }}
+                    severity={
+                      globalUploadStatus.type == StatusType.Error
+                        ? 'error'
+                        : 'success'
+                    }
+                  >
+                    {globalUploadStatus.message}
+                  </Alert>
                 </Collapse>
               </Box>
             </Box>

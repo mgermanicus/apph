@@ -12,6 +12,7 @@ import {
   inputFile
 } from '../utils';
 import { ITag } from '../../utils';
+import { wrapper } from '../utils/components/CustomWrapper';
 
 describe('Test UploadImage', () => {
   beforeEach(() => {
@@ -23,7 +24,7 @@ describe('Test UploadImage', () => {
     const spyRequestFunction = fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' }
     });
-    render(<UploadImage />);
+    render(<UploadImage />, { wrapper });
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000000000, 'image/png');
@@ -54,7 +55,7 @@ describe('Test UploadImage', () => {
     const spyRequestFunction = fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' }
     });
-    render(<UploadImage />);
+    render(<UploadImage />, { wrapper });
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000, 'application/zip');
@@ -84,7 +85,7 @@ describe('Test UploadImage', () => {
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { body: 'body' }
     });
-    render(<UploadImage />);
+    render(<UploadImage />, { wrapper });
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000, 'image/png');
@@ -125,7 +126,7 @@ describe('Test UploadImage', () => {
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { error: serverError }
     });
-    render(<UploadImage />);
+    render(<UploadImage />, { wrapper });
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000, 'image/png');
@@ -149,7 +150,7 @@ describe('Test UploadImage', () => {
       '/tag/': { body: '[]' },
       '/photo/upload': { body: 'body' }
     });
-    render(<UploadImage />);
+    render(<UploadImage />, { wrapper });
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000, 'image/png');
@@ -172,7 +173,7 @@ describe('Test UploadImage', () => {
       fillTags(tags);
       inputFile(file, fileInput);
     });
-    clickButton(/Ajouter/);
+    await act(() => clickButton(/Ajouter/));
     //THEN
     expect(spyRequestFunction).toBeCalledWith(
       '/photo/upload',
@@ -187,7 +188,7 @@ describe('Test UploadImage', () => {
     const spyRequestFunction = fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' }
     });
-    render(<UploadImage />);
+    render(<UploadImage />, { wrapper });
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000, 'image/png');
