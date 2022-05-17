@@ -30,7 +30,7 @@ public class S3Dao {
     @Autowired
     S3Client s3Client;
 
-    public String hashString(String string) {
+    private String hashString(String string) {
         return String.valueOf(MurmurHash2.hash32(string));
     }
 
