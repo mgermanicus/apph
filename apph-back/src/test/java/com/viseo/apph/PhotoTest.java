@@ -263,7 +263,6 @@ public class PhotoTest {
         ResponseEntity<IResponseDTO> responseEntity = photoController.delete(token, photosRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
-        //verify(s3Dao, times(1)).delete(anyString());
         verify(em, times(1)).remove(any());
     }
 
