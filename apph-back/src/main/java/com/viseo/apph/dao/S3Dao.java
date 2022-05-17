@@ -69,7 +69,8 @@ public class S3Dao {
 
     public byte[] download(Photo photo) {
         String name = hashString(String.valueOf(photo.getId())) + photo.getFormat();
-        ResponseBytes<GetObjectResponse> s3Object = s3Client.getObject(
+        ResponseBytes<GetObjectResponse> s3Object = s3Client
+                .getObject(
                 GetObjectRequest.builder().bucket(bucketName).key(user + name).build(),
                 ResponseTransformer.toBytes());
         return s3Object.asByteArray();

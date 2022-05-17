@@ -1,5 +1,6 @@
-package com.viseo.apph.controller;
+package com.viseo.apph;
 
+import com.viseo.apph.controller.AuthController;
 import com.viseo.apph.dao.FolderDao;
 import com.viseo.apph.dao.RoleDao;
 import com.viseo.apph.dao.UserDao;
@@ -38,8 +39,6 @@ import static org.mockito.Mockito.*;
 public class AuthTest {
     @Mock
     EntityManager em;
-    UserService userService;
-    AuthController authController;
     @Mock
     TypedQuery typedQuery;
     @Mock
@@ -48,6 +47,9 @@ public class AuthTest {
     PasswordEncoder passwordEncoder;
     @Mock
     AuthenticationManager authenticationManager;
+
+    UserService userService;
+    AuthController authController;
 
     private void createAuthController() {
         UserDao userDao = new UserDao();
@@ -91,6 +93,36 @@ public class AuthTest {
         ResponseEntity responseEntity = authController.login(loginRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testFailLoginUserNotFind() {
+        //GIVEN
+        createAuthController();
+        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
+        when(typedQuery.setParameter("login", "tintin")).thenThrow(new NoResultException());
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
+        //WHEN
+        ResponseEntity responseEntity = authController.login(userRequest);
+        //THEN
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testFailLoginPasswordNotMatch() {
+        //GIVEN
+        createAuthController();
+        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
+        when(typedQuery.setParameter("login", "tintin")).thenReturn(typedQuery);
+        when(passwordEncoder.matches("password", "fakePassword")).thenReturn(false);
+        //WHEN
+        ResponseEntity responseEntity = authController.login(userRequest);
+        //THEN
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
     }
 
     @Test
