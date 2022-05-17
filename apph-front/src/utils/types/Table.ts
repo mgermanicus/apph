@@ -20,4 +20,5 @@ export interface IPhotoDetails {
   shootingDate: Date;
   size: number;
   tags: ITag[];
+  clickType: string;
 }

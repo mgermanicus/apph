@@ -114,6 +114,7 @@ export const PhotoTable = () => {
                 shootingDate={row.shootingDate}
                 size={row.size}
                 tags={row.tags}
+                clickType="button"
               />
             ))
         );

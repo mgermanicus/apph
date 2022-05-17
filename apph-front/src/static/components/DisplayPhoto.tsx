@@ -1,16 +1,9 @@
 import { ITable } from '../../utils';
-import {
-  Alert,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Grid,
-  Typography
-} from '@mui/material';
+import { Alert, Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
 import PhotoService from '../../services/PhotoService';
 import * as React from 'react';
+import PhotoDetails from './PhotoDetails';
 
 export const DisplayPhoto = ({
   selectedFolder
@@ -52,19 +45,16 @@ export const DisplayPhoto = ({
       >
         {photoList.map((photo) => (
           <Grid item xs={2} sm={4} md={4} key={'key' + photo.id}>
-            <Card sx={{ maxWidth: 200 }}>
-              <CardActionArea>
-                <CardMedia
-                  image={
-                    'https://media.discordapp.net/attachments/821089093730959382/898592598854348800/Bloody_Hell.jpg'
-                  }
-                  sx={{ height: 100, objectFit: 'scale-down' }}
-                />
-                <CardContent>
-                  <Typography>{photo.title}</Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
+            <PhotoDetails
+              photoSrc={photo.url}
+              title={photo.title}
+              description={photo.description}
+              creationDate={photo.creationDate}
+              shootingDate={photo.shootingDate}
+              size={photo.size}
+              tags={photo.tags}
+              clickType="card"
+            />
           </Grid>
         ))}
       </Grid>

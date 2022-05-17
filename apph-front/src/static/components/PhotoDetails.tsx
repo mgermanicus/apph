@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { IPhotoDetails } from '../../utils';
+import { PhotoCard } from './PhotoCard';
 
 const modalStyle = {
   position: 'absolute',
@@ -33,7 +34,8 @@ const PhotoDetails = ({
   creationDate,
   shootingDate,
   size,
-  tags
+  tags,
+  clickType
 }: IPhotoDetails) => {
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
 
@@ -47,9 +49,23 @@ const PhotoDetails = ({
 
   return (
     <>
-      <Button variant="outlined" onClick={handleOpenDetails}>
-        Détails
-      </Button>
+      {
+        {
+          button: (
+            <Button variant="outlined" onClick={handleOpenDetails}>
+              Détails
+            </Button>
+          ),
+          card: (
+            <PhotoCard
+              src={photoSrc}
+              title={title}
+              openFunction={handleOpenDetails}
+            />
+          )
+        }[clickType]
+      }
+
       <Modal
         open={detailsOpen}
         onClose={handleCloseDetails}

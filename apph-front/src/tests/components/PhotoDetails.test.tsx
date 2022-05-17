@@ -29,6 +29,7 @@ describe('Test du composant PhotoDetails', () => {
         shootingDate={mockPhoto.shootingDate}
         size={mockPhoto.size}
         tags={mockPhoto.tags}
+        clickType="button"
       />
     );
     //WHEN
