@@ -46,7 +46,11 @@ export const SignIn = () => {
     const data = new FormData(event.currentTarget);
     const email = data.get('email')?.toString();
     const password = data.get('password')?.toString();
-    if (email && password) {
+    const emailValidator =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!emailValidator.test(email ? email : '')) {
+      setErrorMessage('Email invalide.');
+    } else if (email && password) {
       AuthService.signIn(
         email,
         password,
