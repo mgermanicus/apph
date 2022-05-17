@@ -28,11 +28,11 @@ export const ConfirmationDialog = ({
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button color="primary" onClick={onConfirm}>
-          Continuer
-        </Button>
         <Button color="error" onClick={onCancel}>
           Annuler
+        </Button>
+        <Button color="primary" onClick={onConfirm}>
+          Continuer
         </Button>
       </DialogActions>
     </Dialog>
