@@ -48,6 +48,8 @@ public class PhotoTest {
     @Mock
     TypedQuery<Folder> typedQueryFolder;
     @Mock
+    TypedQuery<Long> typedQueryLong;
+    @Mock
     Utils utils;
     @Mock
     S3Client s3Client;
@@ -100,6 +102,10 @@ public class PhotoTest {
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title", Long.class)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
+        when(typedQueryLong.getSingleResult()).thenReturn(0L);
         when(utils.getUser()).thenReturn(robert);
         PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57"));
         //WHEN
@@ -243,6 +249,10 @@ public class PhotoTest {
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title", Long.class)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
+        when(typedQueryLong.getSingleResult()).thenReturn(0L);
         when(utils.getUser()).thenReturn(user);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
@@ -382,6 +392,39 @@ public class PhotoTest {
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("L'utilisateur n'a pas accès à ce dossier.", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testUploadWithExistingPhotoTitle() {
+        //GIVEN
+        createPhotoController();
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
+        Tag tag = new Tag().setName("+ Add New Tag totoTestTag");
+        Set<Tag> tags = new HashSet<>();
+        tags.add(tag);
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de toto").setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
+        User user = new User().setLogin("toto").setPassword("password");
+        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
+        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title", Long.class)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
+        when(typedQueryLong.getSingleResult()).thenReturn(1L);
+        //WHEN
+        ResponseEntity<IResponseDTO> responseEntity = photoController.upload(jws, photoRequest);
+        //THEN
+        assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("Titre déjà utilisé dans le dossier.", messageResponse.getMessage());
     }
 
     @Test
