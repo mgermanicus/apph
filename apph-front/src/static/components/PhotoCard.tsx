@@ -17,11 +17,11 @@ export const PhotoCard = ({
   openFunction: () => void;
 }): JSX.Element => {
   return (
-    <Card sx={{ maxWidth: 200 }}>
+    <Card sx={{ maxWidth: 210 }}>
       <CardActionArea onClick={openFunction}>
-        <CardMedia image={src} sx={{ height: 100, objectFit: 'scale-down' }} />
+        <CardMedia image={src} sx={{ height: 150, objectFit: 'scale-down' }} />
         <CardContent>
-          <Typography>{title}</Typography>
+          <Typography noWrap>{title}</Typography>
         </CardContent>
       </CardActionArea>
     </Card>

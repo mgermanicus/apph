@@ -40,11 +40,14 @@ export default class PhotoService {
       },
       body: formData
     };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
     return Server.request(
       `/photo/upload`,
       requestOptions,
       handleSuccess,
-      handleError
+      errorFunction
     );
   }
 

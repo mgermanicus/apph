@@ -3,6 +3,7 @@ package com.viseo.apph.controller;
 import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.*;
+import com.viseo.apph.exception.ConflictException;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.exception.UnauthorizedException;
@@ -75,6 +76,8 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
         } catch (NoResultException nre) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("L'utilisateur ou le dossier n'existe pas."));
+        } catch (ConflictException ce) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(ce.getMessage()));
         }
     }
 

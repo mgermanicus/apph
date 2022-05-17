@@ -13,6 +13,7 @@ import com.viseo.apph.dto.PaginationResponse;
 import com.viseo.apph.dto.PhotoListResponse;
 import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.dto.PhotoResponse;
+import com.viseo.apph.exception.ConflictException;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.exception.UnauthorizedException;
@@ -43,7 +44,7 @@ public class PhotoService {
     S3Dao s3Dao;
 
     @Transactional
-    public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException {
+    public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException, ConflictException {
         Folder folder;
         if (photoRequest.getFolderId() == -1) {
             folder = folderDao.getParentFolderByUser(user);
@@ -54,6 +55,8 @@ public class PhotoService {
             throw new NotFoundException("Le dossier n'existe pas.");
         if (folder.getUser().getId() != user.getId())
             throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
+        if (photoDao.existNameInFolder(folder, photoRequest.getTitle()))
+            throw new ConflictException("Titre déjà utilisé dans le dossier.");
         Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
         Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
         Photo photo = new Photo()
