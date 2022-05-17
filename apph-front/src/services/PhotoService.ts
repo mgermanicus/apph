@@ -111,7 +111,7 @@ export default class PhotoService {
     const successFunction = (message: string) => {
       handleSuccess(JSON.parse(message));
     };
-    const errorFunction= (errorMessage: string) => {
+    const errorFunction = (errorMessage: string) => {
       handleError(JSON.parse(errorMessage));
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);

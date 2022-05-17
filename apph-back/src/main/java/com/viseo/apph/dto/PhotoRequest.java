@@ -7,8 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class PhotoRequest {
     @JsonProperty("id")
     long id;
-    @JsonProperty("ids")
-    long[] ids;
     String title;
     String description;
     MultipartFile file;
@@ -16,15 +14,6 @@ public class PhotoRequest {
     String tags;
     @JsonValue
     String shootingDate;
-
-    public long[] getIds() {
-        return ids;
-    }
-
-    public PhotoRequest setIds(long[] ids) {
-        this.ids = ids;
-        return this;
-    }
 
     public long getId() {
         return id;

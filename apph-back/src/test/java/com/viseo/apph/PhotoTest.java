@@ -252,7 +252,7 @@ public class PhotoTest {
         long[] ids = {1L};
         User user = (User) new User().setLogin("test@test").setId(2);
         Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(idPhoto);
-        PhotoRequest photoRequest = new PhotoRequest().setIds(ids);
+        PhotosRequest photosRequest = new PhotosRequest().setIds(ids);
         String token = Jwts.builder().claim("login", user.getLogin()).setExpiration(
                 new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         when(em.createQuery(anyString(), eq(User.class))).thenReturn(typedQueryUser);
@@ -260,7 +260,7 @@ public class PhotoTest {
         when(typedQueryUser.getSingleResult()).thenReturn(user);
         when(em.find(Photo.class, ids[0])).thenReturn(photo);
         //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = photoController.delete(token, photoRequest);
+        ResponseEntity<IResponseDTO> responseEntity = photoController.delete(token, photosRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         //verify(s3Dao, times(1)).delete(anyString());
@@ -276,7 +276,7 @@ public class PhotoTest {
         User user = (User) new User().setLogin("test@test").setId(2);
         User userDiff = (User) new User().setLogin("test@test").setId(100);
         Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(idPhoto);
-        PhotoRequest photoRequest = new PhotoRequest().setIds(ids);
+        PhotosRequest photosRequest = new PhotosRequest().setIds(ids);
         String token = Jwts.builder().claim("login", user.getLogin()).setExpiration(
                 new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         when(em.createQuery(anyString(), eq(User.class))).thenReturn(typedQueryUser);
@@ -284,7 +284,7 @@ public class PhotoTest {
         when(typedQueryUser.getSingleResult()).thenReturn(userDiff);
         when(em.find(Photo.class, ids[0])).thenReturn(photo);
         //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = photoController.delete(token, photoRequest);
+        ResponseEntity<IResponseDTO> responseEntity = photoController.delete(token, photosRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         verify(s3Dao, times(0)).delete(any());
@@ -299,7 +299,7 @@ public class PhotoTest {
         long[] ids = {1L};
         User user = (User) new User().setLogin("test@test").setId(2);
         Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(idPhoto);
-        PhotoRequest photoRequest = new PhotoRequest().setIds(ids);
+        PhotosRequest photosRequest = new PhotosRequest().setIds(ids);
         String token = Jwts.builder().claim("login", user.getLogin()).setExpiration(
                 new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
         when(em.createQuery(anyString(), eq(User.class))).thenReturn(typedQueryUser);
@@ -308,7 +308,7 @@ public class PhotoTest {
         when(em.find(Photo.class, ids[0])).thenReturn(photo);
         when(s3Dao.delete(any())).thenThrow(S3Exception.class);
         //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = photoController.delete(token, photoRequest);
+        ResponseEntity<IResponseDTO> responseEntity = photoController.delete(token, photosRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().isError());
         verify(s3Dao, times(1)).delete(any());
