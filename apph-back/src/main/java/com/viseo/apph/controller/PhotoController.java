@@ -80,7 +80,7 @@ public class PhotoController {
             photoService.deletePhotos(user.getId(), photoRequest.getIds());
             return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Suppression effectuée avec succès"));
         } catch (S3Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du téléchargement"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de la suppression"));
         }
 
     }
