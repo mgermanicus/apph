@@ -1,5 +1,6 @@
-package com.viseo.apph.controller;
+package com.viseo.apph;
 
+import com.viseo.apph.controller.AuthController;
 import com.viseo.apph.dao.FolderDao;
 import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.User;
@@ -29,14 +30,13 @@ import static org.mockito.Mockito.when;
 public class AuthTest {
     @Mock
     EntityManager em;
-    UserService userService;
-    AuthController authController;
     @Mock
     TypedQuery typedQuery;
     @Mock
     PasswordEncoder passwordEncoder;
-    @Mock
-    NoResultException noResultException;
+
+    UserService userService;
+    AuthController authController;
 
     private void createAuthController() {
         UserDao userDao = new UserDao();
@@ -83,7 +83,7 @@ public class AuthTest {
         UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
-        when(typedQuery.setParameter("login", "tintin")).thenThrow(noResultException);
+        when(typedQuery.setParameter("login", "tintin")).thenThrow(new NoResultException());
         when(passwordEncoder.matches("password", "password")).thenReturn(true);
         //WHEN
         ResponseEntity responseEntity = authController.login(userRequest);

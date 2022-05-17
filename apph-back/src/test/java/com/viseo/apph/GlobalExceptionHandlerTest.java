@@ -1,6 +1,7 @@
-package com.viseo.apph.exception;
+package com.viseo.apph;
 
 import com.viseo.apph.dto.IResponseDTO;
+import com.viseo.apph.exception.GlobalExceptionHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

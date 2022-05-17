@@ -13,17 +13,11 @@ import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Base64;
 
 @Repository
 public class S3Dao {
@@ -75,7 +69,8 @@ public class S3Dao {
 
     public byte[] download(Photo photo) {
         String name = hashString(String.valueOf(photo.getId())) + photo.getFormat();
-        ResponseBytes<GetObjectResponse> s3Object = s3Client.getObject(
+        ResponseBytes<GetObjectResponse> s3Object = s3Client
+                .getObject(
                 GetObjectRequest.builder().bucket(bucketName).key(user + name).build(),
                 ResponseTransformer.toBytes());
         return s3Object.asByteArray();

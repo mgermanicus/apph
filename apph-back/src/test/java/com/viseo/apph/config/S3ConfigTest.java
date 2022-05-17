@@ -1,5 +1,6 @@
 package com.viseo.apph.config;
 
+import com.viseo.apph.config.S3Config;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
