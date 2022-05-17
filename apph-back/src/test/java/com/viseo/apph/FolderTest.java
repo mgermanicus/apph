@@ -1,12 +1,12 @@
-package com.viseo.apph.controller;
+package com.viseo.apph;
 
+import com.viseo.apph.controller.FolderController;
 import com.viseo.apph.dao.FolderDao;
 import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FolderRequest;
 import com.viseo.apph.dto.FolderResponse;
-import com.viseo.apph.dto.IResponseDTO;
 import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.security.Utils;
@@ -59,6 +59,8 @@ public class FolderTest {
         inject(folderService, "userDao", userDao);
         folderController = new FolderController();
         inject(folderController, "folderService", folderService);
+        inject(folderController, "utils", utils);
+
     }
 
     @Test
@@ -70,7 +72,6 @@ public class FolderTest {
         Folder robertChild1 = (Folder) new Folder().setName("Robert Child 1").setParentFolderId(1L).setUser(robert).setId(2);
         Folder robertChild2 = (Folder) new Folder().setName("Robert Child 2").setParentFolderId(1L).setUser(robert).setId(3);
         robert.addFolder(robertRoot).addFolder(robertChild1).addFolder(robertChild2);
-        FolderController.utils = utils;
         when(utils.getUser()).thenReturn(robert);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
         when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
@@ -95,7 +96,6 @@ public class FolderTest {
     public void testGetFoldersByUserNoUser() {
         //GIVEN
         createFolderController();
-        FolderController.utils = utils;
         when(utils.getUser()).thenReturn((User)new User().setLogin("Not a User").setId(1));
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
         when(userTypedQuery.setParameter("login", "Not a User")).thenReturn(userTypedQuery);
@@ -117,7 +117,6 @@ public class FolderTest {
         Folder folder = (Folder) new Folder().setName("Folder").setParentFolderId(1L).setId(1);
         List<Folder> folders = new ArrayList<>();
         folders.add(folder);
-        FolderController.utils = utils;
         when(utils.getUser()).thenReturn(robert);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
         when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
@@ -142,7 +141,7 @@ public class FolderTest {
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setUser(robert).setId(1);
         robert.addFolder(robertRoot);
-        FolderController.utils = utils;
+        when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
         when(utils.getUser()).thenReturn(robert);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
         when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
@@ -150,6 +149,7 @@ public class FolderTest {
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(folderTypedQuery);
         when(folderTypedQuery.setParameter("userId", 1L)).thenReturn(folderTypedQuery);
         when(folderTypedQuery.getResultList()).thenReturn(robert.getFolders());
+
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = folderController.createFolder(request);
         //THEN
@@ -168,7 +168,6 @@ public class FolderTest {
         Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setUser(robert).setId(1);
         Folder robertChild = (Folder) new Folder().setName("Robert Child").setParentFolderId(1L).setUser(robert).setId(2);
         robert.addFolder(robertRoot).addFolder(robertChild);
-        FolderController.utils = utils;
         when(utils.getUser()).thenReturn(robert);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
         when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
@@ -190,7 +189,6 @@ public class FolderTest {
         createFolderController();
         FolderRequest request = new FolderRequest().setName("Robert Child").setParentFolderId(null);
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
-        FolderController.utils = utils;
         when(utils.getUser()).thenReturn(robert);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = folderController.createFolder(request);
@@ -210,7 +208,6 @@ public class FolderTest {
         Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setUser(robert).setId(1);
         Folder robertChild = (Folder) new Folder().setName("Robert Child").setParentFolderId(1L).setUser(robert).setId(2);
         robert.addFolder(robertRoot).addFolder(robertChild);
-        FolderController.utils = utils;
         when(utils.getUser()).thenReturn(robert);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
         when(userTypedQuery.setParameter("login", "Robert")).thenReturn(userTypedQuery);
@@ -234,7 +231,6 @@ public class FolderTest {
         User chris = (User) new User().setLogin("Chris").setPassword("P@ssw0rd").setId(2).setVersion(0);
         Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setUser(robert).setId(1);
         robert.addFolder(robertRoot);
-        FolderController.utils = utils;
         when(utils.getUser()).thenReturn(chris);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
         when(userTypedQuery.setParameter("login", "Chris")).thenReturn(userTypedQuery);

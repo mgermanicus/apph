@@ -1,6 +1,6 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.dao.RoleDao;
+
 import com.viseo.apph.dto.LoginRequest;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.security.JwtUtils;
@@ -24,8 +24,7 @@ public class AuthController {
     UserService userService;
     @Autowired
     AuthenticationManager authenticationManager;
-    @Autowired
-    RoleDao roleDao;
+
     @Autowired
     JwtUtils jwtUtils;
     @Autowired

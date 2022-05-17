@@ -1,11 +1,14 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.UserResponse;
 import com.viseo.apph.security.UserDetailsImpl;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.service.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.NoResultException;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -36,11 +41,12 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @RequestMapping(value = "/edit", method = RequestMethod.PUT, produces = "application/json")
-    public ResponseEntity editUserInfo(@RequestBody UserRequest request) {
+    public ResponseEntity editUserInfo(@RequestHeader("Authorization") String token, @RequestBody UserRequest request) {
+        User user = utils.getUser();
         try {
-            User user = utils.getUser();
-            String newToken = userService.editUser(user.getId(), request);
+            String newToken = userService.editUser(user.getLogin(), request, token);
             return ResponseEntity.ok(newToken);
         } catch (NullPointerException | NotFoundException | NoResultException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("L'utilisateur lié à cette session n'existe pas");

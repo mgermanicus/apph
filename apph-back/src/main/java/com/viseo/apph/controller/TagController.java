@@ -1,8 +1,9 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.Tag;
+import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.MessageResponse;
+import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.TagService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -21,12 +22,12 @@ import java.util.List;
 public class TagController {
     @Autowired
     private TagService tagService;
-
+    static Utils utils = new Utils() {};
     @GetMapping("/")
-    public ResponseEntity getTags(@RequestHeader("Authorization") String token) {
+    public ResponseEntity getTags() {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            List<Tag> tags = tagService.getTags(claims.get("login").toString());
+            User user = utils.getUser();
+            List<Tag> tags = tagService.getTags(user);
             return ResponseEntity.ok(tags);
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User does not exist"));

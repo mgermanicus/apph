@@ -1,9 +1,6 @@
 package com.viseo.apph.config;
 
-import com.viseo.apph.domain.Folder;
-import com.viseo.apph.domain.Photo;
-import com.viseo.apph.domain.Tag;
-import com.viseo.apph.domain.User;
+import com.viseo.apph.domain.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;

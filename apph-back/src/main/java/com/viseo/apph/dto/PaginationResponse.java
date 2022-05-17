@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PaginationResponse implements IResponseDTO {
+public class PaginationResponse implements IResponseDto {
     @JsonProperty("photoList")
     List<PhotoResponse> photoList;
 

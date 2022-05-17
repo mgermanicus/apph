@@ -10,16 +10,13 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Map;
 
 @Component
 public class JwtUtils {
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
     private final int jwtExpirationMs = 7_200_000;
-
-    public static Key getKey() {
-        return key;
-    }
 
     public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
@@ -55,5 +52,14 @@ public class JwtUtils {
             logger.error("JWT claims string is empty: {}", e.getMessage());
         }
         return false;
+    }
+
+    public String setClaimOnToken(String token, Map<String,String> newClaims){
+        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        JwtBuilder newToken = Jwts.builder().setClaims(claims);
+        for (Map.Entry<String, String> entry : newClaims.entrySet()) {
+            newToken.claim(entry.getKey(), entry.getValue());
+        }
+        return newToken.setExpiration(claims.getExpiration()).signWith(key).compact();
     }
 }

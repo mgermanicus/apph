@@ -2,12 +2,20 @@ package com.viseo.apph.dao;
 
 import com.viseo.apph.domain.ERole;
 import com.viseo.apph.domain.Role;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.viseo.apph.domain.User;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 @Repository
-public interface RoleDao extends JpaRepository<Role, Long> {
-    Optional<Role> findByName(ERole name);
+public class RoleDao {
+    @PersistenceContext
+    EntityManager em;
+
+    public Role getRole(ERole eRole){
+        return em.createQuery("SELECT r FROM Role r WHERE r.name=:name", Role.class)
+                .setParameter("name", eRole)
+                .getSingleResult();
+    }
 }

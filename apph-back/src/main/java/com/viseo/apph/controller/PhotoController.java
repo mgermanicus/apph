@@ -44,11 +44,10 @@ public class PhotoController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping(value = "/infos", produces = "application/json")
-    public ResponseEntity<IResponseDTO> getUserPhotos(@RequestParam int pageSize, @RequestParam int page) {
+    public ResponseEntity<IResponseDto> getUserPhotos(@RequestParam int pageSize, @RequestParam int page) {
         User user = utils.getUser();
-        long userId = user.getId();
         try {
-            PaginationResponse response = photoService.getUserPhotos(userId, pageSize, page);
+            PaginationResponse response = photoService.getUserPhotos(user, pageSize, page);
             return ResponseEntity.ok(response);
         } catch (NoResultException nre) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("L'utilisateur n'existe pas."));
@@ -64,8 +63,7 @@ public class PhotoController {
     public ResponseEntity<IResponseDto> upload(@ModelAttribute PhotoRequest photoRequest) {
         try {
             User user = utils.getUser();
-            long userId = user.getId();
-            return ResponseEntity.ok(new MessageResponse(photoService.addPhoto(userId, photoRequest)));
+            return ResponseEntity.ok(new MessageResponse(photoService.addPhoto(user, photoRequest)));
         } catch (IOException | S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
         } catch (InvalidFileException e) {
@@ -75,9 +73,9 @@ public class PhotoController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/download")
-    public ResponseEntity<IResponseDTO> download(@RequestHeader("Authorization") String token, @RequestBody PhotoRequest photoRequest) {
+    public ResponseEntity<IResponseDto> download(@RequestBody PhotoRequest photoRequest) {
+        User user = utils.getUser();
         try {
-            User user = utils.getUser();
             long userId = user.getId();
             return ResponseEntity.ok(photoService.download(userId, photoRequest));
         } catch (S3Exception e) {
