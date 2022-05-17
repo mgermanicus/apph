@@ -36,7 +36,6 @@ export const DeleteImage = ({ ids }: { ids: number[] }): JSX.Element => {
   };
   const handleConfirm = () => {
     setDialogOpen(false);
-    console.log(ids);
     deleteImage();
   };
 
