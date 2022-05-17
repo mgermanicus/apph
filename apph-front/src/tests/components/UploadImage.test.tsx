@@ -88,7 +88,8 @@ describe('Test UploadImage', () => {
     //GIVEN
     render(<UploadImage />);
     clickButton(/Upload/);
-    const serverError = "Une erreur est survenue lors de l'upload";
+    const serverError =
+      '{"message":"Une erreur est survenue lors de l\'upload"}';
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000, 'image/png');
     triggerRequestFailure(serverError);
@@ -97,6 +98,8 @@ describe('Test UploadImage', () => {
     inputFile(file, fileInput);
     clickButton(/Ajouter/);
     //THEN
-    expect(screen.getByText(new RegExp(serverError))).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp("Une erreur est survenue lors de l'upload"))
+    ).toBeInTheDocument();
   });
 });
