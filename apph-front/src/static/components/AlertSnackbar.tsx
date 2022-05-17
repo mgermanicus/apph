@@ -26,7 +26,12 @@ export const AlertSnackbar = ({ open, severity, message, onClose }: Props) => {
   };
 
   return (
-    <Snackbar open={open} autoHideDuration={6000} onClose={handleSnackbarClose}>
+    <Snackbar
+      open={open}
+      autoHideDuration={6000}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      onClose={handleSnackbarClose}
+    >
       <Alert onClose={handleSnackbarClose} severity={severity}>
         {message}
       </Alert>
