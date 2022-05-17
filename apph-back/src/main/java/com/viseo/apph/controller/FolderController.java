@@ -24,8 +24,8 @@ import javax.persistence.NoResultException;
 public class FolderController {
     @Autowired
     FolderService folderService;
-
-    static Utils utils = new Utils() {};
+    @Autowired
+    Utils utils ;
 
     @ResponseBody
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")

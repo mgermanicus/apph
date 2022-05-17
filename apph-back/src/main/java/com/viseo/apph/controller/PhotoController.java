@@ -37,8 +37,8 @@ import java.util.Set;
 public class PhotoController {
     @Autowired
     PhotoService photoService;
-
-    static Utils utils = new Utils() {};
+    @Autowired
+    Utils utils ;
     @Autowired
     UserService userService;
 

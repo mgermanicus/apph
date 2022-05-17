@@ -22,7 +22,9 @@ import java.util.List;
 public class TagController {
     @Autowired
     private TagService tagService;
-    static Utils utils = new Utils() {};
+    @Autowired
+    Utils utils ;
+
     @GetMapping("/")
     public ResponseEntity getTags() {
         try {

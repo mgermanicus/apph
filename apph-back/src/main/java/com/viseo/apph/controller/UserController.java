@@ -26,8 +26,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
-
-    static Utils utils = new Utils(){};
+    @Autowired
+    Utils utils ;
+;
 
     @GetMapping("/")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
