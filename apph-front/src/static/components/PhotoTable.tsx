@@ -1,21 +1,14 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { DataGrid, GridColDef, GridSelectionModel } from '@mui/x-data-grid';
-import {
-  Alert,
-  Box,
-  ButtonGroup,
-  Collapse,
-  IconButton,
-  Stack
-} from '@mui/material';
+import { Alert, Collapse, IconButton, Stack } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { IPagination, ITable, ITag } from '../../utils';
 import PhotoService from '../../services/PhotoService';
 import PhotoDetails from './PhotoDetails';
 import { DownloadImage } from './DownloadImage';
-import { DeleteImage } from './DeleteImage';
-import { UploadImage } from './UploadImage';
+import { useDispatch } from 'react-redux';
+import { replaceSelectedPhotos } from '../../redux/slices/photoSlice';
 
 const columns: GridColDef[] = [
   {
@@ -102,6 +95,8 @@ export const PhotoTable = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [selectionModel, setSelectionModel] = useState<GridSelectionModel>([]);
 
+  const dispatch = useDispatch();
+
   const getData = () => {
     setLoading(true);
     PhotoService.getData(
@@ -141,12 +136,6 @@ export const PhotoTable = () => {
 
   return (
     <div style={{ height: 115 + pageSize * 52, width: '100%' }}>
-      <ButtonGroup variant="outlined" aria-label="outlined button group">
-        <UploadImage />
-        <Box sx={{ m: 1 }}>
-          <DeleteImage ids={selectionModel.map((id) => +id)} />
-        </Box>
-      </ButtonGroup>
       <DataGrid
         pagination
         paginationMode="server"
@@ -164,8 +153,13 @@ export const PhotoTable = () => {
           setPage(newPage);
         }}
         columnBuffer={9}
-        onSelectionModelChange={(selection) => {
-          setSelectionModel(selection);
+        onSelectionModelChange={(ids) => {
+          setSelectionModel(ids);
+          const selectedIDs = new Set(ids);
+          const selectedRowData = data.filter((rows) =>
+            selectedIDs.has(rows.id)
+          );
+          dispatch(replaceSelectedPhotos(JSON.stringify(selectedRowData)));
         }}
         selectionModel={selectionModel}
         checkboxSelection={true}
