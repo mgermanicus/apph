@@ -120,6 +120,28 @@ public class PhotoTest {
     }
 
     @Test
+    public void TestEditPhotoInfos() {
+        //GIVEN
+        createPhotoController();
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
+        Set<Tag> tags = new HashSet<>();
+        tags.add(new Tag().setName("+ Add New Tag totoTestTag"));
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57"));
+        User user = new User().setLogin("toto").setPassword("password");
+        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        //WHEN
+        ResponseEntity<IResponseDTO> responseEntity = photoController.upload(jws, photoRequest);
+        //THEN
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        TODO
+    }
+
+    @Test
     public void TestGetUserPhotosUrl() {
         //GIVEN
         createPhotoController();
