@@ -34,8 +34,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import static com.viseo.apph.utils.Utils.inject;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -133,14 +132,10 @@ public class PhotoTest {
         newTags.add(oneNewTag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        photoRequest = new PhotoRequest().setTitle("newTitle").setTags(gson.toJson(newTags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setDescription("newDesc").setId(1L);
-        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("newTitle").setTags(gson.toJson(newTags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setDescription("newDesc").setId(1L);
         when(em.find(Photo.class, 1L)).thenReturn(oldPhoto);
         //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = photoController.editInfos(jws, photoRequest);
+        ResponseEntity<IResponseDto> responseEntity = photoController.editInfos(photoRequest);
         //THEN
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("newTitle", oldPhoto.getTitle());

@@ -6,8 +6,6 @@ import com.viseo.apph.exception.*;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.PhotoService;
 import com.viseo.apph.service.UserService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +65,7 @@ public class PhotoController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/editInfos")
-    public ResponseEntity<IResponseDto> editInfos(@RequestHeader("Authorization") String token, @ModelAttribute PhotoRequest photoRequest) {
+    public ResponseEntity<IResponseDto> editInfos(@ModelAttribute PhotoRequest photoRequest) {
         try {
             User user = utils.getUser();
             return ResponseEntity.ok(new MessageResponse(photoService.editPhotoInfos(user, photoRequest)));
