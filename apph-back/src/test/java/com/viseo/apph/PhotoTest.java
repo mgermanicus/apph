@@ -1,4 +1,5 @@
 package com.viseo.apph;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viseo.apph.controller.PhotoController;
@@ -26,8 +27,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.*;
 import java.util.function.Consumer;
+
 import static com.viseo.apph.utils.Utils.inject;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -103,10 +106,6 @@ public class PhotoTest {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57"));
-        User user = new User().setLogin("toto").setPassword("password");
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenReturn(user);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
         //THEN
@@ -124,9 +123,6 @@ public class PhotoTest {
         when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenReturn(robert);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(5, 1);
@@ -155,9 +151,6 @@ public class PhotoTest {
         when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenReturn(robert);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(5, 1);
@@ -189,9 +182,6 @@ public class PhotoTest {
         when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenReturn(robert);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(5, -1);
         //THEN
@@ -245,18 +235,6 @@ public class PhotoTest {
     }
 
     @Test
-    public void testFailUserNotFind() {
-        //GIVEN
-        createPhotoController();
-        User user = new User().setLogin("dumb_toto");
-        when(utils.getUser()).thenReturn(user);
-        //WHEN
-        ResponseEntity responseEntity = photoController.getUserPhotos(1, 1);
-        //THEN
-        Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.FORBIDDEN);
-    }
-
-    @Test
     public void testFailInvalidFormat() {
         //GIVEN
         createPhotoController();
@@ -266,9 +244,6 @@ public class PhotoTest {
         photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(failFile).setTags(gson.toJson(tags));
         User user = new User().setLogin("toto").setPassword("password");
         when(utils.getUser()).thenReturn(user);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenReturn(user);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
         //THEN

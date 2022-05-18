@@ -1,9 +1,7 @@
 package com.viseo.apph.security;
 
 import com.viseo.apph.domain.User;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 
 public interface Utils {
     default User getUser(){

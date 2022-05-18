@@ -11,8 +11,8 @@ public class JwtResponse {
         return token;
     }
 
-    public void setToken(String token) {
+    public JwtResponse setToken(String token) {
         this.token = token;
+        return this;
     }
-
 }

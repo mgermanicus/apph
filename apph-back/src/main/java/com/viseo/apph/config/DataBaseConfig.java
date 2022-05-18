@@ -1,6 +1,8 @@
 package com.viseo.apph.config;
 
+import com.viseo.apph.dao.RoleDao;
 import com.viseo.apph.domain.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -20,6 +22,9 @@ public class DataBaseConfig {
     @PersistenceContext
     EntityManager em;
 
+    @Autowired
+    RoleDao roleDao;
+
     @Value("${init-database}")
     boolean init;
 
@@ -28,18 +33,25 @@ public class DataBaseConfig {
     @EventListener(ContextRefreshedEvent.class)
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (this.init) {
+            event.getApplicationContext().getBean(DataBaseConfig.class).initializeRole();
             event.getApplicationContext().getBean(DataBaseConfig.class).initialize();
         }
+    }
+
+    @Transactional
+    public void initializeRole(){
+        Role roleAdmin = new Role(ERole.ROLE_ADMIN);
+        Role roleUser = new Role(ERole.ROLE_USER);
+        em.persist(roleUser);
+        em.persist(roleAdmin);
     }
 
     @Transactional
     public void initialize() {
         this.init = false;
         //Role
-        Role roleAdmin = new Role(ERole.ROLE_ADMIN);
-        Role roleUser = new Role(ERole.ROLE_USER);
-        em.persist(roleUser);
-        em.persist(roleAdmin);
+        Role roleAdmin = roleDao.getRole(ERole.ROLE_ADMIN);
+        Role roleUser = roleDao.getRole(ERole.ROLE_USER);
         //User
         Set<Role> set = new HashSet<Role>();
         set.add(roleUser);

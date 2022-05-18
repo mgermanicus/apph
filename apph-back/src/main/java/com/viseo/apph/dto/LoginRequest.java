@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LoginRequest {
     @JsonProperty("email")
-    String username;
+    String email;
     @JsonProperty("password")
     String password;
 
@@ -17,12 +17,12 @@ public class LoginRequest {
         return this;
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public LoginRequest setUsername(String username) {
-        this.username = username;
+    public LoginRequest setEmail(String email) {
+        this.email = email;
         return this;
     }
 }

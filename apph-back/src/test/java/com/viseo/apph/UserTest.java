@@ -15,9 +15,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+
 import static com.viseo.apph.utils.Utils.inject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

@@ -2,25 +2,25 @@ package com.viseo.apph.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class UserResponse {
+public class UserResponse implements IResponseDto{
 
-    @JsonProperty("login")
-    String login;
-    @JsonProperty("login")
+    @JsonProperty("email")
+    String email;
+    @JsonProperty("firstname")
     String firstname;
-    @JsonProperty("login")
+    @JsonProperty("lastname")
     String lastname;
 
     public UserResponse(){
         super();
     }
 
-    public String getLogin() {
-        return login;
+    public String getEmail() {
+        return email;
     }
 
-    public UserResponse setLogin(String login) {
-        this.login = login;
+    public UserResponse setEmail(String email) {
+        this.email = email;
         return this;
     }
 

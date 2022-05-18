@@ -86,10 +86,6 @@ public class User extends BaseEntity {
         return folders;
     }
 
-    public void setFolders(List<Folder> folders) {
-        this.folders = folders;
-    }
-
     public User addFolder(Folder folder) {
         assert folder != null;
         if (!this.folders.contains(folder)) {

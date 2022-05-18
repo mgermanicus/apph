@@ -8,22 +8,16 @@ import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.TagService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.lang.reflect.Field;
-import java.security.Key;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static com.viseo.apph.utils.Utils.inject;
@@ -72,16 +66,5 @@ public class TagTest {
         ResponseEntity<IResponseDto> responseEntity = tagController.getTags();
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
-    }
-
-    @Test
-    public void testFailUserNotFind() {
-        //GIVEN
-        createTagController();
-        when(utils.getUser()).thenReturn(new User().setLogin("dumb_toto"));
-        //WHEN
-        ResponseEntity responseEntity = tagController.getTags();
-        //THEN
-        Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.FORBIDDEN);
     }
 }

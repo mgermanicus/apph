@@ -2,7 +2,6 @@ package com.viseo.apph.dao;
 
 import com.viseo.apph.domain.ERole;
 import com.viseo.apph.domain.Role;
-import com.viseo.apph.domain.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

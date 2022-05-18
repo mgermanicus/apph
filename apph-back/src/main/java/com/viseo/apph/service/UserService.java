@@ -7,13 +7,9 @@ import com.viseo.apph.domain.ERole;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Role;
 import com.viseo.apph.domain.User;
-import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.dto.UserRequest;
+import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.security.JwtUtils;
-import com.viseo.apph.security.Utils;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -51,14 +47,6 @@ public class UserService {
         userDao.createUser(newUser);
         Folder rootFolder = new Folder().setName(newUser.getFirstname()).setParentFolderId(null).setUser(newUser);
         folderDao.createFolder(rootFolder);
-    }
-
-    @Transactional
-    public User login(UserRequest userRequest) throws IllegalArgumentException {
-        User user = userDao.getUserByLogin(userRequest.getLogin());
-        if (encoder.matches(userRequest.getPassword(), user.getPassword()))
-          return user;
-        throw new IllegalArgumentException();
     }
 
     @Transactional

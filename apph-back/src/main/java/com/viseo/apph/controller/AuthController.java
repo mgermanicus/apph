@@ -32,14 +32,14 @@ public class AuthController {
     @PostMapping(value = "/signIn")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
         return ResponseEntity.ok(jwt);
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity register(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<String> register(@RequestBody UserRequest userRequest) {
         try {
             userService.registerUser(userRequest);
             return ResponseEntity.ok().body("Utilisateur crée");

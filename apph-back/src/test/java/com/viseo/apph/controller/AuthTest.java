@@ -18,26 +18,19 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-
-import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
 import static com.viseo.apph.utils.Utils.inject;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -92,7 +85,7 @@ public class AuthTest {
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
         SecurityContext securityContext = mock(SecurityContext.class);
         Mockito.mockStatic(SecurityContextHolder.class).when(SecurityContextHolder::getContext).thenReturn(securityContext);
-        LoginRequest loginRequest = new LoginRequest().setUsername("tintin").setPassword("P@ssw0rd");
+        LoginRequest loginRequest = new LoginRequest().setEmail("tintin").setPassword("P@ssw0rd");
 
         //WHEN
         ResponseEntity responseEntity = authController.login(loginRequest);
@@ -123,7 +116,6 @@ public class AuthTest {
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
         when(typedQuery.setParameter("login", "tintin")).thenReturn(typedQuery);
-
         when(em.createQuery("SELECT r FROM Role r WHERE r.name=:name", Role.class)).thenReturn(typedQuery2);
         when(typedQuery2.setParameter("name",ERole.ROLE_USER)).thenReturn(typedQuery2);
         when(typedQuery2.getSingleResult()).thenReturn(new Role(ERole.ROLE_USER));
@@ -132,6 +124,5 @@ public class AuthTest {
         ResponseEntity responseEntity = authController.register(userRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().isError());
-
     }
 }

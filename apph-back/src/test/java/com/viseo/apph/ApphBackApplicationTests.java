@@ -1,7 +1,6 @@
 package com.viseo.apph;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContextException;
 

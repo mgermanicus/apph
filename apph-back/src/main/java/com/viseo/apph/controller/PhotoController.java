@@ -1,22 +1,14 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.domain.Photo;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.MessageResponse;
-import com.viseo.apph.dto.PhotoResponse;
-import com.viseo.apph.domain.Tag;
-import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.*;
+import com.viseo.apph.dto.PaginationResponse;
+import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.exception.UnauthorizedException;
-import com.viseo.apph.security.JwtUtils;
-import com.viseo.apph.security.UserDetailsImpl;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.PhotoService;
-import com.viseo.apph.service.TagService;
 import com.viseo.apph.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,11 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
-import javax.persistence.NoResultException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Set;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -45,12 +34,10 @@ public class PhotoController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping(value = "/infos", produces = "application/json")
     public ResponseEntity<IResponseDto> getUserPhotos(@RequestParam int pageSize, @RequestParam int page) {
-        User user = utils.getUser();
         try {
+            User user = utils.getUser();
             PaginationResponse response = photoService.getUserPhotos(user, pageSize, page);
             return ResponseEntity.ok(response);
-        } catch (NoResultException nre) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("L'utilisateur n'existe pas."));
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User does not exist"));
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
@@ -74,8 +61,8 @@ public class PhotoController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/download")
     public ResponseEntity<IResponseDto> download(@RequestBody PhotoRequest photoRequest) {
-        User user = utils.getUser();
         try {
+            User user = utils.getUser();
             long userId = user.getId();
             return ResponseEntity.ok(photoService.download(userId, photoRequest));
         } catch (S3Exception e) {
