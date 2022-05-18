@@ -101,10 +101,12 @@ public class PhotoTest {
         createPhotoController();
         MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
         Tag tag = new Tag().setName("+ Add New Tag totoTestTag");
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Set<Tag> tags = new HashSet<>();
         tags.add(tag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
+        when(utils.getUser()).thenReturn(robert);
         photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57"));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
