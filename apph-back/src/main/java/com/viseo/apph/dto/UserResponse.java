@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserResponse implements IResponseDto{
 
-    @JsonProperty("email")
+    @JsonProperty("login")
     String email;
     @JsonProperty("firstname")
     String firstname;

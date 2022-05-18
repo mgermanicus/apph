@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Role extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
+    @Column(length = 20, unique = true)
     ERole name;
 
     public Role() {
