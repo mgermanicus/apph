@@ -85,8 +85,12 @@ describe('Test UploadImage', () => {
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { body: 'body' }
     });
-    render(<UploadImage />, { wrapper });
-    clickButton(/upload-photo/i);
+    act(() => {
+      render(<UploadImage />, { wrapper });
+    });
+    act(() => {
+      clickButton(/upload-photo/i);
+    });
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const file = fakeFile(1000, 'image/png');
     const title = 'Titre';
@@ -116,6 +120,10 @@ describe('Test UploadImage', () => {
       expect.anything(),
       expect.anything()
     );
+    expect(
+      await screen.findByText(/Vos fichiers ont bien été uploadés/)
+    ).toBeVisible();
+    expect(await screen.findByTestId('DoneIcon')).toBeVisible();
   });
 
   it('tests handling of server error', async () => {
