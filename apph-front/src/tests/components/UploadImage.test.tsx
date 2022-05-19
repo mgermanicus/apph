@@ -153,7 +153,9 @@ describe('Test UploadImage', () => {
     clickButton(/Ajouter/);
     //THEN
     expect(
-      screen.getByText(new RegExp("Une erreur est survenue lors de l'upload"))
+      await screen.findByText(
+        new RegExp("Une erreur est survenue lors de l'upload")
+      )
     ).toBeInTheDocument();
   });
 
@@ -281,11 +283,7 @@ describe('Test UploadImage', () => {
       fakeFile(1000, 'application/zip', '2.png')
     ];
     const title = 'Titre';
-    const description = 'Description';
-    const tags = [{ name: 'tag' }] as ITag[];
-    const spyRequestFunction = spyRequestSuccessBody(
-      '[{"id":"0","name":"tag","version":0}]'
-    );
+    spyRequestSuccessBody('[{"id":"0","name":"tag","version":0}]');
     act(() => {
       render(<UploadImage />, { wrapper });
     });

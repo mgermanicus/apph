@@ -11,13 +11,11 @@ import {
   Dialog,
   FilterOptionsState,
   Input,
-  LinearProgress,
   Stack,
   TextField,
   Tooltip,
   Typography
 } from '@mui/material';
-import DoneIcon from '@mui/icons-material/Done';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import PhotoService from '../../services/PhotoService';
 import { ITag, StatusType, UploadStatus } from '../../utils';
@@ -27,67 +25,10 @@ import TagService from '../../services/TagService';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTagList } from '../../redux/slices/tagSlice';
+import { UploadList } from './UploadList';
 import { Upload } from '@mui/icons-material';
 
 const filter = createFilterOptions<ITag>();
-
-const UploadListItem = (props: { file: File; status: UploadStatus }) => {
-  const uploadBody = () => {
-    switch (props.status.type) {
-      case StatusType.Success:
-        return <DoneIcon color={'success'} />;
-      case StatusType.Error:
-        return (
-          <Typography color="error" variant="caption">
-            {props.status.message}
-          </Typography>
-        );
-      case StatusType.Uploading:
-        return (
-          <Box sx={{ width: '100%' }}>
-            <LinearProgress />
-          </Box>
-        );
-      default:
-        return <></>;
-    }
-  };
-
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}
-    >
-      <Box sx={{ mr: 2 }}>
-        <Typography color="text.secondary">{props.file.name}</Typography>
-      </Box>
-      {uploadBody()}
-    </Box>
-  );
-};
-
-const UploadList = ({
-  statuses,
-  files
-}: {
-  statuses: UploadStatus[];
-  files: FileList | undefined;
-}) => {
-  return (
-    <>
-      {files &&
-        statuses.map(
-          (status, i) =>
-            !!files[i] && (
-              <UploadListItem status={status} file={files[i]} key={i} />
-            )
-        )}
-    </>
-  );
-};
 
 export const UploadImage = (): JSX.Element => {
   const fileInput = createRef<HTMLInputElement>();
