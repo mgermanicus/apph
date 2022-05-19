@@ -49,11 +49,8 @@ public class PhotoTest {
     @Mock
     TypedQuery<Photo> typedQueryPhoto;
     @Mock
-    TypedQuery<User> typedQueryUser;
-    @Mock
-    S3Dao s3Dao;
-    @Mock
     Utils utils;
+    @Mock
     S3Client s3Client;
 
     PhotoController photoController;
@@ -87,16 +84,6 @@ public class PhotoTest {
         inject(photoController, "utils", utils);
     }
 
-    void inject(Object component, String field, Object injected) {
-        try {
-            Field compField = component.getClass().getDeclaredField(field);
-            compField.setAccessible(true);
-            compField.set(component, injected);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Test
     public void TestUploadPhoto() {
         //GIVEN
@@ -109,13 +96,7 @@ public class PhotoTest {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         when(utils.getUser()).thenReturn(robert);
-        photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57"));
         PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57"));
-        User user = new User().setLogin("toto").setPassword("password");
-        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenReturn(user);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
         //THEN
