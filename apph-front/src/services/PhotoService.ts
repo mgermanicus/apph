@@ -82,12 +82,12 @@ export default class PhotoService {
     handleSuccess: (photoList: ITable[]) => void,
     handleError: (errorMessage: string) => void
   ) {
-    const user = cookies.get('user');
+    const userInfos = cookies.get('user');
     const requestOptions = {
       method: 'Get',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: user.token
+        Authorization: 'Bearer ' + userInfos?.token
       }
     };
     const successFunction = (photoList: string) => {

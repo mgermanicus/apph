@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PhotoListResponse implements IResponseDTO {
+public class PhotoListResponse implements IResponseDto {
     @JsonProperty("photoList")
     List<PhotoResponse> photoList;
 

@@ -1,6 +1,5 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.config.JwtConfig;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.*;
 import com.viseo.apph.exception.ConflictException;
@@ -17,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
+import javax.persistence.NoResultException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -38,25 +38,22 @@ public class PhotoController {
             User user = utils.getUser();
             PaginationResponse response = photoService.getUserPhotos(user, pageSize, page);
             return ResponseEntity.ok(response);
-        } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User does not exist"));
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Argument illégal."));
         }
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping(value = "/folder/{folderId}")
-    public ResponseEntity<IResponseDTO> getPhotoByFolder(@RequestHeader("Authorization") String token, @PathVariable long folderId) {
+    public ResponseEntity<IResponseDto> getPhotoByFolder(@PathVariable long folderId) {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            PhotoListResponse responseList = photoService.getPhotoByFolder(folderId, claims.get("login").toString());
+            User user = utils.getUser();
+            PhotoListResponse responseList = photoService.getPhotoByFolder(folderId, user);
             return ResponseEntity.ok().body(responseList);
         } catch (UnauthorizedException ue) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
         } catch (NotFoundException nfe) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
-        } catch (NoResultException nre) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("L'utilisateur n'existe pas."));
         }
     }
 
@@ -72,10 +69,8 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Le format du fichier n'est pas valide"));
         } catch (UnauthorizedException ue) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
-        } catch (NotFoundException nfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
-        } catch (NoResultException nre) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("L'utilisateur ou le dossier n'existe pas."));
+        } catch (NoResultException | NotFoundException nfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Le dossier n'existe pas."));
         } catch (ConflictException ce) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(ce.getMessage()));
         }

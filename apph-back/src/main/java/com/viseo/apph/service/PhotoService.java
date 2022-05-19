@@ -130,11 +130,10 @@ public class PhotoService {
     }
 
     @Transactional
-    public PhotoListResponse getPhotoByFolder(long folderId, String login) throws NotFoundException, UnauthorizedException {
+    public PhotoListResponse getPhotoByFolder(long folderId, User user) throws NotFoundException, UnauthorizedException {
         Folder folder = folderDao.getFolderById(folderId);
         if (folder == null)
             throw new NotFoundException("Le dossier n'existe pas.");
-        User user = userDao.getUserByLogin(login);
         if (folder.getUser().getId() != user.getId())
             throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
         List<Photo> photoList = photoDao.getPhotoByFolder(folder);

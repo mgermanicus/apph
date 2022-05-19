@@ -44,8 +44,6 @@ public class PhotoTest {
     @Mock
     TypedQuery<Photo> typedQueryPhoto;
     @Mock
-    TypedQuery<User> typedQueryUser;
-    @Mock
     TypedQuery<Folder> typedQueryFolder;
     @Mock
     TypedQuery<Long> typedQueryLong;
@@ -327,43 +325,15 @@ public class PhotoTest {
         Gson gson = builder.create();
         photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(1);
         User user = new User().setLogin("toto").setPassword("password");
-        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        when(utils.getUser()).thenReturn(user);
         when(em.find(Folder.class, 1L)).thenReturn(null);
         //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = photoController.upload(jws, photoRequest);
+        ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
         //THEN
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("Le dossier n'existe pas.", messageResponse.getMessage());
-    }
-
-    @Test
-    public void testUploadWithNotExistingUser() {
-        //GIVEN
-        createPhotoController();
-        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
-        Tag tag = new Tag().setName("+ Add New Tag totoTestTag");
-        Set<Tag> tags = new HashSet<>();
-        tags.add(tag);
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(1);
-        User user = new User().setLogin("toto").setPassword("password");
-        String jws = Jwts.builder().claim("login", "toto").setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", "toto")).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenThrow(new NoResultException());
-        //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = photoController.upload(jws, photoRequest);
-        //THEN
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
-        assert messageResponse != null;
-        Assert.assertEquals("L'utilisateur ou le dossier n'existe pas.", messageResponse.getMessage());
     }
 
     @Test
@@ -380,13 +350,10 @@ public class PhotoTest {
         User user = new User().setLogin("toto").setPassword("password");
         User other = (User) new User().setLogin("other").setPassword("Passw0rd").setId(2L);
         Folder otherFolder = (Folder) new Folder().setParentFolderId(1L).setName("otherFolder").setUser(other).setId(2L);
-        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        when(utils.getUser()).thenReturn(user);
         when(em.find(Folder.class, 2L)).thenReturn(otherFolder);
         //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = photoController.upload(jws, photoRequest);
+        ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
         //THEN
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
@@ -407,10 +374,7 @@ public class PhotoTest {
         photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de toto").setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
         User user = new User().setLogin("toto").setPassword("password");
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
-        String jws = Jwts.builder().claim("login", user.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        when(utils.getUser()).thenReturn(user);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
@@ -419,7 +383,7 @@ public class PhotoTest {
         when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(1L);
         //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = photoController.upload(jws, photoRequest);
+        ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
         //THEN
         assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
@@ -431,12 +395,12 @@ public class PhotoTest {
     public void testDownloadWithNotExistingPhoto() {
         //GIVEN
         createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         PhotoRequest photoRequest = new PhotoRequest().setId(1L);
-        String token = Jwts.builder().claim("id", 1).setExpiration(
-                new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        when(utils.getUser()).thenReturn(robert);
         when(em.find(Photo.class, 1L)).thenReturn(null);
         //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = photoController.download(token, photoRequest);
+        ResponseEntity<IResponseDto> responseEntity = photoController.download(photoRequest);
         //THEN
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
@@ -454,16 +418,13 @@ public class PhotoTest {
         List<Photo> listPhoto = new ArrayList<>();
         listPhoto.add(new Photo().setTitle("Photo 1").setUser(robert).setFolder(robertRoot));
         listPhoto.add(new Photo().setTitle("Photo 2").setUser(robert).setFolder(robertRoot));
-        String jws = Jwts.builder().claim("login", robert.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        when(utils.getUser()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenReturn(robert);
         when(em.createQuery("SELECT p FROM Photo p WHERE p.folder =: folder", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("folder", robertRoot)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
         //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = photoController.getPhotoByFolder(jws, 1L);
+        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotoByFolder(1L);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         PhotoListResponse response = (PhotoListResponse) responseEntity.getBody();
@@ -476,10 +437,11 @@ public class PhotoTest {
     public void testFolderPhotoWithNotExistingFolder() {
         //GIVEN
         createPhotoController();
-        String jws = Jwts.builder().claim("login", 1L).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        when(utils.getUser()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(null);
         //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = photoController.getPhotoByFolder(jws, 1L);
+        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotoByFolder(1L);
         //THEN
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
@@ -495,35 +457,14 @@ public class PhotoTest {
         User other = (User) new User().setLogin("other").setPassword("P@ssw0rd").setId(2);
         Folder otherFolder = (Folder) new Folder().setName("Other Folder").setParentFolderId(null).setUser(other).setId(1);
         other.addFolder(otherFolder);
-        String jws = Jwts.builder().claim("login", robert.getLogin()).setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
+        when(utils.getUser()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(otherFolder);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenReturn(robert);
         //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = photoController.getPhotoByFolder(jws, 1L);
+        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotoByFolder(1L);
         //THEN
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("L'utilisateur n'a pas accès à ce dossier.", messageResponse.getMessage());
-    }
-
-    @Test
-    public void testFolderPhotoWithNotExistingUser() {
-        //GIVEN
-        createPhotoController();
-        String jws = Jwts.builder().claim("login", "Robert").setExpiration(new Date(System.currentTimeMillis() + 20000)).signWith(JwtConfig.getKey()).compact();
-        when(em.find(Folder.class, 1L)).thenReturn(new Folder());
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
-        when(typedQueryUser.getSingleResult()).thenThrow(new NoResultException());
-        //WHEN
-        ResponseEntity<IResponseDTO> responseEntity = photoController.getPhotoByFolder(jws, 1L);
-        //THEN
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
-        assert messageResponse != null;
-        Assert.assertEquals("L'utilisateur n'existe pas.", messageResponse.getMessage());
     }
 }
