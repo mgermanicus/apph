@@ -134,6 +134,7 @@ public class PhotoTest {
         Gson gson = builder.create();
         PhotoRequest photoRequest = new PhotoRequest().setTitle("newTitle").setTags(gson.toJson(newTags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setDescription("newDesc").setId(1L);
         when(em.find(Photo.class, 1L)).thenReturn(oldPhoto);
+        when(utils.getUser()).thenReturn(user);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.editInfos(photoRequest);
         //THEN
