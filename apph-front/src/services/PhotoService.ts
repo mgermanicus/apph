@@ -77,7 +77,7 @@ export default class PhotoService {
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
 
-  static getFolderPhoto(
+  static getFolderPhotos(
     folderId: string,
     handleSuccess: (photoList: ITable[]) => void,
     handleError: (errorMessage: string) => void

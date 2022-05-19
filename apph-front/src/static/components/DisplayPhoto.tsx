@@ -14,7 +14,7 @@ export const DisplayPhoto = ({
   const [errorMessage, setErrorMessage] = useState('');
 
   const getPhotos = async () => {
-    await PhotoService.getFolderPhoto(
+    await PhotoService.getFolderPhotos(
       selectedFolder,
       (list: ITable[]) => {
         setPhotoList(list);
@@ -26,7 +26,7 @@ export const DisplayPhoto = ({
   };
 
   useEffect(() => {
-    getPhotos().catch(console.error);
+    getPhotos();
   }, [selectedFolder]);
 
   if (errorMessage) {
