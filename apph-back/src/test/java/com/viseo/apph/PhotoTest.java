@@ -423,7 +423,7 @@ public class PhotoTest {
         when(typedQueryPhoto.setParameter("folder", robertRoot)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotoByFolder(1L);
+        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotosByFolder(1L);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         PhotoListResponse response = (PhotoListResponse) responseEntity.getBody();
@@ -440,7 +440,7 @@ public class PhotoTest {
         when(utils.getUser()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(null);
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotoByFolder(1L);
+        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotosByFolder(1L);
         //THEN
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
@@ -459,7 +459,7 @@ public class PhotoTest {
         when(utils.getUser()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(otherFolder);
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotoByFolder(1L);
+        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotosByFolder(1L);
         //THEN
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();

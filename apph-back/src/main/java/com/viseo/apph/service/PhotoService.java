@@ -131,29 +131,25 @@ public class PhotoService {
     }
 
     @Transactional
-    public PhotoListResponse getPhotoByFolder(long folderId, User user) throws NotFoundException, UnauthorizedException {
+    public PhotoListResponse getPhotosByFolder(long folderId, User user) throws NotFoundException, UnauthorizedException {
         Folder folder = folderDao.getFolderById(folderId);
         if (folder == null)
             throw new NotFoundException("Le dossier n'existe pas.");
         if (folder.getUser().getId() != user.getId())
             throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
-        List<Photo> photoList = photoDao.getPhotoByFolder(folder);
-        List<PhotoResponse> responseList = photoList.stream()
-                .map(photo -> new PhotoResponse()
-                        .setId(photo.getId())
-                        .setTitle(photo.getTitle())
-                        .setCreationDate(photo.getCreationDate())
-                        .setSize(photo.getSize())
-                        .setTags(photo.getTags())
-                        .setDescription(photo.getDescription())
-                        .setShootingDate(photo.getShootingDate())
-                        .setUrl(s3Dao.getPhotoUrl(photo))
-                        .setFormat(photo.getFormat())
-                ).collect(Collectors.toList());
+        List<Photo> photoList = photoDao.getPhotosByFolder(folder);
         PhotoListResponse response = new PhotoListResponse();
-        for (PhotoResponse photo : responseList) {
-            response.addPhoto(photo);
-        }
+        photoList.forEach(photo -> response.addPhoto(new PhotoResponse()
+                .setId(photo.getId())
+                .setTitle(photo.getTitle())
+                .setCreationDate(photo.getCreationDate())
+                .setSize(photo.getSize())
+                .setTags(photo.getTags())
+                .setDescription(photo.getDescription())
+                .setShootingDate(photo.getShootingDate())
+                .setUrl(s3Dao.getPhotoUrl(photo))
+                .setFormat(photo.getFormat())
+        ));
         return response;
     }
 }

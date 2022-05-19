@@ -33,7 +33,7 @@ public class PhotoDao {
         em.remove(photo);
     }
 
-    public List<Photo> getPhotoByFolder(Folder folder) {
+    public List<Photo> getPhotosByFolder(Folder folder) {
         return em.createQuery("SELECT p FROM Photo p WHERE p.folder =: folder", Photo.class)
                 .setParameter("folder", folder)
                 .getResultList();

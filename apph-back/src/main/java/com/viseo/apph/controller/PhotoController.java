@@ -45,10 +45,10 @@ public class PhotoController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping(value = "/folder/{folderId}")
-    public ResponseEntity<IResponseDto> getPhotoByFolder(@PathVariable long folderId) {
+    public ResponseEntity<IResponseDto> getPhotosByFolder(@PathVariable long folderId) {
         try {
             User user = utils.getUser();
-            PhotoListResponse responseList = photoService.getPhotoByFolder(folderId, user);
+            PhotoListResponse responseList = photoService.getPhotosByFolder(folderId, user);
             return ResponseEntity.ok().body(responseList);
         } catch (UnauthorizedException ue) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
