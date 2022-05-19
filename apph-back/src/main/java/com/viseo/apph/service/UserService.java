@@ -52,7 +52,7 @@ public class UserService {
     @Transactional
     public String editUser(String login, UserRequest request, String token) throws NotFoundException {
         User user = userDao.getUserByLogin(login);
-        token = token.substring(7); //Remove Bearer :
+        String newToken = token.substring(7); //Remove Bearer :
         Map<String, String> newClaims = new HashMap<>();
         Folder rootFolder = folderDao.getParentFolderByUser(user);
         if (user == null) throw new NotFoundException("");
@@ -74,6 +74,6 @@ public class UserService {
             user.setLogin(request.getLogin());
             newClaims.put("login", request.getLogin());
         }
-        return jwtUtils.setClaimOnToken(token, newClaims);
+        return jwtUtils.setClaimOnToken(newToken, newClaims);
     }
 }
