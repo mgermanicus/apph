@@ -136,8 +136,19 @@ export const FilterSelector = ({ onFilterPhoto }: filterSelectorProps) => {
       });
   };
 
+  const checkForEmptyFilters = (): boolean =>
+    filterStates.some((filterState) =>
+      Object.values(filterState).some(
+        (value) => value === undefined || value === ''
+      )
+    );
+
   const handleFilterPhoto = () => {
-    onFilterPhoto();
+    if (!checkForEmptyFilters()) {
+      onFilterPhoto();
+    } else {
+      throw new Error('Au moins un filtre possède un champ vide.');
+    }
   };
 
   const getFilterList = () =>
