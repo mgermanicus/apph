@@ -20,9 +20,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetUrlRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -41,8 +42,6 @@ public class PhotoTest {
     EntityManager em;
     @Mock
     TypedQuery<Photo> typedQueryPhoto;
-    @Mock
-    S3Dao s3Dao;
     @Mock
     Utils utils;
     @Mock
@@ -76,20 +75,6 @@ public class PhotoTest {
         inject(photoController, "photoService", photoService);
         inject(photoController, "userService", userService);
         inject(photoService, "tagService", tagService);
-        inject(photoController, "utils", utils);
-    }
-
-    private void createPhotoControllerWithoutS3() {
-        PhotoDao photoDao = new PhotoDao();
-        UserDao userDao = new UserDao();
-        inject(photoDao, "em", em);
-        inject(userDao, "em", em);
-        PhotoService photoService = new PhotoService();
-        inject(photoService, "photoDao", photoDao);
-        inject(photoService, "s3Dao", s3Dao);
-        inject(photoService, "userDao", userDao);
-        photoController = new PhotoController();
-        inject(photoController, "photoService", photoService);
         inject(photoController, "utils", utils);
     }
 
@@ -194,18 +179,19 @@ public class PhotoTest {
     @Test
     public void testDownload() {
         // GIVEN
-        createPhotoControllerWithoutS3();
+        createPhotoController();
         long id = 1L;
         long idUser = 2;
         String title = "test";
         String extension = "jpg";
-        byte[] fileByteArray = "".getBytes();
         User user = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setLastname("test").setFirstname("test").setId(idUser);
         Photo photo = (Photo) new Photo().setFormat(extension).setTitle(title).setUser(user).setId(id);
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
+        ResponseBytes<GetObjectResponse> s3Object = mock(ResponseBytes.class);
         when(utils.getUser()).thenReturn(user);
         when(em.find(any(), anyLong())).thenReturn(photo);
-        when(s3Dao.download(any())).thenReturn(fileByteArray);//WHEN
+        when(s3Client.getObject(any(GetObjectRequest.class), eq(ResponseTransformer.toBytes()))).thenReturn(s3Object);
+        //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.download(photoRequest);
         //THEN
         verify(em, times(1)).find(Photo.class, id);
@@ -270,7 +256,7 @@ public class PhotoTest {
     @Test
     public void testDeleteUserNotAllowed() {
         //GIVEN
-        createPhotoControllerWithoutS3();
+        createPhotoController();
         long idPhoto = 1L;
         long[] ids = {1L};
         User user = (User) new User().setLogin("test@test").setId(2);
@@ -283,14 +269,13 @@ public class PhotoTest {
         ResponseEntity<IResponseDto> responseEntity = photoController.delete(photosRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
-        verify(s3Dao, times(0)).delete(any());
         verify(em, times(0)).remove(any());
     }
 
     @Test
     public void testDeleteServerDown() {
         //GIVEN
-        createPhotoControllerWithoutS3();
+        createPhotoController();
         long idPhoto = 1L;
         long[] ids = {1L};
         User user = (User) new User().setLogin("test@test").setId(2);
@@ -298,11 +283,10 @@ public class PhotoTest {
         PhotosRequest photosRequest = new PhotosRequest().setIds(ids);
         when(utils.getUser()).thenReturn(user);
         when(em.find(Photo.class, ids[0])).thenReturn(photo);
-        when(s3Dao.delete(any())).thenThrow(S3Exception.class);
+        doThrow(S3Exception.class).when(s3Client).deleteObject(any(DeleteObjectRequest.class));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.delete(photosRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().isError());
-        verify(s3Dao, times(1)).delete(any());
     }
 }
