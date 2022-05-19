@@ -26,8 +26,7 @@ public class TagService {
     TagDao tagDao;
 
     @Transactional
-    public List<Tag> getTags(String login) {
-        User user = userDao.getUserByLogin(login);
+    public List<Tag> getTags(User user) {
         return tagDao.getTagsByUser(user.getId());
     }
 

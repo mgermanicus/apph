@@ -6,7 +6,7 @@ import com.viseo.apph.domain.Tag;
 import java.util.Date;
 import java.util.Set;
 
-public class PhotoResponse implements IResponseDTO {
+public class PhotoResponse implements IResponseDto {
     @JsonProperty("id")
     long id;
     @JsonProperty("title")

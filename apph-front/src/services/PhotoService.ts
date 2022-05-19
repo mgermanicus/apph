@@ -27,7 +27,7 @@ export default class PhotoService {
     const requestOptions = {
       method: 'POST',
       headers: {
-        Authorization: userInfos?.token
+        Authorization: 'Bearer ' + userInfos?.token
       },
       body: formData
     };
@@ -53,7 +53,7 @@ export default class PhotoService {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: userInfos?.token
+        Authorization: 'Bearer ' + userInfos?.token
       }
     };
     const successFunction = (val: string) => {
@@ -76,7 +76,7 @@ export default class PhotoService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: userInfos?.token
+        Authorization: 'Bearer ' + userInfos?.token
       },
       body: JSON.stringify({
         id

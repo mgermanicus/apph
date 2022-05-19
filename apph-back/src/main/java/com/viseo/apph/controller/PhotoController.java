@@ -1,32 +1,23 @@
 package com.viseo.apph.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.viseo.apph.config.JwtConfig;
-import com.viseo.apph.domain.Photo;
-import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.*;
+import com.viseo.apph.dto.IResponseDto;
+import com.viseo.apph.dto.MessageResponse;
+import com.viseo.apph.dto.PaginationResponse;
+import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.exception.UnauthorizedException;
+import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.PhotoService;
-import com.viseo.apph.service.TagService;
 import com.viseo.apph.service.UserService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import software.amazon.awssdk.services.s3.model.S3Exception;
-
-import javax.persistence.NoResultException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Set;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -35,32 +26,30 @@ public class PhotoController {
     @Autowired
     PhotoService photoService;
     @Autowired
+    Utils utils ;
+    @Autowired
     UserService userService;
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping(value = "/infos", produces = "application/json")
-    public ResponseEntity<IResponseDTO> getUserPhotos(@RequestHeader("Authorization") String token, @RequestParam int pageSize, @RequestParam int page) {
+    public ResponseEntity<IResponseDto> getUserPhotos(@RequestParam int pageSize, @RequestParam int page) {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            PaginationResponse response = photoService.getUserPhotos(claims.get("login").toString(), pageSize, page);
+            User user = utils.getUser();
+            PaginationResponse response = photoService.getUserPhotos(user, pageSize, page);
             return ResponseEntity.ok(response);
-        } catch (NoResultException nre) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("L'utilisateur n'existe pas."));
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User does not exist"));
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Argument illégal."));
-        } catch (SignatureException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Token not valid"));
-        } catch (ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Token expired"));
         }
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/upload")
-    public ResponseEntity<IResponseDTO> upload(@RequestHeader("Authorization") String token, @ModelAttribute PhotoRequest photoRequest) {
+    public ResponseEntity<IResponseDto> upload(@ModelAttribute PhotoRequest photoRequest) {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            return ResponseEntity.ok(new MessageResponse(photoService.addPhoto(claims.get("login").toString(), photoRequest)));
+            User user = utils.getUser();
+            return ResponseEntity.ok(new MessageResponse(photoService.addPhoto(user, photoRequest)));
         } catch (IOException | S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
         } catch (InvalidFileException e) {
@@ -68,11 +57,13 @@ public class PhotoController {
         }
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/download")
-    public ResponseEntity<IResponseDTO> download(@RequestHeader("Authorization") String token, @RequestBody PhotoRequest photoRequest) {
+    public ResponseEntity<IResponseDto> download(@RequestBody PhotoRequest photoRequest) {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(JwtConfig.getKey()).build().parseClaimsJws(token).getBody();
-            return ResponseEntity.ok(photoService.download((Long.valueOf((Integer) claims.get("id"))) , photoRequest));
+            User user = utils.getUser();
+            long userId = user.getId();
+            return ResponseEntity.ok(photoService.download(userId, photoRequest));
         } catch (S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du téléchargement"));
         } catch (FileNotFoundException e) {

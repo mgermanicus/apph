@@ -37,8 +37,7 @@ public class PhotoService {
     S3Dao s3Dao;
 
     @Transactional
-    public String addPhoto(String userLogin, PhotoRequest photoRequest) throws InvalidFileException, IOException {
-        User user = userDao.getUserByLogin(userLogin);
+    public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException {
         Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
         Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
         Photo photo = new Photo()
@@ -65,8 +64,7 @@ public class PhotoService {
     }
 
     @Transactional
-    public PaginationResponse getUserPhotos(String userLogin, int pageSize, int page) {
-        User user = userDao.getUserByLogin(userLogin);
+    public PaginationResponse getUserPhotos(User user, int pageSize, int page) {
         List<Photo> userPhotos = photoDao.getUserPhotos(user);
         int startIndex = (page - 1) * pageSize;
         int endIndex = page * pageSize;

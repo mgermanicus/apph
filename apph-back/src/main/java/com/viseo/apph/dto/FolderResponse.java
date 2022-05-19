@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FolderResponse implements IResponseDTO {
+public class FolderResponse implements IResponseDto {
     @JsonProperty("id")
     long id;
 
