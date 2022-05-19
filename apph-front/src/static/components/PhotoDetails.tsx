@@ -35,6 +35,7 @@ const PhotoDetails = ({
   shootingDate,
   size,
   tags,
+  format,
   clickType
 }: IPhotoDetails) => {
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
@@ -59,7 +60,7 @@ const PhotoDetails = ({
           card: (
             <PhotoCard
               src={photoSrc}
-              title={title}
+              title={title + format}
               openFunction={handleOpenDetails}
             />
           )

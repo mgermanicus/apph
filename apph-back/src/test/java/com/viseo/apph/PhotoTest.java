@@ -95,7 +95,7 @@ public class PhotoTest {
         tags.add(tag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(robert);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
@@ -105,7 +105,6 @@ public class PhotoTest {
         when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(0L);
         when(utils.getUser()).thenReturn(robert);
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57"));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
         //THEN
@@ -323,7 +322,7 @@ public class PhotoTest {
         tags.add(tag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(1);
         User user = new User().setLogin("toto").setPassword("password");
         when(utils.getUser()).thenReturn(user);
         when(em.find(Folder.class, 1L)).thenReturn(null);
@@ -346,7 +345,7 @@ public class PhotoTest {
         tags.add(tag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(2);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(2);
         User user = new User().setLogin("toto").setPassword("password");
         User other = (User) new User().setLogin("other").setPassword("Passw0rd").setId(2L);
         Folder otherFolder = (Folder) new Folder().setParentFolderId(1L).setName("otherFolder").setUser(other).setId(2L);
@@ -371,7 +370,7 @@ public class PhotoTest {
         tags.add(tag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de toto").setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de toto").setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
         User user = new User().setLogin("toto").setPassword("password");
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
         when(utils.getUser()).thenReturn(user);

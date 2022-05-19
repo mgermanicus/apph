@@ -9,6 +9,7 @@ export interface ITable {
   title: string;
   url: string;
   tags: ITag[];
+  format: string;
   details: JSX.Element;
 }
 
@@ -20,5 +21,6 @@ export interface IPhotoDetails {
   shootingDate: Date;
   size: number;
   tags: ITag[];
+  format: string;
   clickType: string;
 }

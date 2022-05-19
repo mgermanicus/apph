@@ -53,6 +53,7 @@ export const DisplayPhoto = ({
               shootingDate={photo.shootingDate}
               size={photo.size}
               tags={photo.tags}
+              format={photo.format}
               clickType="card"
             />
           </Grid>

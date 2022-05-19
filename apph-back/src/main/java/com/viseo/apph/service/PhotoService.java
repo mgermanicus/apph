@@ -99,6 +99,7 @@ public class PhotoService {
                         .setDescription(photo.getDescription())
                         .setShootingDate(photo.getShootingDate())
                         .setUrl(s3Dao.getPhotoUrl(photo))
+                        .setFormat(photo.getFormat())
                 ).collect(Collectors.toList());
         for (PhotoResponse photo : responseList) {
             response.addPhoto(photo);
@@ -147,6 +148,7 @@ public class PhotoService {
                         .setDescription(photo.getDescription())
                         .setShootingDate(photo.getShootingDate())
                         .setUrl(s3Dao.getPhotoUrl(photo))
+                        .setFormat(photo.getFormat())
                 ).collect(Collectors.toList());
         PhotoListResponse response = new PhotoListResponse();
         for (PhotoResponse photo : responseList) {
