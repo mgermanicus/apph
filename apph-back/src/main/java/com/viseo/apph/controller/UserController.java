@@ -46,7 +46,7 @@ public class UserController {
     public ResponseEntity<String> editUserInfo(@RequestHeader("Authorization") String token, @RequestBody UserRequest request) {
         try {
             User user = utils.getUser();
-            String newToken = userService.editUser(user.getLogin(), request, token);
+            String newToken = userService.editUser(user, request, token);
             return ResponseEntity.ok(newToken);
         } catch (NullPointerException | NotFoundException | NoResultException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("L'utilisateur lié à cette session n'existe pas");

@@ -50,28 +50,28 @@ public class UserService {
     }
 
     @Transactional
-    public String editUser(String login, UserRequest request, String token) throws NotFoundException {
-        User user = userDao.getUserByLogin(login);
+    public String editUser(User user, UserRequest request, String token) throws NotFoundException {
+        User userEntity = userDao.getUserByLogin(user.getLogin());
         String newToken = token.substring(7); //Remove Bearer :
         Map<String, String> newClaims = new HashMap<>();
-        Folder rootFolder = folderDao.getParentFolderByUser(user);
-        if (user == null) throw new NotFoundException("");
+        Folder rootFolder = folderDao.getParentFolderByUser(userEntity);
+        if (userEntity == null) throw new NotFoundException("");
         if (request.getFirstName() != null) {
-            user.setFirstname(request.getFirstName());
+            userEntity.setFirstname(request.getFirstName());
             newClaims.put("firstname", request.getFirstName());
-            rootFolder.setName(user.getFirstname() + " " + user.getLastname());
+            rootFolder.setName(userEntity.getFirstname() + " " + userEntity.getLastname());
         }
         if (request.getLastName() != null) {
-            user.setLastname(request.getLastName());
+            userEntity.setLastname(request.getLastName());
             newClaims.put("lastname", request.getLastName());
-            rootFolder.setName(user.getFirstname() + " " + user.getLastname());
+            rootFolder.setName(userEntity.getFirstname() + " " + userEntity.getLastname());
         }
         if (request.getPassword() != null)
-            user.setPassword(encoder.encode(request.getPassword()));
+            userEntity.setPassword(encoder.encode(request.getPassword()));
         if (request.getLogin() != null) {
             if (userDao.existByLogin(request.getLogin()))
                 throw new DataIntegrityViolationException("");
-            user.setLogin(request.getLogin());
+            userEntity.setLogin(request.getLogin());
             newClaims.put("login", request.getLogin());
         }
         return jwtUtils.setClaimOnToken(newToken, newClaims);
