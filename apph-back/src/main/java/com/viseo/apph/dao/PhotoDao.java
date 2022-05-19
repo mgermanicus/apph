@@ -27,4 +27,8 @@ public class PhotoDao {
     public Photo getPhoto(long id) {
         return em.find(Photo.class, id);
     }
+
+    public void deletePhoto(Photo photo) {
+        em.remove(photo);
+    }
 }

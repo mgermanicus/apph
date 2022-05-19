@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridSelectionModel } from '@mui/x-data-grid';
 import { Alert, Collapse, IconButton, Stack } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { IPagination, ITable, ITag } from '../../utils';
 import PhotoService from '../../services/PhotoService';
 import PhotoDetails from './PhotoDetails';
 import { DownloadImage } from './DownloadImage';
+import { useDispatch } from 'react-redux';
+import { replaceSelectedPhotos } from '../../redux/slices/photoSlice';
 
 const columns: GridColDef[] = [
   {
@@ -83,6 +85,7 @@ const columns: GridColDef[] = [
     )
   }
 ];
+
 export const PhotoTable = () => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -90,6 +93,9 @@ export const PhotoTable = () => {
   const [page, setPage] = useState<number>(0);
   const [totalSize, setTotalSize] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectionModel, setSelectionModel] = useState<GridSelectionModel>([]);
+
+  const dispatch = useDispatch();
 
   const getData = () => {
     setLoading(true);
@@ -146,7 +152,17 @@ export const PhotoTable = () => {
           setPageSize(size);
           setPage(newPage);
         }}
-        columnBuffer={8}
+        columnBuffer={9}
+        onSelectionModelChange={(ids) => {
+          setSelectionModel(ids);
+          const selectedIDs = new Set(ids);
+          const selectedRowData = data.filter((rows) =>
+            selectedIDs.has(rows.id)
+          );
+          dispatch(replaceSelectedPhotos(JSON.stringify(selectedRowData)));
+        }}
+        selectionModel={selectionModel}
+        checkboxSelection={true}
       />
       <Collapse in={errorMessage !== ''}>
         <Alert

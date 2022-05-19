@@ -36,7 +36,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public Utils utils() {
-        return new Utils() {};
+        return new Utils() {
+        };
     }
 
     @Override

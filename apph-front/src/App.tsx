@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import AuthService from './services/AuthService';
 import { changeCurrentUser } from './redux/slices/userSlice';
 import { useDispatch } from 'react-redux';
+import { frFR } from '@mui/material/locale';
 
 const useStyles = makeStyles({
   textAlignCenter: {
@@ -13,13 +14,16 @@ const useStyles = makeStyles({
   }
 });
 
-const theme = createTheme({
-  palette: {
-    background: {
-      paper: '#f2f2f2'
+const theme = createTheme(
+  {
+    palette: {
+      background: {
+        paper: '#f2f2f2'
+      }
     }
-  }
-});
+  },
+  frFR
+);
 
 export const App = () => {
   const classes = useStyles();

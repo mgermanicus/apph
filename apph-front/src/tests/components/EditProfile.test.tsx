@@ -95,7 +95,6 @@ describe('Test EditProfile', () => {
       '/user/': { body: JSON.stringify(user) }
     });
     render(<EditProfile />, { wrapper });
-    screen.debug();
     //WHEN
     fillText(/Login/, editedUser.login);
     clickButton(/Valider/);

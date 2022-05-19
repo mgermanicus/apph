@@ -90,4 +90,30 @@ export default class PhotoService {
     };
     return Server.request(URL, requestOptions, successFunction, failFunction);
   }
+
+  static deleteImage(
+    ids: number[],
+    handleSuccess: (message: IMessage) => void,
+    handleError: (errorMessage: IMessage) => void
+  ) {
+    const URL = `/photo/delete`,
+      userInfos = cookies.get('user'),
+      requestOptions = {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + userInfos?.token
+        },
+        body: JSON.stringify({
+          ids
+        })
+      };
+    const successFunction = (message: string) => {
+      handleSuccess(JSON.parse(message));
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage));
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
 }

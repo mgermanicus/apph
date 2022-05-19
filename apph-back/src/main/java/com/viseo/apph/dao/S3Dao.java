@@ -75,8 +75,9 @@ public class S3Dao {
         return s3Object.asByteArray();
     }
 
-    public String delete(String filename) {
-        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(bucketName).key(user + filename).build());
-        return filename + " supprimé";
+    public String delete(Photo photo) {
+        String name = hashString(String.valueOf(photo.getId())) + photo.getFormat();
+        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(bucketName).key(user + name).build());
+        return name + " supprimé";
     }
 }

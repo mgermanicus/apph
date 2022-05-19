@@ -16,20 +16,14 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
-import software.amazon.awssdk.core.BytesWrapper;
 import software.amazon.awssdk.core.ResponseBytes;
-import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
-import software.amazon.awssdk.http.AbortableInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.GetUrlRequest;
+import software.amazon.awssdk.services.s3.model.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -190,17 +184,16 @@ public class PhotoTest {
         long idUser = 2;
         String title = "test";
         String extension = "jpg";
-        byte[] fileByteArray = "".getBytes();
         User user = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setLastname("test").setFirstname("test").setId(idUser);
         Photo photo = (Photo) new Photo().setFormat(extension).setTitle(title).setUser(user).setId(id);
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
+        ResponseBytes<GetObjectResponse> s3Object = mock(ResponseBytes.class);
         when(utils.getUser()).thenReturn(user);
         when(em.find(any(), anyLong())).thenReturn(photo);
-        ResponseBytes<GetObjectResponse> s3Object = Mockito.mock(ResponseBytes.class);
-        doReturn(s3Object).when(s3Client).getObject(any(GetObjectRequest.class),any(ResponseTransformer.class));
+        when(s3Client.getObject(any(GetObjectRequest.class), eq(ResponseTransformer.toBytes()))).thenReturn(s3Object);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.download(photoRequest);
-        // Then
+        //THEN
         verify(em, times(1)).find(Photo.class, id);
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         PhotoResponse photoResponse = (PhotoResponse) responseEntity.getBody();
@@ -218,7 +211,7 @@ public class PhotoTest {
         User user = (User) new User().setId(idUser);
         Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(id);
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
-        when(utils.getUser()).thenReturn((User)new User().setId(1L));
+        when(utils.getUser()).thenReturn((User) new User().setId(1L));
         //WHEN
         when(em.find(Photo.class, id)).thenReturn(photo);
         ResponseEntity<IResponseDto> responseEntity = photoController.download(photoRequest);
@@ -240,5 +233,60 @@ public class PhotoTest {
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
         //THEN
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testDelete() {
+        //GIVEN
+        createPhotoController();
+        long idPhoto = 1L;
+        long[] ids = {1L};
+        User user = (User) new User().setLogin("test@test").setId(2);
+        Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(idPhoto);
+        PhotosRequest photosRequest = new PhotosRequest().setIds(ids);
+        when(utils.getUser()).thenReturn(user);
+        when(em.find(Photo.class, ids[0])).thenReturn(photo);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.delete(photosRequest);
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        verify(em, times(1)).remove(any());
+    }
+
+    @Test
+    public void testDeleteUserNotAllowed() {
+        //GIVEN
+        createPhotoController();
+        long idPhoto = 1L;
+        long[] ids = {1L};
+        User user = (User) new User().setLogin("test@test").setId(2);
+        User userDiff = (User) new User().setLogin("test@test").setId(100);
+        Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(idPhoto);
+        PhotosRequest photosRequest = new PhotosRequest().setIds(ids);
+        when(utils.getUser()).thenReturn(userDiff);
+        when(em.find(Photo.class, ids[0])).thenReturn(photo);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.delete(photosRequest);
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        verify(em, times(0)).remove(any());
+    }
+
+    @Test
+    public void testDeleteServerDown() {
+        //GIVEN
+        createPhotoController();
+        long idPhoto = 1L;
+        long[] ids = {1L};
+        User user = (User) new User().setLogin("test@test").setId(2);
+        Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(idPhoto);
+        PhotosRequest photosRequest = new PhotosRequest().setIds(ids);
+        when(utils.getUser()).thenReturn(user);
+        when(em.find(Photo.class, ids[0])).thenReturn(photo);
+        doThrow(S3Exception.class).when(s3Client).deleteObject(any(DeleteObjectRequest.class));
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.delete(photosRequest);
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().isError());
     }
 }
