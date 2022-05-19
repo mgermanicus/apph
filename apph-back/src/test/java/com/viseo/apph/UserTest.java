@@ -1,8 +1,11 @@
 package com.viseo.apph;
 
 import com.viseo.apph.controller.UserController;
+import com.viseo.apph.dao.FolderDao;
 import com.viseo.apph.dao.UserDao;
+import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.security.UserDetailsImpl;
@@ -29,12 +32,14 @@ public class UserTest {
     @Mock
     EntityManager em;
     @Mock
-    TypedQuery<User> userTypedQuery;
+    TypedQuery<User> typedQueryUser;
     @Mock
-    TypedQuery<Long> existByLoginQuery;
+    TypedQuery<Long> typedQueryLong;
+    @Mock
+    TypedQuery<Folder> typedQueryFolder;
     @Mock
     PasswordEncoder passwordEncoder;
-   @Mock
+    @Mock
     com.viseo.apph.security.Utils utils;
 
     UserService userService;
@@ -43,9 +48,12 @@ public class UserTest {
 
     private void createUserController() {
         UserDao userDao = new UserDao();
+        FolderDao folderDao = new FolderDao();
         inject(userDao, "em", em);
+        inject(folderDao, "em", em);
         userService = new UserService();
         inject(userService, "userDao", userDao);
+        inject(userService, "folderDao", folderDao);
         jwtUtils = new JwtUtils();
         inject(userService, "jwtUtils", jwtUtils);
         userController = new UserController();
@@ -61,11 +69,11 @@ public class UserTest {
         createUserController();
         User user = new User().setLogin("toto").setPassword("password");
         when(utils.getUser()).thenReturn(user);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
-        when(userTypedQuery.getSingleResult()).thenReturn(new User().setLogin("toto").setPassword("password").setFirstname("firstname").setLastname("lastname"));
-        when(userTypedQuery.setParameter("login", "toto")).thenReturn(userTypedQuery);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(new User().setLogin("toto").setPassword("password").setFirstname("firstname").setLastname("lastname"));
+        when(typedQueryUser.setParameter("login", "toto")).thenReturn(typedQueryUser);
         //WHEN
-        ResponseEntity responseEntity = userController.getUserInfo();
+        ResponseEntity<IResponseDto> responseEntity = userController.getUserInfo();
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
@@ -74,6 +82,7 @@ public class UserTest {
     public void testEditUserInfo() {
         //GIVEN
         User user = new User().setLogin("toto").setPassword("password").setFirstname("John").setLastname("Doe");
+        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
         UserRequest request = new UserRequest()
                 .setFirstName("Jean")
                 .setLastName("Dupont")
@@ -84,39 +93,47 @@ public class UserTest {
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(utils.getUser()).thenReturn(user);
         String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
-        when(userTypedQuery.getSingleResult()).thenReturn(user);
-        when(userTypedQuery.setParameter("login", "toto")).thenReturn(userTypedQuery);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        when(typedQueryUser.setParameter("login", "toto")).thenReturn(typedQueryUser);
         when(em.find(User.class, user.getId())).thenReturn(user);
         when(passwordEncoder.encode("newPassword")).thenReturn("newPassword");
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         //WHEN
-        ResponseEntity response = userController.editUserInfo(jws, request);
+        ResponseEntity<String> response = userController.editUserInfo(jws, request);
         //THEN
         Assert.assertTrue(response.getStatusCode().is2xxSuccessful());
         Assert.assertEquals(request.getFirstName(), user.getFirstname());
         Assert.assertEquals(request.getPassword(), user.getPassword());
         Assert.assertEquals(request.getLastName(), user.getLastname());
+        Assert.assertEquals(request.getFirstName() + " " + request.getLastName(), parentFolder.getName());
     }
 
     @Test
     public void testEditUserLogin() {
         //GIVEN
         User user = new User().setLogin("login");
+        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
         UserRequest request = new UserRequest().setLogin("newLogin");
         createUserController();
         UserDetailsImpl userDetails = UserDetailsImpl.build(user);
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(utils.getUser()).thenReturn(user);
-        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
-        when(userTypedQuery.getSingleResult()).thenReturn(user);
-        when(userTypedQuery.setParameter("login", user.getLogin())).thenReturn(userTypedQuery);
+        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
         when(em.find(User.class, user.getId())).thenReturn(user);
-        when(em.createQuery("SELECT count(user) FROM User user WHERE user.login = :login", Long.class)).thenReturn(existByLoginQuery);
-        when(existByLoginQuery.setParameter("login", request.getLogin())).thenReturn(existByLoginQuery);
-        when(existByLoginQuery.getSingleResult()).thenReturn(0L);
+        when(em.createQuery("SELECT count(user) FROM User user WHERE user.login = :login", Long.class)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("login", request.getLogin())).thenReturn(typedQueryLong);
+        when(typedQueryLong.getSingleResult()).thenReturn(0L);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         //WHEN
-        ResponseEntity response = userController.editUserInfo(jws, request);
+        ResponseEntity<String> response = userController.editUserInfo(jws, request);
         //THEN
         Assert.assertTrue(response.getStatusCode().is2xxSuccessful());
         Assert.assertEquals(request.getLogin(), user.getLogin());
@@ -126,21 +143,25 @@ public class UserTest {
     public void testEditUserInvalidLogin() {
         //GIVEN
         User user = new User().setLogin("login");
+        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
         UserRequest request = new UserRequest().setLogin("alreadyTakenLogin");
         createUserController();
         UserDetailsImpl userDetails = UserDetailsImpl.build(user);
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(utils.getUser()).thenReturn(user);
-        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
-        when(userTypedQuery.getSingleResult()).thenReturn(user);
-        when(userTypedQuery.setParameter("login", user.getLogin())).thenReturn(userTypedQuery);
+        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
         when(em.find(User.class, user.getId())).thenReturn(user);
-        when(em.createQuery("SELECT count(user) FROM User user WHERE user.login = :login", Long.class)).thenReturn(existByLoginQuery);
-        when(existByLoginQuery.setParameter("login", request.getLogin())).thenReturn(existByLoginQuery);
-        when(existByLoginQuery.getSingleResult()).thenReturn(1L);
+        when(em.createQuery("SELECT count(user) FROM User user WHERE user.login = :login", Long.class)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("login", request.getLogin())).thenReturn(typedQueryLong);
+        when(typedQueryLong.getSingleResult()).thenReturn(1L);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         //WHEN
-        ResponseEntity response = userController.editUserInfo(jws, request);
+        ResponseEntity<String> response = userController.editUserInfo(jws, request);
         //THEN
         Assert.assertTrue(response.getStatusCode().isError());
         Assert.assertEquals("Ce login est déjà pris", response.getBody());
@@ -157,11 +178,11 @@ public class UserTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(utils.getUser()).thenReturn(user);
-        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(userTypedQuery);
-        when(userTypedQuery.getSingleResult()).thenThrow(new NoResultException());
-        when(userTypedQuery.setParameter("login", user.getLogin())).thenReturn(userTypedQuery);
+        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenThrow(new NoResultException());
+        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
         //WHEN
-        ResponseEntity response = userController.editUserInfo(jws, request);
+        ResponseEntity<String> response = userController.editUserInfo(jws, request);
         //THEN
         Assert.assertTrue(response.getStatusCode().isError());
         Assert.assertEquals("L'utilisateur lié à cette session n'existe pas", response.getBody());

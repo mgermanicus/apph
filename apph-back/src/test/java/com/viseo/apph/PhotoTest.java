@@ -181,7 +181,7 @@ public class PhotoTest {
         assert messageResponse != null;
         Assert.assertEquals("Argument illégal.", messageResponse.getMessage());
     }
-/*
+
     @Test
     public void testDownload() {
         // GIVEN
@@ -208,7 +208,7 @@ public class PhotoTest {
         Assert.assertEquals(title, photoResponse.getTitle());
         Assert.assertEquals(extension, photoResponse.getFormat());
     }
-*/
+
     @Test
     public void testDownloadUserNotAllowed() {
         //GIVEN

@@ -28,7 +28,9 @@ public class TagTest {
     @Mock
     EntityManager em;
     @Mock
-    TypedQuery typedQuery;
+    TypedQuery<Tag> typedQueryTag;
+    @Mock
+    TypedQuery<User> typedQueryUser;
     @Mock
     Utils utils;
     TagService tagService;
@@ -56,12 +58,12 @@ public class TagTest {
         Tag tag1 = new Tag().setUser(user).setName("tag1");
         List<Tag> tags = new ArrayList<>();
         tags.add(tag1);
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("login", "toto")).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(user);
-        when(em.createQuery("SELECT t FROM Tag t WHERE t.user.id=:userId", Tag.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("userId", 1L)).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(tags);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", "toto")).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        when(em.createQuery("SELECT t FROM Tag t WHERE t.user.id=:userId", Tag.class)).thenReturn(typedQueryTag);
+        when(typedQueryTag.setParameter("userId", 1L)).thenReturn(typedQueryTag);
+        when(typedQueryTag.getResultList()).thenReturn(tags);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = tagController.getTags();
         //THEN
