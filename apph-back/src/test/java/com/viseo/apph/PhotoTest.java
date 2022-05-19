@@ -16,11 +16,19 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
+import software.amazon.awssdk.core.BytesWrapper;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.ResponseTransformer;
+import software.amazon.awssdk.http.AbortableInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 
 import javax.persistence.EntityManager;
@@ -41,17 +49,11 @@ public class PhotoTest {
     @Mock
     TypedQuery<Photo> typedQueryPhoto;
     @Mock
-    TypedQuery<User> typedQueryUser;
-    @Mock
-    S3Dao s3Dao;
-    @Mock
     Utils utils;
+    @Mock
     S3Client s3Client;
-    UserService userService;
-    TagService tagService;
-    PhotoService photoService;
+
     PhotoController photoController;
-    PhotoRequest photoRequest;
 
     private void createPhotoController() {
         PhotoDao photoDao = new PhotoDao();
@@ -65,14 +67,14 @@ public class PhotoTest {
         S3Dao s3Dao = new S3Dao();
         s3Client = mock(S3Client.class, RETURNS_DEEP_STUBS);
         inject(s3Dao, "s3Client", s3Client);
-        photoService = new PhotoService();
+        PhotoService photoService = new PhotoService();
         inject(photoService, "photoDao", photoDao);
         inject(photoService, "s3Dao", s3Dao);
         inject(photoService, "userDao", userDao);
-        userService = new UserService();
+        UserService userService = new UserService();
         inject(userService, "userDao", userDao);
         inject(userService, "folderDao", folderDao);
-        tagService = new TagService();
+        TagService tagService = new TagService();
         inject(tagService, "tagDao", tagDao);
         inject(tagService, "userDao", userDao);
         photoController = new PhotoController();
@@ -80,19 +82,6 @@ public class PhotoTest {
         inject(photoController, "userService", userService);
         inject(photoService, "tagService", tagService);
         inject(photoController, "utils", utils);
-    }
-
-    private void createPhotoControllerWithoutS3() {
-        PhotoDao photoDao = new PhotoDao();
-        UserDao userDao = new UserDao();
-        inject(photoDao, "em", em);
-        inject(userDao, "em", em);
-        photoService = new PhotoService();
-        inject(photoService, "photoDao", photoDao);
-        inject(photoService, "s3Dao", s3Dao);
-        inject(photoService, "userDao", userDao);
-        photoController = new PhotoController();
-        inject(photoController, "photoService", photoService);
     }
 
     @Test
@@ -107,7 +96,7 @@ public class PhotoTest {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         when(utils.getUser()).thenReturn(robert);
-        photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57"));
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57"));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
         //THEN
@@ -196,7 +185,7 @@ public class PhotoTest {
     @Test
     public void testDownload() {
         // GIVEN
-        createPhotoControllerWithoutS3();
+        createPhotoController();
         long id = 1L;
         long idUser = 2;
         String title = "test";
@@ -207,7 +196,8 @@ public class PhotoTest {
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
         when(utils.getUser()).thenReturn(user);
         when(em.find(any(), anyLong())).thenReturn(photo);
-        when(s3Dao.download(any())).thenReturn(fileByteArray);
+        ResponseBytes<GetObjectResponse> s3Object = Mockito.mock(ResponseBytes.class);
+        doReturn(s3Object).when(s3Client).getObject(any(GetObjectRequest.class),any(ResponseTransformer.class));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.download(photoRequest);
         // Then
@@ -243,7 +233,7 @@ public class PhotoTest {
         MockMultipartFile failFile = new MockMultipartFile("file", "orig", null, "bar".getBytes());
         Set<Tag> tags = new HashSet<>();
         Gson gson = new GsonBuilder().create();
-        photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(failFile).setTags(gson.toJson(tags));
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(failFile).setTags(gson.toJson(tags));
         User user = new User().setLogin("toto").setPassword("password");
         when(utils.getUser()).thenReturn(user);
         //WHEN
