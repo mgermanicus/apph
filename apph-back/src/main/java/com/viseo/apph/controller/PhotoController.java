@@ -1,10 +1,7 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.IResponseDto;
-import com.viseo.apph.dto.MessageResponse;
-import com.viseo.apph.dto.PaginationResponse;
-import com.viseo.apph.dto.PhotoRequest;
+import com.viseo.apph.dto.*;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.exception.UnauthorizedException;
 import com.viseo.apph.security.Utils;
@@ -16,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -26,7 +24,7 @@ public class PhotoController {
     @Autowired
     PhotoService photoService;
     @Autowired
-    Utils utils ;
+    Utils utils;
     @Autowired
     UserService userService;
 
@@ -73,11 +71,12 @@ public class PhotoController {
         }
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping(value = "/delete")
-    public ResponseEntity<IResponseDTO> delete(@RequestHeader("Authorization") String token, @RequestBody PhotoRequest photoRequest) {
+    public ResponseEntity<IResponseDto> delete(@RequestBody PhotosRequest photosRequest) {
         try {
             User user = utils.getUser();
-            photoService.deletePhotos(user.getId(), photoRequest.getIds());
+            photoService.deletePhotos(user, photosRequest.getIds());
             return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Suppression effectuée avec succès"));
         } catch (S3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de la suppression"));

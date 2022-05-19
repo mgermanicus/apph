@@ -103,7 +103,7 @@ public class AuthTest {
         createAuthController();
         UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
         when(em.createQuery("SELECT r FROM Role r WHERE r.name=:name", Role.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("name",ERole.ROLE_USER)).thenReturn(typedQuery);
+        when(typedQuery.setParameter("name", ERole.ROLE_USER)).thenReturn(typedQuery);
         when(typedQuery.getSingleResult()).thenReturn(new Role(ERole.ROLE_USER));
         when(passwordEncoder.encode("password")).thenReturn("password");
         //WHEN
@@ -121,7 +121,7 @@ public class AuthTest {
         when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
         when(typedQuery.setParameter("login", "tintin")).thenReturn(typedQuery);
         when(em.createQuery("SELECT r FROM Role r WHERE r.name=:name", Role.class)).thenReturn(typedQuery2);
-        when(typedQuery2.setParameter("name",ERole.ROLE_USER)).thenReturn(typedQuery2);
+        when(typedQuery2.setParameter("name", ERole.ROLE_USER)).thenReturn(typedQuery2);
         when(typedQuery2.getSingleResult()).thenReturn(new Role(ERole.ROLE_USER));
         doThrow(new DataIntegrityViolationException("test")).when(em).persist(any());
         //WHEN

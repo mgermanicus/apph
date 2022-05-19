@@ -54,7 +54,7 @@ public class JwtUtils {
         return false;
     }
 
-    public String setClaimOnToken(String token, Map<String,String> newClaims){
+    public String setClaimOnToken(String token, Map<String, String> newClaims) {
         Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
         JwtBuilder newToken = Jwts.builder().setClaims(claims);
         for (Map.Entry<String, String> entry : newClaims.entrySet()) {

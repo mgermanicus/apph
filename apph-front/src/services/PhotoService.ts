@@ -102,7 +102,7 @@ export default class PhotoService {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: userInfos?.token
+          Authorization: 'Bearer ' + userInfos?.token
         },
         body: JSON.stringify({
           ids

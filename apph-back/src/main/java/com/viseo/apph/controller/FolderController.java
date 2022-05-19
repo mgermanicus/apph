@@ -25,7 +25,7 @@ public class FolderController {
     @Autowired
     FolderService folderService;
     @Autowired
-    Utils utils ;
+    Utils utils;
 
     @ResponseBody
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")

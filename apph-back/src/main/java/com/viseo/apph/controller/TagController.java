@@ -22,9 +22,9 @@ import java.util.List;
 @RequestMapping("/tag")
 public class TagController {
     @Autowired
-    private TagService tagService;
+    Utils utils;
     @Autowired
-    Utils utils ;
+    private TagService tagService;
 
     @GetMapping("/")
     public ResponseEntity getTags() {

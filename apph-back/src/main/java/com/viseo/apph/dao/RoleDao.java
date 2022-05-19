@@ -12,7 +12,7 @@ public class RoleDao {
     @PersistenceContext
     EntityManager em;
 
-    public Role getRole(ERole eRole){
+    public Role getRole(ERole eRole) {
         return em.createQuery("SELECT r FROM Role r WHERE r.name=:name", Role.class)
                 .setParameter("name", eRole)
                 .getSingleResult();

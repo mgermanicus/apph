@@ -2,7 +2,6 @@ package com.viseo.apph.config;
 
 import com.viseo.apph.dao.RoleDao;
 import com.viseo.apph.domain.*;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.HashSet;
@@ -41,9 +39,9 @@ public class DataBaseConfig {
     }
 
     @Transactional
-    public void initializeRole(){
+    public void initializeRole() {
         long count = em.createQuery("SELECT COUNT(role) FROM Role role", Long.class).getSingleResult();
-        if(count == 0) {
+        if (count == 0) {
             Role roleAdmin = new Role(ERole.ROLE_ADMIN);
             Role roleUser = new Role(ERole.ROLE_USER);
             em.persist(roleUser);
