@@ -48,6 +48,7 @@ export const UploadImage = (): JSX.Element => {
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>('none');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const fileInput = createRef<HTMLInputElement>();
+  const tagsInput = createRef<HTMLInputElement>();
   const [open, setOpen] = useState<boolean>(false);
   const [allTags, setAllTags] = useState<ITag[]>([]);
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
@@ -66,6 +67,10 @@ export const UploadImage = (): JSX.Element => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (selectedTags.length < 1) {
+      tagsInput.current?.setCustomValidity('Veuillez renseigner ce champ.');
+      return;
+    }
     const files = fileInput.current?.files;
     if (files) {
       const file = files[0];
@@ -205,14 +210,17 @@ export const UploadImage = (): JSX.Element => {
                     getOptionLabel={(tag) => tag.name}
                     renderInput={(params) => (
                       <TextField
-                        required
                         {...params}
                         inputProps={{
                           ...params.inputProps,
                           autoComplete: 'new-password',
                           required: selectedTags.length === 0
                         }}
+                        inputRef={tagsInput}
                         label="Tags"
+                        onChange={() =>
+                          tagsInput.current?.setCustomValidity('')
+                        }
                       />
                     )}
                   />
