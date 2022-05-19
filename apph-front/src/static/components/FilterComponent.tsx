@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Box,
   FormControl,
   IconButton,
@@ -10,13 +11,13 @@ import {
   Tooltip
 } from '@mui/material';
 import * as React from 'react';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, Dispatch } from 'react';
 import { RemoveCircle } from '@mui/icons-material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { Autocomplete } from '@mui/material';
-import { useSelector } from 'react-redux';
 import { ITag } from '../../utils';
+import { IFilter } from '../../utils/types/Filter';
+import { filterActionKind, filterActions } from './FilterSelector';
 
 const selectFieldStyle = {
   minWidth: '6vw',
@@ -29,35 +30,57 @@ const selectOperatorStyle = {
 };
 
 interface filterComponentProps {
-  filterId: number;
-  removeFilter: (filterId: number) => void;
+  state: IFilter;
+  dispatchFilterState: Dispatch<filterActions>;
+  tagList: ITag[];
 }
 
 export const FilterComponent = ({
-  filterId,
-  removeFilter
+  state,
+  dispatchFilterState,
+  tagList
 }: filterComponentProps) => {
-  const [field, setField] = useState('');
-  const [operator, setOperator] = useState('');
-  const [value, setValue] = useState<string | Date | ITag[]>('');
-  useState<string>('');
-  const tagList = useSelector(({ tagList }: { tagList: ITag[] }) => tagList);
-
   const handleChangeField = (event: SelectChangeEvent) => {
-    setField(event.target.value);
-    setOperator('');
-    setValue('');
+    dispatchFilterState({
+      type: filterActionKind.UPDATE,
+      payload: {
+        id: state.id,
+        field: event.target.value,
+        operator: '',
+        value: ''
+      }
+    });
   };
 
   const handleChangeOperator = (event: SelectChangeEvent) => {
-    setOperator(event.target.value);
+    dispatchFilterState({
+      type: filterActionKind.UPDATE,
+      payload: {
+        id: state.id,
+        field: state.field,
+        operator: event.target.value,
+        value: state.value
+      }
+    });
+  };
+
+  const handleChangeValue = (value: string | Date | ITag[]) => {
+    dispatchFilterState({
+      type: filterActionKind.UPDATE,
+      payload: {
+        id: state.id,
+        field: state.field,
+        operator: state.operator,
+        value: value
+      }
+    });
   };
 
   const getFields = () => (
     <Select
       labelId="select-field-label"
       id="select-field"
-      value={field}
+      value={state.field}
       onChange={handleChangeField}
       sx={selectFieldStyle}
     >
@@ -65,20 +88,19 @@ export const FilterComponent = ({
       <MenuItem value={'description'}>Description</MenuItem>
       <MenuItem value={'creationDate'}>Date de création</MenuItem>
       <MenuItem value={'shootingDate'}>Date de prise de vue</MenuItem>
-      <MenuItem value={'size'}>Taille(Ko)</MenuItem>
       <MenuItem value={'tags'}>Tags</MenuItem>
     </Select>
   );
 
   const getOperators = () => {
-    switch (field) {
+    switch (state.field) {
       case 'title':
       case 'description':
         return (
           <Select
             labelId="select-operator-label"
             id="select-operator"
-            value={operator}
+            value={state.operator}
             onChange={handleChangeOperator}
             sx={selectOperatorStyle}
           >
@@ -92,7 +114,7 @@ export const FilterComponent = ({
           <Select
             labelId="select-operator-label"
             id="select-operator"
-            value={operator}
+            value={state.operator}
             onChange={handleChangeOperator}
             sx={selectOperatorStyle}
           >
@@ -119,8 +141,8 @@ export const FilterComponent = ({
   };
 
   const getInputValue = () => {
-    if (field === 'tags') {
-      if (Array.isArray(value)) {
+    if (state.field === 'tags') {
+      if (Array.isArray(state.value)) {
         return (
           <Autocomplete
             multiple
@@ -128,9 +150,9 @@ export const FilterComponent = ({
             size="small"
             options={tagList}
             getOptionLabel={(tag) => tag.name}
-            value={value as ITag[]}
+            value={state.value as ITag[]}
             onChange={(event, newValue) => {
-              setValue(newValue);
+              handleChangeValue(newValue);
             }}
             sx={{ minWidth: 200 }}
             renderInput={(params) => (
@@ -139,10 +161,10 @@ export const FilterComponent = ({
           />
         );
       } else {
-        setValue([]);
+        handleChangeValue([]);
       }
     }
-    switch (operator) {
+    switch (state.operator) {
       case 'is':
       case 'contain':
         return (
@@ -151,9 +173,9 @@ export const FilterComponent = ({
             label="Valeur"
             multiline
             size="small"
-            value={value}
+            value={state.value}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setValue(event.target.value);
+              handleChangeValue(event.target.value);
             }}
             type="text"
           />
@@ -167,9 +189,9 @@ export const FilterComponent = ({
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label="Valeur"
-              value={value || new Date()}
+              value={state.value || new Date()}
               onChange={(value) => {
-                if (value) setValue(value);
+                if (value) handleChangeValue(value);
               }}
               renderInput={(params) => (
                 <TextField {...params} id="fill-value-date" size="small" />
@@ -195,7 +217,14 @@ export const FilterComponent = ({
       </FormControl>
       <FormControl>{getInputValue()}</FormControl>
       <Tooltip title="Supprimer un filtre" arrow>
-        <IconButton onClick={() => removeFilter(filterId)}>
+        <IconButton
+          onClick={() =>
+            dispatchFilterState({
+              type: filterActionKind.REMOVE,
+              payload: state.id
+            })
+          }
+        >
           <RemoveCircle />
         </IconButton>
       </Tooltip>

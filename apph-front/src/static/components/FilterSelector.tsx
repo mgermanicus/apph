@@ -1,12 +1,14 @@
 import * as React from 'react';
+import { useEffect, useReducer } from 'react';
 import { AddCircle } from '@mui/icons-material';
 import { FilterComponent } from './FilterComponent';
 import { Box, IconButton, Tooltip } from '@mui/material';
-import { useEffect, useState } from 'react';
+import SearchIcon from '@mui/icons-material/Search';
 import TagService from '../../services/TagService';
 import { ITag } from '../../utils';
 import { setTagList } from '../../redux/slices/tagSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { IFilter } from '../../utils/types/Filter';
 
 const filterSelectorBoxStyle = {
   display: 'flex',
@@ -15,29 +17,105 @@ const filterSelectorBoxStyle = {
   '> div, button': { mt: '1vh' }
 };
 
-export const FilterSelector = () => {
-  const dispatch = useDispatch();
-  const removeFilter = (filterId: number) => {
-    setFilters((prevState) => {
-      return prevState.filter((filter) => filter.key != filterId);
-    });
-  };
-  const [filters, setFilters] = useState([
-    <FilterComponent key={0} filterId={0} removeFilter={removeFilter} />
-  ]);
-  const [dynamicKey, setDynamicKey] = useState(1);
+const filterButtonStyle = { mb: '2vh', mx: '1vh' };
 
-  const addFilter = () => {
-    setFilters([
-      ...filters,
-      <FilterComponent
-        key={dynamicKey}
-        filterId={dynamicKey}
-        removeFilter={removeFilter}
-      />
-    ]);
-    setDynamicKey(dynamicKey + 1);
-  };
+const isInstanceOfIFilter = (object: object): object is IFilter => {
+  return (
+    'id' in object &&
+    ('field' in object || 'operator' in object || 'value' in object)
+  );
+};
+
+export enum filterActionKind {
+  ADD = 'addFilter',
+  REMOVE = 'removeFilter',
+  UPDATE = 'updateFilter'
+}
+
+export interface filterActions {
+  type: filterActionKind;
+  payload: IFilter | number;
+}
+
+const filterInitialState: IFilter[] = [
+  {
+    id: 0,
+    field: '',
+    operator: '',
+    value: ''
+  }
+];
+
+const filterReducers = (state: IFilter[], action: filterActions) => {
+  const { type, payload } = action;
+  switch (type) {
+    case filterActionKind.ADD:
+      if (typeof payload == 'number')
+        return [
+          ...state,
+          {
+            id: payload,
+            field: '',
+            operator: '',
+            value: ''
+          }
+        ];
+      throw new Error(
+        "Erreur dans l'ajout du filtre: le payload n'est pas un nombre."
+      );
+    case filterActionKind.REMOVE:
+      if (typeof payload == 'number')
+        return state.filter((filter) => filter.id != action.payload);
+      throw new Error(
+        "Erreur dans la suppression du filtre: le payload n'est pas un nombre"
+      );
+    case filterActionKind.UPDATE:
+      if (typeof payload == 'object' && isInstanceOfIFilter(payload)) {
+        const filterIndex = state.findIndex(
+          (filter) => filter.id == payload.id
+        );
+        state[filterIndex] = {
+          id: state[filterIndex].id,
+          field:
+            payload.field !== 'undefined'
+              ? payload.field
+              : state[filterIndex].field,
+          operator:
+            payload.operator !== 'undefined'
+              ? payload.operator
+              : state[filterIndex].operator,
+          value:
+            payload.value !== 'undefined'
+              ? payload.value
+              : state[filterIndex].value
+        };
+        return [...state];
+      }
+      throw new Error(
+        "Erreur dans la mise à jour du filtre : l'id ne correspond à aucun filtre existant"
+      );
+    default:
+      throw new Error('Erreur dans la gestion du filtre');
+  }
+};
+
+function* generateId() {
+  let id = 1;
+  while (true) yield id++;
+}
+const iterator = generateId();
+
+interface filterSelectorProps {
+  onFilterPhoto: () => void;
+}
+
+export const FilterSelector = ({ onFilterPhoto }: filterSelectorProps) => {
+  const [filterStates, dispatchFilterStates] = useReducer(
+    filterReducers,
+    filterInitialState
+  );
+  const tagList = useSelector(({ tagList }: { tagList: ITag[] }) => tagList);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     TagService.getAllTags(
@@ -49,14 +127,48 @@ export const FilterSelector = () => {
     );
   }, []);
 
+  const createNewFilter = () => {
+    const currentIterator = iterator.next();
+    if (!currentIterator.done)
+      dispatchFilterStates({
+        type: filterActionKind.ADD,
+        payload: currentIterator.value
+      });
+  };
+
+  const handleFilterPhoto = () => {
+    onFilterPhoto();
+  };
+
+  const getFilterList = () =>
+    filterStates.map((filterState) => (
+      <FilterComponent
+        key={filterState.id}
+        state={filterState}
+        dispatchFilterState={dispatchFilterStates}
+        tagList={tagList}
+      />
+    ));
+
   return (
     <Box sx={filterSelectorBoxStyle}>
-      {filters}
-      <Tooltip title="Ajouter un filtre" arrow>
-        <IconButton onClick={addFilter}>
-          <AddCircle />
-        </IconButton>
-      </Tooltip>
+      {getFilterList()}
+      <Box>
+        <Tooltip title="Ajouter un filtre" arrow>
+          <IconButton onClick={createNewFilter} sx={filterButtonStyle}>
+            <AddCircle />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Rechercher" arrow>
+          <IconButton
+            color="primary"
+            onClick={handleFilterPhoto}
+            sx={filterButtonStyle}
+          >
+            <SearchIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
     </Box>
   );
 };

@@ -1,15 +1,19 @@
 import { FilterSelector } from '../components/FilterSelector';
 import { PhotoTable } from '../components/PhotoTable';
+import { useState } from 'react';
 
 export const AdvancedResearchPage = (): JSX.Element => {
+  const [showTable, setShowTable] = useState(false);
+
   const getFilteredPhotos = () => {
-    return null;
+    setShowTable(true);
+    console.log('Test');
   };
 
   return (
     <>
-      <FilterSelector />
-      {/*<PhotoTable getPhotos={getFilteredPhotos} />*/}
+      <FilterSelector onFilterPhoto={getFilteredPhotos} />
+      {showTable && <PhotoTable getPhotos={getFilteredPhotos} />}
     </>
   );
 };
