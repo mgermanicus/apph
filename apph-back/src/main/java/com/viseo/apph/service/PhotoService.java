@@ -104,7 +104,7 @@ public class PhotoService {
             Photo photo = photoDao.getPhoto(id);
             if (photo != null && photo.getUser().getId() == user.getId()) {
                 s3Dao.delete(photo);
-                photoDao.deletePhoto(photo.getId());
+                photoDao.deletePhoto(photo);
             }
         }
     }
