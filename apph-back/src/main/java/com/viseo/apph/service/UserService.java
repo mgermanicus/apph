@@ -40,28 +40,31 @@ public class UserService {
 
     @Transactional
     public void registerUser(UserRequest userRequest) {
-        Set<Role> set = new HashSet<Role>();
+        Set<Role> set = new HashSet<>();
         Role roleUser = roleDao.getRole(ERole.ROLE_USER);
         set.add(roleUser);
         User newUser = new User().setLogin(userRequest.getLogin()).setPassword(encoder.encode(userRequest.getPassword())).setFirstname(userRequest.getFirstName()).setLastname(userRequest.getLastName()).setRoles(set);
         userDao.createUser(newUser);
-        Folder rootFolder = new Folder().setName(newUser.getFirstname()).setParentFolderId(null).setUser(newUser);
+        Folder rootFolder = new Folder().setName(newUser.getFirstname() + " " + newUser.getLastname()).setParentFolderId(null).setUser(newUser);
         folderDao.createFolder(rootFolder);
     }
 
     @Transactional
     public String editUser(String login, UserRequest request, String token) throws NotFoundException {
         User user = userDao.getUserByLogin(login);
-        token = token.substring(7, token.length()); //Remove Bearer :
-        Map newClaims = new HashMap<String,String>();
+        token = token.substring(7); //Remove Bearer :
+        Map<String, String> newClaims = new HashMap<>();
+        Folder rootFolder = folderDao.getParentFolderByUser(user);
         if (user == null) throw new NotFoundException("");
         if (request.getFirstName() != null) {
             user.setFirstname(request.getFirstName());
             newClaims.put("firstname", request.getFirstName());
+            rootFolder.setName(user.getFirstname() + " " + user.getLastname());
         }
         if (request.getLastName() != null) {
             user.setLastname(request.getLastName());
             newClaims.put("lastname", request.getLastName());
+            rootFolder.setName(user.getFirstname() + " " + user.getLastname());
         }
         if (request.getPassword() != null)
             user.setPassword(encoder.encode(request.getPassword()));

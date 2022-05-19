@@ -44,8 +44,8 @@ public class UserController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @RequestMapping(value = "/edit", method = RequestMethod.PUT, produces = "application/json")
     public ResponseEntity<String> editUserInfo(@RequestHeader("Authorization") String token, @RequestBody UserRequest request) {
-        User user = utils.getUser();
         try {
+            User user = utils.getUser();
             String newToken = userService.editUser(user.getLogin(), request, token);
             return ResponseEntity.ok(newToken);
         } catch (NullPointerException | NotFoundException | NoResultException e) {
