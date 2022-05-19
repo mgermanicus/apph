@@ -52,7 +52,6 @@ public class AuthTest {
     PasswordEncoder passwordEncoder;
     @Mock
     AuthenticationManager authenticationManager;
-
     AuthController authController;
 
     private void createAuthController() {
