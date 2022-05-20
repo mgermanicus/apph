@@ -8,6 +8,7 @@ import PhotoDetails from './PhotoDetails';
 import { DownloadImage } from './DownloadImage';
 import { useDispatch } from 'react-redux';
 import { replaceSelectedPhotos } from '../../redux/slices/photoSlice';
+import { IFilterPayload } from '../../utils/types/Filter';
 
 const columns: GridColDef[] = [
   {
@@ -90,11 +91,13 @@ interface photoTableProps {
     pageSize: number,
     page: number,
     handleSuccess: (pagination: IPagination) => void,
-    handleError: (errorMessage: string) => void
+    handleError: (errorMessage: string) => void,
+    filterList?: IFilterPayload[]
   ) => void;
+  filterList?: IFilterPayload[];
 }
 
-export const PhotoTable = ({ getPhotos }: photoTableProps) => {
+export const PhotoTable = ({ getPhotos, filterList }: photoTableProps) => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [pageSize, setPageSize] = useState<number>(5);
@@ -117,8 +120,9 @@ export const PhotoTable = ({ getPhotos }: photoTableProps) => {
             shootingDate={row.shootingDate}
             size={row.size}
             tags={row.tags}
-          format={row.format}
-                clickType="button"/>
+            format={row.format}
+            clickType="button"
+          />
         ))
     );
     setData(pagination.photoList);
@@ -132,9 +136,9 @@ export const PhotoTable = ({ getPhotos }: photoTableProps) => {
   };
 
   useEffect(() => {
-    getPhotos(pageSize, page + 1, handleSuccess, handleError);
+    getPhotos(pageSize, page + 1, handleSuccess, handleError, filterList);
     const timer = setInterval(() => {
-      getPhotos(pageSize, page + 1, handleSuccess, handleError);
+      getPhotos(pageSize, page + 1, handleSuccess, handleError, filterList);
     }, 3000);
     return () => clearInterval(timer);
   }, [page, pageSize]);
