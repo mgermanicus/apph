@@ -165,7 +165,7 @@ public class PhotoService {
             } else if (photo.getUser().getId() != user.getId()) {
                 response.addMessage("error: L'une des photos n'appartient pas à l'utilisateur.");
             } else if(photo.getFolder().getId() == folder.getId()) {
-                response.addMessage("warning: L'une des photos est déjà dans le dossier");
+                response.addMessage("warning: L'une des photos est déjà dans le dossier.");
             } else if (photoDao.existNameInFolder(folder, photo.getTitle(), photo.getFormat())) {
                 response.addMessage("error: L'une des photos comporte un nom existant déjà dans le dossier destinataire.");
             } else {
