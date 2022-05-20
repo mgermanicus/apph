@@ -1,8 +1,8 @@
 export const openFullScreenById = (id: string) => {
-  setTimeout(() => {
+  setTimeout(async () => {
     const element = document.getElementById(id);
     if (element?.requestFullscreen) {
-      element.requestFullscreen();
+      await element.requestFullscreen();
     }
   }, 100);
 };
