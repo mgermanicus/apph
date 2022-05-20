@@ -67,10 +67,6 @@ export const UploadImage = (): JSX.Element => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (selectedTags.length < 1) {
-      tagsInput.current?.setCustomValidity('Veuillez renseigner ce champ.');
-      return;
-    }
     const files = fileInput.current?.files;
     if (files) {
       const file = files[0];
@@ -118,6 +114,12 @@ export const UploadImage = (): JSX.Element => {
       (errorMessage: string) => setErrorMessage(errorMessage)
     );
   }, []);
+
+  useEffect(() => {
+    if (selectedTags.length < 1)
+      tagsInput.current?.setCustomValidity('Veuillez renseigner ce champ.');
+    else tagsInput.current?.setCustomValidity('');
+  }, [selectedTags]);
 
   return (
     <Box sx={{ m: 1 }}>
@@ -210,6 +212,7 @@ export const UploadImage = (): JSX.Element => {
                     getOptionLabel={(tag) => tag.name}
                     renderInput={(params) => (
                       <TextField
+                        required={selectedTags.length === 0}
                         {...params}
                         inputProps={{
                           ...params.inputProps,
@@ -218,9 +221,6 @@ export const UploadImage = (): JSX.Element => {
                         }}
                         inputRef={tagsInput}
                         label="Tags"
-                        onChange={() =>
-                          tagsInput.current?.setCustomValidity('')
-                        }
                       />
                     )}
                   />
