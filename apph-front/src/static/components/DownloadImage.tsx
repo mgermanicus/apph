@@ -1,8 +1,7 @@
 import { Box, Button, Modal, Typography } from '@mui/material';
-import { IPhoto } from '../../utils/types/Photo';
+import { IMessage, IPhoto } from '../../utils';
 import PhotoService from '../../services/PhotoService';
 import React, { useState } from 'react';
-import { IMessage } from '../../utils/types/Message';
 
 const modalStyle = {
   position: 'absolute',
