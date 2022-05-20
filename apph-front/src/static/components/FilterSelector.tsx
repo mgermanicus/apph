@@ -106,10 +106,14 @@ function* generateId() {
 const iterator = generateId();
 
 interface filterSelectorProps {
-  onFilterPhoto: () => void;
+  onFilterPhoto: (filterList: IFilter[]) => void;
+  openAlert: (message: string) => void;
 }
 
-export const FilterSelector = ({ onFilterPhoto }: filterSelectorProps) => {
+export const FilterSelector = ({
+  onFilterPhoto,
+  openAlert
+}: filterSelectorProps) => {
   const [filterStates, dispatchFilterStates] = useReducer(
     filterReducers,
     filterInitialState
@@ -123,7 +127,7 @@ export const FilterSelector = ({ onFilterPhoto }: filterSelectorProps) => {
         const tagsConverted: ITag[] = JSON.parse(tags);
         dispatch(setTagList(tagsConverted));
       },
-      (errorMessage: string) => console.log(errorMessage)
+      (errorMessage: string) => openAlert(errorMessage)
     );
   }, []);
 
@@ -136,19 +140,8 @@ export const FilterSelector = ({ onFilterPhoto }: filterSelectorProps) => {
       });
   };
 
-  const checkForEmptyFilters = (): boolean =>
-    filterStates.some((filterState) =>
-      Object.values(filterState).some(
-        (value) => value === undefined || value === ''
-      )
-    );
-
   const handleFilterPhoto = () => {
-    if (!checkForEmptyFilters()) {
-      onFilterPhoto();
-    } else {
-      throw new Error('Au moins un filtre possède un champ vide.');
-    }
+    onFilterPhoto(filterStates);
   };
 
   const getFilterList = () =>

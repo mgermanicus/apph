@@ -38,7 +38,7 @@ describe('Tests du composant PhotoTable.tsx', () => {
             size: 1300.0,
             tags: [{ name: 'img2' }],
             url: 'fake url',
-            format: 'png'
+            format: 'jpg'
           }
         ],
         totalSize: 3
