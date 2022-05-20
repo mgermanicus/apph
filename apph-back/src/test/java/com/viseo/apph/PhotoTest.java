@@ -100,9 +100,10 @@ public class PhotoTest {
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
-        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title", Long.class)).thenReturn(typedQueryLong);
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(0L);
         when(utils.getUser()).thenReturn(robert);
         //WHEN
@@ -377,9 +378,10 @@ public class PhotoTest {
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
-        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title", Long.class)).thenReturn(typedQueryLong);
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(1L);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
