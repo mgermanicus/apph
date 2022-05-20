@@ -155,4 +155,32 @@ export default class PhotoService {
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
+
+  static movePhotos(
+    ids: number[],
+    folderId: string,
+    handleSuccess: (message: string[]) => void,
+    handleError: (errorMessage: IMessage) => void
+  ) {
+    const URL = `/photo/folder/move`,
+      userInfos = cookies.get('user'),
+      requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + userInfos?.token
+        },
+        body: JSON.stringify({
+          ids,
+          folderId
+        })
+      };
+    const successFunction = (message: string) => {
+      handleSuccess(JSON.parse(message).messageList);
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage));
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
 }
