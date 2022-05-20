@@ -8,6 +8,7 @@ import { render, screen } from '@testing-library/react';
 import { MyFoldersPage } from '../../static/pages/MyFoldersPage';
 import Cookies from 'universal-cookie';
 import jwtDecode from 'jwt-decode';
+import PhotoService from '../../services/PhotoService';
 
 describe('Folder Tree Tests', () => {
   beforeEach(() => {
@@ -19,6 +20,7 @@ describe('Folder Tree Tests', () => {
     triggerRequestSuccess(
       '{"id":1,"version":0,"name":"Elie_root","parentFolderId":null,"childrenFolders":[{"id":2,"version":0,"name":"Elie_child_1","parentFolderId":1,"childrenFolders":[]},{"id":3,"version":0,"name":"Elie_child_2","parentFolderId":1,"childrenFolders":[]}]}'
     );
+    jest.spyOn(PhotoService, 'getFolderPhotos').mockResolvedValue();
     const cookies = new Cookies();
     const decodedToken = jwtDecode(JWS_TOKEN);
     if (decodedToken !== null && typeof decodedToken === 'object') {

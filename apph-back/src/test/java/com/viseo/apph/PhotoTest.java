@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viseo.apph.controller.PhotoController;
 import com.viseo.apph.dao.*;
+import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
@@ -43,6 +44,10 @@ public class PhotoTest {
     @Mock
     TypedQuery<Photo> typedQueryPhoto;
     @Mock
+    TypedQuery<Folder> typedQueryFolder;
+    @Mock
+    TypedQuery<Long> typedQueryLong;
+    @Mock
     Utils utils;
     @Mock
     S3Client s3Client;
@@ -65,6 +70,7 @@ public class PhotoTest {
         inject(photoService, "photoDao", photoDao);
         inject(photoService, "s3Dao", s3Dao);
         inject(photoService, "userDao", userDao);
+        inject(photoService, "folderDao", folderDao);
         UserService userService = new UserService();
         inject(userService, "userDao", userDao);
         inject(userService, "folderDao", folderDao);
@@ -89,8 +95,16 @@ public class PhotoTest {
         tags.add(tag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
+        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(robert);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title", Long.class)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
+        when(typedQueryLong.getSingleResult()).thenReturn(0L);
         when(utils.getUser()).thenReturn(robert);
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57"));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
         //THEN
@@ -212,8 +226,8 @@ public class PhotoTest {
         Photo photo = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(id);
         PhotoRequest photoRequest = new PhotoRequest().setId(id);
         when(utils.getUser()).thenReturn((User) new User().setId(1L));
-        //WHEN
         when(em.find(Photo.class, id)).thenReturn(photo);
+        //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.download(photoRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().isError());
@@ -226,8 +240,16 @@ public class PhotoTest {
         MockMultipartFile failFile = new MockMultipartFile("file", "orig", null, "bar".getBytes());
         Set<Tag> tags = new HashSet<>();
         Gson gson = new GsonBuilder().create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(failFile).setTags(gson.toJson(tags));
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(failFile).setTags(gson.toJson(tags)).setFolderId(-1);
         User user = new User().setLogin("toto").setPassword("password");
+        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title", Long.class)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
+        when(typedQueryLong.getSingleResult()).thenReturn(0L);
         when(utils.getUser()).thenReturn(user);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
@@ -288,5 +310,160 @@ public class PhotoTest {
         ResponseEntity<IResponseDto> responseEntity = photoController.delete(photosRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().isError());
+    }
+
+    @Test
+    public void testUploadWithNotExistingFolder() {
+        //GIVEN
+        createPhotoController();
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
+        Tag tag = new Tag().setName("+ Add New Tag totoTestTag");
+        Set<Tag> tags = new HashSet<>();
+        tags.add(tag);
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(1);
+        User user = new User().setLogin("toto").setPassword("password");
+        when(utils.getUser()).thenReturn(user);
+        when(em.find(Folder.class, 1L)).thenReturn(null);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("Le dossier n'existe pas.", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testUploadWithUnauthorizedFolder() {
+        //GIVEN
+        createPhotoController();
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
+        Tag tag = new Tag().setName("+ Add New Tag totoTestTag");
+        Set<Tag> tags = new HashSet<>();
+        tags.add(tag);
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(2);
+        User user = new User().setLogin("toto").setPassword("password");
+        User other = (User) new User().setLogin("other").setPassword("Passw0rd").setId(2L);
+        Folder otherFolder = (Folder) new Folder().setParentFolderId(1L).setName("otherFolder").setUser(other).setId(2L);
+        when(utils.getUser()).thenReturn(user);
+        when(em.find(Folder.class, 2L)).thenReturn(otherFolder);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("L'utilisateur n'a pas accès à ce dossier.", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testUploadWithExistingPhotoTitle() {
+        //GIVEN
+        createPhotoController();
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
+        Tag tag = new Tag().setName("+ Add New Tag totoTestTag");
+        Set<Tag> tags = new HashSet<>();
+        tags.add(tag);
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de toto").setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
+        User user = new User().setLogin("toto").setPassword("password");
+        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
+        when(utils.getUser()).thenReturn(user);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title", Long.class)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
+        when(typedQueryLong.getSingleResult()).thenReturn(1L);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("Titre déjà utilisé dans le dossier.", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testDownloadWithNotExistingPhoto() {
+        //GIVEN
+        createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        PhotoRequest photoRequest = new PhotoRequest().setId(1L);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Photo.class, 1L)).thenReturn(null);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.download(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("Le fichier n'existe pas", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testFolderPhoto() {
+        //GIVEN
+        createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setUser(robert).setId(1);
+        robert.addFolder(robertRoot);
+        List<Photo> listPhoto = new ArrayList<>();
+        listPhoto.add(new Photo().setTitle("Photo 1").setUser(robert).setFolder(robertRoot));
+        listPhoto.add(new Photo().setTitle("Photo 2").setUser(robert).setFolder(robertRoot));
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.folder =: folder", Photo.class)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("folder", robertRoot)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotosByFolder(1L);
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        PhotoListResponse response = (PhotoListResponse) responseEntity.getBody();
+        assert response != null;
+        Assert.assertEquals(2, response.getPhotoList().size());
+        Assert.assertEquals("Photo 1", response.getPhotoList().get(0).getTitle());
+    }
+
+    @Test
+    public void testFolderPhotoWithNotExistingFolder() {
+        //GIVEN
+        createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 1L)).thenReturn(null);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotosByFolder(1L);
+        //THEN
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("Le dossier n'existe pas.", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testFolderPhotoWithNoAccessToFolder() {
+        //GIVEN
+        createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        User other = (User) new User().setLogin("other").setPassword("P@ssw0rd").setId(2);
+        Folder otherFolder = (Folder) new Folder().setName("Other Folder").setParentFolderId(null).setUser(other).setId(1);
+        other.addFolder(otherFolder);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 1L)).thenReturn(otherFolder);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotosByFolder(1L);
+        //THEN
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("L'utilisateur n'a pas accès à ce dossier.", messageResponse.getMessage());
     }
 }

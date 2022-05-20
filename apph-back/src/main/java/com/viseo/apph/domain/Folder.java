@@ -1,6 +1,8 @@
 package com.viseo.apph.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "parentFolderId"})})
@@ -11,6 +13,9 @@ public class Folder extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     User user;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Photo> photos = new ArrayList<>();
 
     public Folder() {
         super();

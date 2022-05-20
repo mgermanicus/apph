@@ -2,7 +2,9 @@ package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.*;
+import com.viseo.apph.exception.ConflictException;
 import com.viseo.apph.exception.InvalidFileException;
+import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.exception.UnauthorizedException;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.PhotoService;
@@ -14,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
+import javax.persistence.NoResultException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -35,10 +38,22 @@ public class PhotoController {
             User user = utils.getUser();
             PaginationResponse response = photoService.getUserPhotos(user, pageSize, page);
             return ResponseEntity.ok(response);
-        } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User does not exist"));
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Argument illégal."));
+        }
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping(value = "/folder/{folderId}")
+    public ResponseEntity<IResponseDto> getPhotosByFolder(@PathVariable long folderId) {
+        try {
+            User user = utils.getUser();
+            PhotoListResponse responseList = photoService.getPhotosByFolder(folderId, user);
+            return ResponseEntity.ok().body(responseList);
+        } catch (UnauthorizedException ue) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
+        } catch (NotFoundException nfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
         }
     }
 
@@ -52,6 +67,12 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
         } catch (InvalidFileException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Le format du fichier n'est pas valide"));
+        } catch (UnauthorizedException ue) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
+        } catch (NoResultException | NotFoundException nfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Le dossier n'existe pas."));
+        } catch (ConflictException ce) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(ce.getMessage()));
         }
     }
 

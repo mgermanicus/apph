@@ -18,6 +18,7 @@ describe('Test du composant PhotoDetails', () => {
       creationDate: new Date(),
       shootingDate: new Date(),
       size: 0,
+      format: 'jpeg',
       tags: [{ id: 1, name: 'testTag' }] as ITag[]
     };
     render(
@@ -29,6 +30,8 @@ describe('Test du composant PhotoDetails', () => {
         shootingDate={mockPhoto.shootingDate}
         size={mockPhoto.size}
         tags={mockPhoto.tags}
+        format={mockPhoto.format}
+        clickType="button"
       />
     );
     //WHEN
