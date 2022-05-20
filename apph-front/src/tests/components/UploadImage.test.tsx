@@ -147,7 +147,7 @@ describe('Test UploadImage', () => {
     //GIVEN
     const spyRequestFunction = fakeRequest({
       '/tag/': { body: '[]' },
-      '/photo/upload': { body: '' }
+      '/photo/upload': { body: 'body' }
     });
     render(<UploadImage />);
     clickButton(/upload-photo/i);
