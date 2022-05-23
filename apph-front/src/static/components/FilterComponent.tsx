@@ -189,7 +189,7 @@ export const FilterComponent = ({
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label="Valeur"
-              value={state.value || new Date()}
+              value={state.value || handleChangeValue(new Date())}
               onChange={(value) => {
                 if (value) handleChangeValue(value);
               }}
