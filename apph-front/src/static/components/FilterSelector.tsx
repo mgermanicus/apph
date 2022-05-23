@@ -81,7 +81,9 @@ const filterReducers = (state: IFilter[], action: filterActions) => {
               ? payload.field
               : state[filterIndex].field,
           operator:
-            payload.operator !== 'undefined'
+            payload.field === 'tags'
+              ? null
+              : payload.operator !== 'undefined'
               ? payload.operator
               : state[filterIndex].operator,
           value:

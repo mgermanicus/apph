@@ -52,13 +52,13 @@ export const FilterComponent = ({
     });
   };
 
-  const handleChangeOperator = (event: SelectChangeEvent) => {
+  const handleChangeOperator = (event: SelectChangeEvent | null) => {
     dispatchFilterState({
       type: filterActionKind.UPDATE,
       payload: {
         id: state.id,
         field: state.field,
-        operator: event.target.value,
+        operator: event?.target.value || null,
         value: state.value
       }
     });
@@ -100,7 +100,7 @@ export const FilterComponent = ({
           <Select
             labelId="select-operator-label"
             id="select-operator"
-            value={state.operator}
+            value={state.operator || ''}
             onChange={handleChangeOperator}
             sx={selectOperatorStyle}
           >
@@ -114,7 +114,7 @@ export const FilterComponent = ({
           <Select
             labelId="select-operator-label"
             id="select-operator"
-            value={state.operator}
+            value={state.operator || ''}
             onChange={handleChangeOperator}
             sx={selectOperatorStyle}
           >
