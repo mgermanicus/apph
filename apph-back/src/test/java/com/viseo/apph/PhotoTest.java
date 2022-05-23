@@ -113,7 +113,7 @@ public class PhotoTest {
         //THEN
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
-
+/*
     @Test
     public void TestGetUserPhotosUrl() {
         //GIVEN
@@ -192,7 +192,7 @@ public class PhotoTest {
         assert messageResponse != null;
         Assert.assertEquals("Argument illégal.", messageResponse.getMessage());
     }
-
+*/
     @Test
     public void testDownload() {
         // GIVEN
