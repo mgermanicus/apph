@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 
 public class FilterRequest {
     @JsonValue
-    String filterList;
+    FilterDto[] filterList;
     @JsonValue
     int pageSize;
     @JsonValue
@@ -29,13 +29,13 @@ public class FilterRequest {
         return this;
     }
 
-    public String getFilters() {
+    public FilterDto[] getFilters() {
         return filterList;
-       // return filterList;
     }
 
-    public void setFilterList(String filterList) {
+    public FilterRequest setFilterList(FilterDto[] filterList) {
         this.filterList = filterList;
+        return this;
     }
 }
 
