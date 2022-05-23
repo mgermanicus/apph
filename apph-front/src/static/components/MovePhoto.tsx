@@ -40,8 +40,8 @@ export const MovePhoto = ({
 }: {
   photoIds: number[];
 }): JSX.Element => {
-  const [dialogVisible, setDialogVisible] = useState<boolean>(false);
   const [rootFolder, setRootFolder] = useState<IFolder | null>(null);
+  const [dialogVisible, setDialogVisible] = useState<boolean>(false);
   const [selectedFolder, setSelectedFolder] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [snackMessage, setSnackMessage] = useState<string>('');
@@ -50,17 +50,18 @@ export const MovePhoto = ({
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    getFolders().catch(console.error);
+    getFolders();
   }, []);
 
-  const getFolders = async () => {
-    await FolderService.getFolders(
+  const getFolders = () => {
+    FolderService.getFolders(
       (parentFolder: IFolder) => {
         setRootFolder(parentFolder);
         setSelectedFolder(parentFolder.id.toString());
       },
       (error: string) => {
-        setErrorMessage(error);
+        setSnackMessage(error);
+        setSnackbarOpen(true);
       }
     );
   };
@@ -106,7 +107,11 @@ export const MovePhoto = ({
   return (
     <Box sx={{ m: 1 }}>
       <Tooltip title="Déplacer dans le dossier">
-        <Button variant="outlined" onClick={handleOpenDialog}>
+        <Button
+          variant="outlined"
+          onClick={handleOpenDialog}
+          aria-label="move-photo"
+        >
           <DriveFileMove />
         </Button>
       </Tooltip>
