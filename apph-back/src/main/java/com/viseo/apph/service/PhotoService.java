@@ -7,6 +7,7 @@ import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.FilterDto;
 import com.viseo.apph.dto.PaginationResponse;
 import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.dto.PhotoResponse;
@@ -19,9 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.io.InvalidObjectException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -107,5 +107,24 @@ public class PhotoService {
                 photoDao.deletePhoto(photo);
             }
         }
+    }
+
+    private String createFilterQuery(List<FilterDto> filters) throws InvalidObjectException {
+        StringBuilder query = new StringBuilder("SELECT p FROM Photo p LEFT JOIN Tag t ON p.user = t.user WHERE p.user = :user");
+        filters.sort(FilterDto::compareTo);
+        String lastField = "first";
+        for (FilterDto filter : filters) {
+            if (!Objects.equals(filter.getField(), lastField)) {
+                if (!lastField.equals("first")) {query.append(") AND");}
+                if (lastField.equals("first")) {query.append(" AND");}
+                query.append(" (");
+                lastField = filter.getField();
+            }
+            query.append(filter.getFieldToSql()).append(" ");
+            query.append(filter.getOperatorToSql()).append(" ");
+            query.append(filter.getValueToSql()).append(" ");
+        }
+        if (!filters.isEmpty()) {query.append(")");}
+        return query.toString();
     }
 }
