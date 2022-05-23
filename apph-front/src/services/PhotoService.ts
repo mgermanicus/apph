@@ -109,6 +109,38 @@ export default class PhotoService {
     );
   }
 
+  static editInfos(
+    title: string,
+    description: string,
+    tags: string,
+    shootingDate: string,
+    handleSuccess: (message: string) => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = '/photo/editInfos';
+    const userInfos = cookies.get('user');
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('tags', tags);
+    formData.append('shootingDate', shootingDate);
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + userInfos?.token
+      },
+      body: formData
+    };
+    const successFunction = (val: string) => {
+      handleSuccess(JSON.parse(val).message);
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
+
   static downloadImage(
     id: number,
     handleSuccess: (photo: IPhoto) => void,
