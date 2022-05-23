@@ -125,7 +125,7 @@ export default class PhotoService {
     formData.append('tags', tags);
     formData.append('shootingDate', shootingDate);
     const requestOptions = {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + userInfos?.token
