@@ -19,6 +19,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import javax.persistence.NoResultException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InvalidObjectException;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -39,6 +40,18 @@ public class PhotoController {
             PaginationResponse response = photoService.getUserPhotos(user, pageSize, page);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Argument illégal."));
+        }
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping(value = "/filteredInfos", produces = "application/json")
+    public ResponseEntity<IResponseDto> getUserFilteredPhotos(@RequestParam int pageSize, @RequestParam int page, @RequestBody FilterRequest filterRequest) {
+        try {
+            User user = utils.getUser();
+            PaginationResponse response = photoService.getUserFilteredPhotos(user, pageSize, page, filterRequest);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException | IndexOutOfBoundsException | InvalidObjectException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Argument illégal."));
         }
     }
