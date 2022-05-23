@@ -65,7 +65,8 @@ export const AdvancedResearchPage = (): JSX.Element => {
   };
 
   const handleFilterPhoto = (filterList: IFilter[]) => {
-    getFilterPayload(filterList);
+    const filters: IFilter[] = JSON.parse(JSON.stringify(filterList));
+    getFilterPayload(filters);
   };
 
   return (
