@@ -82,25 +82,7 @@ public class PhotoService {
     @Transactional
     public PaginationResponse getUserPhotos(User user, int pageSize, int page) {
         List<Photo> userPhotos = photoDao.getUserPhotos(user);
-        int startIndex = (page - 1) * pageSize;
-        int endIndex = page * pageSize;
-        PaginationResponse response = new PaginationResponse().setTotalSize(userPhotos.size());
-        List<PhotoResponse> responseList = userPhotos.subList(startIndex, Math.min(endIndex, userPhotos.size())).stream()
-                .map(photo -> new PhotoResponse()
-                        .setId(photo.getId())
-                        .setTitle(photo.getTitle())
-                        .setCreationDate(photo.getCreationDate())
-                        .setSize(photo.getSize())
-                        .setTags(photo.getTags())
-                        .setDescription(photo.getDescription())
-                        .setShootingDate(photo.getShootingDate())
-                        .setUrl(s3Dao.getPhotoUrl(photo))
-                        .setFormat(photo.getFormat())
-                ).collect(Collectors.toList());
-        for (PhotoResponse photo : responseList) {
-            response.addPhoto(photo);
-        }
-        return response;
+        return getPaginationResponse(pageSize, page, userPhotos);
     }
 
     public PhotoResponse download(Long userId, PhotoRequest photoRequest) throws FileNotFoundException, UnauthorizedException {
@@ -175,6 +157,10 @@ public class PhotoService {
     public PaginationResponse getUserFilteredPhotos(User user, int pageSize, int page, FilterRequest filterRequest) throws InvalidObjectException {
         String filterQuery = createFilterQuery(filterRequest.getFilters());
         List<Photo> userPhotos = photoDao.getUserFilteredPhotos(user, filterQuery);
+        return getPaginationResponse(pageSize, page, userPhotos);
+    }
+
+    private PaginationResponse getPaginationResponse(int pageSize, int page, List<Photo> userPhotos) {
         int startIndex = (page - 1) * pageSize;
         int endIndex = page * pageSize;
         PaginationResponse response = new PaginationResponse().setTotalSize(userPhotos.size());

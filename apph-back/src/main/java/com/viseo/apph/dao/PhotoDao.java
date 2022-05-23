@@ -48,8 +48,8 @@ public class PhotoDao {
     }
 
     public List<Photo> getUserFilteredPhotos(User user, String filterQuery) {
-            return em.createQuery(filterQuery, Photo.class)
-                    .setParameter("user", user)
-                    .getResultList();
-        }
+        return em.createQuery(filterQuery, Photo.class)
+                .setParameter("user", user)
+                .getResultList();
+    }
 }
