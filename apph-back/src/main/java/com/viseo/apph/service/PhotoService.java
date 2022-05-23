@@ -9,11 +9,7 @@ import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.FilterDto;
-import com.viseo.apph.dto.PaginationResponse;
-import com.viseo.apph.dto.PhotoListResponse;
-import com.viseo.apph.dto.PhotoRequest;
-import com.viseo.apph.dto.PhotoResponse;
+import com.viseo.apph.dto.*;
 import com.viseo.apph.exception.ConflictException;
 import com.viseo.apph.exception.InvalidFileException;
 import com.viseo.apph.exception.NotFoundException;
@@ -153,22 +149,50 @@ public class PhotoService {
         return response;
     }
 
-    private String createFilterQuery(List<FilterDto> filters) throws InvalidObjectException {
+    private String createFilterQuery(FilterDto[] filters) throws InvalidObjectException {
         StringBuilder query = new StringBuilder("SELECT p FROM Photo p LEFT JOIN Tag t ON p.user = t.user WHERE p.user = :user");
-        filters.sort(FilterDto::compareTo);
+        List<FilterDto> filterDtoList = Arrays.asList(filters);
+        filterDtoList.sort(FilterDto::compareTo);
         String lastField = "first";
-        for (FilterDto filter : filters) {
+        for (FilterDto filter : filterDtoList) {
             if (!Objects.equals(filter.getField(), lastField)) {
                 if (!lastField.equals("first")) {query.append(") AND");}
                 if (lastField.equals("first")) {query.append(" AND");}
                 query.append(" (");
                 lastField = filter.getField();
+            } else {
+                query.append(") OR (");
             }
             query.append(filter.getFieldToSql()).append(" ");
             query.append(filter.getOperatorToSql()).append(" ");
             query.append(filter.getValueToSql()).append(" ");
         }
-        if (!filters.isEmpty()) {query.append(")");}
+        if (!filterDtoList.isEmpty()) {query.append(")");}
         return query.toString();
+    }
+
+    @Transactional
+    public PaginationResponse getUserFilteredPhotos(User user, int pageSize, int page, FilterRequest filterRequest) throws InvalidObjectException {
+        String filterQuery = createFilterQuery(filterRequest.getFilters());
+        List<Photo> userPhotos = photoDao.getUserFilteredPhotos(user, filterQuery);
+        int startIndex = (page - 1) * pageSize;
+        int endIndex = page * pageSize;
+        PaginationResponse response = new PaginationResponse().setTotalSize(userPhotos.size());
+        List<PhotoResponse> responseList = userPhotos.subList(startIndex, Math.min(endIndex, userPhotos.size())).stream()
+                .map(photo -> new PhotoResponse()
+                        .setId(photo.getId())
+                        .setTitle(photo.getTitle())
+                        .setCreationDate(photo.getCreationDate())
+                        .setSize(photo.getSize())
+                        .setTags(photo.getTags())
+                        .setDescription(photo.getDescription())
+                        .setShootingDate(photo.getShootingDate())
+                        .setUrl(s3Dao.getPhotoUrl(photo))
+                        .setFormat(photo.getFormat())
+                ).collect(Collectors.toList());
+        for (PhotoResponse photo : responseList) {
+            response.addPhoto(photo);
+        }
+        return response;
     }
 }

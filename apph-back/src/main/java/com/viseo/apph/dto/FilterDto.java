@@ -1,9 +1,9 @@
 package com.viseo.apph.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sun.istack.NotNull;
 
 import java.io.InvalidObjectException;
-import java.util.Date;
 
 public class FilterDto implements Comparable<FilterDto> {
 
@@ -84,7 +84,7 @@ public class FilterDto implements Comparable<FilterDto> {
         throw new InvalidObjectException("champ non reconnu");
     }
 
-    public String getValueToSql() throws InvalidObjectException {
+    public String getValueToSql() {
         if (operator.equals("contain")) {
             return "\"%" + value + "%\"";
         } else {
@@ -93,8 +93,42 @@ public class FilterDto implements Comparable<FilterDto> {
     }
 
     @Override
-    public int compareTo(FilterDto o) {
-        return 0;
-        //TODO
+    public int compareTo(@NotNull FilterDto o) {
+        if (o == null) {return 0;}
+        int thisField = 0;
+        int otherField = 0;
+        switch (field) {
+            case "title":
+                thisField = 1;
+                break;
+            case "description":
+                thisField = 2;
+                break;
+            case "creationDate":
+                thisField = 3;
+                break;
+            case "shootingDate":
+                thisField = 4;
+                break;
+            case "tags":
+                thisField = 5;
+        }
+        switch (o.field) {
+            case "title":
+                otherField = 1;
+                break;
+            case "description":
+                otherField = 2;
+                break;
+            case "creationDate":
+                otherField = 3;
+                break;
+            case "shootingDate":
+                otherField = 4;
+                break;
+            case "tags":
+                otherField = 5;
+        }
+        return thisField - otherField;
     }
 }

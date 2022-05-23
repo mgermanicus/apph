@@ -6,14 +6,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class FilterRequest {
     @JsonValue
-    String[] shootingDate;
+    FilterDto[] filters;
 
-    public String[] getShootingDate() {
-        return shootingDate;
+    public FilterDto[] getFilters() {
+        return filters;
     }
 
-    public FilterRequest setShootingDate(String[] shootingDate) {
-        this.shootingDate = shootingDate;
+    public FilterRequest setFilters(FilterDto[] filters) {
+        this.filters = filters;
         return this;
     }
 }
