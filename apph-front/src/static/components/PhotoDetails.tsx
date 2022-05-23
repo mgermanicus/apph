@@ -1,4 +1,4 @@
-import { Modal } from '@mui/material';
+import { Modal, Tooltip } from '@mui/material';
 import Button from '@mui/material/Button';
 import * as React from 'react';
 import { useState } from 'react';
@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { ITableDetails } from '../../utils';
 import { PhotoCard } from './PhotoCard';
+import { Info } from '@mui/icons-material';
 
 const modalStyle = {
   position: 'absolute',
@@ -53,9 +54,15 @@ const PhotoDetails = ({
       {
         {
           button: (
-            <Button variant="outlined" onClick={handleOpenDetails}>
-              Détails
-            </Button>
+            <Tooltip title="Détails">
+              <Button
+                variant="outlined"
+                onClick={handleOpenDetails}
+                aria-label="photo-detail"
+              >
+                <Info />
+              </Button>
+            </Tooltip>
           ),
           card: (
             <PhotoCard

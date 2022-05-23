@@ -35,7 +35,7 @@ describe('Test du composant PhotoDetails', () => {
       />
     );
     //WHEN
-    clickButton(/Détails/);
+    clickButton(/photo-detail/i);
     //THEN
     expect(screen.getAllByText(/testTitle/)).toBeInstanceOf(Array);
     expect(screen.getByText(/testDescription/)).toBeInTheDocument();

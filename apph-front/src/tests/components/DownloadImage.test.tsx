@@ -27,7 +27,7 @@ describe('Create download button tests', () => {
     );
     const requestParams = fakeDownloadRequestParams(id);
     //WHEN
-    clickButton(/Télécharger/);
+    clickButton(/download-photo/i);
     //THEN
     expect(spyRequestFunction).toBeCalledWith(
       requestParams.URL,
@@ -45,7 +45,7 @@ describe('Create download button tests', () => {
       '{ "message": "Une erreur est survenue lors du téléchargement" }';
     triggerRequestFailure(serverError);
     //WHEN
-    clickButton(/Télécharger/);
+    clickButton(/download-photo/i);
     //THEN
     expect(
       screen.getByText('Une erreur est survenue lors du téléchargement')
