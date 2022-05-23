@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class UserResponse implements IResponseDto {
 
     @JsonProperty("login")
-    String email;
+    String login;
     @JsonProperty("firstname")
     String firstname;
     @JsonProperty("lastname")
@@ -15,12 +15,12 @@ public class UserResponse implements IResponseDto {
         super();
     }
 
-    public String getEmail() {
-        return email;
+    public String getLogin() {
+        return login;
     }
 
-    public UserResponse setEmail(String email) {
-        this.email = email;
+    public UserResponse setLogin(String login) {
+        this.login = login;
         return this;
     }
 

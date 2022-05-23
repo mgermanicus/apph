@@ -34,7 +34,7 @@ public class UserController {
     public ResponseEntity<IResponseDto> getUserInfo() {
         try {
             User user = utils.getUser();
-            return ResponseEntity.ok(new UserResponse().setEmail(user.getLogin()).setFirstname(user.getFirstname())
+            return ResponseEntity.ok(new UserResponse().setLogin(user.getLogin()).setFirstname(user.getFirstname())
                     .setLastname(user.getLastname()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body((new MessageResponse("L'utilisateur n'est pas authentifié")));
