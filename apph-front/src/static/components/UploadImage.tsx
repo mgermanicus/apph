@@ -78,6 +78,7 @@ export const UploadImage = (): JSX.Element => {
         shootingDate,
         file,
         selectedTags,
+        '-1',
         () => {
           getTagList();
           setUploadStatus('success');

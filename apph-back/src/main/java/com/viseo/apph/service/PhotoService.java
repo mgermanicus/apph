@@ -1,17 +1,22 @@
 package com.viseo.apph.service;
 
 import com.google.gson.GsonBuilder;
+import com.viseo.apph.dao.FolderDao;
 import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDao;
+import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FilterDto;
 import com.viseo.apph.dto.PaginationResponse;
+import com.viseo.apph.dto.PhotoListResponse;
 import com.viseo.apph.dto.PhotoRequest;
 import com.viseo.apph.dto.PhotoResponse;
+import com.viseo.apph.exception.ConflictException;
 import com.viseo.apph.exception.InvalidFileException;
+import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,10 +39,24 @@ public class PhotoService {
     @Autowired
     TagService tagService;
     @Autowired
+    FolderDao folderDao;
+    @Autowired
     S3Dao s3Dao;
 
     @Transactional
-    public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException {
+    public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException, ConflictException {
+        Folder folder;
+        if (photoRequest.getFolderId() == -1) {
+            folder = folderDao.getParentFolderByUser(user);
+        } else {
+            folder = folderDao.getFolderById(photoRequest.getFolderId());
+        }
+        if (folder == null)
+            throw new NotFoundException("Le dossier n'existe pas.");
+        if (folder.getUser().getId() != user.getId())
+            throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
+        if (photoDao.existNameInFolder(folder, photoRequest.getTitle()))
+            throw new ConflictException("Titre déjà utilisé dans le dossier.");
         Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
         Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
         Photo photo = new Photo()
@@ -48,7 +67,8 @@ public class PhotoService {
                 .setDescription(photoRequest.getDescription())
                 .setCreationDate(new Date())
                 .setShootingDate(shootingDate)
-                .setTags(allTags);
+                .setTags(allTags)
+                .setFolder(folder);
         photo = photoDao.addPhoto(photo);
         return s3Dao.upload(photoRequest.getFile(), photo);
     }
@@ -79,6 +99,7 @@ public class PhotoService {
                         .setDescription(photo.getDescription())
                         .setShootingDate(photo.getShootingDate())
                         .setUrl(s3Dao.getPhotoUrl(photo))
+                        .setFormat(photo.getFormat())
                 ).collect(Collectors.toList());
         for (PhotoResponse photo : responseList) {
             response.addPhoto(photo);
@@ -107,6 +128,29 @@ public class PhotoService {
                 photoDao.deletePhoto(photo);
             }
         }
+    }
+
+    @Transactional
+    public PhotoListResponse getPhotosByFolder(long folderId, User user) throws NotFoundException, UnauthorizedException {
+        Folder folder = folderDao.getFolderById(folderId);
+        if (folder == null)
+            throw new NotFoundException("Le dossier n'existe pas.");
+        if (folder.getUser().getId() != user.getId())
+            throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
+        List<Photo> photoList = photoDao.getPhotosByFolder(folder);
+        PhotoListResponse response = new PhotoListResponse();
+        photoList.forEach(photo -> response.addPhoto(new PhotoResponse()
+                .setId(photo.getId())
+                .setTitle(photo.getTitle())
+                .setCreationDate(photo.getCreationDate())
+                .setSize(photo.getSize())
+                .setTags(photo.getTags())
+                .setDescription(photo.getDescription())
+                .setShootingDate(photo.getShootingDate())
+                .setUrl(s3Dao.getPhotoUrl(photo))
+                .setFormat(photo.getFormat())
+        ));
+        return response;
     }
 
     private String createFilterQuery(List<FilterDto> filters) throws InvalidObjectException {

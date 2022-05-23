@@ -1,4 +1,4 @@
-import { IFolder } from '../../utils/types/Folder';
+import { IFolder } from '../../utils';
 import { TreeItem } from '@mui/lab';
 import { Alert } from '@mui/material';
 import * as React from 'react';

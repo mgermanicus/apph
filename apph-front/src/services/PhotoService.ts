@@ -1,6 +1,14 @@
 import Server from './Server';
-import { imageFileCheck, IMessage, IPagination, IPhoto, ITag } from '../utils';
+import {
+  imageFileCheck,
+  IMessage,
+  IPagination,
+  IPhoto,
+  ITable,
+  ITag
+} from '../utils';
 import Cookies from 'universal-cookie';
+import { IFilterPayload } from '../utils/types/Filter';
 
 const cookies = new Cookies();
 export default class PhotoService {
@@ -10,6 +18,7 @@ export default class PhotoService {
     shootingDate: Date,
     imageFile: File,
     selectedTags: ITag[],
+    folderId: string,
     handleSuccess: () => void,
     handleError: (errorMessage: string) => void
   ) {
@@ -24,6 +33,7 @@ export default class PhotoService {
       'shootingDate',
       JSON.stringify(shootingDate.toLocaleString())
     );
+    formData.append('folderId', folderId);
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -31,11 +41,14 @@ export default class PhotoService {
       },
       body: formData
     };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
     return Server.request(
       `/photo/upload`,
       requestOptions,
       handleSuccess,
-      handleError
+      errorFunction
     );
   }
 
@@ -43,18 +56,22 @@ export default class PhotoService {
     pageSize: number,
     page: number,
     handleSuccess: (pagination: IPagination) => void,
-    handleError: (errorMessage: string) => void
+    handleError: (errorMessage: string) => void,
+    filterList?: IFilterPayload[]
   ) {
-    const URL = `/photo/infos?pageSize=${encodeURIComponent(
-      pageSize
-    )}&page=${encodeURIComponent(page)}`;
+    const URL = '/photo/infos';
     const userInfos = cookies.get('user');
     const requestOptions = {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + userInfos?.token
-      }
+      },
+      body: JSON.stringify({
+        pageSize: encodeURIComponent(pageSize),
+        page: encodeURIComponent(page),
+        filterList
+      })
     };
     const successFunction = (val: string) => {
       handleSuccess(JSON.parse(val));
@@ -63,6 +80,33 @@ export default class PhotoService {
       handleError(JSON.parse(errorMessage).message);
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
+
+  static getFolderPhotos(
+    folderId: string,
+    handleSuccess: (photoList: ITable[]) => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const userInfos = cookies.get('user');
+    const requestOptions = {
+      method: 'Get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + userInfos?.token
+      }
+    };
+    const successFunction = (photoList: string) => {
+      handleSuccess(JSON.parse(photoList).photoList);
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
+    return Server.request(
+      `/photo/folder/${folderId}`,
+      requestOptions,
+      successFunction,
+      errorFunction
+    );
   }
 
   static downloadImage(

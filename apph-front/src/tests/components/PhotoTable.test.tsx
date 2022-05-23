@@ -26,7 +26,8 @@ describe('Tests du composant PhotoTable.tsx', () => {
             shootingDate: new Date(),
             size: 1300.0,
             tags: [{ name: 'img1' }],
-            url: 'fake url'
+            url: 'fake url',
+            format: 'png'
           },
           {
             id: 2,
@@ -36,7 +37,8 @@ describe('Tests du composant PhotoTable.tsx', () => {
             shootingDate: new Date(),
             size: 1300.0,
             tags: [{ name: 'img2' }],
-            url: 'fake url'
+            url: 'fake url',
+            format: 'jpg'
           }
         ],
         totalSize: 3
@@ -82,7 +84,8 @@ describe('Tests du composant PhotoTable.tsx', () => {
             shootingDate: new Date(),
             size: 1300.0,
             tags: [{ name: 'img2' }],
-            url: 'fake url'
+            url: 'fake url',
+            format: 'png'
           }
         ],
         totalSize: 3
