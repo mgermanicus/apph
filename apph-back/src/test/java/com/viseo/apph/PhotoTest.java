@@ -143,7 +143,7 @@ public class PhotoTest {
         assertEquals("newDesc", oldPhoto.getDescription());
         assertNotNull(oldPhoto.getShootingDate());
         assertTrue(oldPhoto.getTags().contains(oneOldTag));
-        assertTrue(oldPhoto.getTags().contains(oneOldTag));
+        assertTrue(oldPhoto.getTags().contains(oneNewTag));
     }
 
     @Test
