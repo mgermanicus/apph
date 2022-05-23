@@ -34,7 +34,7 @@ public class DataBaseConfig {
     public void onApplicationEvent(ContextRefreshedEvent event) {
         event.getApplicationContext().getBean(DataBaseConfig.class).initializeRole();
         if (this.init) {
-            //event.getApplicationContext().getBean(DataBaseConfig.class).initialize();
+            event.getApplicationContext().getBean(DataBaseConfig.class).initialize();
         }
     }
 
