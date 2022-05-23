@@ -1,5 +1,5 @@
 import { Box, Button, Modal, Tooltip, Typography } from '@mui/material';
-import { IMessage, IPhoto, IMessage } from '../../utils';
+import { IMessage, IPhoto } from '../../utils';
 import PhotoService from '../../services/PhotoService';
 import React, { useState } from 'react';
 import { Download } from '@mui/icons-material';
