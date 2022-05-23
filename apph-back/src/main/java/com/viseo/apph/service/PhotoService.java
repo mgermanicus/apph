@@ -155,8 +155,8 @@ public class PhotoService {
 
     @Transactional
     public PaginationResponse getUserFilteredPhotos(User user, int pageSize, int page, FilterRequest filterRequest) throws InvalidObjectException {
-        //String filterQuery = createFilterQuery(filterRequest.getFilters());
-        List<Photo> userPhotos = photoDao.getUserFilteredPhotos(user, "");
+        String filterQuery = createFilterQuery(filterRequest.getFilters());
+        List<Photo> userPhotos = photoDao.getUserFilteredPhotos(user, filterQuery);
         return getPaginationResponse(pageSize, page, userPhotos);
     }
 

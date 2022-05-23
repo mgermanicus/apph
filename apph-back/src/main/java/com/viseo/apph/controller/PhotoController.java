@@ -35,13 +35,14 @@ public class PhotoController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(value = "/infos", produces = "application/json")
     public ResponseEntity<IResponseDto> getUserFilteredPhotos(@RequestBody FilterRequest filterRequest) {
-        System.out.println(filterRequest.getFilters()[0].getField());
+
         try {
             User user = utils.getUser();
             PaginationResponse response;
             if (filterRequest.getFilters() == null) {
                 response = photoService.getUserPhotos(user, filterRequest.getPageSize(), filterRequest.getPage());
             } else {
+                System.out.println(filterRequest.getFilters()[0].getField());
                 response = photoService.getUserFilteredPhotos(user, filterRequest.getPageSize(), filterRequest.getPage(), filterRequest);
             }
             return ResponseEntity.ok(response);

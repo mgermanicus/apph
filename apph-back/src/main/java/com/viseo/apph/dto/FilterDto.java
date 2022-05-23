@@ -65,8 +65,7 @@ public class FilterDto implements Comparable<FilterDto> {
                 return "LIKE";
             }
             throw new InvalidObjectException("Operateur invalide pour un " + field);
-        }
-        else if (field.equals("creationDate") | field.equals("shootingDate")) {
+        } else if (field.equals("creationDate") | field.equals("shootingDate")) {
             switch (operator) {
                 case "strictlyInferior":
                     return "<";
@@ -87,15 +86,17 @@ public class FilterDto implements Comparable<FilterDto> {
 
     public String getValueToSql() {
         if (operator.equals("contain")) {
-            return "\"%" + value + "%\"";
-        } else {
-            return "\"" + value + "\"";
+            return "'%" + value + "%'";
         }
+        return "'" + value + "'";
+
     }
 
     @Override
     public int compareTo(@NotNull FilterDto o) {
-        if (o == null) {return 0;}
+        if (o == null) {
+            return 0;
+        }
         int thisField = 0;
         int otherField = 0;
         switch (field) {

@@ -73,13 +73,6 @@ export default class PhotoService {
         filterList
       })
     };
-    console.log(
-      JSON.stringify({
-        pageSize: encodeURIComponent(pageSize),
-        page: encodeURIComponent(page),
-        filterList
-      })
-    );
     const successFunction = (val: string) => {
       handleSuccess(JSON.parse(val));
     };

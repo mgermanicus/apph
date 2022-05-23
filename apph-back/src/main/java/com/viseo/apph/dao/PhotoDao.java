@@ -7,8 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Repository
@@ -50,9 +48,8 @@ public class PhotoDao {
     }
 
     public List<Photo> getUserFilteredPhotos(User user, String filterQuery) {
-        return new ArrayList<>();
-//            return em.createQuery(filterQuery, Photo.class)
-//                    .setParameter("user", user)
-//                    .getResultList();
-        }
+        return em.createQuery(filterQuery, Photo.class)
+                .setParameter("user", user)
+                .getResultList();
+    }
 }
