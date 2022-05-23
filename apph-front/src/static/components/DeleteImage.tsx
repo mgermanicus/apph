@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertColor, Button } from '@mui/material';
+import { AlertColor, Box, Button } from '@mui/material';
 import { ConfirmationDialog } from './ConfirmationDialog';
 import PhotoService from '../../services/PhotoService';
 import { AlertSnackbar } from './AlertSnackbar';
@@ -40,7 +40,7 @@ export const DeleteImage = ({ ids }: { ids: number[] }): JSX.Element => {
   };
 
   return (
-    <>
+    <Box sx={{ m: 1 }}>
       <Button
         variant="outlined"
         color="error"
@@ -64,6 +64,6 @@ export const DeleteImage = ({ ids }: { ids: number[] }): JSX.Element => {
         message={message}
         onClose={setSnackbarOpen}
       />
-    </>
+    </Box>
   );
 };

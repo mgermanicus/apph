@@ -1,9 +1,9 @@
-import { triggerRequestFailure, triggerRequestSuccess } from '../utils';
 import { render, waitFor } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 import * as React from 'react';
 import { PhotoTable } from '../../static/components/PhotoTable';
 import { wrapper } from '../utils/components/CustomWrapper';
+import { IPagination } from '../../utils';
 
 describe('Tests du composant PhotoTable.tsx', () => {
   beforeEach(() => {
@@ -11,12 +11,41 @@ describe('Tests du composant PhotoTable.tsx', () => {
   });
   it('Tests array display when data are send', () => {
     //GIVEN
-    triggerRequestSuccess(
-      '{"photoList":[{"id":3,"id":1,"title":"photo1","description":"photo test 1","creationDate":"2022-05-09T08:30:00.814+00:00","shootingDate":"2022-05-09T08:30:00.814+00:00","size":1300.0,"tags":["img1"],"url":"fake url"},' +
-        '{"id":2,"id":4,"title":"photo2","description":"photo test 2","creationDate":"2022-05-09T08:30:00.814+00:00","shootingDate":"2022-05-09T08:30:00.814+00:00","size":1300.0,"tags":["img2"],"url":"fake url"}],"totalSize":3}'
-    );
+    const getPhotosSuccess = (
+      pageSize: number,
+      page: number,
+      handleSuccess: (pagination: IPagination) => void
+    ) => {
+      handleSuccess({
+        photoList: [
+          {
+            id: 3,
+            title: 'photo1',
+            description: 'photo test 1',
+            creationDate: new Date(),
+            shootingDate: new Date(),
+            size: 1300.0,
+            tags: [{ name: 'img1' }],
+            url: 'fake url',
+            format: 'png'
+          },
+          {
+            id: 2,
+            title: 'photo2',
+            description: 'photo test 2',
+            creationDate: new Date(),
+            shootingDate: new Date(),
+            size: 1300.0,
+            tags: [{ name: 'img2' }],
+            url: 'fake url',
+            format: 'png'
+          }
+        ],
+        totalSize: 3
+      });
+    };
     //WHEN
-    render(<PhotoTable />, { wrapper });
+    render(<PhotoTable getPhotos={getPhotosSuccess} />, { wrapper });
     //THEN
     expect(screen.getByText(/photo1/)).toBeInTheDocument();
     expect(screen.getByText(/photo2/)).toBeInTheDocument();
@@ -24,21 +53,46 @@ describe('Tests du composant PhotoTable.tsx', () => {
 
   it('Test with error server', () => {
     //GIVEN
-    triggerRequestFailure('{"message": "Argument illégal."}');
+    const getPhotosFailure = (
+      pageSize: number,
+      page: number,
+      handleSuccess: (pagination: IPagination) => void,
+      handleError: (errorMessage: string) => void
+    ) => {
+      handleError('Argument illégal.');
+    };
     //WHEN
-    render(<PhotoTable />, { wrapper });
+    render(<PhotoTable getPhotos={getPhotosFailure} />, { wrapper });
     //THEN
     expect(screen.getByText(/Argument illégal./));
   });
 
   test('Tests button display when grid rendered', async () => {
     //GIVEN
-    triggerRequestSuccess(
-      '{"photoList":[{"id":3,"id":1,"title":"photo1","description":"photo test 1","creationDate":"2022-05-09T08:30:00.814+00:00","shootingDate":"2022-05-09T08:30:00.814+00:00","size":1300.0,"tags":["img1"],"url":"fake url"},' +
-        '{"id":2,"id":4,"title":"photo2","description":"photo test 2","creationDate":"2022-05-09T08:30:00.814+00:00","shootingDate":"2022-05-09T08:30:00.814+00:00","size":1300.0,"tags":["img2"],"url":"fake url"}],"totalSize":3}'
-    );
+    const getPhotosSuccess = (
+      pageSize: number,
+      page: number,
+      handleSuccess: (pagination: IPagination) => void
+    ) => {
+      handleSuccess({
+        photoList: [
+          {
+            id: 2,
+            title: 'photo2',
+            description: 'photo test 2',
+            creationDate: new Date(),
+            shootingDate: new Date(),
+            size: 1300.0,
+            tags: [{ name: 'img2' }],
+            url: 'fake url',
+            format: 'png'
+          }
+        ],
+        totalSize: 3
+      });
+    };
     // When
-    render(<PhotoTable />, { wrapper });
+    render(<PhotoTable getPhotos={getPhotosSuccess} />, { wrapper });
     // Then
     await waitFor(() => {
       expect(screen.getAllByText(/Télécharger/)[0]).toBeInTheDocument();

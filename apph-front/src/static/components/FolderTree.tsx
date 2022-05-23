@@ -4,8 +4,7 @@ import { Alert } from '@mui/material';
 import * as React from 'react';
 
 export const FolderTree = ({
-  folder,
-  key
+  folder
 }: {
   folder: IFolder | null;
   key?: number;
@@ -14,14 +13,13 @@ export const FolderTree = ({
     return (
       <TreeItem
         nodeId={folder.id.toString()}
-        key={folder.id.toString() + key}
+        key={folder.id}
         label={folder.name}
       >
-        {Array.isArray(folder.childrenFolders) && folder.childrenFolders.length
-          ? folder.childrenFolders.map((child, key) => (
-              <FolderTree folder={child} key={key} />
-            ))
-          : null}
+        {!!folder.childrenFolders?.length &&
+          folder.childrenFolders.map((child) => (
+            <FolderTree folder={child} key={parseInt(child.id)} />
+          ))}
       </TreeItem>
     );
   } else {

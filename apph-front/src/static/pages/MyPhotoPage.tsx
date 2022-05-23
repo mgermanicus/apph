@@ -2,31 +2,42 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { PhotoTable } from '../components/PhotoTable';
 import { UploadImage } from '../components/UploadImage';
-import { Box, ButtonGroup } from '@mui/material';
+import { ButtonGroup } from '@mui/material';
 import { DeleteImage } from '../components/DeleteImage';
 import { useSelector } from 'react-redux';
-import { IPhoto } from '../../utils';
+import { IPagination, ITable } from '../../utils';
+import { Diaporama } from '../components/Diaporama';
+import PhotoService from '../../services/PhotoService';
 
 export const MyPhotoPage = (): JSX.Element => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-
   const selected = useSelector(
-    ({ selectedPhotos }: { selectedPhotos: IPhoto[] }) => selectedPhotos
+    ({ selectedPhotos }: { selectedPhotos: ITable[] }) => selectedPhotos
   );
+  const getPhotos = (
+    pageSize: number,
+    page: number,
+    handleSuccess: (pagination: IPagination) => void,
+    handleError: (errorMessage: string) => void
+  ) => {
+    PhotoService.getData(pageSize, page, handleSuccess, handleError);
+  };
 
   useEffect(() => {
-    setSelectedIds(selected.map((photo: IPhoto) => +photo['id']));
+    setSelectedIds(selected.map((photo: ITable) => +photo['id']));
   }, [selected]);
 
   return (
     <>
-      <ButtonGroup variant="outlined" aria-label="outlined button group">
+      <ButtonGroup
+        variant="outlined"
+        sx={{ m: 1, display: 'flex', justifyContent: 'end' }}
+      >
         <UploadImage />
-        <Box sx={{ m: 1 }}>
-          <DeleteImage ids={selectedIds} />
-        </Box>
+        <DeleteImage ids={selectedIds} />
+        <Diaporama data={selected} />
       </ButtonGroup>
-      <PhotoTable />
+      <PhotoTable getPhotos={getPhotos} />
     </>
   );
 };

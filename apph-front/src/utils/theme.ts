@@ -14,3 +14,35 @@ export const makeAppBarStyles = makeStyles({
     mr: 2
   }
 });
+
+export const makeDiapoStyles = makeStyles({
+  displayContent: {
+    display: 'contents'
+  },
+  swiper: {
+    width: '80vw',
+    height: '95vh',
+    marginTop: '10px'
+  },
+  swiperSlide: {
+    textAlign: 'center',
+    fontSize: '18px',
+    background: 'transparent',
+    display: 'flex',
+    justifyContent: 'center'
+  },
+  swiperImg: {
+    maxWidth: '90vw',
+    maxHeight: '90vh'
+  },
+  button: {
+    float: 'right',
+    '&:hover': {
+      color: '#0032ff'
+    }
+  },
+  swiperImgAutoPlay: {
+    maxWidth: '100vw',
+    maxHeight: '100vh'
+  }
+});

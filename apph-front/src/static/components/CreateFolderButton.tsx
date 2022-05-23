@@ -10,7 +10,7 @@ import {
   TextField
 } from '@mui/material';
 import { FolderService } from '../../services/FolderService';
-import { IFolder } from '../../utils/types/Folder';
+import { IFolder } from '../../utils';
 
 export const CreateFolderButton = ({
   selected,
