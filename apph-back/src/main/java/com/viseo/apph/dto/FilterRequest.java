@@ -1,20 +1,41 @@
 package com.viseo.apph.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.springframework.web.multipart.MultipartFile;
+import com.google.gson.GsonBuilder;
 
 public class FilterRequest {
     @JsonValue
-    FilterDto[] filters;
+    String filterList;
+    @JsonValue
+    int pageSize;
+    @JsonValue
+    int page;
 
-    public FilterDto[] getFilters() {
-        return filters;
+    public int getPageSize() {
+        return pageSize;
     }
 
-    public FilterRequest setFilters(FilterDto[] filters) {
-        this.filters = filters;
+    public FilterRequest setPageSize(int pageSize) {
+        this.pageSize = pageSize;
         return this;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public FilterRequest setPage(int page) {
+        this.page = page;
+        return this;
+    }
+
+    public String getFilters() {
+        return filterList;
+       // return filterList;
+    }
+
+    public void setFilterList(String filterList) {
+        this.filterList = filterList;
     }
 }
 

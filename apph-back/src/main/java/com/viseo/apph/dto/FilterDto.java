@@ -13,6 +13,7 @@ public class FilterDto implements Comparable<FilterDto> {
     String operator;
     @JsonProperty("value")
     String value;
+    //TODO if tag will be just an id
 
     public String getField() {
         return field;
