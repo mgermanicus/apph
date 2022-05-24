@@ -15,5 +15,8 @@
         "endOfLine": "auto"
       }
     ]
+  },
+  "env": {
+    "node": true
   }
 }

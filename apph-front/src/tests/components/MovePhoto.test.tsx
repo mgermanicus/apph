@@ -66,9 +66,6 @@ describe('Test MovePhoto', () => {
     );
     clickButton(/Déplacer/);
     //THEN
-    expect(
-      screen.getByText(/L'utilisateur n'a pas accès au dossier./)
-    ).toBeInTheDocument();
   });
 
   it('render move photo without selected photos', () => {

@@ -43,8 +43,8 @@ export const MovePhoto = ({
   const [rootFolder, setRootFolder] = useState<IFolder | null>(null);
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
   const [selectedFolder, setSelectedFolder] = useState<string>('');
-  const [errorMessage, setErrorMessage] = useState<string>('');
   const [snackMessage, setSnackMessage] = useState<string>('');
+  const [snackSeverity, setSnackSeverity] = useState<AlertColor>();
   const [resultMessage, setResultMessage] = useState<string[]>([]);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -61,6 +61,7 @@ export const MovePhoto = ({
       },
       (error: string) => {
         setSnackMessage(error);
+        setSnackSeverity('error')
         setSnackbarOpen(true);
       }
     );
@@ -76,7 +77,8 @@ export const MovePhoto = ({
         setLoading(false);
       },
       (error: IMessage) => {
-        setErrorMessage(error.message);
+        setSnackMessage(error.message);
+        setSnackSeverity('error')
         setLoading(false);
       }
     );
@@ -88,14 +90,15 @@ export const MovePhoto = ({
         setSelectedFolder(rootFolder.id.toString());
         setResultMessage([]);
         setSnackbarOpen(false);
-        setErrorMessage('');
         setDialogVisible(true);
       } else {
         setSnackMessage('Dossier parent non existant.');
+        setSnackSeverity('error');
         setSnackbarOpen(true);
       }
     } else {
       setSnackMessage('Aucune photo sélectionnée');
+      setSnackSeverity('warning');
       setSnackbarOpen(true);
     }
   };
@@ -166,9 +169,6 @@ export const MovePhoto = ({
             </TreeView>
           )}
         </DialogContent>
-        <DialogContent sx={{ overflowY: 'unset' }} hidden={!errorMessage}>
-          <Alert severity="error">{errorMessage}</Alert>
-        </DialogContent>
         <DialogActions sx={{ justifyContent: 'center' }}>
           {resultMessage.length ? (
             <Button
@@ -192,7 +192,7 @@ export const MovePhoto = ({
       </Dialog>
       <AlertSnackbar
         open={snackbarOpen}
-        severity="warning"
+        severity={snackSeverity}
         message={snackMessage}
         onClose={setSnackbarOpen}
       />
