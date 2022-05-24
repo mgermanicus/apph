@@ -109,11 +109,19 @@ public class Photo extends BaseEntity {
         return this;
     }
 
+    public Folder getFolder() {
+        return this.folder;
+    }
+
     public Photo setFolder(Folder folder) {
-        assert this.folder == null;
-        if (folder != null) {
-            this.folder = folder;
-            this.folder.photos.add(this);
+        if (this.folder != folder) {
+            if (this.folder != null) {
+                this.folder.photos.remove(this);
+            }
+            if (folder != null) {
+                this.folder = folder;
+                this.folder.photos.add(this);
+            }
         }
         return this;
     }

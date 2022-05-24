@@ -74,7 +74,7 @@ const columns: GridColDef[] = [
   {
     field: 'actions',
     headerName: 'Actions',
-    flex: 3,
+    flex: 2,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => (

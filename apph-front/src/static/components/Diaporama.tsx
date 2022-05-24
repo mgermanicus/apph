@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { ITable, makeDiapoStyles, openFullScreenById } from '../../utils';
-import { Box, Button, IconButton, Modal } from '@mui/material';
+import { Box, Button, IconButton, Modal, Tooltip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Autoplay, EffectCoverflow, Navigation, Pagination } from 'swiper';
 import { AlertSnackbar } from './AlertSnackbar';
@@ -11,6 +11,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import 'swiper/css/autoplay';
 import 'swiper/css/effect-coverflow';
+import { Slideshow } from '@mui/icons-material';
 
 export const Diaporama = ({ data }: { data: ITable[] }) => {
   const [open, setOpen] = useState(false);
@@ -35,14 +36,16 @@ export const Diaporama = ({ data }: { data: ITable[] }) => {
 
   return (
     <Box sx={{ m: 1 }}>
-      <Button
-        variant="outlined"
-        onClick={() => {
-          data.length ? setOpen(true) : setAlertOpen(true);
-        }}
-      >
-        Diaporama
-      </Button>
+      <Tooltip title="Diaporama">
+        <Button
+          variant="outlined"
+          onClick={() => {
+            data.length ? setOpen(true) : setAlertOpen(true);
+          }}
+        >
+          <Slideshow />
+        </Button>
+      </Tooltip>
       <>
         <Modal open={open} onClose={() => setOpen(false)}>
           <>

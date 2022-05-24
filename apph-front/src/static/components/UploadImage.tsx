@@ -13,6 +13,7 @@ import {
   LinearProgress,
   Stack,
   TextField,
+  Tooltip,
   Typography
 } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -22,6 +23,7 @@ import { createRef, FormEvent, useEffect, useState } from 'react';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import TagService from '../../services/TagService';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
+import { Upload } from '@mui/icons-material';
 
 const filter = createFilterOptions<ITag>();
 
@@ -114,9 +116,15 @@ export const UploadImage = (): JSX.Element => {
 
   return (
     <Box sx={{ m: 1 }}>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Upload
-      </Button>
+      <Tooltip title="Upload">
+        <Button
+          variant="outlined"
+          onClick={handleClickOpen}
+          aria-label="upload-photo"
+        >
+          <Upload />
+        </Button>
+      </Tooltip>
       <Dialog open={open} onClose={handleClose}>
         <Container component="main">
           <CssBaseline>

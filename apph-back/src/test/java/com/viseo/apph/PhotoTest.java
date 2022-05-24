@@ -48,6 +48,8 @@ public class PhotoTest {
     @Mock
     TypedQuery<Long> typedQueryLong;
     @Mock
+    TypedQuery<Long> typedQueryInvalidLong;
+    @Mock
     Utils utils;
     @Mock
     S3Client s3Client;
@@ -100,9 +102,10 @@ public class PhotoTest {
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
-        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title", Long.class)).thenReturn(typedQueryLong);
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(0L);
         when(utils.getUser()).thenReturn(robert);
         //WHEN
@@ -377,9 +380,10 @@ public class PhotoTest {
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
-        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title", Long.class)).thenReturn(typedQueryLong);
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(1L);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
@@ -465,5 +469,84 @@ public class PhotoTest {
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("L'utilisateur n'a pas accès à ce dossier.", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testMovePhoto() {
+        //GIVEN
+        createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        User other = (User) new User().setLogin("Other").setId(2);
+        Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setUser(robert).setId(1);
+        Folder robertChild = (Folder) new Folder().setName("Robert Child").setParentFolderId(1L).setUser(robert).setId(2);
+        Photo photoValid = (Photo) new Photo().setTitle("Photo Valid").setFormat(".png").setUser(robert).setFolder(robertRoot).setId(1L);
+        Photo photoOfOther = (Photo) new Photo().setTitle("Photo").setFormat(".png").setUser(other).setId(1L);
+        Photo photoAlreadyInFolder = (Photo) new Photo().setTitle("Photo Already in Folder").setFormat(".png").setUser(robert).setFolder(robertChild).setId(1L);
+        Photo photoAlreadyExist = (Photo) new Photo().setTitle("Photo Already Exist").setFormat(".png").setUser(robert).setFolder(robertRoot).setId(1L);
+        PhotosRequest request = new PhotosRequest().setIds(new long[]{1L, 2L, 3L, 4L, 5L}).setFolderId(2L);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
+        when(em.find(Folder.class, 2L)).thenReturn(robertChild);
+        when(em.find(Photo.class, 1L)).thenReturn(photoValid);
+        when(em.find(Photo.class, 2L)).thenReturn(photoOfOther);
+        when(em.find(Photo.class, 3L)).thenReturn(photoAlreadyInFolder);
+        when(em.find(Photo.class, 4L)).thenReturn(photoAlreadyExist);
+        when(em.find(Photo.class, 5L)).thenReturn(null);
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", robertChild)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("title", "Photo Valid")).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
+        when(typedQueryLong.getSingleResult()).thenReturn(0L);
+        when(typedQueryLong.setParameter("title", "Photo Already Exist")).thenReturn(typedQueryInvalidLong);
+        when(typedQueryInvalidLong.setParameter("format", ".png")).thenReturn(typedQueryInvalidLong);
+        when(typedQueryInvalidLong.getSingleResult()).thenReturn(1L);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.movePhotosToFolder(request);
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        MessageListResponse response = (MessageListResponse) responseEntity.getBody();
+        assert response != null;
+        Assert.assertEquals(5, response.getMessageList().size());
+        Assert.assertEquals("error: L'une des photos n'appartient pas à l'utilisateur.", response.getMessageList().get(0));
+        Assert.assertEquals("warning: L'une des photos est déjà dans le dossier.", response.getMessageList().get(1));
+        Assert.assertEquals("error: L'une des photos comporte un nom existant déjà dans le dossier destinataire.", response.getMessageList().get(2));
+        Assert.assertEquals("error: L'une des photos n'existe pas.", response.getMessageList().get(3));
+        Assert.assertEquals("success: Le déplacement des photos est terminé.", response.getMessageList().get(4));
+    }
+
+    @Test
+    public void testMovePhotoWithNotExistingFolder() {
+        //GIVEN
+        createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        PhotosRequest request = new PhotosRequest().setFolderId(1L);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 1L)).thenReturn(null);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.movePhotosToFolder(request);
+        //THEN
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("Le dossier n'existe pas.", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testMovePhotoWithUnautorizedFolder() {
+        //GIVEN
+        createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        User other = (User) new User().setLogin("Other").setId(2);
+        Folder otherRoot = (Folder) new Folder().setName("Other Root").setParentFolderId(null).setUser(other).setId(1);
+        PhotosRequest request = new PhotosRequest().setFolderId(1L);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 1L)).thenReturn(otherRoot);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.movePhotosToFolder(request);
+        //THEN
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("L'utilisateur n'a pas accès au dossier.", messageResponse.getMessage());
     }
 }
