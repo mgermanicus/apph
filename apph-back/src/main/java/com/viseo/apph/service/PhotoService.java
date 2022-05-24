@@ -81,12 +81,11 @@ public class PhotoService {
         Photo photo = photoDao.getPhoto(photoRequest.getId());
         if (photo == null) throw new NotFoundException("photo not found");
         Set<Tag> newTags = tagService.createListTags(photoRequest.getTags(), user);
-        newTags.addAll(photo.getTags());
         Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
         photo.setTitle(photoRequest.getTitle())
              .setDescription(photoRequest.getDescription())
              .setShootingDate(shootingDate)
-             .setTags(newTags);
+             .setTags(tagService.createListTags(photoRequest.getTags(), user));
         return "Photo édité";
     }
 

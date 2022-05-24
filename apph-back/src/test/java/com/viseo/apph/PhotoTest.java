@@ -142,7 +142,7 @@ public class PhotoTest {
         assertEquals("newTitle", oldPhoto.getTitle());
         assertEquals("newDesc", oldPhoto.getDescription());
         assertNotNull(oldPhoto.getShootingDate());
-        assertTrue(oldPhoto.getTags().contains(oneOldTag));
+        assertEquals(1, oldPhoto.getTags().size());
         assertTrue(oldPhoto.getTags().contains(oneNewTag));
     }
 
