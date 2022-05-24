@@ -90,7 +90,7 @@ public class AuthTest {
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
         SecurityContext securityContext = mock(SecurityContext.class);
         Mockito.mockStatic(SecurityContextHolder.class).when(SecurityContextHolder::getContext).thenReturn(securityContext);
-        LoginRequest loginRequest = new LoginRequest().setEmail("tintin").setPassword("P@ssw0rd");
+        LoginRequest loginRequest = new LoginRequest().setLogin("tintin").setPassword("P@ssw0rd");
         //WHEN
         ResponseEntity responseEntity = authController.login(loginRequest);
         //THEN
