@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import Server from '../../services/Server';
 import { FakeRequestResults } from './types/FakeRequestResults';
 import AuthService from '../../services/AuthService';
@@ -15,6 +15,12 @@ export function fillPassword(label: RegExp, value: string) {
 
 export function clickButton(label: RegExp) {
   fireEvent.click(screen.getByRole('button', { name: label }));
+}
+
+export function selectOptionInListBox(input: HTMLElement, optionName: RegExp) {
+  fireEvent.mouseDown(input);
+  const fieldListBox = within(screen.getByRole('listbox'));
+  fireEvent.click(fieldListBox.getByRole('option', { name: optionName }));
 }
 
 export function triggerRequestSuccess(response: string) {
