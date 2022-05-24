@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { AdvancedResearchPage } from '../../static/pages/AdvancedResearchPage';
 import { clickButton, fillText, selectOptionInListBox } from '../utils';
 import { wrapper } from '../utils/components/CustomWrapper';
