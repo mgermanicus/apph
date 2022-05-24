@@ -8,15 +8,15 @@ export const UploadList = ({
   statuses: UploadStatus[];
   files: FileList | undefined;
 }) => {
-  if (!files) return <></>;
   return (
     <>
-      {statuses.map(
-        (status, i) =>
-          !!files[i] && (
-            <UploadListItem status={status} file={files[i]} key={i} />
-          )
-      )}
+      {files &&
+        statuses.map(
+          (status, i) =>
+            !!files[i] && (
+              <UploadListItem status={status} file={files[i]} key={i} />
+            )
+        )}
     </>
   );
 };

@@ -19,7 +19,7 @@ import {
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import PhotoService from '../../services/PhotoService';
 import { ITag, StatusType, UploadStatus } from '../../utils';
-import { createRef, FormEvent, useEffect, useState } from 'react';
+import React, { createRef, FormEvent, useEffect, useState } from 'react';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import TagService from '../../services/TagService';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setTagList } from '../../redux/slices/tagSlice';
 import { UploadList } from './UploadList';
 import { Upload } from '@mui/icons-material';
+import { AlertSnackbar } from './AlertSnackbar';
 
 const filter = createFilterOptions<ITag>();
 
@@ -344,18 +345,20 @@ export const UploadImage = (): JSX.Element => {
                     Ajouter
                   </Button>
                 </Stack>
-                <Collapse in={!!globalUploadStatus.message}>
-                  <Alert
-                    sx={{ mt: 2 }}
-                    severity={
-                      globalUploadStatus.type == StatusType.Error
-                        ? 'error'
-                        : 'success'
-                    }
-                  >
-                    {globalUploadStatus.message}
-                  </Alert>
-                </Collapse>
+                <AlertSnackbar
+                  open={!!globalUploadStatus.message}
+                  severity={
+                    globalUploadStatus.type == StatusType.Error
+                      ? 'error'
+                      : 'success'
+                  }
+                  message={globalUploadStatus.message ?? ''}
+                  onClose={() =>
+                    setGlobalUploadStatus((status) => {
+                      return { type: status.type, message: '' };
+                    })
+                  }
+                />
               </Box>
             </Box>
           </CssBaseline>

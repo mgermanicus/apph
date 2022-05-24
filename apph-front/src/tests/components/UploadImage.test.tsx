@@ -283,6 +283,8 @@ describe('Test UploadImage', () => {
       fakeFile(1000, 'application/zip', '2.png')
     ];
     const title = 'Titre';
+    const description = 'Description';
+    const tags = [{ name: 'tag' }] as ITag[];
     spyRequestSuccessBody('[{"id":"0","name":"tag","version":0}]');
     act(() => {
       render(<UploadImage />, { wrapper });
