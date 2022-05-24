@@ -83,9 +83,9 @@ export const UploadImage = (): JSX.Element => {
     setDescription('');
     setShootingDate(new Date());
     setSelectedTags([]);
-    setGlobalUploadStatus({ type: StatusType.None });
     setUploadStatuses([]);
     setFiles(undefined);
+    setGlobalUploadStatus({ type: StatusType.None });
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -173,6 +173,8 @@ export const UploadImage = (): JSX.Element => {
       type: StatusType.Success,
       message: 'Vos fichiers ont bien été uploadés'
     });
+    // Just enough time to see the success message
+    setTimeout(handleClose, 1000);
   };
 
   const filterTags = (options: ITag[], params: FilterOptionsState<ITag>) => {
@@ -330,7 +332,15 @@ export const UploadImage = (): JSX.Element => {
                     required
                   />
                   <UploadList statuses={uploadStatuses} files={files} />
-                  <Button type="submit" fullWidth variant="contained">
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    disabled={
+                      globalUploadStatus.type === StatusType.Uploading ||
+                      globalUploadStatus.type === StatusType.Success
+                    }
+                  >
                     Ajouter
                   </Button>
                 </Stack>
