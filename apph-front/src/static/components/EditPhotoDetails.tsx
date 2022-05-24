@@ -1,10 +1,13 @@
 import { ITag } from '../../utils';
 import {
+  Alert,
   Box,
   Button,
+  Collapse,
   Container,
   CssBaseline,
   Dialog,
+  IconButton,
   Stack,
   TextField
 } from '@mui/material';
@@ -15,6 +18,7 @@ import PhotoService from '../../services/PhotoService';
 import { TagInput } from './TagInput';
 import TagService from '../../services/TagService';
 import * as React from 'react';
+import CloseIcon from '@mui/icons-material/Close';
 
 export const EditPhotoDetails = (props: {
   id: number;
@@ -30,6 +34,7 @@ export const EditPhotoDetails = (props: {
   const [allTags, setAllTags] = useState<ITag[]>([]);
   const [selectedTags, setSelectedTags] = useState<ITag[]>(props.tags);
   const [tagsValidity, setTagsValidity] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
     TagService.getAllTags(
@@ -38,7 +43,7 @@ export const EditPhotoDetails = (props: {
         setAllTags(tagsConverted);
       },
       (errorMessage: string) => {
-        // TODO error handler
+        setErrorMessage(errorMessage);
       }
     );
   }, []);
@@ -56,7 +61,7 @@ export const EditPhotoDetails = (props: {
       selectedTags,
       shootingDate,
       () => handleClose(),
-      (error) => console.log(error)
+      (error) => setErrorMessage(error)
     );
   };
 
@@ -139,6 +144,26 @@ export const EditPhotoDetails = (props: {
                   <Button type="submit" fullWidth variant="contained">
                     Valider
                   </Button>
+                  <Collapse in={errorMessage !== ''}>
+                    <Alert
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
+                          onClick={() => {
+                            setErrorMessage('');
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                      sx={{ mb: 2 }}
+                      severity="error"
+                    >
+                      {errorMessage}
+                    </Alert>
+                  </Collapse>
                 </Stack>
               </Box>
             </Box>
