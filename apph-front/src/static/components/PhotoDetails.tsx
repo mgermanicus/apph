@@ -8,6 +8,7 @@ import { ITableDetails, randomHSL } from '../../utils';
 import { PhotoCard } from './PhotoCard';
 import { Info } from '@mui/icons-material';
 import { ReUploadPhoto } from './ReUploadPhoto';
+import { EditPhotoDetails } from './EditPhotoDetails';
 
 const modalStyle = {
   position: 'absolute',
@@ -168,6 +169,15 @@ const PhotoDetails = ({
                     />
                   ))}
                 </Stack>
+              </Box>
+              <Box sx={{ pl: 15, mt: 2 }}>
+                <EditPhotoDetails
+                  id={photoId}
+                  title={title}
+                  description={description}
+                  shootingDate={shootingDate}
+                  tags={tags}
+                />
               </Box>
             </Box>
           </Typography>

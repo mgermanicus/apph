@@ -110,24 +110,28 @@ export default class PhotoService {
   }
 
   static editInfos(
+    id: number,
     title: string,
     description: string,
-    tags: string,
-    shootingDate: string,
+    tags: ITag[],
+    shootingDate: Date,
     handleSuccess: (message: string) => void,
     handleError: (errorMessage: string) => void
   ) {
     const URL = '/photo/editInfos';
     const userInfos = cookies.get('user');
     const formData = new FormData();
+    formData.append('id', id.toString());
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('tags', tags);
-    formData.append('shootingDate', shootingDate);
+    formData.append('tags', JSON.stringify(tags));
+    formData.append(
+      'shootingDate',
+      JSON.stringify(shootingDate.toLocaleString())
+    );
     const requestOptions = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         Authorization: 'Bearer ' + userInfos?.token
       },
       body: formData
