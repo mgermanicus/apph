@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { DataGrid, GridColDef, GridSelectionModel } from '@mui/x-data-grid';
 import { Alert, Collapse, IconButton, Stack } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -8,7 +8,6 @@ import PhotoDetails from './PhotoDetails';
 import { DownloadImage } from './DownloadImage';
 import { useDispatch } from 'react-redux';
 import { replaceSelectedPhotos } from '../../redux/slices/photoSlice';
-import { IFilterPayload } from '../../utils/types/Filter';
 
 const columns: GridColDef[] = [
   {
@@ -86,18 +85,24 @@ const columns: GridColDef[] = [
   }
 ];
 
+function* generateId() {
+  let id = 1;
+  while (true) yield id++;
+}
+const iterator = generateId();
+
 interface photoTableProps {
-  getPhotos: (
-    pageSize: number,
-    page: number,
-    handleSuccess: (pagination: IPagination) => void,
-    handleError: (errorMessage: string) => void,
-    filterList?: IFilterPayload[]
-  ) => void;
-  filterList?: IFilterPayload[];
+  onGetPhotos: RefObject<
+    (
+      pageSize: number,
+      page: number,
+      handleSuccess: (pagination: IPagination) => void,
+      handleError: (errorMessage: string) => void
+    ) => void
+  >;
 }
 
-export const PhotoTable = ({ getPhotos, filterList }: photoTableProps) => {
+export const PhotoTable = ({ onGetPhotos }: photoTableProps) => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [pageSize, setPageSize] = useState<number>(5);
@@ -109,22 +114,23 @@ export const PhotoTable = ({ getPhotos, filterList }: photoTableProps) => {
   const dispatch = useDispatch();
 
   const handleSuccess = (pagination: IPagination) => {
-    pagination.photoList.forEach(
-      (row) =>
-        (row.details = (
-          <PhotoDetails
-            photoSrc={row.url}
-            title={row.title}
-            description={row.description}
-            creationDate={row.creationDate}
-            shootingDate={row.shootingDate}
-            size={row.size}
-            tags={row.tags}
-            format={row.format}
-            clickType="button"
-          />
-        ))
-    );
+    pagination.photoList.forEach((row) => {
+      const currentIterator = iterator.next();
+      if (!currentIterator.done) row.id = currentIterator.value;
+      row.details = (
+        <PhotoDetails
+          photoSrc={row.url}
+          title={row.title}
+          description={row.description}
+          creationDate={row.creationDate}
+          shootingDate={row.shootingDate}
+          size={row.size}
+          tags={row.tags}
+          format={row.format}
+          clickType="button"
+        />
+      );
+    });
     setData(pagination.photoList);
     setTotalSize(pagination.totalSize);
     setLoading(false);
@@ -136,9 +142,9 @@ export const PhotoTable = ({ getPhotos, filterList }: photoTableProps) => {
   };
 
   useEffect(() => {
-    getPhotos(pageSize, page + 1, handleSuccess, handleError, filterList);
+    onGetPhotos.current?.(pageSize, page + 1, handleSuccess, handleError);
     const timer = setInterval(() => {
-      getPhotos(pageSize, page + 1, handleSuccess, handleError, filterList);
+      onGetPhotos.current?.(pageSize, page + 1, handleSuccess, handleError);
     }, 3000);
     return () => clearInterval(timer);
   }, [page, pageSize]);

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PhotoTable } from '../components/PhotoTable';
 import { IPagination } from '../../utils';
 import PhotoService from '../../services/PhotoService';
@@ -14,7 +14,7 @@ import { AlertSnackbar } from '../components/AlertSnackbar';
 
 export const AdvancedResearchPage = (): JSX.Element => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [filterList, setFilterList] = useState<IFilterPayload[]>([]);
+  const [filterList, setFilterList] = useState<IFilterPayload[]>();
   const [isAlert, setIsAlert] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>('');
 
@@ -25,6 +25,10 @@ export const AdvancedResearchPage = (): JSX.Element => {
   useEffect(() => {
     setSelectedIds(selected.map((photo: IPhoto) => +photo['id']));
   }, [selected]);
+
+  useEffect(() => {
+    getPhotosRef.current = getPhotos;
+  }, [filterList]);
 
   const openAlert = (message: string): void => {
     setAlertMessage(message);
@@ -43,7 +47,7 @@ export const AdvancedResearchPage = (): JSX.Element => {
       openAlert('Au moins un filtre possède un champ vide.');
     } else {
       const filterPayload = filterList as IFilterPayload[];
-      filterPayload.map((filter) => delete filter.id);
+      filterPayload.forEach((filter) => delete filter.id);
       setFilterList(filterPayload);
     }
   };
@@ -52,8 +56,7 @@ export const AdvancedResearchPage = (): JSX.Element => {
     pageSize: number,
     page: number,
     handleSuccess: (pagination: IPagination) => void,
-    handleError: (errorMessage: string) => void,
-    filterList?: IFilterPayload[]
+    handleError: (errorMessage: string) => void
   ) => {
     PhotoService.getData(
       pageSize,
@@ -64,6 +67,16 @@ export const AdvancedResearchPage = (): JSX.Element => {
     );
   };
 
+  const getPhotosRef =
+    useRef<
+      (
+        pageSize: number,
+        page: number,
+        handleSuccess: (pagination: IPagination) => void,
+        handleError: (errorMessage: string) => void
+      ) => void
+    >(getPhotos);
+
   const handleFilterPhoto = (filterList: IFilter[]) => {
     const filters: IFilter[] = JSON.parse(JSON.stringify(filterList));
     getFilterPayload(filters);
@@ -72,7 +85,7 @@ export const AdvancedResearchPage = (): JSX.Element => {
   return (
     <>
       <FilterSelector onFilterPhoto={handleFilterPhoto} openAlert={openAlert} />
-      {filterList.length !== 0 && (
+      {filterList?.length !== 0 && (
         <>
           <ButtonGroup variant="outlined" aria-label="outlined button group">
             <UploadImage />
@@ -80,7 +93,7 @@ export const AdvancedResearchPage = (): JSX.Element => {
               <DeleteImage ids={selectedIds} />
             </Box>
           </ButtonGroup>
-          <PhotoTable getPhotos={getPhotos} filterList={filterList} />
+          <PhotoTable onGetPhotos={getPhotosRef} />
         </>
       )}
       <AlertSnackbar
