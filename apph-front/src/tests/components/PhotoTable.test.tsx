@@ -11,41 +11,43 @@ describe('Tests du composant PhotoTable.tsx', () => {
   });
   it('Tests array display when data are send', () => {
     //GIVEN
-    const getPhotosSuccess = (
-      pageSize: number,
-      page: number,
-      handleSuccess: (pagination: IPagination) => void
-    ) => {
-      handleSuccess({
-        photoList: [
-          {
-            id: 3,
-            title: 'photo1',
-            description: 'photo test 1',
-            creationDate: new Date(),
-            shootingDate: new Date(),
-            size: 1300.0,
-            tags: [{ name: 'img1' }],
-            url: 'fake url',
-            format: 'png'
-          },
-          {
-            id: 2,
-            title: 'photo2',
-            description: 'photo test 2',
-            creationDate: new Date(),
-            shootingDate: new Date(),
-            size: 1300.0,
-            tags: [{ name: 'img2' }],
-            url: 'fake url',
-            format: 'jpg'
-          }
-        ],
-        totalSize: 3
-      });
+    const getPhotosSuccess = {
+      current: (
+        pageSize: number,
+        page: number,
+        handleSuccess: (pagination: IPagination) => void
+      ) => {
+        handleSuccess({
+          photoList: [
+            {
+              id: 3,
+              title: 'photo1',
+              description: 'photo test 1',
+              creationDate: new Date(),
+              shootingDate: new Date(),
+              size: 1300.0,
+              tags: [{ name: 'img1' }],
+              url: 'fake url',
+              format: 'png'
+            },
+            {
+              id: 2,
+              title: 'photo2',
+              description: 'photo test 2',
+              creationDate: new Date(),
+              shootingDate: new Date(),
+              size: 1300.0,
+              tags: [{ name: 'img2' }],
+              url: 'fake url',
+              format: 'jpg'
+            }
+          ],
+          totalSize: 3
+        });
+      }
     };
     //WHEN
-    render(<PhotoTable getPhotos={getPhotosSuccess} />, { wrapper });
+    render(<PhotoTable onGetPhotos={getPhotosSuccess} />, { wrapper });
     //THEN
     expect(screen.getByText(/photo1/)).toBeInTheDocument();
     expect(screen.getByText(/photo2/)).toBeInTheDocument();
@@ -53,46 +55,50 @@ describe('Tests du composant PhotoTable.tsx', () => {
 
   it('Test with error server', () => {
     //GIVEN
-    const getPhotosFailure = (
-      pageSize: number,
-      page: number,
-      handleSuccess: (pagination: IPagination) => void,
-      handleError: (errorMessage: string) => void
-    ) => {
-      handleError('Argument illégal.');
+    const getPhotosFailure = {
+      current: (
+        pageSize: number,
+        page: number,
+        handleSuccess: (pagination: IPagination) => void,
+        handleError: (errorMessage: string) => void
+      ) => {
+        handleError('Argument illégal.');
+      }
     };
     //WHEN
-    render(<PhotoTable getPhotos={getPhotosFailure} />, { wrapper });
+    render(<PhotoTable onGetPhotos={getPhotosFailure} />, { wrapper });
     //THEN
     expect(screen.getByText(/Argument illégal./));
   });
 
   test('Tests button display when grid rendered', async () => {
     //GIVEN
-    const getPhotosSuccess = (
-      pageSize: number,
-      page: number,
-      handleSuccess: (pagination: IPagination) => void
-    ) => {
-      handleSuccess({
-        photoList: [
-          {
-            id: 2,
-            title: 'photo2',
-            description: 'photo test 2',
-            creationDate: new Date(),
-            shootingDate: new Date(),
-            size: 1300.0,
-            tags: [{ name: 'img2' }],
-            url: 'fake url',
-            format: 'png'
-          }
-        ],
-        totalSize: 3
-      });
+    const getPhotosSuccess = {
+      current: (
+        pageSize: number,
+        page: number,
+        handleSuccess: (pagination: IPagination) => void
+      ) => {
+        handleSuccess({
+          photoList: [
+            {
+              id: 2,
+              title: 'photo2',
+              description: 'photo test 2',
+              creationDate: new Date(),
+              shootingDate: new Date(),
+              size: 1300.0,
+              tags: [{ name: 'img2' }],
+              url: 'fake url',
+              format: 'png'
+            }
+          ],
+          totalSize: 3
+        });
+      }
     };
     // When
-    render(<PhotoTable getPhotos={getPhotosSuccess} />, { wrapper });
+    render(<PhotoTable onGetPhotos={getPhotosSuccess} />, { wrapper });
     // Then
     await waitFor(() => {
       expect(

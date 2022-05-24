@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PhotoTable } from '../components/PhotoTable';
 import { IPagination } from '../../utils';
 import PhotoService from '../../services/PhotoService';
@@ -39,6 +39,8 @@ export const MyPhotoPage = (): JSX.Element => {
     PhotoService.getData(pageSize, page, handleSuccess, handleError);
   };
 
+  const getPhotosRef = useRef(getPhotos);
+
   return (
     <>
       <ButtonGroup
@@ -50,7 +52,7 @@ export const MyPhotoPage = (): JSX.Element => {
         <DeleteImage ids={selectedIds} />
         <Diaporama data={selected} />
       </ButtonGroup>
-      <PhotoTable getPhotos={getPhotos} />
+      <PhotoTable onGetPhotos={getPhotosRef} />
     </>
   );
 };
