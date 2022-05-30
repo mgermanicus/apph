@@ -92,9 +92,10 @@ interface photoTableProps {
     handleSuccess: (pagination: IPagination) => void,
     handleError: (errorMessage: string) => void
   ) => void;
+  refresh?: boolean;
 }
 
-export const PhotoTable = ({ getPhotos }: photoTableProps) => {
+export const PhotoTable = ({ getPhotos, refresh = false }: photoTableProps) => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [pageSize, setPageSize] = useState<number>(5);
@@ -134,11 +135,7 @@ export const PhotoTable = ({ getPhotos }: photoTableProps) => {
 
   useEffect(() => {
     getPhotos(pageSize, page + 1, handleSuccess, handleError);
-    const timer = setInterval(() => {
-      getPhotos(pageSize, page + 1, handleSuccess, handleError);
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [page, pageSize]);
+  }, [page, pageSize, refresh]);
 
   return (
     <div style={{ height: 115 + pageSize * 52, width: '100%' }}>

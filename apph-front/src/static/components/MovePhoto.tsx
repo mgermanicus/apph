@@ -11,6 +11,7 @@ import {
   Tooltip
 } from '@mui/material';
 import { DriveFileMove } from '@mui/icons-material';
+import * as React from 'react';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import { TreeView } from '@mui/lab';
 import { IFolder, IMessage } from '../../utils';
@@ -18,7 +19,6 @@ import { FolderService } from '../../services/FolderService';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import { FolderTree } from './FolderTree';
-import * as React from 'react';
 import PhotoService from '../../services/PhotoService';
 import { AlertSnackbar } from './AlertSnackbar';
 

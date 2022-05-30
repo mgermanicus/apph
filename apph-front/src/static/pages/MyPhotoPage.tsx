@@ -12,6 +12,7 @@ import { MovePhoto } from '../components/MovePhoto';
 
 export const MyPhotoPage = (): JSX.Element => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [refresh, setRefresh] = useState(false);
   const selected = useSelector(
     ({ selectedPhotos }: { selectedPhotos: ITable[] }) => selectedPhotos
   );
@@ -34,12 +35,12 @@ export const MyPhotoPage = (): JSX.Element => {
         variant="outlined"
         sx={{ m: 1, display: 'flex', justifyContent: 'end' }}
       >
-        <UploadImage />
+        <UploadImage setRefresh={setRefresh} />
         <MovePhoto photoIds={selectedIds} />
-        <DeleteImage ids={selectedIds} />
+        <DeleteImage ids={selectedIds} setRefresh={setRefresh} />
         <Diaporama data={selected} />
       </ButtonGroup>
-      <PhotoTable getPhotos={getPhotos} />
+      <PhotoTable getPhotos={getPhotos} refresh={refresh} />
     </>
   );
 };
