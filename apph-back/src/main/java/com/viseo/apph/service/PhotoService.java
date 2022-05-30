@@ -61,7 +61,7 @@ public class PhotoService {
                 .setTitle(photoRequest.getTitle())
                 .setFormat(getFormat(photoRequest.getFile()))
                 .setUser(user)
-                .setSize((photoRequest.getFile().getSize() + .0F) / 1000)
+                .setSize((photoRequest.getFile().getSize() + .0F) / 1024)
                 .setDescription(photoRequest.getDescription())
                 .setCreationDate(new Date())
                 .setShootingDate(shootingDate)
