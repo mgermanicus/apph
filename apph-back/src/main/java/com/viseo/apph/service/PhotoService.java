@@ -10,20 +10,21 @@ import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.*;
-import com.viseo.apph.exception.ConflictException;
-import com.viseo.apph.exception.InvalidFileException;
-import com.viseo.apph.exception.NotFoundException;
-import com.viseo.apph.exception.UnauthorizedException;
+import com.viseo.apph.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 public class PhotoService {
@@ -38,6 +39,8 @@ public class PhotoService {
     FolderDao folderDao;
     @Autowired
     S3Dao s3Dao;
+    @Value("${max-zip-size-mb}")
+    long zipMaxSize;
 
     @Transactional
     public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException, ConflictException {
@@ -113,31 +116,21 @@ public class PhotoService {
     @Transactional
     public PhotoListResponse getPhotosByFolder(long folderId, User user) throws NotFoundException, UnauthorizedException {
         Folder folder = folderDao.getFolderById(folderId);
-        if (folder == null)
-            throw new NotFoundException("Le dossier n'existe pas.");
+        if (folder == null) throw new NotFoundException("Le dossier n'existe pas.");
         if (folder.getUser().getId() != user.getId())
             throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
         List<Photo> photoList = photoDao.getPhotosByFolder(folder);
         PhotoListResponse response = new PhotoListResponse();
         photoList.forEach(photo -> response.addPhoto(new PhotoResponse()
                 .setId(photo.getId())
-                .setTitle(photo.getTitle())
-                .setCreationDate(photo.getCreationDate())
-                .setSize(photo.getSize())
-                .setTags(photo.getTags())
-                .setDescription(photo.getDescription())
-                .setShootingDate(photo.getShootingDate())
-                .setUrl(s3Dao.getPhotoUrl(photo))
-                .setFormat(photo.getFormat())
-        ));
+                .setTitle(photo.getTitle()).setCreationDate(photo.getCreationDate()).setSize(photo.getSize()).setTags(photo.getTags()).setDescription(photo.getDescription()).setShootingDate(photo.getShootingDate()).setUrl(s3Dao.getPhotoUrl(photo)).setFormat(photo.getFormat())));
         return response;
     }
 
     @Transactional
     public MessageListResponse movePhotosToFolder(User user, PhotosRequest request) throws NotFoundException, UnauthorizedException {
         Folder folder = folderDao.getFolderById(request.getFolderId());
-        if (folder == null)
-            throw new NotFoundException("Le dossier n'existe pas.");
+        if (folder == null) throw new NotFoundException("Le dossier n'existe pas.");
         if (folder.getUser().getId() != user.getId())
             throw new UnauthorizedException("L'utilisateur n'a pas accès au dossier.");
         MessageListResponse response = new MessageListResponse();
@@ -147,7 +140,7 @@ public class PhotoService {
                 response.addMessage("error: L'une des photos n'existe pas.");
             } else if (photo.getUser().getId() != user.getId()) {
                 response.addMessage("error: L'une des photos n'appartient pas à l'utilisateur.");
-            } else if(photo.getFolder().getId() == folder.getId()) {
+            } else if (photo.getFolder().getId() == folder.getId()) {
                 response.addMessage("warning: L'une des photos est déjà dans le dossier.");
             } else if (photoDao.existNameInFolder(folder, photo.getTitle(), photo.getFormat())) {
                 response.addMessage("error: L'une des photos comporte un nom existant déjà dans le dossier destinataire.");
@@ -209,5 +202,30 @@ public class PhotoService {
             response.addPhoto(photo);
         }
         return response;
+    }
+
+    public PhotoResponse downloadZip(User user, long[] ids) throws UnauthorizedException, IOException, MaxSizeExceededException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ZipOutputStream zipOut = new ZipOutputStream(bos);
+        for (Long id : ids) {
+            Photo photo = photoDao.getPhoto(id);
+            if (photo == null) {
+                throw new FileNotFoundException();
+            }
+            if (user.getId() != photo.getUser().getId()) {
+                throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
+            }
+            byte[] photoByte = s3Dao.download(photo);
+            ZipEntry zipEntry = new ZipEntry(photo.getTitle() + photo.getFormat());
+            zipEntry.setSize(photoByte.length);
+            zipOut.putNextEntry(zipEntry);
+            zipOut.write(photoByte);
+            if (bos.size() > zipMaxSize * 1024 * 1024) {
+                throw new MaxSizeExceededException("Vous n'est pas autorisé à effectuer ce téléchargement qui dépasse la taille maximum autorisée de " + zipMaxSize + " Mo.");
+            }
+        }
+        zipOut.closeEntry();
+        zipOut.close();
+        return new PhotoResponse().setData(bos.toByteArray()).setTitle("photos").setFormat(".zip");
     }
 }

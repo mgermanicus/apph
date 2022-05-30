@@ -2,10 +2,7 @@ package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.*;
-import com.viseo.apph.exception.ConflictException;
-import com.viseo.apph.exception.InvalidFileException;
-import com.viseo.apph.exception.NotFoundException;
-import com.viseo.apph.exception.UnauthorizedException;
+import com.viseo.apph.exception.*;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.PhotoService;
 import com.viseo.apph.service.UserService;
@@ -127,6 +124,23 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
         } catch (UnauthorizedException ue) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
+        }
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping(value = "download/zip")
+    public ResponseEntity<IResponseDto> downloadZip(@RequestBody PhotosRequest photosRequest) {
+        try {
+            User user = utils.getUser();
+            photoService.downloadZip(user, photosRequest.getIds());
+            return ResponseEntity.ok(photoService.downloadZip(user, photosRequest.getIds()));
+        } catch (S3Exception | IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du téléchargement"));
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("L'utilisateur n'est pas autorisé à accéder à la ressource demandée"));
+        } catch (MaxSizeExceededException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(e.getMessage()));
         }
     }
 }
