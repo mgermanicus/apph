@@ -61,7 +61,7 @@ export const MovePhoto = ({
       },
       (error: string) => {
         setSnackMessage(error);
-        setSnackSeverity('error')
+        setSnackSeverity('error');
         setSnackbarOpen(true);
       }
     );
@@ -78,7 +78,7 @@ export const MovePhoto = ({
       },
       (error: IMessage) => {
         setSnackMessage(error.message);
-        setSnackSeverity('error')
+        setSnackSeverity('error');
         setLoading(false);
       }
     );

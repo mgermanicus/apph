@@ -82,6 +82,7 @@ export const CreateFolderButton = ({
             label="Nom du Dossier"
             size="small"
             disabled={loading}
+            inputProps={{ maxLength: 255 }}
             onKeyDown={(event) => {
               if (event.key === 'Enter') {
                 event.preventDefault();

@@ -96,6 +96,7 @@ export const SignUp = () => {
                 name="firstName"
                 autoComplete="given-name"
                 autoFocus
+                inputProps={{ maxLength: 127 }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -106,6 +107,7 @@ export const SignUp = () => {
                 label="Nom"
                 name="lastName"
                 autoComplete="family-name"
+                inputProps={{ maxLength: 127 }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -117,6 +119,7 @@ export const SignUp = () => {
                 name="email"
                 autoComplete="email"
                 type="email"
+                inputProps={{ maxLength: 255 }}
               />
             </Grid>
             <Grid item xs={12}>

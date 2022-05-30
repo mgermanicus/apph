@@ -8,11 +8,12 @@ import com.viseo.apph.domain.ERole;
 import com.viseo.apph.domain.Role;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.LoginRequest;
+import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.dto.UserRequest;
-import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.security.UserDetailsImpl;
 import com.viseo.apph.service.UserService;
+import net.bytebuddy.utility.RandomString;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,11 +27,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,9 +44,9 @@ public class AuthTest {
     @Mock
     EntityManager em;
     @Mock
-    TypedQuery typedQuery;
+    TypedQuery<Role> typedQueryRole;
     @Mock
-    TypedQuery typedQuery2;
+    TypedQuery<User> typedQueryUser;
     @Mock
     PasswordEncoder passwordEncoder;
     @Mock
@@ -92,7 +91,7 @@ public class AuthTest {
         Mockito.mockStatic(SecurityContextHolder.class).when(SecurityContextHolder::getContext).thenReturn(securityContext);
         LoginRequest loginRequest = new LoginRequest().setLogin("tintin").setPassword("P@ssw0rd");
         //WHEN
-        ResponseEntity responseEntity = authController.login(loginRequest);
+        ResponseEntity<String> responseEntity = authController.login(loginRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
@@ -101,13 +100,13 @@ public class AuthTest {
     public void testRegister() {
         //GIVEN
         createAuthController();
-        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
-        when(em.createQuery("SELECT r FROM Role r WHERE r.name=:name", Role.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter("name", ERole.ROLE_USER)).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(new Role(ERole.ROLE_USER));
+        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password").setFirstName("toto").setLastName("tintin");
+        when(em.createQuery("SELECT r FROM Role r WHERE r.name=:name", Role.class)).thenReturn(typedQueryRole);
+        when(typedQueryRole.setParameter("name", ERole.ROLE_USER)).thenReturn(typedQueryRole);
+        when(typedQueryRole.getSingleResult()).thenReturn(new Role(ERole.ROLE_USER));
         when(passwordEncoder.encode("password")).thenReturn("password");
         //WHEN
-        ResponseEntity responseEntity = authController.register(userRequest);
+        ResponseEntity<String> responseEntity = authController.register(userRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
@@ -116,17 +115,43 @@ public class AuthTest {
     public void testRegisterFailUserExist() {
         //GIVEN
         createAuthController();
-        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password");
-        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
-        when(typedQuery.setParameter("login", "tintin")).thenReturn(typedQuery);
-        when(em.createQuery("SELECT r FROM Role r WHERE r.name=:name", Role.class)).thenReturn(typedQuery2);
-        when(typedQuery2.setParameter("name", ERole.ROLE_USER)).thenReturn(typedQuery2);
-        when(typedQuery2.getSingleResult()).thenReturn(new Role(ERole.ROLE_USER));
+        UserRequest userRequest = new UserRequest().setLogin("tintin").setPassword("password").setFirstName("toto").setLastName("tintin");
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(new User().setLogin("tintin").setPassword("password"));
+        when(typedQueryUser.setParameter("login", "tintin")).thenReturn(typedQueryUser);
+        when(em.createQuery("SELECT r FROM Role r WHERE r.name=:name", Role.class)).thenReturn(typedQueryRole);
+        when(typedQueryRole.setParameter("name", ERole.ROLE_USER)).thenReturn(typedQueryRole);
+        when(typedQueryRole.getSingleResult()).thenReturn(new Role(ERole.ROLE_USER));
         doThrow(new DataIntegrityViolationException("test")).when(em).persist(any());
         //WHEN
-        ResponseEntity responseEntity = authController.register(userRequest);
+        ResponseEntity<String> responseEntity = authController.register(userRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().isError());
+    }
+
+    @Test
+    public void testRegisterWithIllegalNameLength() {
+        //GIVEN
+        createAuthController();
+        String name = RandomString.make(128);
+        UserRequest userRequest = new UserRequest().setFirstName(name).setLastName(name);
+        //WHEN
+        ResponseEntity<String> responseEntity = authController.register(userRequest);
+        //THEN
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        Assert.assertEquals("Le nom ou le prénom ne peuvent pas dépasser les 127 caractères.", responseEntity.getBody());
+    }
+
+    @Test
+    public void testRegisterWithIllegalLoginLength() {
+        //GIVEN
+        createAuthController();
+        String login = RandomString.make(256);
+        UserRequest userRequest = new UserRequest().setFirstName("toto").setLastName("tintin").setLogin(login);
+        //WHEN
+        ResponseEntity<String> responseEntity = authController.register(userRequest);
+        //THEN
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        Assert.assertEquals("L'email ne peut pas dépasser les 255 caractères.", responseEntity.getBody());
     }
 }

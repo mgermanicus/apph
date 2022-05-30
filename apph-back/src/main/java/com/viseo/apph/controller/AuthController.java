@@ -45,6 +45,8 @@ public class AuthController {
             return ResponseEntity.ok().body("Utilisateur crée");
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email déjà utilisé.");
+        } catch (IllegalArgumentException iae) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(iae.getMessage());
         }
     }
 }

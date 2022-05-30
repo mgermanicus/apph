@@ -37,12 +37,21 @@ public class TagService {
         Gson gson = builder.create();
         Tag[] parsedTags = gson.fromJson(listOfTags, Tag[].class);
         List<Tag> tagsToCreate = Arrays.stream(parsedTags).filter(tag -> tag.getId() == 0).collect(Collectors.toList());
-        List<Tag> tags = Arrays.stream(parsedTags).filter(tag -> tag.getId() != 0).collect(Collectors.toList());
-        Set<Tag> allTags = new HashSet<>(tags);
+        if (Boolean.FALSE.equals(isTagValid(tagsToCreate)))
+            throw new IllegalArgumentException("Les tags ne peuvent pas dépasser 255 caractères.");
+        Set<Tag> allTags = Arrays.stream(parsedTags).filter(tag -> tag.getId() != 0).collect(Collectors.toSet());
         for (Tag tag : tagsToCreate) {
             Tag newTag = tagDao.createTag(new Tag().setName(tag.getName().substring(14)).setUser(user));
             allTags.add(newTag);
         }
         return allTags;
+    }
+
+    Boolean isTagValid(List<Tag> list) {
+        for (Tag tag : list) {
+            if (tag.getName().substring(14).length() > 255)
+                return false;
+        }
+        return true;
     }
 }

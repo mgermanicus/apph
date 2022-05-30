@@ -6,15 +6,18 @@ import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.IResponseDto;
+import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.security.UserDetailsImpl;
 import com.viseo.apph.service.UserService;
+import net.bytebuddy.utility.RandomString;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +27,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import static com.viseo.apph.utils.Utils.inject;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -186,5 +190,89 @@ public class UserTest {
         //THEN
         Assert.assertTrue(response.getStatusCode().isError());
         Assert.assertEquals("L'utilisateur lié à cette session n'existe pas", response.getBody());
+    }
+
+    @Test
+    public void testEditUserWithIllegalFirstNameLength() {
+        //GIVEN
+        User user = new User().setLogin("toto").setPassword("password").setFirstname("John").setLastname("Doe");
+        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
+        String name = RandomString.make(128);
+        UserRequest request = new UserRequest()
+                .setFirstName(name);
+        createUserController();
+        UserDetailsImpl userDetails = UserDetailsImpl.build(user);
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(utils.getUser()).thenReturn(user);
+        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        when(typedQueryUser.setParameter("login", "toto")).thenReturn(typedQueryUser);
+        when(em.find(User.class, user.getId())).thenReturn(user);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
+        //WHEN
+        ResponseEntity<String> response = userController.editUserInfo(jws, request);
+        //THEN
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        Assert.assertEquals("Le prénom ne peut pas dépasser les 127 caractères.", response.getBody());
+    }
+
+    @Test
+    public void testEditUserWithIllegalLastNameLength() {
+        //GIVEN
+        User user = new User().setLogin("toto").setPassword("password").setFirstname("John").setLastname("Doe");
+        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
+        String name = RandomString.make(128);
+        UserRequest request = new UserRequest()
+                .setLastName(name);
+        createUserController();
+        UserDetailsImpl userDetails = UserDetailsImpl.build(user);
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(utils.getUser()).thenReturn(user);
+        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        when(typedQueryUser.setParameter("login", "toto")).thenReturn(typedQueryUser);
+        when(em.find(User.class, user.getId())).thenReturn(user);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
+        //WHEN
+        ResponseEntity<String> response = userController.editUserInfo(jws, request);
+        //THEN
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        Assert.assertEquals("Le nom ne peut pas dépasser les 127 caractères.", response.getBody());
+    }
+
+    @Test
+    public void testEditUserWithIllegalLoginLength() {
+        //GIVEN
+        User user = new User().setLogin("toto").setPassword("password").setFirstname("John").setLastname("Doe");
+        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
+        String login = RandomString.make(256);
+        UserRequest request = new UserRequest()
+                .setLogin(login);
+        createUserController();
+        UserDetailsImpl userDetails = UserDetailsImpl.build(user);
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(utils.getUser()).thenReturn(user);
+        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(user);
+        when(typedQueryUser.setParameter("login", "toto")).thenReturn(typedQueryUser);
+        when(em.find(User.class, user.getId())).thenReturn(user);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
+        //WHEN
+        ResponseEntity<String> response = userController.editUserInfo(jws, request);
+        //THEN
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        Assert.assertEquals("Le login ne peut pas dépasser les 255 caractères.", response.getBody());
     }
 }
