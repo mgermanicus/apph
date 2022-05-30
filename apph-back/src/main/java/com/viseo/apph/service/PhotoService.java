@@ -143,7 +143,7 @@ public class PhotoService {
                 query.append(" (");
                 lastField = filter.getField();
             } else {
-                query.append(") OR (");
+                query.append(" OR ");
             }
             query.append(filter.getFieldToSql()).append(" ");
             query.append(filter.getOperatorToSql()).append(" ");

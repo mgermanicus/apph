@@ -34,7 +34,7 @@ public class PhotoController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(value = "/infos", produces = "application/json")
-    public ResponseEntity<IResponseDto> getUserFilteredPhotos(@RequestBody FilterRequest filterRequest) {
+    public ResponseEntity<IResponseDto> getUserPhotos(@RequestBody FilterRequest filterRequest) {
 
         try {
             User user = utils.getUser();
@@ -42,12 +42,13 @@ public class PhotoController {
             if (filterRequest.getFilters() == null) {
                 response = photoService.getUserPhotos(user, filterRequest.getPageSize(), filterRequest.getPage());
             } else {
-                System.out.println(filterRequest.getFilters()[0].getField());
                 response = photoService.getUserFilteredPhotos(user, filterRequest.getPageSize(), filterRequest.getPage(), filterRequest);
             }
             return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException | IndexOutOfBoundsException | InvalidObjectException e) {
+        } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Argument illégal."));
+        } catch (InvalidObjectException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(e.getMessage()));
         }
     }
 
