@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { PhotoTable } from '../components/PhotoTable';
-import { IPagination } from '../../utils';
-import PhotoService from '../../services/PhotoService';
 import { UploadImage } from '../components/UploadImage';
 import { ButtonGroup } from '@mui/material';
 import { DeleteImage } from '../components/DeleteImage';
@@ -17,14 +15,6 @@ export const MyPhotoPage = (): JSX.Element => {
   const selected = useSelector(
     ({ selectedPhotos }: { selectedPhotos: ITable[] }) => selectedPhotos
   );
-  const getPhotos = (
-    pageSize: number,
-    page: number,
-    handleSuccess: (pagination: IPagination) => void,
-    handleError: (errorMessage: string) => void
-  ) => {
-    PhotoService.getData(pageSize, page, handleSuccess, handleError);
-  };
 
   useEffect(() => {
     setSelectedIds(selected.map((photo: ITable) => +photo['id']));

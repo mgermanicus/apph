@@ -89,7 +89,7 @@ export const AdvancedResearchPage = (): JSX.Element => {
         <>
           <ButtonGroup variant="outlined" aria-label="outlined button group">
             <UploadImage />
-            <Box sx={{ m: 1 }}>
+            <Box>
               <DeleteImage ids={selectedIds} />
             </Box>
           </ButtonGroup>
