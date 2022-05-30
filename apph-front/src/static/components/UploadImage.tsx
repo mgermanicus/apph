@@ -1,5 +1,4 @@
 import {
-  Alert,
   Autocomplete,
   Avatar,
   Box,
@@ -10,7 +9,6 @@ import {
   Dialog,
   FilterOptionsState,
   Input,
-  LinearProgress,
   Stack,
   TextField,
   Tooltip,
@@ -18,51 +16,75 @@ import {
 } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import PhotoService from '../../services/PhotoService';
-import { ITag, UploadStatus } from '../../utils';
-import { createRef, FormEvent, useEffect, useState } from 'react';
+import { ITag, StatusType, UploadStatus } from '../../utils';
+import React, { createRef, FormEvent, useEffect, useState } from 'react';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import TagService from '../../services/TagService';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
+import { useDispatch, useSelector } from 'react-redux';
+import { setTagList } from '../../redux/slices/tagSlice';
+import { UploadList } from './UploadList';
 import { Upload } from '@mui/icons-material';
+import { AlertSnackbar } from './AlertSnackbar';
 
 const filter = createFilterOptions<ITag>();
 
-const displayAlert = (
-  uploadStatus: UploadStatus,
-  errorMessage = "Une erreur est survenue lors de l'upload"
-) => {
-  switch (uploadStatus) {
-    case 'success':
-      return <Alert severity="success">Votre fichier a bien été uploadé</Alert>;
-    case 'error':
-      return <Alert severity="error">{errorMessage}</Alert>;
-    default:
-      return <></>;
-  }
-};
-
 export const UploadImage = (): JSX.Element => {
+  const fileInput = createRef<HTMLInputElement>();
+  const dispatch = useDispatch();
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [shootingDate, setShootingDate] = useState<Date>(new Date());
-  const [uploadStatus, setUploadStatus] = useState<UploadStatus>('none');
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const fileInput = createRef<HTMLInputElement>();
-  const tagsInput = createRef<HTMLInputElement>();
   const [open, setOpen] = useState<boolean>(false);
-  const [allTags, setAllTags] = useState<ITag[]>([]);
+  const tagsInput = createRef<HTMLInputElement>();
+  const [files, setFiles] = useState<FileList>();
+  const [globalUploadStatus, setGlobalUploadStatus] = useState<UploadStatus>({
+    type: StatusType.None
+  });
+  const [uploadStatuses, setUploadStatuses] = useState<UploadStatus[]>([]);
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
+  const tagList = useSelector(({ tagList }: { tagList: ITag[] }) => tagList);
+
+  const createUploadCallbacks = (nbFiles: number) => {
+    const handleSuccess = [];
+    const handleError = [];
+    for (let i = 0; i < nbFiles; i++) {
+      handleSuccess.push(() => {
+        setUploadStatuses((statuses) => [
+          ...statuses.slice(0, i),
+          {
+            type: StatusType.Success
+          },
+          ...statuses.slice(i + 1)
+        ]);
+      });
+      handleError.push((errorMessage: string) => {
+        setUploadStatuses((statuses) => [
+          ...statuses.slice(0, i),
+          {
+            type: StatusType.Error,
+            message: errorMessage
+          },
+          ...statuses.slice(i + 1)
+        ]);
+      });
+    }
+    return { handleSuccess, handleError };
+  };
+
   const handleClickOpen = () => {
     setOpen(true);
   };
+
   const handleClose = () => {
-    setOpen(false);
-    setErrorMessage('');
     setTitle('');
     setDescription('');
     setShootingDate(new Date());
     setSelectedTags([]);
-    setUploadStatus('none');
+    setUploadStatuses([]);
+    setFiles(undefined);
+    setGlobalUploadStatus({ type: StatusType.None });
+    setOpen(false);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -71,27 +93,87 @@ export const UploadImage = (): JSX.Element => {
       tagsInput.current?.setCustomValidity('Veuillez renseigner ce champ.');
       return;
     }
-    const files = fileInput.current?.files;
-    if (files) {
-      const file = files[0];
-      setUploadStatus('uploading');
+    const fileList = fileInput.current?.files;
+    if (fileList) {
+      setFiles(fileList);
+      setGlobalUploadStatus({ type: StatusType.Uploading });
+      setUploadStatuses(
+        Array(fileList.length).fill({ type: StatusType.Uploading })
+      );
+      const { handleSuccess, handleError } = createUploadCallbacks(
+        fileList.length
+      );
+
+      // We wait for the first upload to finish before sending the others because if new tags are created we need
+      // their id in the following requests
       PhotoService.uploadImage(
-        title,
+        fileList.length > 1 ? `${title}_1` : title,
         description,
         shootingDate,
-        file,
+        fileList[0],
         selectedTags,
         '-1',
-        () => {
-          setUploadStatus('success');
-          handleClose();
-        },
-        (errorMessage) => {
-          setUploadStatus('error');
-          setErrorMessage(errorMessage);
-        }
-      );
+        handleSuccess[0],
+        handleError[0]
+      )?.then(() => {
+        TagService.getAllTags(
+          (tags: string) => {
+            const tagsConverted: ITag[] = JSON.parse(tags);
+            dispatch(setTagList(tagsConverted));
+            // Get the id of tags that have been created
+            const newSelectedTags = selectedTags.map(
+              (selectedTag) =>
+                tagsConverted.find(
+                  (tag) => `+ Add New Tag ${tag.name}` == selectedTag.name
+                ) ?? selectedTag
+            );
+            setSelectedTags(newSelectedTags);
+            for (let i = 1; i < fileList.length; i++) {
+              PhotoService.uploadImage(
+                `${title}_${i + 1}`,
+                description,
+                shootingDate,
+                fileList[i],
+                newSelectedTags,
+                '-1',
+                handleSuccess[i],
+                handleError[i]
+              );
+            }
+          },
+          (errorMessage: string) =>
+            setGlobalUploadStatus({
+              type: StatusType.Error,
+              message: errorMessage
+            })
+        );
+      });
     }
+  };
+
+  const updateGlobalStatus = () => {
+    if (
+      !uploadStatuses.length ||
+      uploadStatuses.some(
+        (status) =>
+          status.type === StatusType.None ||
+          status.type === StatusType.Uploading
+      )
+    )
+      return;
+    if (uploadStatuses.some((status) => status.type === StatusType.Error)) {
+      setGlobalUploadStatus({
+        type: StatusType.Error,
+        message: "Certains fichiers n'ont pas pu être uploadés"
+      });
+      return;
+    }
+    setGlobalUploadStatus({
+      type: StatusType.Success,
+      message: 'Vos fichiers ont bien été uploadés'
+    });
+    // Just enough time to see the success message
+    setTimeout(handleClose, 1000);
   };
 
   const filterTags = (options: ITag[], params: FilterOptionsState<ITag>) => {
@@ -110,14 +192,26 @@ export const UploadImage = (): JSX.Element => {
   };
 
   useEffect(() => {
+    getTagList();
+  }, []);
+
+  useEffect(() => {
+    updateGlobalStatus();
+  }, [uploadStatuses]);
+
+  const getTagList = () => {
     TagService.getAllTags(
       (tags: string) => {
         const tagsConverted: ITag[] = JSON.parse(tags);
-        setAllTags(tagsConverted);
+        dispatch(setTagList(tagsConverted));
       },
-      (errorMessage: string) => setErrorMessage(errorMessage)
+      (errorMessage: string) =>
+        setGlobalUploadStatus({
+          type: StatusType.Error,
+          message: errorMessage
+        })
     );
-  }, []);
+  };
 
   return (
     <Box sx={{ m: 1 }}>
@@ -130,7 +224,7 @@ export const UploadImage = (): JSX.Element => {
           <Upload />
         </Button>
       </Tooltip>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} data-testid="upload-dialog">
         <Container component="main">
           <CssBaseline>
             <Box
@@ -199,7 +293,7 @@ export const UploadImage = (): JSX.Element => {
                     limitTags={2}
                     id="tags"
                     size="small"
-                    options={allTags}
+                    options={tagList}
                     onChange={(event, tags) => {
                       setSelectedTags(tags);
                       tagsInput.current?.setCustomValidity('');
@@ -231,21 +325,38 @@ export const UploadImage = (): JSX.Element => {
                     inputProps={{
                       type: 'file',
                       accept: 'image/*',
-                      'data-testid': 'file-input'
+                      'data-testid': 'file-input',
+                      multiple: true
                     }}
                     required
                   />
-                  {uploadStatus === 'uploading' && <LinearProgress />}
+                  <UploadList statuses={uploadStatuses} files={files} />
                   <Button
                     type="submit"
                     fullWidth
                     variant="contained"
-                    disabled={uploadStatus === 'uploading'}
+                    disabled={
+                      globalUploadStatus.type === StatusType.Uploading ||
+                      globalUploadStatus.type === StatusType.Success
+                    }
                   >
                     Ajouter
                   </Button>
-                  {displayAlert(uploadStatus, errorMessage)}
                 </Stack>
+                <AlertSnackbar
+                  open={!!globalUploadStatus.message}
+                  severity={
+                    globalUploadStatus.type == StatusType.Error
+                      ? 'error'
+                      : 'success'
+                  }
+                  message={globalUploadStatus.message ?? ''}
+                  onClose={() =>
+                    setGlobalUploadStatus((status) => {
+                      return { type: status.type, message: '' };
+                    })
+                  }
+                />
               </Box>
             </Box>
           </CssBaseline>
