@@ -1,10 +1,8 @@
 import {
-  Alert,
   Autocomplete,
   Avatar,
   Box,
   Button,
-  Collapse,
   Container,
   createFilterOptions,
   CssBaseline,
@@ -79,7 +77,6 @@ export const UploadImage = (): JSX.Element => {
   };
 
   const handleClose = () => {
-    setOpen(false);
     setTitle('');
     setDescription('');
     setShootingDate(new Date());
@@ -87,6 +84,7 @@ export const UploadImage = (): JSX.Element => {
     setUploadStatuses([]);
     setFiles(undefined);
     setGlobalUploadStatus({ type: StatusType.None });
+    setOpen(false);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -226,7 +224,7 @@ export const UploadImage = (): JSX.Element => {
           <Upload />
         </Button>
       </Tooltip>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} data-testid="upload-dialog">
         <Container component="main">
           <CssBaseline>
             <Box

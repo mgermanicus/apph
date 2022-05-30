@@ -51,34 +51,6 @@ export default class PhotoService {
     );
   }
 
-  static uploadImages(
-    title: string,
-    description: string,
-    shootingDate: Date,
-    imageFiles: FileList,
-    selectedTags: ITag[],
-    folderId: string,
-    handleSuccess: (() => void)[],
-    handleError: ((errorMessage: string) => void)[]
-  ) {
-    const promises = [];
-    for (let i = 0; i < imageFiles.length; i++) {
-      const file = imageFiles[i];
-      promises.push(
-        this.uploadImage(
-          imageFiles.length > 1 ? `${title}_${i + 1}` : title,
-          description,
-          shootingDate,
-          file,
-          selectedTags,
-          folderId,
-          handleSuccess[i],
-          handleError[i]
-        )
-      );
-    }
-  }
-
   static getData(
     pageSize: number,
     page: number,
