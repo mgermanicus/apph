@@ -5,6 +5,15 @@ import PhotoService from '../../services/PhotoService';
 import * as React from 'react';
 import PhotoDetails from './PhotoDetails';
 
+const mediumSize = {
+  gridContainerSpacing: { xs: 2, md: 3 },
+  gridContainerColumns: { xs: 8, sm: 12, md: 16 },
+  gridContainerPadding: 5,
+  gridItemXS: 2,
+  gridItemSM: 4,
+  gridItemMD: 4
+};
+
 export const DisplayPhoto = ({
   selectedFolder
 }: {
@@ -12,6 +21,7 @@ export const DisplayPhoto = ({
 }): JSX.Element => {
   const [photoList, setPhotoList] = useState<ITable[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const [selectedSize, setSelectedSize] = useState(mediumSize);
 
   const getPhotos = async () => {
     await PhotoService.getFolderPhotos(
@@ -39,12 +49,18 @@ export const DisplayPhoto = ({
     return (
       <Grid
         container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 8, sm: 12, md: 16 }}
-        padding={5}
+        spacing={selectedSize.gridContainerSpacing}
+        columns={selectedSize.gridContainerColumns}
+        padding={selectedSize.gridContainerPadding}
       >
         {photoList.map((photo) => (
-          <Grid item xs={2} sm={4} md={4} key={'key' + photo.id}>
+          <Grid
+            item
+            xs={selectedSize.gridItemXS}
+            sm={selectedSize.gridItemSM}
+            md={selectedSize.gridItemMD}
+            key={'key' + photo.id}
+          >
             <PhotoDetails
               photoSrc={photo.url}
               title={photo.title}
