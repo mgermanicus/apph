@@ -92,10 +92,15 @@ interface photoTableProps {
     handleSuccess: (pagination: IPagination) => void,
     handleError: (errorMessage: string) => void
   ) => void;
+  selected?: number[];
   refresh?: boolean;
 }
 
-export const PhotoTable = ({ getPhotos, refresh = false }: photoTableProps) => {
+export const PhotoTable = ({
+  getPhotos,
+  selected,
+  refresh = false
+}: photoTableProps) => {
   const [data, setData] = useState<ITable[]>(new Array<ITable>());
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [pageSize, setPageSize] = useState<number>(5);
@@ -103,7 +108,6 @@ export const PhotoTable = ({ getPhotos, refresh = false }: photoTableProps) => {
   const [totalSize, setTotalSize] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectionModel, setSelectionModel] = useState<GridSelectionModel>([]);
-
   const dispatch = useDispatch();
 
   const handleSuccess = (pagination: IPagination) => {
@@ -126,6 +130,11 @@ export const PhotoTable = ({ getPhotos, refresh = false }: photoTableProps) => {
     setData(pagination.photoList);
     setTotalSize(pagination.totalSize);
     setLoading(false);
+    setSelectionModel(() =>
+      pagination.photoList
+        .filter((photoId) => selected?.some((id) => photoId.id === id))
+        .map((photo) => photo.id)
+    );
   };
 
   const handleError = (error: string) => {
@@ -156,13 +165,15 @@ export const PhotoTable = ({ getPhotos, refresh = false }: photoTableProps) => {
           setPage(newPage);
         }}
         columnBuffer={9}
-        onSelectionModelChange={(ids) => {
+        onSelectionModelChange={(ids: GridSelectionModel) => {
           setSelectionModel(ids);
           const selectedIDs = new Set(ids);
           const selectedRowData = data.filter((rows) =>
             selectedIDs.has(rows.id)
           );
-          dispatch(replaceSelectedPhotos(JSON.stringify(selectedRowData)));
+          if (selectedRowData.length) {
+            dispatch(replaceSelectedPhotos(JSON.stringify(selectedRowData)));
+          }
         }}
         selectionModel={selectionModel}
         checkboxSelection

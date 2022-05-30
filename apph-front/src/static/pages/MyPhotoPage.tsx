@@ -40,7 +40,11 @@ export const MyPhotoPage = (): JSX.Element => {
         <DeleteImage ids={selectedIds} setRefresh={setRefresh} />
         <Diaporama data={selected} />
       </ButtonGroup>
-      <PhotoTable getPhotos={getPhotos} refresh={refresh} />
+      <PhotoTable
+        getPhotos={getPhotos}
+        selected={selectedIds}
+        refresh={refresh}
+      />
     </>
   );
 };

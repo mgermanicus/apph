@@ -45,10 +45,17 @@ describe('Tests du composant PhotoTable.tsx', () => {
       });
     };
     //WHEN
-    render(<PhotoTable getPhotos={getPhotosSuccess} />, { wrapper });
+    const tree = render(
+      <PhotoTable getPhotos={getPhotosSuccess} selected={[2]} />,
+      { wrapper }
+    );
     //THEN
-    expect(screen.getByText(/photo1/)).toBeInTheDocument();
-    expect(screen.getByText(/photo2/)).toBeInTheDocument();
+    expect(tree).toMatchSnapshot();
+    expect(tree.getAllByRole(/row/)[2].classList.contains('Mui-selected')).toBe(
+      true
+    );
+    expect(tree.getByText(/photo1/)).toBeInTheDocument();
+    expect(tree.getByText(/photo2/)).toBeInTheDocument();
   });
 
   it('Test with error server', () => {
