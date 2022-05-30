@@ -188,4 +188,30 @@ export default class PhotoService {
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
+
+  static downloadZip(
+    ids: number[],
+    handleSuccess: (photos: IPhoto) => void,
+    handleError: (errorMessage: IMessage) => void
+  ) {
+    const URL = `/photo/download/zip`,
+      userInfos = cookies.get('user'),
+      requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + userInfos?.token
+        },
+        body: JSON.stringify({
+          ids
+        })
+      };
+    const successFunction = (photos: string) => {
+      handleSuccess(JSON.parse(photos));
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage));
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
 }
