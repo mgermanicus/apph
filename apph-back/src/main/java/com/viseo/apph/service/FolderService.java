@@ -46,6 +46,10 @@ public class FolderService {
             logger.error("Cannot create a root folder.");
             throw new UnauthorizedException("Impossible de créer un dossier racine.");
         }
+        if (request.getName().length() > 255) {
+            logger.error("The folder name cannot exceed 255 characters.");
+            throw new IllegalArgumentException("Le nom du dossier ne peut pas dépasser 255 caractères.");
+        }
         Folder parentFolder = folderDao.getFolderById(request.getParentFolderId());
         User user = userDao.getUserByLogin(login);
         if (parentFolder == null) {

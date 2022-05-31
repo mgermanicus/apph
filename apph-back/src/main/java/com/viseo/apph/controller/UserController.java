@@ -54,6 +54,8 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("La session a expiré. Veuillez vous reconnecter");
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Ce login est déjà pris");
+        } catch (IllegalArgumentException iae) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(iae.getMessage());
         }
     }
 }

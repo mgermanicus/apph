@@ -11,6 +11,7 @@ import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.FolderService;
+import net.bytebuddy.utility.RandomString;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -242,5 +243,22 @@ public class FolderTest {
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("L'utilisateur n'a pas accès à ce dossier.", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testCreateFolderWithInvalidNameLength() {
+        //GIVEN
+        createFolderController();
+        String name = RandomString.make(256);
+        FolderRequest request = new FolderRequest().setName(name).setParentFolderId(1L);
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        when(utils.getUser()).thenReturn(robert);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = folderController.createFolder(request);
+        //THEN
+        Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("Le nom du dossier ne peut pas dépasser 255 caractères.", messageResponse.getMessage());
     }
 }

@@ -264,6 +264,7 @@ export const UploadImage = (): JSX.Element => {
                     name="title"
                     autoComplete="title"
                     autoFocus
+                    inputProps={{ maxLength: 255 }}
                   />
                   <TextField
                     required
@@ -275,6 +276,7 @@ export const UploadImage = (): JSX.Element => {
                     name="description"
                     autoComplete="description"
                     autoFocus
+                    inputProps={{ maxLength: 255 }}
                   />
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DesktopDatePicker
@@ -312,7 +314,8 @@ export const UploadImage = (): JSX.Element => {
                         inputProps={{
                           ...params.inputProps,
                           autoComplete: 'new-password',
-                          required: selectedTags.length === 0
+                          required: selectedTags.length === 0,
+                          maxLength: 255
                         }}
                         inputRef={tagsInput}
                         label="Tags"
