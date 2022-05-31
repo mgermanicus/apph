@@ -40,7 +40,7 @@ public class PhotoService {
     @Autowired
     S3Dao s3Dao;
     @Value("${max-zip-size-mb}")
-    long zipMaxSize;
+    public long zipMaxSize;
 
     @Transactional
     public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException, ConflictException {
@@ -207,6 +207,7 @@ public class PhotoService {
     public PhotoResponse downloadZip(User user, long[] ids) throws UnauthorizedException, IOException, MaxSizeExceededException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ZipOutputStream zipOut = new ZipOutputStream(bos);
+        Set<String> names = new HashSet<>();
         for (Long id : ids) {
             Photo photo = photoDao.getPhoto(id);
             if (photo == null) {
@@ -216,7 +217,10 @@ public class PhotoService {
                 throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
             }
             byte[] photoByte = s3Dao.download(photo);
-            ZipEntry zipEntry = new ZipEntry(photo.getTitle() + photo.getFormat());
+            String name = photo.getTitle() + photo.getFormat();
+            for (int i = 1; !names.add(name); i++)
+                name = photo.getTitle() + "_" + i + photo.getFormat();
+            ZipEntry zipEntry = new ZipEntry(name);
             zipEntry.setSize(photoByte.length);
             zipOut.putNextEntry(zipEntry);
             zipOut.write(photoByte);

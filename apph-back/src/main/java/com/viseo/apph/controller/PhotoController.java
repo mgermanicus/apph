@@ -132,7 +132,6 @@ public class PhotoController {
     public ResponseEntity<IResponseDto> downloadZip(@RequestBody PhotosRequest photosRequest) {
         try {
             User user = utils.getUser();
-            photoService.downloadZip(user, photosRequest.getIds());
             return ResponseEntity.ok(photoService.downloadZip(user, photosRequest.getIds()));
         } catch (S3Exception | IOException e) {
             e.printStackTrace();
@@ -140,7 +139,7 @@ public class PhotoController {
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("L'utilisateur n'est pas autorisé à accéder à la ressource demandée"));
         } catch (MaxSizeExceededException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(e.getMessage()));
+            return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(new MessageResponse(e.getMessage()));
         }
     }
 }

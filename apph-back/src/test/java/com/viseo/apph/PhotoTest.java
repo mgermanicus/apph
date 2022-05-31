@@ -29,6 +29,7 @@ import software.amazon.awssdk.services.s3.model.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -55,6 +56,8 @@ public class PhotoTest {
     @Mock
     S3Client s3Client;
 
+    long zipMaxSize = 50;
+
     PhotoController photoController;
 
     private void createPhotoController() {
@@ -70,6 +73,7 @@ public class PhotoTest {
         s3Client = mock(S3Client.class, RETURNS_DEEP_STUBS);
         inject(s3Dao, "s3Client", s3Client);
         PhotoService photoService = new PhotoService();
+        photoService.zipMaxSize = zipMaxSize;
         inject(photoService, "photoDao", photoDao);
         inject(photoService, "s3Dao", s3Dao);
         inject(photoService, "userDao", userDao);
@@ -703,5 +707,83 @@ public class PhotoTest {
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("L'utilisateur n'a pas accès au dossier.", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testDownloadZipLarge() {
+        //GIVEN
+        zipMaxSize = 0;
+        createPhotoController();
+        long[] ids = {1L, 1L};
+        User user = (User) new User().setLogin("test@test").setId(2);
+        Photo photo_1 = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(ids[0]);
+        PhotosRequest photosRequest = new PhotosRequest().setIds(ids);
+        GetObjectResponse response = mock(GetObjectResponse.class);
+        ResponseBytes<GetObjectResponse> s3Object = ResponseBytes.fromByteArray(response, "".getBytes(StandardCharsets.UTF_8));
+        when(utils.getUser()).thenReturn(user);
+        when(em.find(any(), anyLong())).thenReturn(photo_1);
+        when(s3Client.getObject(any(GetObjectRequest.class), eq(ResponseTransformer.toBytes()))).thenReturn(s3Object);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.downloadZip(photosRequest);
+        //THEN
+        Assert.assertEquals(HttpStatus.PAYLOAD_TOO_LARGE, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testDownloadZipDuplicate() {
+        //GIVEN
+        createPhotoController();
+        long[] ids = {1L, 1L};
+        User user = (User) new User().setLogin("test@test").setId(2);
+        Photo photo_1 = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(ids[0]);
+        PhotosRequest photosRequest = new PhotosRequest().setIds(ids);
+        GetObjectResponse response = mock(GetObjectResponse.class);
+        ResponseBytes<GetObjectResponse> s3Object = ResponseBytes.fromByteArray(response, "".getBytes(StandardCharsets.UTF_8));
+        when(utils.getUser()).thenReturn(user);
+        when(em.find(any(), anyLong())).thenReturn(photo_1);
+        when(s3Client.getObject(any(GetObjectRequest.class), eq(ResponseTransformer.toBytes()))).thenReturn(s3Object);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.downloadZip(photosRequest);
+        //THEN
+        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        verify(em, times(2)).find(eq(Photo.class), anyLong());
+        PhotoResponse photoResponse = (PhotoResponse) responseEntity.getBody();
+        assert photoResponse != null;
+        Assert.assertEquals("photos", photoResponse.getTitle());
+        Assert.assertEquals(".zip", photoResponse.getFormat());
+        Assert.assertNotNull(photoResponse.getData());
+    }
+
+    @Test
+    public void testDownloadZipUserNotAllowed() {
+        //GIVEN
+        createPhotoController();
+        long[] ids = {1L, 1L};
+        User user = (User) new User().setLogin("test@test").setId(2);
+        Photo photo_1 = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(ids[0]);
+        PhotosRequest photosRequest = new PhotosRequest().setIds(ids);
+        GetObjectResponse response = mock(GetObjectResponse.class);
+        ResponseBytes<GetObjectResponse> s3Object = ResponseBytes.fromByteArray(response, "".getBytes(StandardCharsets.UTF_8));
+        when(utils.getUser()).thenReturn((User) new User().setId(1));
+        when(em.find(any(), anyLong())).thenReturn(photo_1);
+        when(s3Client.getObject(any(GetObjectRequest.class), eq(ResponseTransformer.toBytes()))).thenReturn(s3Object);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.downloadZip(photosRequest);
+        //THEN
+        Assert.assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testDownloadZipNotFound() {
+        //GIVEN
+        createPhotoController();
+        long[] ids = {1L, 1L};
+        PhotosRequest photosRequest = new PhotosRequest().setIds(ids);
+        when(utils.getUser()).thenReturn((User) new User().setId(1));
+        when(em.find(any(), anyLong())).thenReturn(null);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.downloadZip(photosRequest);
+        //THEN
+        Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 }
