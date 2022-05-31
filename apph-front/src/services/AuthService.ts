@@ -78,6 +78,7 @@ export default class AuthService {
 
   static logout = () => {
     cookies.remove('user');
+    document.location.replace('/');
   };
 
   static getToken() {
