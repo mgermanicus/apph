@@ -39,10 +39,11 @@ public class PhotoDao {
                 .getResultList();
     }
 
-    public boolean existNameInFolder(Folder folder, String title) {
-        Long count = em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title", Long.class)
+    public boolean existNameInFolder(Folder folder, String title, String format) {
+        Long count = em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)
                 .setParameter("folder", folder)
                 .setParameter("title", title)
+                .setParameter("format", format)
                 .getSingleResult();
         return !count.equals(0L);
     }

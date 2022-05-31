@@ -113,4 +113,18 @@ public class PhotoController {
         }
 
     }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping(value = "folder/move")
+    public ResponseEntity<IResponseDto> movePhotosToFolder(@RequestBody PhotosRequest photosRequest) {
+        try {
+            User user = utils.getUser();
+            MessageListResponse response = photoService.movePhotosToFolder(user, photosRequest);
+            return ResponseEntity.ok(response);
+        } catch (NotFoundException nfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
+        } catch (UnauthorizedException ue) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
+        }
+    }
 }

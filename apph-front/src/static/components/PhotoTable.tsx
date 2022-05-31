@@ -74,7 +74,7 @@ const columns: GridColDef[] = [
   {
     field: 'actions',
     headerName: 'Actions',
-    flex: 3,
+    flex: 2,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => (
@@ -177,7 +177,8 @@ export const PhotoTable = ({ onGetPhotos }: photoTableProps) => {
           dispatch(replaceSelectedPhotos(JSON.stringify(selectedRowData)));
         }}
         selectionModel={selectionModel}
-        checkboxSelection={true}
+        checkboxSelection
+        disableSelectionOnClick
       />
       <Collapse in={errorMessage !== ''}>
         <Alert

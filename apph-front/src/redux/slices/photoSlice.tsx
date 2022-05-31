@@ -1,14 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { IPhoto } from '../../utils';
+import { ITable } from '../../utils';
 
 export const selectedPhotosSlice = createSlice({
   name: 'selectedPhotos',
-  initialState: [] as IPhoto[],
+  initialState: [] as ITable[],
   reducers: {
     replaceSelectedPhotos: (state, action) => {
-      const photos: IPhoto[] = JSON.parse(action.payload);
+      const photos: ITable[] = JSON.parse(action.payload);
       return [
-        ...state.filter((photo: IPhoto) => photos.includes(photo)),
+        ...state.filter((photo: ITable) => photos.includes(photo)),
         ...photos
       ];
     }

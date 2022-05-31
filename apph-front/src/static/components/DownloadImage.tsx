@@ -1,8 +1,8 @@
-import { Box, Button, Modal, Typography } from '@mui/material';
-import { IPhoto } from '../../utils/types/Photo';
+import { Box, Button, Modal, Tooltip, Typography } from '@mui/material';
+import { IMessage, IPhoto } from '../../utils';
 import PhotoService from '../../services/PhotoService';
 import React, { useState } from 'react';
-import { IMessage } from '../../utils/types/Message';
+import { Download } from '@mui/icons-material';
 
 const modalStyle = {
   position: 'absolute',
@@ -40,9 +40,16 @@ export const DownloadImage = ({ id }: { id: number }): JSX.Element => {
 
   return (
     <>
-      <Button variant="outlined" onClick={handleSubmit} id={`download-${id}`}>
-        Télécharger
-      </Button>
+      <Tooltip title="Télécharger">
+        <Button
+          variant="outlined"
+          onClick={handleSubmit}
+          id={`download-${id}`}
+          aria-label="download-photo"
+        >
+          <Download />
+        </Button>
+      </Tooltip>
       <Modal
         open={errorMessage !== ''}
         onClose={handleClose}

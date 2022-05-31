@@ -51,7 +51,7 @@ public class PhotoService {
             throw new NotFoundException("Le dossier n'existe pas.");
         if (folder.getUser().getId() != user.getId())
             throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
-        if (photoDao.existNameInFolder(folder, photoRequest.getTitle()))
+        if (photoDao.existNameInFolder(folder, photoRequest.getTitle(), getFormat(photoRequest.getFile())))
             throw new ConflictException("Titre déjà utilisé dans le dossier.");
         Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
         Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
@@ -128,6 +128,32 @@ public class PhotoService {
                 .setUrl(s3Dao.getPhotoUrl(photo))
                 .setFormat(photo.getFormat())
         ));
+        return response;
+    }
+
+    @Transactional
+    public MessageListResponse movePhotosToFolder(User user, PhotosRequest request) throws NotFoundException, UnauthorizedException {
+        Folder folder = folderDao.getFolderById(request.getFolderId());
+        if (folder == null)
+            throw new NotFoundException("Le dossier n'existe pas.");
+        if (folder.getUser().getId() != user.getId())
+            throw new UnauthorizedException("L'utilisateur n'a pas accès au dossier.");
+        MessageListResponse response = new MessageListResponse();
+        for (long id : request.getIds()) {
+            Photo photo = photoDao.getPhoto(id);
+            if (photo == null) {
+                response.addMessage("error: L'une des photos n'existe pas.");
+            } else if (photo.getUser().getId() != user.getId()) {
+                response.addMessage("error: L'une des photos n'appartient pas à l'utilisateur.");
+            } else if(photo.getFolder().getId() == folder.getId()) {
+                response.addMessage("warning: L'une des photos est déjà dans le dossier.");
+            } else if (photoDao.existNameInFolder(folder, photo.getTitle(), photo.getFormat())) {
+                response.addMessage("error: L'une des photos comporte un nom existant déjà dans le dossier destinataire.");
+            } else {
+                photo.setFolder(folder);
+            }
+        }
+        response.addMessage("success: Le déplacement des photos est terminé.");
         return response;
     }
 

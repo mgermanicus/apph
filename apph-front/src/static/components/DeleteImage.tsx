@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { AlertColor, Button } from '@mui/material';
+import { AlertColor, Box, Button, Tooltip } from '@mui/material';
 import { ConfirmationDialog } from './ConfirmationDialog';
 import PhotoService from '../../services/PhotoService';
 import { AlertSnackbar } from './AlertSnackbar';
+import { Delete } from '@mui/icons-material';
 
 export const DeleteImage = ({ ids }: { ids: number[] }): JSX.Element => {
   const [message, setMessage] = useState('');
@@ -40,15 +41,18 @@ export const DeleteImage = ({ ids }: { ids: number[] }): JSX.Element => {
   };
 
   return (
-    <>
-      <Button
-        variant="outlined"
-        color="error"
-        onClick={handleSubmit}
-        id={`download-${ids}`}
-      >
-        Supprimer
-      </Button>
+    <Box sx={{ m: 1 }}>
+      <Tooltip title="Supprimer">
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={handleSubmit}
+          id={`download-${ids}`}
+          aria-label="delete-photo"
+        >
+          <Delete />
+        </Button>
+      </Tooltip>
       <ConfirmationDialog
         open={dialogOpen}
         onConfirm={handleConfirm}
@@ -64,6 +68,6 @@ export const DeleteImage = ({ ids }: { ids: number[] }): JSX.Element => {
         message={message}
         onClose={setSnackbarOpen}
       />
-    </>
+    </Box>
   );
 };

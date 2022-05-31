@@ -13,6 +13,7 @@ import {
   LinearProgress,
   Stack,
   TextField,
+  Tooltip,
   Typography
 } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -24,6 +25,7 @@ import TagService from '../../services/TagService';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTagList } from '../../redux/slices/tagSlice';
+import { Upload } from '@mui/icons-material';
 
 const filter = createFilterOptions<ITag>();
 
@@ -49,6 +51,7 @@ export const UploadImage = (): JSX.Element => {
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>('none');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const fileInput = createRef<HTMLInputElement>();
+  const tagsInput = createRef<HTMLInputElement>();
   const [open, setOpen] = useState<boolean>(false);
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const tagList = useSelector(({ tagList }: { tagList: ITag[] }) => tagList);
@@ -68,6 +71,10 @@ export const UploadImage = (): JSX.Element => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (selectedTags.length < 1) {
+      tagsInput.current?.setCustomValidity('Veuillez renseigner ce champ.');
+      return;
+    }
     const files = fileInput.current?.files;
     if (files) {
       const file = files[0];
@@ -123,9 +130,15 @@ export const UploadImage = (): JSX.Element => {
 
   return (
     <Box sx={{ m: 1 }}>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Upload
-      </Button>
+      <Tooltip title="Upload">
+        <Button
+          variant="outlined"
+          onClick={handleClickOpen}
+          aria-label="upload-photo"
+        >
+          <Upload />
+        </Button>
+      </Tooltip>
       <Dialog open={open} onClose={handleClose}>
         <Container component="main">
           <CssBaseline>
@@ -196,7 +209,10 @@ export const UploadImage = (): JSX.Element => {
                     id="tags"
                     size="small"
                     options={tagList}
-                    onChange={(event, tags) => setSelectedTags(tags)}
+                    onChange={(event, tags) => {
+                      setSelectedTags(tags);
+                      tagsInput.current?.setCustomValidity('');
+                    }}
                     filterOptions={(options, params) =>
                       filterTags(options, params)
                     }
@@ -206,13 +222,14 @@ export const UploadImage = (): JSX.Element => {
                     getOptionLabel={(tag) => tag.name}
                     renderInput={(params) => (
                       <TextField
-                        required
+                        required={selectedTags.length === 0}
                         {...params}
                         inputProps={{
                           ...params.inputProps,
                           autoComplete: 'new-password',
                           required: selectedTags.length === 0
                         }}
+                        inputRef={tagsInput}
                         label="Tags"
                       />
                     )}

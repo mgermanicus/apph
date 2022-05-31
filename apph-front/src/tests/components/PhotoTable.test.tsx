@@ -101,7 +101,9 @@ describe('Tests du composant PhotoTable.tsx', () => {
     render(<PhotoTable onGetPhotos={getPhotosSuccess} />, { wrapper });
     // Then
     await waitFor(() => {
-      expect(screen.getAllByText(/Télécharger/)[0]).toBeInTheDocument();
+      expect(
+        screen.getAllByRole('button', { name: /download-photo/i })[0]
+      ).toBeInTheDocument();
     });
   });
 });

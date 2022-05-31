@@ -19,7 +19,7 @@ describe('Create delete button tests', () => {
     //GIVEN
     const ids = [1];
     render(<DeleteImage ids={ids} />);
-    clickButton(/Supprimer/);
+    clickButton(/delete-photo/i);
     triggerRequestSuccess('{ "message": "Suppression effectuée avec succès" }');
     const spyRequestFunction = spyRequestSuccessBody(
       '{ "message": "Suppression effectuée avec succès" }'
@@ -40,7 +40,7 @@ describe('Create delete button tests', () => {
     //GIVEN
     const ids = [100];
     render(<DeleteImage ids={ids} />);
-    clickButton(/Supprimer/);
+    clickButton(/delete-photo/i);
     const serverError =
       '{ "message": "Une erreur est survenue lors du téléchargement" }';
     triggerRequestFailure(serverError);
@@ -56,7 +56,7 @@ describe('Create delete button tests', () => {
     //GIVEN
     render(<DeleteImage ids={[]} />);
     //WHEN
-    clickButton(/Supprimer/);
+    clickButton(/delete-photo/i);
     //THEN
     expect(screen.getByText('Aucune photo sélectionnée')).toBeInTheDocument();
   });

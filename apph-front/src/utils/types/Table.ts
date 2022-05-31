@@ -13,7 +13,7 @@ export interface ITable {
   details?: JSX.Element;
 }
 
-export interface IPhotoDetails {
+export interface ITableDetails {
   photoSrc: string;
   title: string;
   description: string;
