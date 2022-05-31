@@ -1,17 +1,17 @@
 import { createEvent, fireEvent } from '@testing-library/react';
 import { ITag } from '../../utils';
 
-export function inputFile(file: File, input: HTMLInputElement) {
+export function inputFile(files: File[], input: HTMLInputElement) {
   fireEvent(
     input,
     createEvent('input', input, {
-      target: { files: [file] }
+      target: { files }
     })
   );
 }
 
-export function fakeFile(size: number, type: string) {
-  const file = new File([''], 'big_image.png', { type });
+export function fakeFile(size: number, type: string, name?: string) {
+  const file = new File([''], name ?? 'image.png', { type });
   Object.defineProperty(file, 'size', { value: size });
   return file;
 }

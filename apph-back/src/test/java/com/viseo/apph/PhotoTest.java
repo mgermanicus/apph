@@ -13,6 +13,7 @@ import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.PhotoService;
 import com.viseo.apph.service.TagService;
 import com.viseo.apph.service.UserService;
+import net.bytebuddy.utility.RandomString;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -342,7 +343,7 @@ public class PhotoTest {
         MockMultipartFile failFile = new MockMultipartFile("file", "orig", null, "bar".getBytes());
         Set<Tag> tags = new HashSet<>();
         Gson gson = new GsonBuilder().create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(failFile).setTags(gson.toJson(tags)).setFolderId(-1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setDescription("Description").setFile(failFile).setTags(gson.toJson(tags)).setFolderId(-1);
         User user = new User().setLogin("toto").setPassword("password");
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
@@ -424,7 +425,7 @@ public class PhotoTest {
         tags.add(tag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setDescription("Description").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(1);
         User user = new User().setLogin("toto").setPassword("password");
         when(utils.getUser()).thenReturn(user);
         when(em.find(Folder.class, 1L)).thenReturn(null);
@@ -447,7 +448,7 @@ public class PhotoTest {
         tags.add(tag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(2);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setDescription("Description").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(2);
         User user = new User().setLogin("toto").setPassword("password");
         User other = (User) new User().setLogin("other").setPassword("Passw0rd").setId(2L);
         Folder otherFolder = (Folder) new Folder().setParentFolderId(1L).setName("otherFolder").setUser(other).setId(2L);
@@ -491,6 +492,61 @@ public class PhotoTest {
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("Titre déjà utilisé dans le dossier.", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testUploadWithInvalidTitleLength() {
+        //GIVEN
+        createPhotoController();
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
+        Tag tag = new Tag().setName("+ Add New Tag totoTestTag");
+        Set<Tag> tags = new HashSet<>();
+        tags.add(tag);
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        String title = RandomString.make(256);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle(title).setDescription("Description").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(1);
+        User user = new User().setLogin("toto").setPassword("password");
+        when(utils.getUser()).thenReturn(user);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("Le titre ou la description ne peuvent pas dépasser les 255 caractères.", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testUploadWithInvalidTagLength() {
+        //GIVEN
+        createPhotoController();
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
+        String tagName = RandomString.make(256);
+        Tag tag = new Tag().setName("+ Add New Tag " + tagName);
+        Set<Tag> tags = new HashSet<>();
+        tags.add(tag);
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setDescription("Description").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
+        User user = new User().setLogin("toto").setPassword("password");
+        when(utils.getUser()).thenReturn(user);
+        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
+        when(typedQueryLong.getSingleResult()).thenReturn(0L);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("Les tags ne peuvent pas dépasser 255 caractères.", messageResponse.getMessage());
     }
 
     @Test

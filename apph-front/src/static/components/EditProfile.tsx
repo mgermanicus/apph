@@ -120,18 +120,21 @@ export const EditProfile = () => {
               required
               label="Nom"
               value={lastName}
+              inputProps={{ maxLength: 127 }}
               onChange={(e) => setLastName(e.target.value)}
             />
             <TextField
               required
               label="Prénom"
               value={firstName}
+              inputProps={{ maxLength: 127 }}
               onChange={(e) => setFirstName(e.target.value)}
             />
             <TextField
               required
               label="Login"
               value={login}
+              inputProps={{ maxLength: 255 }}
               onChange={(e) => setLogin(e.target.value)}
               type="email"
             />

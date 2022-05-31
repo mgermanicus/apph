@@ -10,7 +10,7 @@ import {
 import { UserAvatar } from './UserAvatar';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { IUser, makeAppBarStyles } from '../../utils';
 import { useState } from 'react';
 import { DrawerMenuItem } from './DrawerMenuItem';
@@ -27,14 +27,12 @@ import AuthService from '../../services/AuthService';
 
 export const Header = (): JSX.Element => {
   const classes = makeAppBarStyles();
-  const navigate = useNavigate();
   const user = useSelector(
     ({ currentUser }: { currentUser: IUser }) => currentUser
   );
   const [drawerMenuVisible, setDrawerMenuVisible] = useState<boolean>(false);
   const handleLogout = () => {
     AuthService.logout();
-    navigate(0);
   };
   return (
     <Box sx={{ flexGrow: 1 }}>

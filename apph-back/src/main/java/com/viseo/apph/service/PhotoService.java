@@ -42,6 +42,8 @@ public class PhotoService {
     @Transactional
     public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException, ConflictException {
         Folder folder;
+        if (photoRequest.getTitle().length() > 255 || photoRequest.getDescription().length() > 255)
+            throw new IllegalArgumentException("Le titre ou la description ne peuvent pas dépasser les 255 caractères.");
         if (photoRequest.getFolderId() == -1) {
             folder = folderDao.getParentFolderByUser(user);
         } else {

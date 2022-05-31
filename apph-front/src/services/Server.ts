@@ -1,3 +1,5 @@
+import AuthService from './AuthService';
+
 const BASE_API_URL = process.env['REACT_APP_API_URL'];
 
 export default class Server {
@@ -13,6 +15,9 @@ export default class Server {
         if (response.ok) {
           successFunction(body);
         } else {
+          if (body === 'Token invalide') {
+            AuthService.logout();
+          }
           errorFunction(body);
         }
       })
