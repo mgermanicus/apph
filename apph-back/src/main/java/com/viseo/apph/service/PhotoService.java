@@ -82,9 +82,9 @@ public class PhotoService {
     }
 
     @Transactional
-    public PaginationResponse getUserPhotos(User user, int pageSize, int page) {
+    public PaginationResponse getUserPhotos(User user, FilterRequest filterRequest) {
         List<Photo> userPhotos = photoDao.getUserPhotos(user);
-        return getPaginationResponse(pageSize, page, userPhotos);
+        return getPaginationResponse(filterRequest.getPageSize(), filterRequest.getPage(), userPhotos);
     }
 
     public PhotoResponse download(Long userId, PhotoRequest photoRequest) throws FileNotFoundException, UnauthorizedException {
@@ -183,10 +183,10 @@ public class PhotoService {
     }
 
     @Transactional
-    public PaginationResponse getUserFilteredPhotos(User user, int pageSize, int page, FilterRequest filterRequest) throws InvalidObjectException {
+    public PaginationResponse getUserFilteredPhotos(User user, FilterRequest filterRequest) throws InvalidObjectException {
         String filterQuery = createFilterQuery(filterRequest.getFilters());
         List<Photo> userPhotos = photoDao.getUserFilteredPhotos(user, filterQuery);
-        return getPaginationResponse(pageSize, page, userPhotos);
+        return getPaginationResponse(filterRequest.getPageSize(), filterRequest.getPage(), userPhotos);
     }
 
     private PaginationResponse getPaginationResponse(int pageSize, int page, List<Photo> userPhotos) {

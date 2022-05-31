@@ -40,9 +40,9 @@ public class PhotoController {
             User user = utils.getUser();
             PaginationResponse response;
             if (filterRequest.getFilters() == null) {
-                response = photoService.getUserPhotos(user, filterRequest.getPageSize(), filterRequest.getPage());
+                response = photoService.getUserPhotos(user, filterRequest);
             } else {
-                response = photoService.getUserFilteredPhotos(user, filterRequest.getPageSize(), filterRequest.getPage(), filterRequest);
+                response = photoService.getUserFilteredPhotos(user, filterRequest);
             }
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
