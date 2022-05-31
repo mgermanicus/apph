@@ -14,12 +14,16 @@ import * as React from 'react';
 import PhotoDetails from './PhotoDetails';
 
 const tinySize = {
-  gridContainerSpacing: { xs: 2, md: 3 },
+  gridContainerSpacing: { xs: 1, md: 2 },
   gridContainerColumns: { xs: 8, sm: 12, md: 16 },
-  gridContainerPadding: 5,
+  gridContainerPadding: 2.5,
   gridItemXS: 1,
   gridItemSM: 1.5,
-  gridItemMD: 2
+  gridItemMD: 2,
+  cardStyle: {
+    cardMaxWidth: '30vw',
+    cardMediaHeight: '10vh'
+  }
 };
 
 const mediumSize = {
@@ -28,7 +32,11 @@ const mediumSize = {
   gridContainerPadding: 5,
   gridItemXS: 2,
   gridItemSM: 3,
-  gridItemMD: 4
+  gridItemMD: 4,
+  cardStyle: {
+    cardMaxWidth: '30vw',
+    cardMediaHeight: '20vh'
+  }
 };
 
 const bigSize = {
@@ -37,7 +45,11 @@ const bigSize = {
   gridContainerPadding: 5,
   gridItemXS: 4,
   gridItemSM: 6,
-  gridItemMD: 8
+  gridItemMD: 8,
+  cardStyle: {
+    cardMaxWidth: '30vw',
+    cardMediaHeight: '30vh'
+  }
 };
 
 export const DisplayPhoto = ({
@@ -115,7 +127,7 @@ export const DisplayPhoto = ({
           container
           spacing={selectedSize.gridContainerSpacing}
           columns={selectedSize.gridContainerColumns}
-          padding={selectedSize.gridContainerPadding}
+          sx={{ px: selectedSize.gridContainerPadding }}
         >
           {photoList.map((photo) => (
             <Grid
@@ -135,6 +147,7 @@ export const DisplayPhoto = ({
                 tags={photo.tags}
                 format={photo.format}
                 clickType="card"
+                cardStyle={selectedSize.cardStyle}
               />
             </Grid>
           ))}
