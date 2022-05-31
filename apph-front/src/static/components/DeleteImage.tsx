@@ -26,8 +26,8 @@ export const DeleteImage = ({
       setSeverity('warning');
     }
   };
-  const deleteImage = () => {
-    PhotoService.deleteImage(
+  const deleteImage = async () => {
+    await PhotoService.deleteImage(
       ids,
       (message) => {
         setMessage(message.message);
@@ -41,13 +41,13 @@ export const DeleteImage = ({
       }
     );
   };
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setDialogOpen(false);
-    deleteImage();
+    await deleteImage();
     if (setRefresh) {
       setTimeout(async () => {
         setRefresh((refresh) => !refresh);
-      }, 100);
+      }, 500);
     }
   };
 
