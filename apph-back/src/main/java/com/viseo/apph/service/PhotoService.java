@@ -85,7 +85,7 @@ public class PhotoService {
         photo.setTitle(photoRequest.getTitle())
              .setDescription(photoRequest.getDescription())
              .setShootingDate(shootingDate)
-             .setTags(tagService.createListTags(photoRequest.getTags(), user));
+             .setTags(newTags);
         return "Photo édité";
     }
 
