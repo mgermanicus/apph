@@ -13,7 +13,6 @@ public class FilterDto implements Comparable<FilterDto> {
     String operator;
     @JsonProperty("value")
     String value;
-    //TODO if tag will be just an id
 
     public String getField() {
         return field;
@@ -53,19 +52,21 @@ public class FilterDto implements Comparable<FilterDto> {
             case "shootingDate":
                 return "p.shootingDate";
             case "tags":
-                return "tag.name";
+                return "'" + value + "'";
             default:
-                throw new InvalidObjectException("champ non reconnu");
+                throw new InvalidObjectException("champ non reconnu : " + field);
         }
     }
 
     public String getOperatorToSql() throws InvalidObjectException {
-        if (field.equals("title") | field.equals("description") | field.equals("tags")) {
-            if (operator.equals("is") | operator.equals("contain") | field.equals("tags")) {
+        if (field.equals("title") || field.equals("description")) {
+            if (operator.equals("is") || operator.equals("contain")) {
                 return "LIKE";
             }
             throw new InvalidObjectException("Operateur invalide pour un " + field);
-        } else if (field.equals("creationDate") | field.equals("shootingDate")) {
+        } else if (field.equals("tags")) {
+            return "IN";
+        } else if (field.equals("creationDate") || field.equals("shootingDate")) {
             switch (operator) {
                 case "strictlyInferior":
                     return "<";
@@ -85,7 +86,9 @@ public class FilterDto implements Comparable<FilterDto> {
     }
 
     public String getValueToSql() {
-        if (operator.equals("contain")) {
+        if (field.equals("tags")) {
+            return "(select t.name from p.tags t)";
+        } else if (operator.equals("contain")) {
             return "'%" + value + "%'";
         }
         return "'" + value + "'";

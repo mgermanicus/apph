@@ -158,7 +158,7 @@ public class PhotoService {
     }
 
     private String createFilterQuery(FilterDto[] filters) throws InvalidObjectException {
-        StringBuilder query = new StringBuilder("SELECT p FROM Photo p LEFT JOIN Tag t ON p.user = t.user WHERE p.user = :user");
+        StringBuilder query = new StringBuilder("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user");
         List<FilterDto> filterDtoList = Arrays.asList(filters);
         filterDtoList.sort(FilterDto::compareTo);
         String lastField = "first";
@@ -176,6 +176,7 @@ public class PhotoService {
             query.append(filter.getValueToSql()).append(" ");
         }
         if (!filterDtoList.isEmpty()) {query.append(")");}
+        //query.append(" GROUP BY p.id,t.user");
         return query.toString();
     }
 
