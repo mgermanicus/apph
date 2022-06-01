@@ -49,7 +49,7 @@ export const DownloadZip = ({ ids }: { ids: number[] }): JSX.Element => {
           variant="outlined"
           onClick={handleSubmit}
           id={`download-${ids}`}
-          aria-label="downdload-zip"
+          aria-label="download-zip"
           loading={loading}
         >
           <Download />

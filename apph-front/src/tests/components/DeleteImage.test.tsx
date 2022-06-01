@@ -42,13 +42,13 @@ describe('Create delete button tests', () => {
     render(<DeleteImage ids={ids} />);
     clickButton(/delete-photo/i);
     const serverError =
-      '{ "message": "Une erreur est survenue lors du téléchargement" }';
+      '{ "message": "Une erreur est survenue lors de la suppresion" }';
     triggerRequestFailure(serverError);
     //WHEN
     clickButton(/Continuer/);
     //THEN
     expect(
-      screen.getByText('Une erreur est survenue lors du téléchargement')
+      screen.getByText('Une erreur est survenue lors de la suppresion')
     ).toBeInTheDocument();
   });
 

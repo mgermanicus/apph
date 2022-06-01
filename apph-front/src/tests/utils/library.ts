@@ -18,6 +18,10 @@ export function clickButton(label: RegExp) {
   fireEvent.click(screen.getByRole('button', { name: label }));
 }
 
+export function clickLoadingButton(label: RegExp) {
+  fireEvent.click(screen.getByRole('LoadingButton', { name: label }));
+}
+
 export function fillTags(tags: ITag[]) {
   const autocomplete = screen.getByRole('combobox');
   tags.forEach((tag) => {
