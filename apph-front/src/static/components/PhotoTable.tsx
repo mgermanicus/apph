@@ -1,10 +1,8 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { Dispatch, useEffect, useState } from 'react';
 import { DataGrid, GridColDef, GridSelectionModel } from '@mui/x-data-grid';
-import { Alert, Collapse, IconButton, Stack } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import { IPagination, ITable, ITag } from '../../utils';
-import PhotoDetails from './PhotoDetails';
+import { Stack } from '@mui/material';
+import { ITable, ITag } from '../../utils';
 import { DownloadImage } from './DownloadImage';
 import { useDispatch } from 'react-redux';
 import { replaceSelectedPhotos } from '../../redux/slices/photoSlice';
@@ -86,59 +84,33 @@ const columns: GridColDef[] = [
 ];
 
 interface photoTableProps {
-  getPhotos: (
-    pageSize: number,
-    page: number,
-    handleSuccess: (pagination: IPagination) => void,
-    handleError: (errorMessage: string) => void
-  ) => void;
+  data: ITable[];
+  loading: boolean;
+  totalSize: number;
+  page: number;
+  setPage: Dispatch<React.SetStateAction<number>>;
+  pageSize: number;
+  setPageSize: Dispatch<React.SetStateAction<number>>;
+  selected?: number[];
+  refresh?: boolean;
 }
 
-export const PhotoTable = ({ getPhotos }: photoTableProps) => {
-  const [data, setData] = useState<ITable[]>(new Array<ITable>());
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [pageSize, setPageSize] = useState<number>(5);
-  const [page, setPage] = useState<number>(0);
-  const [totalSize, setTotalSize] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
+export const PhotoTable = ({
+  data,
+  loading = false,
+  totalSize = 0,
+  page = 0,
+  setPage,
+  pageSize = 5,
+  setPageSize,
+  selected
+}: photoTableProps) => {
   const [selectionModel, setSelectionModel] = useState<GridSelectionModel>([]);
-
   const dispatch = useDispatch();
 
-  const handleSuccess = (pagination: IPagination) => {
-    pagination.photoList.forEach(
-      (row) =>
-        (row.details = (
-          <PhotoDetails
-            photoSrc={row.url}
-            title={row.title}
-            description={row.description}
-            creationDate={row.creationDate}
-            shootingDate={row.shootingDate}
-            size={row.size}
-            tags={row.tags}
-            format={row.format}
-            clickType="button"
-          />
-        ))
-    );
-    setData(pagination.photoList);
-    setTotalSize(pagination.totalSize);
-    setLoading(false);
-  };
-
-  const handleError = (error: string) => {
-    setErrorMessage(error);
-    setLoading(false);
-  };
-
   useEffect(() => {
-    getPhotos(pageSize, page + 1, handleSuccess, handleError);
-    const timer = setInterval(() => {
-      getPhotos(pageSize, page + 1, handleSuccess, handleError);
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [page, pageSize]);
+    if (selected) setSelectionModel(selected);
+  }, [data]);
 
   return (
     <div style={{ height: 115 + pageSize * 52, width: '100%' }}>
@@ -159,38 +131,20 @@ export const PhotoTable = ({ getPhotos }: photoTableProps) => {
           setPage(newPage);
         }}
         columnBuffer={9}
-        onSelectionModelChange={(ids) => {
+        onSelectionModelChange={(ids: GridSelectionModel) => {
           setSelectionModel(ids);
           const selectedIDs = new Set(ids);
           const selectedRowData = data.filter((rows) =>
             selectedIDs.has(rows.id)
           );
-          dispatch(replaceSelectedPhotos(JSON.stringify(selectedRowData)));
+          if (selectedRowData.length) {
+            dispatch(replaceSelectedPhotos(JSON.stringify(selectedRowData)));
+          }
         }}
         selectionModel={selectionModel}
         checkboxSelection
         disableSelectionOnClick
       />
-      <Collapse in={errorMessage !== ''}>
-        <Alert
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setErrorMessage('');
-              }}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-          sx={{ mb: 2 }}
-          severity="error"
-        >
-          {errorMessage}
-        </Alert>
-      </Collapse>
     </div>
   );
 };

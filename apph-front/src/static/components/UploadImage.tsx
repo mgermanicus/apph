@@ -17,7 +17,14 @@ import {
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import PhotoService from '../../services/PhotoService';
 import { ITag, StatusType, UploadStatus } from '../../utils';
-import React, { createRef, FormEvent, useEffect, useState } from 'react';
+import React, {
+  createRef,
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useEffect,
+  useState
+} from 'react';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import TagService from '../../services/TagService';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
@@ -29,7 +36,11 @@ import { AlertSnackbar } from './AlertSnackbar';
 
 const filter = createFilterOptions<ITag>();
 
-export const UploadImage = (): JSX.Element => {
+export const UploadImage = ({
+  setRefresh
+}: {
+  setRefresh?: Dispatch<SetStateAction<boolean>>;
+}): JSX.Element => {
   const fileInput = createRef<HTMLInputElement>();
   const dispatch = useDispatch();
   const [title, setTitle] = useState<string>('');
@@ -85,6 +96,9 @@ export const UploadImage = (): JSX.Element => {
     setFiles(undefined);
     setGlobalUploadStatus({ type: StatusType.None });
     setOpen(false);
+    if (setRefresh) {
+      setRefresh((refresh) => !refresh);
+    }
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
