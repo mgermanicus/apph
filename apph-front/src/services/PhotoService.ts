@@ -216,4 +216,33 @@ export default class PhotoService {
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
+
+  static reUploadImage(
+    id: number,
+    imageFile: File,
+    handleSuccess: () => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    if (!imageFileCheck(imageFile, handleError)) return;
+    const userInfos = cookies.get('user');
+    const formData = new FormData();
+    formData.append('id', id.toString());
+    formData.append('file', imageFile);
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + userInfos?.token
+      },
+      body: formData
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
+    return Server.request(
+      `/photo/reupload`,
+      requestOptions,
+      handleSuccess,
+      errorFunction
+    );
+  }
 }

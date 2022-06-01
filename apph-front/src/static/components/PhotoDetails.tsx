@@ -1,4 +1,4 @@
-import { Chip, Modal, Stack, Tooltip } from '@mui/material';
+import { ButtonGroup, Chip, Modal, Stack, Tooltip } from '@mui/material';
 import Button from '@mui/material/Button';
 import * as React from 'react';
 import { useState } from 'react';
@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import { ITableDetails, randomHSL } from '../../utils';
 import { PhotoCard } from './PhotoCard';
 import { Info } from '@mui/icons-material';
+import { ReUploadPhoto } from './ReUploadPhoto';
 
 const modalStyle = {
   position: 'absolute',
@@ -29,6 +30,7 @@ const titleTypoStyle = { fontWeight: 'bold', pl: 15 };
 const detailTypoStyle = { ml: 1 };
 
 const PhotoDetails = ({
+  photoId,
   photoSrc,
   title,
   description,
@@ -39,7 +41,8 @@ const PhotoDetails = ({
   tags,
   format,
   clickType,
-  cardStyle
+  cardStyle,
+  updateData
 }: ITableDetails) => {
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
 
@@ -98,7 +101,17 @@ const PhotoDetails = ({
             align="center"
             component={'div'}
           >
-            <Box component={'img'} sx={{ width: 0.7 }} src={photoSrc} />
+            <Box
+              component={'img'}
+              sx={{ width: 0.7 }}
+              src={`${photoSrc}?${global.Date.now()}`}
+            />
+            <ButtonGroup
+              variant="outlined"
+              sx={{ m: 1, display: 'flex', justifyContent: 'end' }}
+            >
+              <ReUploadPhoto photoId={photoId} updateData={updateData} />
+            </ButtonGroup>
             <Box
               sx={{
                 display: 'flex',

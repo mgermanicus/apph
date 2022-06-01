@@ -12,6 +12,7 @@ describe('Test du composant PhotoDetails', () => {
   it('check if datas are render correctly', () => {
     //GIVEN
     const mockPhoto = {
+      id: 0,
       src: 'https://i.pinimg.com/originals/a2/39/b5/a239b5b33d145fcab7e48544b81019da.jpg',
       title: 'testTitle',
       description: 'testDescription',
@@ -24,6 +25,7 @@ describe('Test du composant PhotoDetails', () => {
     };
     render(
       <PhotoDetails
+        photoId={mockPhoto.id}
         photoSrc={mockPhoto.src}
         title={mockPhoto.title}
         description={mockPhoto.description}
@@ -34,6 +36,9 @@ describe('Test du composant PhotoDetails', () => {
         tags={mockPhoto.tags}
         format={mockPhoto.format}
         clickType="button"
+        updateData={() => {
+          return;
+        }}
       />
     );
     //WHEN

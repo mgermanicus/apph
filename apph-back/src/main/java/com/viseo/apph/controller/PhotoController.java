@@ -141,4 +141,21 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(new MessageResponse(e.getMessage()));
         }
     }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping("/reupload")
+    public ResponseEntity<IResponseDto> changePhotoFile(@ModelAttribute PhotoRequest photoRequest) {
+        try {
+            User user = utils.getUser();
+            return ResponseEntity.ok(new MessageResponse(photoService.changePhotoFile(user.getId(), photoRequest)));
+        } catch (FileNotFoundException fnfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(fnfe.getMessage()));
+        } catch (UnauthorizedException ue) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
+        } catch (InvalidFileException ife) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Le format du fichier n'est pas valide"));
+        } catch (S3Exception | IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du ré-upload."));
+        }
+    }
 }
