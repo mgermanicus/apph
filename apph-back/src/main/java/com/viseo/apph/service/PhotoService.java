@@ -45,18 +45,16 @@ public class PhotoService {
 
     @Transactional
     public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException, ConflictException {
-        Folder folder;
+        Folder folder = null;
         if (photoRequest.getTitle().length() > 255 || photoRequest.getDescription().length() > 255)
             throw new IllegalArgumentException("Le titre ou la description ne peuvent pas dépasser les 255 caractères.");
-        if (photoRequest.getFolderId() == -1) {
-            folder = folderDao.getParentFolderByUser(user);
-        } else {
+        if (photoRequest.getFolderId() >= 0) {
             folder = folderDao.getFolderById(photoRequest.getFolderId());
+            if (folder == null)
+                throw new NotFoundException("Le dossier n'existe pas.");
+            if (folder.getUser().getId() != user.getId())
+                throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
         }
-        if (folder == null)
-            throw new NotFoundException("Le dossier n'existe pas.");
-        if (folder.getUser().getId() != user.getId())
-            throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
         if (photoDao.existNameInFolder(folder, photoRequest.getTitle(), getFormat(photoRequest.getFile())))
             throw new ConflictException("Titre déjà utilisé dans le dossier.");
         Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);

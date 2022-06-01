@@ -107,7 +107,7 @@ public class PhotoTest {
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
-        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", null)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(0L);
@@ -514,7 +514,7 @@ public class PhotoTest {
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
-        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", null)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(1L);
@@ -569,7 +569,7 @@ public class PhotoTest {
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
-        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", null)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(0L);
