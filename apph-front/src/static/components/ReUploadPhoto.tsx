@@ -44,7 +44,7 @@ export const ReUploadPhoto = ({
             setSnackMessage("Le changement s'est effectué avec succèss.");
             setSnackbarOpen(true);
             setLoading(false);
-            setShowModal(false);
+            setTimeout(handleCloseModal, 1000);
           },
           (errorMessage) => {
             setSnackSeverity('error');
@@ -110,13 +110,13 @@ export const ReUploadPhoto = ({
             {loading ? <CircularProgress /> : <>Confirmer</>}
           </Button>
         </DialogActions>
+        <AlertSnackbar
+          open={snackbarOpen}
+          severity={snackSeverity}
+          message={snackMessage}
+          onClose={setSnackbarOpen}
+        />
       </Dialog>
-      <AlertSnackbar
-        open={snackbarOpen}
-        severity={snackSeverity}
-        message={snackMessage}
-        onClose={setSnackbarOpen}
-      />
     </Box>
   );
 };
