@@ -37,7 +37,8 @@ const PhotoDetails = ({
   size,
   tags,
   format,
-  clickType
+  clickType,
+  cardStyle
 }: ITableDetails) => {
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
 
@@ -69,6 +70,7 @@ const PhotoDetails = ({
               src={photoSrc}
               title={title + format}
               openFunction={handleOpenDetails}
+              cardStyle={cardStyle}
             />
           )
         }[clickType]

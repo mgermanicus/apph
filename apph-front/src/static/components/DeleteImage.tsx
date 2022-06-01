@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { AlertColor, Box, Button, Tooltip } from '@mui/material';
 import { ConfirmationDialog } from './ConfirmationDialog';
 import PhotoService from '../../services/PhotoService';
 import { AlertSnackbar } from './AlertSnackbar';
 import { Delete } from '@mui/icons-material';
 
-export const DeleteImage = ({ ids }: { ids: number[] }): JSX.Element => {
+export const DeleteImage = ({
+  ids,
+  setRefresh
+}: {
+  ids: number[];
+  setRefresh?: Dispatch<SetStateAction<boolean>>;
+}): JSX.Element => {
   const [message, setMessage] = useState('');
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
@@ -20,8 +26,8 @@ export const DeleteImage = ({ ids }: { ids: number[] }): JSX.Element => {
       setSeverity('warning');
     }
   };
-  const deleteImage = () => {
-    PhotoService.deleteImage(
+  const deleteImage = async () => {
+    await PhotoService.deleteImage(
       ids,
       (message) => {
         setMessage(message.message);
@@ -35,9 +41,14 @@ export const DeleteImage = ({ ids }: { ids: number[] }): JSX.Element => {
       }
     );
   };
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setDialogOpen(false);
-    deleteImage();
+    await deleteImage();
+    if (setRefresh) {
+      setTimeout(async () => {
+        setRefresh((refresh) => !refresh);
+      }, 500);
+    }
   };
 
   return (
