@@ -13,11 +13,11 @@ import {
 } from '@mui/material';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import * as React from 'react';
 import { FormEvent, useEffect, useState } from 'react';
 import PhotoService from '../../services/PhotoService';
 import { TagInput } from './TagInput';
 import TagService from '../../services/TagService';
-import * as React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 
 export const EditPhotoDetails = (props: {
@@ -26,6 +26,7 @@ export const EditPhotoDetails = (props: {
   description: string;
   shootingDate: Date;
   tags: ITag[];
+  onEdit: () => void;
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [title, setTitle] = useState(props.title);
@@ -62,7 +63,7 @@ export const EditPhotoDetails = (props: {
       shootingDate,
       () => handleClose(),
       (error) => setErrorMessage(error)
-    );
+    ).then(props.onEdit);
   };
 
   const handleClose = () => {

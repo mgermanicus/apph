@@ -28,7 +28,7 @@ describe('test EditPhotoDetails', () => {
       shootingDate: new Date(2000, 0),
       tags: [{ name: 'new tag1' }, { name: 'new tag 2' }]
     };
-    render(<EditPhotoDetails id={0} {...photoDetails} />);
+    render(<EditPhotoDetails id={0} {...photoDetails} onEdit={jest.fn()} />);
     //WHEN
     clickButton(/Modifier/);
     fillText(/Titre/, newPhotoDetails.title);
@@ -57,7 +57,7 @@ describe('test EditPhotoDetails', () => {
       shootingDate: new Date(),
       tags: [{ name: 'tag' }]
     };
-    render(<EditPhotoDetails id={0} {...photoDetails} />);
+    render(<EditPhotoDetails id={0} {...photoDetails} onEdit={jest.fn()} />);
     //WHEN
     clickButton(/Modifier/);
     clickButton(/Valider/);

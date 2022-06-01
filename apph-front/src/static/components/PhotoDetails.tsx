@@ -31,20 +31,14 @@ const titleTypoStyle = { fontWeight: 'bold', pl: 15 };
 const detailTypoStyle = { ml: 1 };
 
 const PhotoDetails = ({
-  photoId,
-  photoSrc,
-  title,
-  description,
-  creationDate,
-  modificationDate,
-  shootingDate,
-  size,
-  tags,
-  format,
-  clickType,
-  cardStyle,
-  updateData
-}: ITableDetails) => {
+  details,
+  updateData,
+  refresh
+}: {
+  details: ITableDetails;
+  updateData: () => void;
+  refresh: () => void;
+}) => {
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
 
   const handleOpenDetails = () => {
@@ -72,13 +66,13 @@ const PhotoDetails = ({
           ),
           card: (
             <PhotoCard
-              src={photoSrc}
-              title={title + format}
+              src={details.photoSrc}
+              title={details.title + details.format}
               openFunction={handleOpenDetails}
-              cardStyle={cardStyle}
+              cardStyle={details.cardStyle}
             />
           )
-        }[clickType]
+        }[details.clickType]
       }
 
       <Modal
@@ -94,7 +88,7 @@ const PhotoDetails = ({
             align="center"
             sx={{ fontSize: '2.5rem' }}
           >
-            {title}
+            {details.title}
           </Typography>
           <Typography
             id="modal-modal-description"
@@ -105,13 +99,16 @@ const PhotoDetails = ({
             <Box
               component={'img'}
               sx={{ width: 0.7 }}
-              src={`${photoSrc}?${global.Date.now()}`}
+              src={`${details.photoSrc}?${global.Date.now()}`}
             />
             <ButtonGroup
               variant="outlined"
               sx={{ m: 1, display: 'flex', justifyContent: 'end' }}
             >
-              <ReUploadPhoto photoId={photoId} updateData={updateData} />
+              <ReUploadPhoto
+                photoId={details.photoId}
+                updateData={updateData}
+              />
             </ButtonGroup>
             <Box
               sx={{
@@ -122,16 +119,18 @@ const PhotoDetails = ({
             >
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>Titre:</Typography>
-                <Typography sx={detailTypoStyle}>{title}</Typography>
+                <Typography sx={detailTypoStyle}>{details.title}</Typography>
               </Box>
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>Description:</Typography>
-                <Typography sx={detailTypoStyle}>{description}</Typography>
+                <Typography sx={detailTypoStyle}>
+                  {details.description}
+                </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>Date de création:</Typography>
                 <Typography sx={detailTypoStyle}>
-                  {creationDate?.toLocaleString()}
+                  {details.creationDate?.toLocaleString()}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
@@ -139,7 +138,7 @@ const PhotoDetails = ({
                   Date de dernière modification:
                 </Typography>
                 <Typography sx={detailTypoStyle}>
-                  {modificationDate?.toLocaleString()}
+                  {details.modificationDate?.toLocaleString()}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
@@ -147,19 +146,19 @@ const PhotoDetails = ({
                   Date de prise de vue:
                 </Typography>
                 <Typography sx={detailTypoStyle}>
-                  {shootingDate?.toLocaleString()}
+                  {details.shootingDate?.toLocaleString()}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>Taille:</Typography>
-                <Typography sx={detailTypoStyle}>{size} Ko</Typography>
+                <Typography sx={detailTypoStyle}>{details.size} Ko</Typography>
               </Box>
               <Box sx={detailBoxStyle}>
                 <Stack direction="row" spacing={1}>
                   <Box sx={{ m: 0.5 }}>
                     <Typography sx={titleTypoStyle}>Tags:</Typography>
                   </Box>
-                  {tags.map((tag, index) => (
+                  {details.tags.map((tag, index) => (
                     <Chip
                       key={index}
                       label={tag.name}
@@ -172,11 +171,12 @@ const PhotoDetails = ({
               </Box>
               <Box sx={{ pl: 15, mt: 2 }}>
                 <EditPhotoDetails
-                  id={photoId}
-                  title={title}
-                  description={description}
-                  shootingDate={shootingDate}
-                  tags={tags}
+                  id={details.photoId}
+                  title={details.title}
+                  description={details.description}
+                  shootingDate={details.shootingDate}
+                  tags={details.tags}
+                  onEdit={refresh}
                 />
               </Box>
             </Box>

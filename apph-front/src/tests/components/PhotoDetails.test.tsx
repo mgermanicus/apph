@@ -25,20 +25,23 @@ describe('Test du composant PhotoDetails', () => {
     };
     render(
       <PhotoDetails
-        photoId={mockPhoto.id}
-        photoSrc={mockPhoto.src}
-        title={mockPhoto.title}
-        description={mockPhoto.description}
-        creationDate={mockPhoto.creationDate}
-        modificationDate={mockPhoto.modificationDate}
-        shootingDate={mockPhoto.shootingDate}
-        size={mockPhoto.size}
-        tags={mockPhoto.tags}
-        format={mockPhoto.format}
-        clickType="button"
+        details={{
+          photoId: 0,
+          photoSrc: mockPhoto.src,
+          title: mockPhoto.title,
+          description: mockPhoto.description,
+          creationDate: mockPhoto.creationDate,
+          modificationDate: mockPhoto.modificationDate,
+          shootingDate: mockPhoto.shootingDate,
+          size: mockPhoto.size,
+          tags: mockPhoto.tags,
+          format: mockPhoto.format,
+          clickType: 'button'
+        }}
         updateData={() => {
           return;
         }}
+        refresh={jest.fn()}
       />
     );
     //WHEN

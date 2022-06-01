@@ -55,17 +55,19 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
       (row) =>
         (row.details = (
           <PhotoDetails
-            photoId={row.id}
-            photoSrc={row.url}
-            title={row.title}
-            description={row.description}
-            creationDate={row.creationDate}
-            modificationDate={row.modificationDate}
-            shootingDate={row.shootingDate}
-            size={row.size}
-            tags={row.tags}
-            format={row.format}
-            clickType="button"
+            details={{
+              photoId: row.id,
+              photoSrc: row.url,
+              title: row.title,
+              description: row.description,
+              creationDate: row.creationDate,
+              modificationDate: row.modificationDate,
+              shootingDate: row.shootingDate,
+              size: row.size,
+              tags: row.tags,
+              format: row.format,
+              clickType: 'button'
+            }}
             updateData={() =>
               PhotoService.getData(
                 pageSize,
@@ -75,6 +77,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
                 filterList
               )
             }
+            refresh={() => setRefresh((refresh) => !refresh)}
           />
         ))
     );

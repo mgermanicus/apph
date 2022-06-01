@@ -30,5 +30,4 @@ export interface ITableDetails {
     cardMaxWidth: string;
     cardMediaHeight: string;
   };
-  updateData: () => void;
 }
