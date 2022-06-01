@@ -77,7 +77,7 @@ public class PhotoService {
     }
 
     @Transactional
-    public String editPhotoInfos(User user, PhotoRequest photoRequest) throws JsonProcessingException, InvalidFileException, NotFoundException {
+    public String editPhotoInfos(User user, PhotoRequest photoRequest) throws NotFoundException {
         Photo photo = photoDao.getPhoto(photoRequest.getId());
         if (photo == null) throw new NotFoundException("photo not found");
         Set<Tag> newTags = tagService.createListTags(photoRequest.getTags(), user);
