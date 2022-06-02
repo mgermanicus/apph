@@ -35,11 +35,11 @@ export const DownloadZip = ({
       titleZip,
       (photos: IPhoto) => {
         const imageBase64 = `data:application/zip;base64,${photos.data}`;
-        const a = document.createElement('a');
+        const link = document.createElement('a');
         const event = new MouseEvent('click');
-        a.href = imageBase64;
-        a.download = photos.title + photos.format;
-        a.dispatchEvent(event);
+        link.href = imageBase64;
+        link.download = photos.title + photos.format;
+        link.dispatchEvent(event);
       },
       (error: IMessage) => {
         setMessage(error.message);
