@@ -234,7 +234,7 @@ public class PhotoService {
             zipOut.putNextEntry(zipEntry);
             zipOut.write(photoByte);
             if (bos.size() > zipMaxSize * 1024 * 1024) {
-                throw new MaxSizeExceededException("Vous n'est pas autorisé à effectuer ce téléchargement qui dépasse la taille maximum autorisée de " + zipMaxSize + " Mo.");
+                throw new MaxSizeExceededException("Erreur: Taille maximale du ZIP dépassée.");
             }
         }
         zipOut.closeEntry();
