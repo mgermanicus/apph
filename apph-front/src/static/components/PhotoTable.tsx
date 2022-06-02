@@ -92,7 +92,6 @@ interface photoTableProps {
   pageSize: number;
   setPageSize: Dispatch<React.SetStateAction<number>>;
   selected?: number[];
-  refresh?: boolean;
 }
 
 export const PhotoTable = ({
