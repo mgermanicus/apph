@@ -736,7 +736,7 @@ public class PhotoTest {
         long[] ids = {1L, 1L};
         User user = (User) new User().setLogin("test@test").setId(2);
         Photo photo_1 = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(ids[0]);
-        PhotosRequest photosRequest = new PhotosRequest().setIds(ids);
+        PhotosRequest photosRequest = new PhotosRequest().setIds(ids).setTitleZip("photos");
         GetObjectResponse response = mock(GetObjectResponse.class);
         ResponseBytes<GetObjectResponse> s3Object = ResponseBytes.fromByteArray(response, "".getBytes(StandardCharsets.UTF_8));
         when(utils.getUser()).thenReturn(user);

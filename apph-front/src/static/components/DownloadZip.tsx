@@ -3,10 +3,16 @@ import { AlertColor, Box, Tooltip } from '@mui/material';
 import PhotoService from '../../services/PhotoService';
 import { AlertSnackbar } from './AlertSnackbar';
 import { IMessage, IPhoto } from '../../utils';
-import { Download } from '@mui/icons-material';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import { LoadingButton } from '@mui/lab';
 
-export const DownloadZip = ({ ids }: { ids: number[] }): JSX.Element => {
+export const DownloadZip = ({
+  ids,
+  titleZip
+}: {
+  ids: number[];
+  titleZip: string;
+}): JSX.Element => {
   const [message, setMessage] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [severity, setSeverity] = useState<AlertColor>();
@@ -26,6 +32,7 @@ export const DownloadZip = ({ ids }: { ids: number[] }): JSX.Element => {
   const downloadImage = () => {
     PhotoService.downloadZip(
       ids,
+      titleZip,
       (photos: IPhoto) => {
         const imageBase64 = `data:application/zip;base64,${photos.data}`;
         const a = document.createElement('a');
@@ -52,7 +59,7 @@ export const DownloadZip = ({ ids }: { ids: number[] }): JSX.Element => {
           aria-label="download-zip"
           loading={loading}
         >
-          <Download />
+          <CloudDownloadIcon />
         </LoadingButton>
       </Tooltip>
       <AlertSnackbar

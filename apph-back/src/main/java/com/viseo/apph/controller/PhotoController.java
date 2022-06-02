@@ -132,7 +132,7 @@ public class PhotoController {
     public ResponseEntity<IResponseDto> downloadZip(@RequestBody PhotosRequest photosRequest) {
         try {
             User user = utils.getUser();
-            return ResponseEntity.ok(photoService.downloadZip(user, photosRequest.getIds()));
+            return ResponseEntity.ok(photoService.downloadZip(user, photosRequest));
         } catch (S3Exception | IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du téléchargement"));

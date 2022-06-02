@@ -204,7 +204,8 @@ public class PhotoService {
         return response;
     }
 
-    public PhotoResponse downloadZip(User user, long[] ids) throws UnauthorizedException, IOException, MaxSizeExceededException {
+    public PhotoResponse downloadZip(User user, PhotosRequest photosRequest) throws UnauthorizedException, IOException, MaxSizeExceededException {
+        long[] ids = photosRequest.getIds();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ZipOutputStream zipOut = new ZipOutputStream(bos);
         Set<String> names = new HashSet<>();
@@ -230,6 +231,6 @@ public class PhotoService {
         }
         zipOut.closeEntry();
         zipOut.close();
-        return new PhotoResponse().setData(bos.toByteArray()).setTitle("photos").setFormat(".zip");
+        return new PhotoResponse().setData(bos.toByteArray()).setTitle(photosRequest.getTitleZip()).setFormat(".zip");
     }
 }

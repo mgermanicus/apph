@@ -191,6 +191,7 @@ export default class PhotoService {
 
   static downloadZip(
     ids: number[],
+    titleZip: string,
     handleSuccess: (photos: IPhoto) => void,
     handleError: (errorMessage: IMessage) => void
   ) {
@@ -203,7 +204,8 @@ export default class PhotoService {
           Authorization: 'Bearer ' + userInfos?.token
         },
         body: JSON.stringify({
-          ids
+          ids,
+          titleZip
         })
       };
     const successFunction = (photos: string) => {
