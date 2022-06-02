@@ -123,7 +123,15 @@ public class PhotoService {
         PhotoListResponse response = new PhotoListResponse();
         photoList.forEach(photo -> response.addPhoto(new PhotoResponse()
                 .setId(photo.getId())
-                .setTitle(photo.getTitle()).setCreationDate(photo.getCreationDate()).setSize(photo.getSize()).setTags(photo.getTags()).setDescription(photo.getDescription()).setShootingDate(photo.getShootingDate()).setUrl(s3Dao.getPhotoUrl(photo)).setFormat(photo.getFormat())));
+                .setTitle(photo.getTitle())
+                .setCreationDate(photo.getCreationDate())
+                .setSize(photo.getSize())
+                .setTags(photo.getTags())
+                .setDescription(photo.getDescription())
+                .setShootingDate(photo.getShootingDate())
+                .setUrl(s3Dao.getPhotoUrl(photo))
+                .setFormat(photo.getFormat())
+        ));
         return response;
     }
 
