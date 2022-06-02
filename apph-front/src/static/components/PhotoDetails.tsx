@@ -33,11 +33,18 @@ const detailTypoStyle = { ml: 1 };
 const PhotoDetails = ({
   details,
   updateData,
-  refresh
+  refresh,
+  clickType,
+  cardStyle
 }: {
   details: ITableDetails;
   updateData: () => void;
   refresh: () => void;
+  clickType: string;
+  cardStyle?: {
+    cardMaxWidth: string;
+    cardMediaHeight: string;
+  };
 }) => {
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
 
@@ -69,10 +76,10 @@ const PhotoDetails = ({
               src={details.photoSrc}
               title={details.title + details.format}
               openFunction={handleOpenDetails}
-              cardStyle={details.cardStyle}
+              cardStyle={cardStyle}
             />
           )
-        }[details.clickType]
+        }[clickType]
       }
 
       <Modal

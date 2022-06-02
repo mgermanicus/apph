@@ -25,9 +25,4 @@ export interface ITableDetails {
   size: number;
   tags: ITag[];
   format: string;
-  clickType: string;
-  cardStyle?: {
-    cardMaxWidth: string;
-    cardMediaHeight: string;
-  };
 }

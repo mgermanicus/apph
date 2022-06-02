@@ -35,13 +35,13 @@ describe('Test du composant PhotoDetails', () => {
           shootingDate: mockPhoto.shootingDate,
           size: mockPhoto.size,
           tags: mockPhoto.tags,
-          format: mockPhoto.format,
-          clickType: 'button'
+          format: mockPhoto.format
         }}
         updateData={() => {
           return;
         }}
         refresh={jest.fn()}
+        clickType="button"
       />
     );
     //WHEN

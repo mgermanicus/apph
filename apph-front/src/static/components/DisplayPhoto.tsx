@@ -148,12 +148,12 @@ export const DisplayPhoto = ({
                   shootingDate: photo.shootingDate,
                   size: photo.size,
                   tags: photo.tags,
-                  format: photo.format,
-                  clickType: 'card',
-                  cardStyle: selectedSize.cardStyle
+                  format: photo.format
                 }}
                 updateData={getPhotos}
                 refresh={getPhotos}
+                clickType="card"
+                cardStyle={selectedSize.cardStyle}
               />
             </Grid>
           ))}

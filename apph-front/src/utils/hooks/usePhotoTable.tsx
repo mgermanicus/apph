@@ -65,8 +65,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
               shootingDate: row.shootingDate,
               size: row.size,
               tags: row.tags,
-              format: row.format,
-              clickType: 'button'
+              format: row.format
             }}
             updateData={() =>
               PhotoService.getData(
@@ -78,6 +77,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
               )
             }
             refresh={() => setRefresh((refresh) => !refresh)}
+            clickType="button"
           />
         ))
     );
