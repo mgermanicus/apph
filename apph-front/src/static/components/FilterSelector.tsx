@@ -109,12 +109,12 @@ const iterator = generateId();
 
 interface filterSelectorProps {
   onFilterPhoto: (filterList: IFilter[]) => void;
-  openAlert: (message: string) => void;
+  onError: (message: string) => void;
 }
 
 export const FilterSelector = ({
   onFilterPhoto,
-  openAlert
+  onError
 }: filterSelectorProps) => {
   const [filterStates, dispatchFilterStates] = useReducer(
     filterReducers,
@@ -129,7 +129,7 @@ export const FilterSelector = ({
         const tagsConverted: ITag[] = JSON.parse(tags);
         dispatch(setTagList(tagsConverted));
       },
-      (errorMessage: string) => openAlert(errorMessage)
+      (errorMessage: string) => onError(errorMessage)
     );
   }, []);
 

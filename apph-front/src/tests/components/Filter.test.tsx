@@ -32,10 +32,7 @@ describe('Test du fonctionnement des filtres', () => {
     const spyFilterPhoto = jest.fn();
     const spyOpenAlert = jest.fn();
     render(
-      <FilterSelector
-        onFilterPhoto={spyFilterPhoto}
-        openAlert={spyOpenAlert}
-      />,
+      <FilterSelector onFilterPhoto={spyFilterPhoto} onError={spyOpenAlert} />,
       { wrapper }
     );
     const fieldInput = screen.getByLabelText(/Champ/);

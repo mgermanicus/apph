@@ -62,6 +62,7 @@ export const MyPhotoPage = (): JSX.Element => {
   }, [selected]);
 
   useEffect(() => {
+    setLoading(true);
     PhotoService.getData(pageSize, page + 1, handleSuccess, handleError);
   }, [refresh, page, pageSize]);
 
