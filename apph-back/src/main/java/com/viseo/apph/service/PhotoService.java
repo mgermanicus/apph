@@ -256,7 +256,7 @@ public class PhotoService {
             throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
         }
         s3Dao.delete(photo);
-        photo.setFormat(getFormat(photoRequest.getFile())).setSize((photoRequest.getFile().getSize() + .0F) / 1000);
+        photo.setFormat(getFormat(photoRequest.getFile())).setSize((photoRequest.getFile().getSize() + .0F) / 1024);
         return s3Dao.upload(photoRequest.getFile(), photo);
     }
 }
