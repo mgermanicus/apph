@@ -8,10 +8,10 @@ import { LoadingButton } from '@mui/lab';
 
 export const DownloadZip = ({
   ids,
-  titleZip
+  titleZip = 'photos'
 }: {
   ids: number[];
-  titleZip: string;
+  titleZip?: string;
 }): JSX.Element => {
   const [message, setMessage] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
