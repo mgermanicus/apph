@@ -71,6 +71,7 @@ export const ReUploadPhoto = ({
   const handleCloseModal = () => {
     if (!loading) {
       setShowModal(false);
+      setSnackbarOpen(false);
     }
   };
 
