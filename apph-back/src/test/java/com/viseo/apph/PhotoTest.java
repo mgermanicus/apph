@@ -143,9 +143,10 @@ public class PhotoTest {
         List<Photo> listPhoto = new ArrayList<>();
         Date creationDate = new Date();
         Date shootingDate = new Date();
+        Date modificationDate = new Date();
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Tag tag = new Tag().setUser(robert).setName("robertTag");
-        listPhoto.add((Photo) new Photo().setSize(10).setTitle("photo 1").setCreationDate(creationDate).setShootingDate(shootingDate).setDescription("description").addTag(tag).setId(1L));
+        listPhoto.add((Photo) new Photo().setSize(10).setTitle("photo 1").setCreationDate(creationDate).setModificationDate(modificationDate).setShootingDate(shootingDate).setDescription("description").addTag(tag).setId(1L));
         listPhoto.add(new Photo());
         listPhoto.add(new Photo());
         listPhoto.add(new Photo());
@@ -169,6 +170,7 @@ public class PhotoTest {
         Assert.assertEquals(10, photo.getSize(), 0.0f);
         Assert.assertEquals("photo 1", photo.getTitle());
         Assert.assertEquals(creationDate, photo.getCreationDate());
+        Assert.assertEquals(modificationDate, photo.getModificationDate());
         Assert.assertEquals(shootingDate, photo.getShootingDate());
         Assert.assertEquals("description", photo.getDescription());
         Assert.assertTrue(photo.getTags().contains(tag));

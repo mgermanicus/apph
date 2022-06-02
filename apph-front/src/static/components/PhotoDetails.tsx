@@ -33,6 +33,7 @@ const PhotoDetails = ({
   title,
   description,
   creationDate,
+  modificationDate,
   shootingDate,
   size,
   tags,
@@ -117,6 +118,14 @@ const PhotoDetails = ({
                 <Typography sx={titleTypoStyle}>Date de création:</Typography>
                 <Typography sx={detailTypoStyle}>
                   {creationDate?.toLocaleString()}
+                </Typography>
+              </Box>
+              <Box sx={detailBoxStyle}>
+                <Typography sx={titleTypoStyle}>
+                  Date de dernière modification:
+                </Typography>
+                <Typography sx={detailTypoStyle}>
+                  {modificationDate?.toLocaleString()}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>

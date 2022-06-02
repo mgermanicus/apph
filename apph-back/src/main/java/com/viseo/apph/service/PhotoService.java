@@ -64,6 +64,7 @@ public class PhotoService {
                 .setSize((photoRequest.getFile().getSize() + .0F) / 1000)
                 .setDescription(photoRequest.getDescription())
                 .setCreationDate(new Date())
+                .setModificationDate(new Date())
                 .setShootingDate(shootingDate)
                 .setTags(allTags)
                 .setFolder(folder);
@@ -123,6 +124,7 @@ public class PhotoService {
                 .setId(photo.getId())
                 .setTitle(photo.getTitle())
                 .setCreationDate(photo.getCreationDate())
+                .setModificationDate(photo.getModificationDate())
                 .setSize(photo.getSize())
                 .setTags(photo.getTags())
                 .setDescription(photo.getDescription())
@@ -153,6 +155,7 @@ public class PhotoService {
                 response.addMessage("error: L'une des photos comporte un nom existant déjà dans le dossier destinataire.");
             } else {
                 photo.setFolder(folder);
+                photo.setModificationDate(new Date());
             }
         }
         response.addMessage("success: Le déplacement des photos est terminé.");
@@ -198,6 +201,7 @@ public class PhotoService {
                         .setId(photo.getId())
                         .setTitle(photo.getTitle())
                         .setCreationDate(photo.getCreationDate())
+                        .setModificationDate(photo.getModificationDate())
                         .setSize(photo.getSize())
                         .setTags(photo.getTags())
                         .setDescription(photo.getDescription())

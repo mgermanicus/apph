@@ -12,6 +12,7 @@ public class Photo extends BaseEntity {
     String title;
     String description;
     Date creationDate;
+    Date modificationDate;
     Date shootingDate;
     float size;
     String format;
@@ -65,6 +66,15 @@ public class Photo extends BaseEntity {
 
     public Photo setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+        return this;
+    }
+
+    public Date getModificationDate() {
+        return modificationDate;
+    }
+
+    public Photo setModificationDate(Date modificationDate) {
+        this.modificationDate = modificationDate;
         return this;
     }
 

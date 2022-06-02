@@ -142,6 +142,7 @@ export const DisplayPhoto = ({
                 title={photo.title}
                 description={photo.description}
                 creationDate={photo.creationDate}
+                modificationDate={photo.modificationDate}
                 shootingDate={photo.shootingDate}
                 size={photo.size}
                 tags={photo.tags}
