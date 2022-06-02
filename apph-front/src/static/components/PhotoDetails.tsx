@@ -1,4 +1,4 @@
-import { Modal, Tooltip } from '@mui/material';
+import { Chip, Modal, Stack, Tooltip } from '@mui/material';
 import Button from '@mui/material/Button';
 import * as React from 'react';
 import { useState } from 'react';
@@ -134,12 +134,11 @@ const PhotoDetails = ({
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>Tags:</Typography>
                 <Typography sx={detailTypoStyle}>
-                  {tags.map((tag, index) => {
-                    if (index !== tags.length - 1) {
-                      return tag.name + ', ';
-                    }
-                    return tag.name;
-                  })}
+                  <Stack direction="row" spacing={1}>
+                    {tags.map((tag) => (
+                      <Chip label={tag.name} color="primary" />
+                    ))}
+                  </Stack>
                 </Typography>
               </Box>
             </Box>
