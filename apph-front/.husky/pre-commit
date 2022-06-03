@@ -1,5 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-cd apph-front || exit 1
-npm run prettier && npm run lint
+cd apph-front && npx lint-staged
