@@ -61,12 +61,12 @@ public class PhotoService {
         if (photoRequest.getFolderId() >= 0) {
             folder = folderDao.getFolderById(photoRequest.getFolderId());
             if (folder == null)
-                throw new NotFoundException("Le dossier n'existe pas.");
+                throw new NotFoundException("folder.error.notExist");
             if (folder.getUser().getId() != user.getId())
-                throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
+                throw new UnauthorizedException("folder.error.accessDenied");
         }
         if (photoDao.existNameInFolder(folder, photoRequest.getTitle(), getFormat(photoRequest.getFile())))
-            throw new ConflictException("Titre déjà utilisé dans le dossier.");
+            throw new ConflictException("folder.error.titleAlreadyUsed");
         Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
         Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
         Photo photo = new Photo()
@@ -103,7 +103,7 @@ public class PhotoService {
             String[] types = contentType.split("/");
             return "." + types[1];
         } else {
-            throw new InvalidFileException("Wrong file format");
+            throw new InvalidFileException("upload.error.wrongFormat");
         }
     }
 
@@ -119,7 +119,7 @@ public class PhotoService {
             throw new FileNotFoundException();
         }
         if (userId != photo.getUser().getId()) {
-            throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
+            throw new UnauthorizedException("download.error.accessDenied");
         }
         byte[] photoByte = s3Dao.download(photo);
         return new PhotoResponse().setData(photoByte).setTitle(photo.getTitle()).setFormat(photo.getFormat());
@@ -139,9 +139,9 @@ public class PhotoService {
     @Transactional
     public PhotoListResponse getPhotosByFolder(long folderId, User user) throws NotFoundException, UnauthorizedException {
         Folder folder = folderDao.getFolderById(folderId);
-        if (folder == null) throw new NotFoundException("Le dossier n'existe pas.");
+        if (folder == null) throw new NotFoundException("folder.error.notExist");
         if (folder.getUser().getId() != user.getId())
-            throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
+            throw new UnauthorizedException("folder.error.accessDenied");
         List<Photo> photoList = photoDao.getPhotosByFolder(folder);
         PhotoListResponse response = new PhotoListResponse();
         photoList.forEach(photo -> response.addPhoto(new PhotoResponse()
@@ -162,26 +162,26 @@ public class PhotoService {
     @Transactional
     public MessageListResponse movePhotosToFolder(User user, PhotosRequest request) throws NotFoundException, UnauthorizedException {
         Folder folder = folderDao.getFolderById(request.getFolderId());
-        if (folder == null) throw new NotFoundException("Le dossier n'existe pas.");
+        if (folder == null) throw new NotFoundException("folder.error.notExist");
         if (folder.getUser().getId() != user.getId())
-            throw new UnauthorizedException("L'utilisateur n'a pas accès au dossier.");
+            throw new UnauthorizedException("folder.error.accessDenied");
         MessageListResponse response = new MessageListResponse();
         for (long id : request.getIds()) {
             Photo photo = photoDao.getPhoto(id);
             if (photo == null) {
-                response.addMessage("error: L'une des photos n'existe pas.");
+                response.addMessage("error: folder.error.oneOf.photoNotExist");
             } else if (photo.getUser().getId() != user.getId()) {
-                response.addMessage("error: L'une des photos n'appartient pas à l'utilisateur.");
+                response.addMessage("error: folder.error.oneOf.notBelongUser");
             } else if (photo.getFolder() != null && photo.getFolder().getId() == folder.getId()) {
-                response.addMessage("warning: L'une des photos est déjà dans le dossier.");
+                response.addMessage("warning: folder.error.oneOf.alreadyExist");
             } else if (photoDao.existNameInFolder(folder, photo.getTitle(), photo.getFormat())) {
-                response.addMessage("error: L'une des photos comporte un nom existant déjà dans le dossier destinataire.");
+                response.addMessage("error: folder.error.oneOf.existingName");
             } else {
                 photo.setFolder(folder);
                 photo.setModificationDate(new Date());
             }
         }
-        response.addMessage("success: Le déplacement des photos est terminé.");
+        response.addMessage("success: folder.successMove");
         return response;
     }
 

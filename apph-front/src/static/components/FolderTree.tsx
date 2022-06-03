@@ -2,6 +2,7 @@ import { IFolder } from '../../utils';
 import { TreeItem } from '@mui/lab';
 import { Alert } from '@mui/material';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const FolderTree = ({
   folder
@@ -9,6 +10,7 @@ export const FolderTree = ({
   folder: IFolder | null;
   key?: number;
 }): JSX.Element => {
+  const { t, i18n } = useTranslation();
   if (folder) {
     return (
       <TreeItem
@@ -25,7 +27,7 @@ export const FolderTree = ({
   } else {
     return (
       <Alert sx={{ mb: 2 }} severity="error">
-        Folder is null !
+        {t('folder.error.nullFolder')}
       </Alert>
     );
   }

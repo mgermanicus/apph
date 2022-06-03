@@ -21,6 +21,7 @@ import ChevronRight from '@mui/icons-material/ChevronRight';
 import { FolderTree } from './FolderTree';
 import PhotoService from '../../services/PhotoService';
 import { AlertSnackbar } from './AlertSnackbar';
+import { useTranslation } from 'react-i18next';
 
 const stringToAlertColor = (status: string): AlertColor => {
   switch (status) {
@@ -48,6 +49,7 @@ export const MovePhoto = ({
   const [resultMessage, setResultMessage] = useState<string[]>([]);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     getFolders();
@@ -92,12 +94,12 @@ export const MovePhoto = ({
         setSnackbarOpen(false);
         setDialogVisible(true);
       } else {
-        setSnackMessage('Dossier parent non existant.');
+        setSnackMessage(t('folder.error.parentNotExist'));
         setSnackSeverity('error');
         setSnackbarOpen(true);
       }
     } else {
-      setSnackMessage('Aucune photo sélectionnée');
+      setSnackMessage(t('photo.noneSelected'));
       setSnackSeverity('warning');
       setSnackbarOpen(true);
     }
@@ -109,7 +111,7 @@ export const MovePhoto = ({
 
   return (
     <Box sx={{ m: 1 }}>
-      <Tooltip title="Déplacer dans le dossier">
+      <Tooltip title={t('folder.moveInto')}>
         <Button
           variant="outlined"
           onClick={handleOpenDialog}
@@ -120,7 +122,7 @@ export const MovePhoto = ({
       </Tooltip>
       <Dialog open={dialogVisible} onClose={handleCloseDialog}>
         <DialogTitle sx={{ fontWeight: 'bold' }}>
-          Déplacer vers un dossier
+          {t('folder.moveTo')}
         </DialogTitle>
         <DialogContent
           sx={{
@@ -185,7 +187,7 @@ export const MovePhoto = ({
               disabled={loading}
               onClick={handleSubmit}
             >
-              Déplacer
+              {t('folder.move')}
             </Button>
           )}
         </DialogActions>

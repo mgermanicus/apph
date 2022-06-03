@@ -6,6 +6,7 @@ import {
   DialogContentText,
   DialogTitle
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   open: boolean;
@@ -21,6 +22,7 @@ export const ConfirmationDialog = ({
   onConfirm,
   onCancel
 }: Props) => {
+  const { t } = useTranslation();
   return (
     <Dialog open={open} sx={{ py: '20vh' }}>
       <DialogTitle>{title}</DialogTitle>
@@ -29,10 +31,10 @@ export const ConfirmationDialog = ({
       </DialogContent>
       <DialogActions>
         <Button color="error" onClick={onCancel}>
-          Annuler
+          {t('action.cancel')}
         </Button>
         <Button color="primary" onClick={onConfirm}>
-          Continuer
+          {t('action.continue')}
         </Button>
       </DialogActions>
     </Dialog>

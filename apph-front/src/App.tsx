@@ -5,7 +5,10 @@ import { BrowserRouter } from 'react-router-dom';
 import AuthService from './services/AuthService';
 import { changeCurrentUser } from './redux/slices/userSlice';
 import { useDispatch } from 'react-redux';
-import { frFR } from '@mui/material/locale';
+import { enUS, frFR } from '@mui/material/locale';
+import { useTranslation } from 'react-i18next';
+import Cookies from 'universal-cookie';
+const cookies = new Cookies();
 
 const appStyles = {
   textAlignCenter: {
@@ -13,27 +16,30 @@ const appStyles = {
   }
 };
 
-const theme = createTheme(
-  {
-    palette: {
-      background: {
-        paper: '#f2f2f2'
-      }
-    }
-  },
-  frFR
-);
-
 export const App = () => {
+  const { t, i18n } = useTranslation();
+  const theme = createTheme(
+    {
+      palette: {
+        background: {
+          paper: '#f2f2f2'
+        }
+      }
+    },
+    i18n.language == 'fr' ? frFR : enUS
+  );
   const dispatch = useDispatch();
   const authenticated = AuthService.isTokenValid();
   useEffect(() => {
+    const languagePreference = cookies.get('userPreferences');
+    if (cookies.get('userPreferences'))
+      i18n.changeLanguage(languagePreference.language);
     try {
       if (AuthService.isTokenValid()) {
         dispatch(changeCurrentUser(AuthService.getUserLoginByToken()));
       }
     } catch (e) {
-      alert('Session expirée, veuillez-vous reconnecter.');
+      alert(t('user.error.expiredSession'));
     }
   }, []);
   return (

@@ -3,12 +3,14 @@ import { useEffect, useState } from 'react';
 import { IUser } from '../../utils';
 import { ErrorCard } from '../components/ErrorCard';
 import UserService from '../../services/UserService';
+import { useTranslation } from 'react-i18next';
 
 export const UserProfilePage = (): JSX.Element => {
   const [firstname, setFirstname] = useState<string>('');
   const [lastname, setLastname] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string>();
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     (async () => {
@@ -29,7 +31,7 @@ export const UserProfilePage = (): JSX.Element => {
   return (
     <>
       {error ? (
-        <ErrorCard errorMessage={error} />
+        <ErrorCard errorMessage={t(error)} />
       ) : (
         <UserProfile firstname={firstname} lastname={lastname} login={email} />
       )}

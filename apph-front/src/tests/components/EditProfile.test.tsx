@@ -71,7 +71,7 @@ describe('Test EditProfile', () => {
     });
     render(<EditProfile />, { wrapper });
     //WHEN
-    fillText(/Login/, editedUser.login);
+    fillText(/Email/, editedUser.login);
     clickButton(/Valider/);
     //THEN
     expect(screen.getByText(/Vous allez être déconnecté/)).toBeInTheDocument();

@@ -3,6 +3,7 @@ import { IMessage, IPhoto } from '../../utils';
 import PhotoService from '../../services/PhotoService';
 import React, { useState } from 'react';
 import { Download } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 const modalStyle = {
   position: 'absolute',
@@ -21,6 +22,8 @@ const modalStyle = {
 export const DownloadImage = ({ id }: { id: number }): JSX.Element => {
   const [errorMessage, setErrorMessage] = useState('');
   const handleClose = () => setErrorMessage('');
+  const { t, i18n } = useTranslation();
+
   const handleSubmit = () => {
     PhotoService.downloadImage(
       id,
@@ -40,7 +43,7 @@ export const DownloadImage = ({ id }: { id: number }): JSX.Element => {
 
   return (
     <>
-      <Tooltip title="Télécharger">
+      <Tooltip title={t('action.download')}>
         <Button
           variant="outlined"
           onClick={handleSubmit}
@@ -61,7 +64,7 @@ export const DownloadImage = ({ id }: { id: number }): JSX.Element => {
             Alert
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            {errorMessage}
+            {t(errorMessage)}
           </Typography>
         </Box>
       </Modal>

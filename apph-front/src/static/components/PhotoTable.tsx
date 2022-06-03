@@ -6,25 +6,26 @@ import { ITable, ITag } from '../../utils';
 import { DownloadImage } from './DownloadImage';
 import { useDispatch } from 'react-redux';
 import { replaceSelectedPhotos } from '../../redux/slices/photoSlice';
+import { useTranslation } from 'react-i18next';
 
 const columns: GridColDef[] = [
   {
     field: 'title',
-    headerName: 'Titre',
+    headerName: t('photoTable.title'),
     flex: 1,
     align: 'center',
     headerAlign: 'center'
   },
   {
     field: 'description',
-    headerName: 'Description',
+    headerName: t('photoTable.description'),
     flex: 1.7,
     align: 'center',
     headerAlign: 'center'
   },
   {
     field: 'creationDate',
-    headerName: 'Date de création',
+    headerName: t('photoTable.creationDate'),
     type: 'date',
     flex: 2.2,
     align: 'center',
@@ -33,7 +34,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'shootingDate',
-    headerName: 'Date de prise de vue',
+    headerName: t('photoTable.shootingDate'),
     type: 'date',
     flex: 2.2,
     align: 'center',
@@ -42,7 +43,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'size',
-    headerName: 'Taille(Ko)',
+    headerName: t('photoTable.size') + '(Ko)',
     type: 'number',
     flex: 1,
     align: 'center',
@@ -50,7 +51,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'tags',
-    headerName: 'Tags',
+    headerName: t('photoTable.tags'),
     flex: 1.5,
     align: 'center',
     headerAlign: 'center',
@@ -64,14 +65,14 @@ const columns: GridColDef[] = [
   },
   {
     field: 'url',
-    headerName: 'Url',
+    headerName: t('photoTable.url'),
     flex: 1,
     align: 'center',
     headerAlign: 'center'
   },
   {
     field: 'actions',
-    headerName: 'Actions',
+    headerName: t('photoTable.actions'),
     flex: 2,
     align: 'center',
     headerAlign: 'center',

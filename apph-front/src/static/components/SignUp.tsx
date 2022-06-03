@@ -14,6 +14,9 @@ import { Alert, Collapse, IconButton, SxProps } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../../services/AuthService';
+import { useTranslation } from 'react-i18next';
+import { setCookieLanguage } from '../../utils/setCookieLanguage';
+import { flagStyles } from '../../utils';
 
 function Copyright(props: { sx: SxProps }) {
   return (
@@ -36,6 +39,7 @@ function Copyright(props: { sx: SxProps }) {
 export const SignUp = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState('');
+  const { t, i18n } = useTranslation();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -47,11 +51,9 @@ export const SignUp = () => {
     const emailValidator =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!emailValidator.test(email ? email : '')) {
-      setErrorMessage('Email invalide.');
+      setErrorMessage('signup.error.email');
     } else if (password && confirmPassword && password != confirmPassword) {
-      setErrorMessage(
-        'Ces mots de passe ne correspondent pas. Veuillez réessayer.'
-      );
+      setErrorMessage('signup.error.password');
     } else if (email && password && firstName && lastName && confirmPassword) {
       AuthService.signUp(
         email,
@@ -83,7 +85,7 @@ export const SignUp = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Créer un compte
+          {t('signup.create')}
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
@@ -92,7 +94,7 @@ export const SignUp = () => {
                 required
                 fullWidth
                 id="firstName"
-                label="Prénom"
+                label={t('user.firstName')}
                 name="firstName"
                 autoComplete="given-name"
                 autoFocus
@@ -104,7 +106,7 @@ export const SignUp = () => {
                 required
                 fullWidth
                 id="lastName"
-                label="Nom"
+                label={t('user.lastName')}
                 name="lastName"
                 autoComplete="family-name"
                 inputProps={{ maxLength: 127 }}
@@ -115,7 +117,7 @@ export const SignUp = () => {
                 required
                 fullWidth
                 id="email"
-                label="Email"
+                label={t('user.email')}
                 name="email"
                 autoComplete="email"
                 type="email"
@@ -127,7 +129,7 @@ export const SignUp = () => {
                 required
                 fullWidth
                 id="password"
-                label="Mot de passe"
+                label={t('user.password')}
                 name="password"
                 type="password"
                 autoComplete="new-password"
@@ -138,7 +140,7 @@ export const SignUp = () => {
                 required
                 fullWidth
                 id="confirmPassword"
-                label="Confirmer le mot de passe"
+                label={t('user.passwordConfirmation')}
                 name="confirmPassword"
                 type="password"
               />
@@ -150,18 +152,32 @@ export const SignUp = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Créer votre compte
+            {t('signup.create')}
           </Button>
           <Grid container justifyContent="center">
             <Grid item>
               <Link href="signIn" variant="body2">
-                Vous avez déja un compte? Se connecter
+                {t('signup.exist')}
               </Link>
             </Grid>
           </Grid>
         </Box>
       </Box>
-      <Copyright sx={{ mt: 5 }} />
+      <Copyright sx={{ mt: 5, mb: 5 }} />
+      <button
+        onClick={() => {
+          setCookieLanguage('fr');
+          i18n.changeLanguage('fr');
+        }}
+        style={flagStyles.fr}
+      />
+      <button
+        onClick={() => {
+          setCookieLanguage('en');
+          i18n.changeLanguage('en');
+        }}
+        style={flagStyles.en}
+      />
       <Collapse in={errorMessage !== ''}>
         <Alert
           action={
@@ -179,7 +195,7 @@ export const SignUp = () => {
           sx={{ mb: 2 }}
           severity="error"
         >
-          {errorMessage}
+          {t(errorMessage)}
         </Alert>
       </Collapse>
     </Container>

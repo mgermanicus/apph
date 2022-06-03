@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 import PhotoService from '../../services/PhotoService';
 import { PhotoDetails } from './PhotoDetails';
 import { AlertSnackbar } from './AlertSnackbar';
+import { useTranslation } from 'react-i18next';
 
 const tinySize = {
   gridContainerSpacing: { xs: 1, md: 2 },
@@ -61,6 +62,7 @@ export const DisplayPhoto = ({
 }): JSX.Element => {
   const [photoList, setPhotoList] = useState<ITable[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const { t } = useTranslation();
   const [selectedSize, setSelectedSize] = useState(tinySize);
   const [refresh, setRefresh] = useState(false);
   const [snackMessage, setSnackMessage] = useState<string>('');
@@ -102,7 +104,7 @@ export const DisplayPhoto = ({
   if (errorMessage) {
     return (
       <Alert sx={{ mb: 2 }} severity="error">
-        {errorMessage}
+        {t(errorMessage)}
       </Alert>
     );
   } else {

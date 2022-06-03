@@ -4,6 +4,7 @@ import { ConfirmationDialog } from './ConfirmationDialog';
 import PhotoService from '../../services/PhotoService';
 import { AlertSnackbar } from './AlertSnackbar';
 import { Delete } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 export const DeleteImage = ({
   ids,
@@ -16,13 +17,14 @@ export const DeleteImage = ({
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [severity, setSeverity] = useState<AlertColor>();
+  const { t } = useTranslation();
 
   const handleSubmit = () => {
     if (ids.length != 0) {
       setDialogOpen(true);
     } else {
       setSnackbarOpen(true);
-      setMessage('Aucune photo sélectionnée');
+      setMessage(t('photo.noneSelected'));
       setSeverity('warning');
     }
   };
@@ -53,7 +55,7 @@ export const DeleteImage = ({
 
   return (
     <Box sx={{ m: 1 }}>
-      <Tooltip title="Supprimer">
+      <Tooltip title={t('action.delete')}>
         <Button
           variant="outlined"
           color="error"
@@ -70,13 +72,13 @@ export const DeleteImage = ({
         onCancel={() => {
           setDialogOpen(false);
         }}
-        title="Confirmez-vous la suppression?"
-        message="Si vous confirmez, vos photos seront définitivement effacés"
+        title={t('action.confirmDelete')}
+        message={t('photo.warningDeleting')}
       />
       <AlertSnackbar
         open={snackbarOpen}
         severity={severity}
-        message={message}
+        message={t(message)}
         onClose={setSnackbarOpen}
       />
     </Box>

@@ -38,7 +38,7 @@ public class FolderController {
         } catch (NotFoundException nfe) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
         } catch (NoResultException nre) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("L'utilisateur n'existe pas."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("folder.error.userNotExist"));
         }
     }
 
@@ -51,7 +51,7 @@ public class FolderController {
             FolderResponse folder = folderService.createFolder(user.getLogin(), request);
             return ResponseEntity.ok(folder);
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Le dossier existe déjà dans le dossier actuel."));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("folder.error.existingFolder"));
         } catch (NotFoundException nfe) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
         } catch (UnauthorizedException ue) {

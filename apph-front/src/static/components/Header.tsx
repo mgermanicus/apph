@@ -4,6 +4,8 @@ import {
   Drawer,
   IconButton,
   List,
+  ToggleButton,
+  ToggleButtonGroup,
   Toolbar,
   Typography
 } from '@mui/material';
@@ -24,6 +26,8 @@ import {
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import AuthService from '../../services/AuthService';
+import { useTranslation } from 'react-i18next';
+import { setCookieLanguage } from '../../utils/setCookieLanguage';
 
 const appBarStyles = {
   iconButton: {
@@ -38,6 +42,14 @@ export const Header = (): JSX.Element => {
   const [drawerMenuVisible, setDrawerMenuVisible] = useState<boolean>(false);
   const handleLogout = () => {
     AuthService.logout();
+  };
+  const { t, i18n } = useTranslation();
+  const handleChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newLanguage: string
+  ) => {
+    i18n.changeLanguage(newLanguage);
+    setCookieLanguage(newLanguage);
   };
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -63,32 +75,32 @@ export const Header = (): JSX.Element => {
             >
               <List>
                 <DrawerMenuItem
-                  title="Mes Photos"
+                  title={t('field.photos')}
                   url="/pictures"
                   icon={<InsertPhoto />}
                 />
                 <DrawerMenuItem
-                  title="Mes Dossiers"
+                  title={t('field.folders')}
                   url="/folders"
                   icon={<Folder />}
                 />
                 <DrawerMenuItem
-                  title="Mes Voyages"
+                  title={t('field.trips')}
                   url="/trips"
                   icon={<Flight />}
                 />
                 <DrawerMenuItem
-                  title="Mes Tags"
+                  title={t('field.tags')}
                   url="/tags"
                   icon={<LocalOffer />}
                 />
                 <DrawerMenuItem
-                  title="Mes Traitements"
+                  title={t('field.treatments')}
                   url="/treatments"
                   icon={<AutoFixHigh />}
                 />
                 <DrawerMenuItem
-                  title="Recherche Avancée"
+                  title={t('field.advancedSearch')}
                   url="/research"
                   icon={<Search />}
                 />
@@ -98,6 +110,15 @@ export const Header = (): JSX.Element => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             APPH
           </Typography>
+          <ToggleButtonGroup
+            color="secondary"
+            value={i18n.language}
+            exclusive
+            onChange={handleChange}
+          >
+            <ToggleButton value="fr">fr</ToggleButton>
+            <ToggleButton value="en">en</ToggleButton>
+          </ToggleButtonGroup>
           <IconButton component={Link} to="/me">
             <UserAvatar
               firstname={user.firstname || user.login}

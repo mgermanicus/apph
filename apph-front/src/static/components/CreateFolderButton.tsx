@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { FolderService } from '../../services/FolderService';
 import { IFolder } from '../../utils';
+import { useTranslation } from 'react-i18next';
 
 export const CreateFolderButton = ({
   selected,
@@ -23,10 +24,10 @@ export const CreateFolderButton = ({
   const [folderName, setFolderName] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState<boolean>(false);
-
+  const { t } = useTranslation();
   const handleSubmit = () => {
     if (folderName === '') {
-      setErrorMessage('Le nom du dossier ne peut pas être vide.');
+      setErrorMessage('folder.error.emptyFolder');
     } else {
       setLoading(true);
       FolderService.createFolder(
@@ -53,7 +54,7 @@ export const CreateFolderButton = ({
           setShowModal(true);
         }}
       >
-        Créer un dossier
+        {t('folder.createFolder')}
       </Button>
       <Dialog
         open={showModal}
@@ -64,11 +65,11 @@ export const CreateFolderButton = ({
         }}
       >
         <DialogTitle sx={{ fontWeight: 'bold' }}>
-          Création d'un dossier
+          {t('folder.creation')}
         </DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ color: 'black' }}>
-            Entrez le nom de dossier:
+            {t('folder.enterName')}
           </DialogContentText>
           <TextField
             autoFocus
@@ -78,8 +79,8 @@ export const CreateFolderButton = ({
               setFolderName(event.currentTarget.value);
             }}
             id="folder-name"
-            autoComplete="Nouveau Dossier"
-            label="Nom du Dossier"
+            autoComplete={t('folder.new')}
+            label={t('folder.name')}
             size="small"
             disabled={loading}
             inputProps={{ maxLength: 255 }}
@@ -94,7 +95,7 @@ export const CreateFolderButton = ({
             sx={{ color: 'red', fontSize: 'small' }}
             hidden={!errorMessage}
           >
-            {errorMessage}
+            {t(errorMessage)}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -105,7 +106,7 @@ export const CreateFolderButton = ({
             }}
             disabled={loading}
           >
-            {loading ? <CircularProgress /> : <>Créer</>}
+            {loading ? <CircularProgress /> : <>{t('folder.create')}</>}
           </Button>
         </DialogActions>
       </Dialog>
