@@ -4,10 +4,9 @@ import * as React from 'react';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { ITableDetails } from '../../utils';
+import { ITableDetails, randomColorCodeFromString } from '../../utils';
 import { PhotoCard } from './PhotoCard';
 import { Info } from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
 
 const modalStyle = {
   position: 'absolute',
@@ -42,15 +41,6 @@ const PhotoDetails = ({
   cardStyle
 }: ITableDetails) => {
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
-  const theme = useTheme();
-
-  const colors = [
-    theme.palette.primary.light,
-    theme.palette.secondary.light,
-    theme.palette.error.light,
-    theme.palette.success.light,
-    theme.palette.warning.light
-  ];
 
   const handleOpenDetails = () => {
     setDetailsOpen(true);
@@ -142,13 +132,17 @@ const PhotoDetails = ({
                 <Typography sx={detailTypoStyle}>{size} Ko</Typography>
               </Box>
               <Box sx={detailBoxStyle}>
-                <Typography sx={titleTypoStyle}>Tags:</Typography>
                 <Stack direction="row" spacing={1}>
+                  <Box sx={{ m: 0.5 }}>
+                    <Typography sx={titleTypoStyle}>Tags:</Typography>
+                  </Box>
                   {tags.map((tag, index) => (
                     <Chip
                       key={index}
                       label={tag.name}
-                      sx={{ backgroundColor: colors[index % 5] }}
+                      sx={{
+                        backgroundColor: randomColorCodeFromString(tag.name)
+                      }}
                     />
                   ))}
                 </Stack>
