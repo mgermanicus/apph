@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import { ITableDetails } from '../../utils';
 import { PhotoCard } from './PhotoCard';
 import { Info } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
 
 const modalStyle = {
   position: 'absolute',
@@ -41,6 +42,15 @@ const PhotoDetails = ({
   cardStyle
 }: ITableDetails) => {
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
+  const theme = useTheme();
+
+  const colors = [
+    theme.palette.primary.light,
+    theme.palette.secondary.light,
+    theme.palette.error.light,
+    theme.palette.success.light,
+    theme.palette.warning.light
+  ];
 
   const handleOpenDetails = () => {
     setDetailsOpen(true);
@@ -133,13 +143,15 @@ const PhotoDetails = ({
               </Box>
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>Tags:</Typography>
-                <Typography sx={detailTypoStyle}>
-                  <Stack direction="row" spacing={1}>
-                    {tags.map((tag) => (
-                      <Chip label={tag.name} color="primary" />
-                    ))}
-                  </Stack>
-                </Typography>
+                <Stack direction="row" spacing={1}>
+                  {tags.map((tag, index) => (
+                    <Chip
+                      key={index}
+                      label={tag.name}
+                      sx={{ backgroundColor: colors[index % 5] }}
+                    />
+                  ))}
+                </Stack>
               </Box>
             </Box>
           </Typography>
