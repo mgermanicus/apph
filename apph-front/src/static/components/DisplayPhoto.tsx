@@ -1,6 +1,7 @@
 import { ITable } from '../../utils';
 import {
   Alert,
+  AlertColor,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -8,10 +9,11 @@ import {
   Radio,
   RadioGroup
 } from '@mui/material';
+import * as React from 'react';
 import { useEffect, useState } from 'react';
 import PhotoService from '../../services/PhotoService';
-import * as React from 'react';
-import PhotoDetails from './PhotoDetails';
+import { PhotoDetails } from './PhotoDetails';
+import { AlertSnackbar } from './AlertSnackbar';
 
 const tinySize = {
   gridContainerSpacing: { xs: 1, md: 2 },
@@ -60,7 +62,10 @@ export const DisplayPhoto = ({
   const [photoList, setPhotoList] = useState<ITable[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedSize, setSelectedSize] = useState(tinySize);
-
+  const [refresh, setRefresh] = useState(false);
+  const [snackMessage, setSnackMessage] = useState<string>('');
+  const [snackSeverity, setSnackSeverity] = useState<AlertColor>('info');
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const getPhotos = async () => {
     await PhotoService.getFolderPhotos(
       selectedFolder,
@@ -75,7 +80,7 @@ export const DisplayPhoto = ({
 
   useEffect(() => {
     getPhotos();
-  }, [selectedFolder]);
+  }, [selectedFolder, refresh]);
 
   function handleChangeSize(event: React.ChangeEvent<HTMLInputElement>) {
     switch (event.target.value) {
@@ -154,10 +159,21 @@ export const DisplayPhoto = ({
                 refresh={getPhotos}
                 clickType="card"
                 cardStyle={selectedSize.cardStyle}
+                fromFolders={true}
+                setRefresh={setRefresh}
+                setSnackbarOpen={setSnackbarOpen}
+                setSnackMessage={setSnackMessage}
+                setSnackSeverity={setSnackSeverity}
               />
             </Grid>
           ))}
         </Grid>
+        <AlertSnackbar
+          open={snackbarOpen}
+          severity={snackSeverity}
+          message={snackMessage}
+          onClose={setSnackbarOpen}
+        />
       </>
     );
   }

@@ -31,7 +31,6 @@ public class PhotoResponse implements IResponseDto {
     String format;
 
     public PhotoResponse() {
-
     }
 
     public long getId() {

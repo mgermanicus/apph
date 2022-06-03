@@ -4,11 +4,13 @@ import * as React from 'react';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { ITableDetails, randomHSL } from '../../utils';
+import { randomHSL, IMessage, ITableDetails } from '../../utils';
 import { PhotoCard } from './PhotoCard';
 import { Info } from '@mui/icons-material';
 import { ReUploadPhoto } from './ReUploadPhoto';
 import { EditPhotoDetails } from './EditPhotoDetails';
+import PhotoService from '../../services/PhotoService';
+import { ConfirmationDialog } from './ConfirmationDialog';
 
 const modalStyle = {
   position: 'absolute',
@@ -30,7 +32,7 @@ const titleTypoStyle = { fontWeight: 'bold', pl: 15 };
 
 const detailTypoStyle = { ml: 1 };
 
-const PhotoDetails = ({
+export const PhotoDetails = ({
   details,
   updateData,
   refresh,
@@ -47,13 +49,40 @@ const PhotoDetails = ({
   };
 }) => {
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleOpenDetails = () => {
     setDetailsOpen(true);
   };
-
   const handleCloseDetails = () => {
     setDetailsOpen(false);
+  };
+  const handleUpdate = async () => {
+    await PhotoService.updatePhotoInfo(
+      details.photoId,
+      details.title,
+      details.description,
+      -1,
+      (message: { message: string }) => {
+        if (details.setSnackMessage && details.setSnackSeverity) {
+          details.setSnackMessage(message.message);
+          details.setSnackSeverity('success');
+        }
+      },
+      (error: IMessage) => {
+        if (details.setSnackMessage && details.setSnackSeverity) {
+          details.setSnackMessage(error.message);
+          details.setSnackSeverity('error');
+        }
+      }
+    );
+    setDetailsOpen(false);
+    if (details.setSnackbarOpen) {
+      details.setSnackbarOpen(true);
+    }
+    if (details.setRefresh) {
+      details.setRefresh((refresh) => !refresh);
+    }
   };
 
   return (
@@ -124,6 +153,16 @@ const PhotoDetails = ({
                 alignItems: 'flex-start'
               }}
             >
+              {details.fromFolders && (
+                <Button
+                  name="Supprimer depuis le dossier"
+                  variant="outlined"
+                  sx={{ alignSelf: 'center' }}
+                  onClick={() => setDialogOpen(true)}
+                >
+                  Supprimer depuis le dossier
+                </Button>
+              )}
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>Titre:</Typography>
                 <Typography sx={detailTypoStyle}>{details.title}</Typography>
@@ -188,10 +227,17 @@ const PhotoDetails = ({
               </Box>
             </Box>
           </Typography>
+          <ConfirmationDialog
+            open={dialogOpen}
+            onConfirm={handleUpdate}
+            onCancel={() => {
+              setDialogOpen(false);
+            }}
+            title="Confirmez-vous la suppression?"
+            message="Si vous confirmez, vos photos seront supprimer du dossier"
+          />
         </Box>
       </Modal>
     </>
   );
 };
-
-export default PhotoDetails;
