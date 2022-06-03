@@ -1,8 +1,15 @@
 import { render, screen } from '@testing-library/react';
-import { AdvancedResearchPage } from '../../static/pages/AdvancedResearchPage';
 import { clickButton, fillText, selectOptionInListBox } from '../utils';
 import { wrapper } from '../utils/components/CustomWrapper';
 import { FilterSelector } from '../../static/components/FilterSelector';
+
+/*jest.mock('../../utils/hooks/usePhotoTable.tsx', () => () => ({
+  errorState: {
+    getMessage: '',
+    setMessage: () => null
+  },
+  photoTable: null
+}));*/
 
 describe('Test du fonctionnement des filtres', () => {
   beforeEach(() => {
@@ -11,7 +18,11 @@ describe('Test du fonctionnement des filtres', () => {
 
   it('test if a filter is correctly added', () => {
     //GIVEN
-    render(<AdvancedResearchPage />, { wrapper });
+    const onError = () => null;
+    const onFilterPhoto = () => null;
+    render(<FilterSelector onError={onError} onFilterPhoto={onFilterPhoto} />, {
+      wrapper
+    });
     //WHEN
     clickButton(/Ajouter un filtre/);
     //THEN
@@ -20,7 +31,11 @@ describe('Test du fonctionnement des filtres', () => {
 
   it('test if a filter is correctly deleted', () => {
     //GIVEN
-    render(<AdvancedResearchPage />, { wrapper });
+    const onError = () => null;
+    const onFilterPhoto = () => null;
+    render(<FilterSelector onError={onError} onFilterPhoto={onFilterPhoto} />, {
+      wrapper
+    });
     //WHEN
     clickButton(/Supprimer un filtre/);
     //THEN
