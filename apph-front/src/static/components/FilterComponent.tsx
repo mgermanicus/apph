@@ -172,6 +172,7 @@ export const FilterComponent = ({
             id="fill-value-text"
             label="Valeur"
             multiline
+            maxRows={3}
             size="small"
             value={state.value}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
