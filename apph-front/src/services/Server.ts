@@ -19,7 +19,7 @@ export default class Server {
         } else {
           if (body === 'Token invalide') {
             if (cookies.get('user') == undefined) {
-              errorFunction('login ou mot de passe incorrect.');
+              errorFunction('Login ou mot de passe incorrect.');
             } else {
               AuthService.logout();
               errorFunction(body);
