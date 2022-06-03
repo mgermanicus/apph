@@ -4,6 +4,7 @@ import { FilterSelector } from '../components/FilterSelector';
 import { IFilter, IFilterPayload } from '../../utils/types/Filter';
 import { AlertSnackbar } from '../components/AlertSnackbar';
 import { usePhotoTable } from '../../utils/hooks/usePhotoTable';
+import { deepCopy } from '../../utils/DeepCopy';
 
 export const AdvancedResearchPage = (): JSX.Element => {
   const [filterList, setFilterList] = useState<IFilterPayload[]>();
@@ -51,7 +52,7 @@ export const AdvancedResearchPage = (): JSX.Element => {
   };
 
   const handleFilterPhoto = (filterList: IFilter[]) => {
-    const filters: IFilter[] = JSON.parse(JSON.stringify(filterList));
+    const filters: IFilter[] = deepCopy(filterList);
     getFilterPayload(filters);
   };
 
