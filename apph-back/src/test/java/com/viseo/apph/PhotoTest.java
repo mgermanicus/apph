@@ -788,4 +788,80 @@ public class PhotoTest {
         //THEN
         Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
+
+    @Test
+    public void testChangePhotoFile() {
+        //GIVEN
+        createPhotoController();
+        String imageString = RandomString.make(2000);
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", imageString.getBytes());
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        PhotoRequest photoRequest = new PhotoRequest().setFile(file).setId(0);
+        Photo photo = (Photo) new Photo().setFormat(".jpeg").setSize(50).setUser(robert).setId(0);
+        when(em.find(Photo.class, 0L)).thenReturn(photo);
+        when(utils.getUser()).thenReturn(robert);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.changePhotoFile(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(".png", photo.getFormat());
+        assertEquals(2, photo.getSize(), 0.1);
+    }
+
+    @Test
+    public void testChangePhotoFilePhotoNotFound() {
+        //GIVEN
+        createPhotoController();
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        PhotoRequest photoRequest = new PhotoRequest().setFile(file).setId(0);
+        when(em.find(Photo.class, 0L)).thenReturn(null);
+        when(utils.getUser()).thenReturn(robert);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.changePhotoFile(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("Le fichier n'existe pas", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testChangePhotoFileUnauthorizedAccess() {
+        //GIVEN
+        createPhotoController();
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        User other = (User) new User().setLogin("Other").setId(2);
+        Photo photo = (Photo) new Photo().setFormat(".jpeg").setSize(50).setUser(other).setId(0);
+        PhotoRequest photoRequest = new PhotoRequest().setFile(file).setId(0);
+        when(em.find(Photo.class, 0L)).thenReturn(photo);
+        when(utils.getUser()).thenReturn(robert);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.changePhotoFile(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("L'utilisateur n'est pas autorisé à accéder à la ressource demandée", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testChangePhotoFileInvalidFormat() {
+        //GIVEN
+        createPhotoController();
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "fake", "bar".getBytes());
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        PhotoRequest photoRequest = new PhotoRequest().setFile(file).setId(0);
+        Photo photo = (Photo) new Photo().setFormat(".jpeg").setSize(50).setUser(robert).setId(0);
+        when(em.find(Photo.class, 0L)).thenReturn(photo);
+        when(utils.getUser()).thenReturn(robert);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.changePhotoFile(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("Le format du fichier n'est pas valide", messageResponse.getMessage());
+    }
 }

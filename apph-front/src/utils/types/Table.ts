@@ -15,6 +15,7 @@ export interface ITable {
 }
 
 export interface ITableDetails {
+  photoId: number;
   photoSrc: string;
   title: string;
   description: string;
@@ -29,4 +30,5 @@ export interface ITableDetails {
     cardMaxWidth: string;
     cardMediaHeight: string;
   };
+  updateData: () => void;
 }

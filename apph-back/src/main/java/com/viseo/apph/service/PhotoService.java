@@ -245,4 +245,18 @@ public class PhotoService {
         zipOut.close();
         return new PhotoResponse().setData(bos.toByteArray()).setTitle(photosRequest.getTitleZip()).setFormat(".zip");
     }
+
+    @Transactional
+    public String changePhotoFile(Long userId, PhotoRequest photoRequest) throws IOException, UnauthorizedException, InvalidFileException {
+        Photo photo = photoDao.getPhoto(photoRequest.getId());
+        if (photo == null) {
+            throw new FileNotFoundException("Le fichier n'existe pas");
+        }
+        if (userId != photo.getUser().getId()) {
+            throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
+        }
+        s3Dao.delete(photo);
+        photo.setFormat(getFormat(photoRequest.getFile())).setSize((photoRequest.getFile().getSize() + .0F) / 1024);
+        return s3Dao.upload(photoRequest.getFile(), photo);
+    }
 }

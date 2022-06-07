@@ -25,7 +25,7 @@ export const PhotoCard = ({
     <Card sx={{ maxWidth: cardStyle?.cardMaxWidth }}>
       <CardActionArea onClick={openFunction}>
         <CardMedia
-          image={src}
+          image={`${src}?${global.Date.now()}`}
           sx={{ height: cardStyle?.cardMediaHeight, objectFit: 'scale-down' }}
         />
         <CardContent>

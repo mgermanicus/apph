@@ -138,6 +138,7 @@ export const DisplayPhoto = ({
               key={'key' + photo.id}
             >
               <PhotoDetails
+                photoId={photo.id}
                 photoSrc={photo.url}
                 title={photo.title}
                 description={photo.description}
@@ -148,6 +149,7 @@ export const DisplayPhoto = ({
                 tags={photo.tags}
                 format={photo.format}
                 clickType="card"
+                updateData={getPhotos}
                 cardStyle={selectedSize.cardStyle}
               />
             </Grid>
