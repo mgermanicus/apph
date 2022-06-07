@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { ITableDetails, randomColorCodeFromString } from '../../utils';
+import { ITableDetails, randomHSL } from '../../utils';
 import { PhotoCard } from './PhotoCard';
 import { Info } from '@mui/icons-material';
 
@@ -141,7 +141,7 @@ const PhotoDetails = ({
                       key={index}
                       label={tag.name}
                       sx={{
-                        backgroundColor: randomColorCodeFromString(tag.name)
+                        backgroundColor: randomHSL(tag.name)
                       }}
                     />
                   ))}
