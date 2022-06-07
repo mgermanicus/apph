@@ -1,16 +1,17 @@
+import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { IFilterPayload } from '../types/Filter';
 import { IPagination, ITable } from '../index';
 import { useSelector } from 'react-redux';
 import PhotoDetails from '../../static/components/PhotoDetails';
 import PhotoService from '../../services/PhotoService';
-import * as React from 'react';
 import { ButtonGroup } from '@mui/material';
 import { UploadImage } from '../../static/components/UploadImage';
 import { MovePhoto } from '../../static/components/MovePhoto';
 import { DeleteImage } from '../../static/components/DeleteImage';
 import { Diaporama } from '../../static/components/Diaporama';
 import { PhotoTable } from '../../static/components/PhotoTable';
+import { DownloadZip } from '../../static/components/DownloadZip';
 
 export const usePhotoTable = (filterList?: IFilterPayload[]) => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -76,6 +77,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
       <ButtonGroup variant="outlined">
         <UploadImage setRefresh={setRefresh} />
         <MovePhoto photoIds={selectedIds} />
+        <DownloadZip ids={selectedIds} />
         <DeleteImage ids={selectedIds} setRefresh={setRefresh} />
         <Diaporama data={selected} />
       </ButtonGroup>
