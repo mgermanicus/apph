@@ -153,17 +153,17 @@ export const DisplayPhoto = ({
                   shootingDate: photo.shootingDate,
                   size: photo.size,
                   tags: photo.tags,
-                  format: photo.format
+                  format: photo.format,
+                  fromFolders: true,
+                  setRefresh: setRefresh,
+                  setSnackbarOpen: setSnackbarOpen,
+                  setSnackMessage: setSnackMessage,
+                  setSnackSeverity: setSnackSeverity
                 }}
                 updateData={getPhotos}
                 refresh={getPhotos}
                 clickType="card"
                 cardStyle={selectedSize.cardStyle}
-                fromFolders={true}
-                setRefresh={setRefresh}
-                setSnackbarOpen={setSnackbarOpen}
-                setSnackMessage={setSnackMessage}
-                setSnackSeverity={setSnackSeverity}
               />
             </Grid>
           ))}

@@ -271,4 +271,16 @@ public class PhotoService {
         photo.setFormat(getFormat(photoRequest.getFile())).setSize((photoRequest.getFile().getSize() + .0F) / 1024);
         return s3Dao.upload(photoRequest.getFile(), photo);
     }
+
+    @Transactional
+    public MessageResponse updatePhotoFolder(User user, PhotoRequest photoRequest) throws UnauthorizedException, NotFoundException {
+        Photo photo = photoDao.getPhoto(photoRequest.getId());
+        if (photo == null)
+            throw new NotFoundException("La photo n'existe pas.");
+        if (photo.getUser().getId() != user.getId())
+            throw new UnauthorizedException("L'utilisateur n'a pas accès à cette action.");
+        Folder folder = folderDao.getFolderById(photoRequest.getFolderId());
+        photo.setFolder(folder);
+        return new MessageResponse("Suppression effectuée avec succès.");
+    }
 }
