@@ -58,8 +58,8 @@ export const SignIn = () => {
           dispatch(changeCurrentUser(user));
           navigate('/pictures');
         },
-        (errorMessage: string) => {
-          setErrorMessage(errorMessage);
+        (error: string) => {
+          setErrorMessage(error);
         }
       );
     }

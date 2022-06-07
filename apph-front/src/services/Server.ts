@@ -1,6 +1,8 @@
 import AuthService from './AuthService';
+import Cookies from 'universal-cookie';
 
 const BASE_API_URL = process.env['REACT_APP_API_URL'];
+const cookies = new Cookies();
 
 export default class Server {
   static request(
@@ -16,9 +18,15 @@ export default class Server {
           successFunction(body);
         } else {
           if (body === 'Token invalide') {
-            AuthService.logout();
+            if (cookies.get('user') == undefined) {
+              errorFunction('Login ou mot de passe incorrect.');
+            } else {
+              AuthService.logout();
+              errorFunction(body);
+            }
+          } else {
+            errorFunction(body);
           }
-          errorFunction(body);
         }
       })
       .catch((error) => {
