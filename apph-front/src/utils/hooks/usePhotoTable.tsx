@@ -55,6 +55,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
       (row) =>
         (row.details = (
           <PhotoDetails
+            photoId={row.id}
             photoSrc={row.url}
             title={row.title}
             description={row.description}
@@ -65,6 +66,15 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
             tags={row.tags}
             format={row.format}
             clickType="button"
+            updateData={() =>
+              PhotoService.getData(
+                pageSize,
+                page + 1,
+                handleSuccess,
+                handleError,
+                filterList
+              )
+            }
           />
         ))
     );
