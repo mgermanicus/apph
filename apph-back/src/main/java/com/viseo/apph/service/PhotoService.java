@@ -178,7 +178,7 @@ public class PhotoService {
             query.append(filter.getValueToSql()).append(" ");
         }
         if (!filterDtoList.isEmpty()) {query.append(")");}
-        //query.append(" GROUP BY p.id,t.user");
+        query.append(" GROUP BY p.id");
         return query.toString();
     }
 

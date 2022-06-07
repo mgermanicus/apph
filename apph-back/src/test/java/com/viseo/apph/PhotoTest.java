@@ -202,7 +202,7 @@ public class PhotoTest {
         };
         FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos);
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%p%'  OR p.title LIKE 'photo' ) AND (p.description LIKE 'cool' ) AND (p.creationDate < '1'  OR p.creationDate <= '4' ) AND (p.shootingDate > '2'  OR p.shootingDate >= '3' )", Photo.class)).thenReturn(typedQueryPhoto);
+        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%p%'  OR p.title LIKE 'photo' ) AND (p.description LIKE 'cool' ) AND (p.creationDate < '1'  OR p.creationDate <= '4' ) AND (p.shootingDate > '2'  OR p.shootingDate >= '3' ) GROUP BY p.id", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
@@ -249,7 +249,7 @@ public class PhotoTest {
         };
         FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos);
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%p%'  OR p.title LIKE 'photo' ) AND ('p1' IN (select t.name from p.tags t)  OR 'p2' IN (select t.name from p.tags t)  OR 'p3' IN (select t.name from p.tags t) )", Photo.class)).thenReturn(typedQueryPhoto);
+        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%p%'  OR p.title LIKE 'photo' ) AND ('p1' IN (select t.name from p.tags t)  OR 'p2' IN (select t.name from p.tags t)  OR 'p3' IN (select t.name from p.tags t) ) GROUP BY p.id", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
