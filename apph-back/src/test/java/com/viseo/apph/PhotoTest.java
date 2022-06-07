@@ -893,7 +893,7 @@ public class PhotoTest {
     }
 
     @Test
-    public void testUpdatePhotoInfo() {
+    public void testUpdatePhotoFolder() {
         //GIVEN
         createPhotoController();
         User robert = (User) new User().setLogin("Robert").setId(1);
@@ -913,7 +913,7 @@ public class PhotoTest {
     }
 
     @Test
-    public void testUpdatePhotoInfoWithFolderId() {
+    public void testUpdatePhotoFolderWithFolderId() {
         //GIVEN
         createPhotoController();
         User robert = (User) new User().setLogin("Robert").setId(1);
@@ -932,14 +932,14 @@ public class PhotoTest {
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.updatePhotoInfo(request);
         //THEN
-        UpdateResponse messageResponse = (UpdateResponse) responseEntity.getBody();
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("Suppression effectuée avec succès.", messageResponse.getMessage());
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
-    public void testUpdatePhotoInfoWithNotExistingPhoto() {
+    public void testUpdatePhotoFolderWithNotExistingPhoto() {
         createPhotoController();
         PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setFolderId(-1).setId(1);
         //WHEN
@@ -952,7 +952,7 @@ public class PhotoTest {
     }
 
     @Test
-    public void testUpdatePhotoInfoWithUnauthorizedPhoto() {
+    public void testUpdatePhotoFolderWithUnauthorized() {
         createPhotoController();
         PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setFolderId(-1).setId(1);
         when(utils.getUser()).thenReturn(new User());
