@@ -168,7 +168,7 @@ public class UserTest {
         ResponseEntity<String> response = userController.editUserInfo(jws, request);
         //THEN
         Assert.assertTrue(response.getStatusCode().isError());
-        Assert.assertEquals("Ce login est déjà pris", response.getBody());
+        Assert.assertEquals("user.error.loginAlreadyToken", response.getBody());
         Assert.assertEquals("login", user.getLogin());
     }
 
@@ -189,7 +189,7 @@ public class UserTest {
         ResponseEntity<String> response = userController.editUserInfo(jws, request);
         //THEN
         Assert.assertTrue(response.getStatusCode().isError());
-        Assert.assertEquals("L'utilisateur lié à cette session n'existe pas", response.getBody());
+        Assert.assertEquals("user.error.sessionBindUserNotExist", response.getBody());
     }
 
     @Test

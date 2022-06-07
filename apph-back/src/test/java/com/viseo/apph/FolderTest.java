@@ -106,7 +106,7 @@ public class FolderTest {
         Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("L'utilisateur n'existe pas.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.userNotExist", messageResponse.getMessage());
     }
 
     @Test
@@ -130,7 +130,7 @@ public class FolderTest {
         Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Dossier parent introuvable.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.notFound", messageResponse.getMessage());
     }
 
     @Test
@@ -180,7 +180,7 @@ public class FolderTest {
         Assert.assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Le dossier existe déjà dans le dossier actuel.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.existingFolder", messageResponse.getMessage());
     }
 
     @Test
@@ -196,7 +196,7 @@ public class FolderTest {
         Assert.assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Impossible de créer un dossier racine.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.root", messageResponse.getMessage());
     }
 
     @Test
@@ -219,7 +219,7 @@ public class FolderTest {
         Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Dossier parent introuvable.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.notFound", messageResponse.getMessage());
     }
 
     @Test
@@ -242,7 +242,7 @@ public class FolderTest {
         Assert.assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("L'utilisateur n'a pas accès à ce dossier.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.unauthorized", messageResponse.getMessage());
     }
 
     @Test

@@ -324,7 +324,7 @@ public class PhotoTest {
         Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Argument illégal.", messageResponse.getMessage());
+        Assert.assertEquals("photoTable.error", messageResponse.getMessage());
     }
 
     @Test
@@ -469,7 +469,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Le dossier n'existe pas.", messageResponse.getMessage());
+        Assert.assertEquals("upload.error.folderNotExist", messageResponse.getMessage());
     }
 
     @Test
@@ -494,7 +494,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("L'utilisateur n'a pas accès à ce dossier.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.accessDenied", messageResponse.getMessage());
     }
 
     @Test
@@ -525,7 +525,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Titre déjà utilisé dans le dossier.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.titleAlreadyUsed", messageResponse.getMessage());
     }
 
     @Test
@@ -597,7 +597,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Le fichier n'existe pas", messageResponse.getMessage());
+        Assert.assertEquals("download.error.fileNotExist", messageResponse.getMessage());
     }
 
     @Test
@@ -638,7 +638,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Le dossier n'existe pas.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.notExist", messageResponse.getMessage());
     }
 
     @Test
@@ -657,7 +657,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("L'utilisateur n'a pas accès à ce dossier.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.accessDenied", messageResponse.getMessage());
     }
 
     @Test
@@ -696,11 +696,11 @@ public class PhotoTest {
         MessageListResponse response = (MessageListResponse) responseEntity.getBody();
         assert response != null;
         Assert.assertEquals(5, response.getMessageList().size());
-        Assert.assertEquals("error: L'une des photos n'appartient pas à l'utilisateur.", response.getMessageList().get(0));
-        Assert.assertEquals("warning: L'une des photos est déjà dans le dossier.", response.getMessageList().get(1));
-        Assert.assertEquals("error: L'une des photos comporte un nom existant déjà dans le dossier destinataire.", response.getMessageList().get(2));
-        Assert.assertEquals("error: L'une des photos n'existe pas.", response.getMessageList().get(3));
-        Assert.assertEquals("success: Le déplacement des photos est terminé.", response.getMessageList().get(4));
+        Assert.assertEquals("error: folder.error.oneOf.notBelongUser", response.getMessageList().get(0));
+        Assert.assertEquals("warning: folder.error.oneOf.alreadyExist", response.getMessageList().get(1));
+        Assert.assertEquals("error: folder.error.oneOf.existingName", response.getMessageList().get(2));
+        Assert.assertEquals("error: folder.error.oneOf.photoNotExist", response.getMessageList().get(3));
+        Assert.assertEquals("success: folder.successMove", response.getMessageList().get(4));
     }
 
     @Test
@@ -717,7 +717,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Le dossier n'existe pas.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.notExist", messageResponse.getMessage());
     }
 
     @Test
@@ -736,7 +736,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("L'utilisateur n'a pas accès au dossier.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.accessDenied", messageResponse.getMessage());
     }
 
     @Test
