@@ -16,6 +16,7 @@ describe('Test du composant PhotoDetails', () => {
       title: 'testTitle',
       description: 'testDescription',
       creationDate: new Date(),
+      modificationDate: new Date(),
       shootingDate: new Date(),
       size: 0,
       format: 'jpeg',
@@ -27,6 +28,7 @@ describe('Test du composant PhotoDetails', () => {
         title={mockPhoto.title}
         description={mockPhoto.description}
         creationDate={mockPhoto.creationDate}
+        modificationDate={mockPhoto.modificationDate}
         shootingDate={mockPhoto.shootingDate}
         size={mockPhoto.size}
         tags={mockPhoto.tags}

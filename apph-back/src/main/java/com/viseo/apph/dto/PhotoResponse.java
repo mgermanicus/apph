@@ -15,6 +15,8 @@ public class PhotoResponse implements IResponseDto {
     String description;
     @JsonProperty("creationDate")
     Date creationDate;
+    @JsonProperty("modificationDate")
+    Date modificationDate;
     @JsonProperty("shootingDate")
     Date shootingDate;
     @JsonProperty("size")
@@ -65,6 +67,15 @@ public class PhotoResponse implements IResponseDto {
 
     public PhotoResponse setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+        return this;
+    }
+
+    public Date getModificationDate() {
+        return modificationDate;
+    }
+
+    public PhotoResponse setModificationDate(Date modificationDate) {
+        this.modificationDate = modificationDate;
         return this;
     }
 

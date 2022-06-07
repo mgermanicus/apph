@@ -4,6 +4,7 @@ export interface ITable {
   id: number;
   size: number;
   creationDate: Date;
+  modificationDate: Date;
   shootingDate: Date;
   description: string;
   title: string;
@@ -18,6 +19,7 @@ export interface ITableDetails {
   title: string;
   description: string;
   creationDate: Date;
+  modificationDate: Date;
   shootingDate: Date;
   size: number;
   tags: ITag[];
