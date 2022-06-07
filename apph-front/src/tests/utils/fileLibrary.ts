@@ -58,3 +58,13 @@ export function fakeDeleteRequestParams(ids: number[]) {
   };
   return { URL: `/photo/delete`, requestOptions };
 }
+
+export function fakeDownloadZipRequestParams(ids: number[]) {
+  const requestOptions = {
+    method: 'POST',
+    body: JSON.stringify({
+      ids
+    })
+  };
+  return { URL: `/photo/download/zip`, requestOptions };
+}
