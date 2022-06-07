@@ -234,7 +234,7 @@ export const PhotoDetails = ({
               setDialogOpen(false);
             }}
             title="Confirmez-vous la suppression?"
-            message="Si vous confirmez, vos photos seront supprimer du dossier"
+            message="Si vous confirmez, la photo sera supprimer du dossier"
           />
         </Box>
       </Modal>
