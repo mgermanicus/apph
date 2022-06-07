@@ -122,13 +122,14 @@ public class PhotoTest {
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         List<Photo> listPhoto = new ArrayList<>();
         listPhoto.add(new Photo());
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5);
         when(utils.getUser()).thenReturn(robert);
         when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(5, 1);
+        ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(filterRequest);
         //THEN
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         PaginationResponse paginationResponse = (PaginationResponse) responseEntity.getBody();
@@ -150,15 +151,112 @@ public class PhotoTest {
         listPhoto.add(new Photo());
         listPhoto.add(new Photo());
         listPhoto.add(new Photo());
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5);
         when(utils.getUser()).thenReturn(robert);
         when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(5, 1);
+        ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(filterRequest);
         //THEN
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        PaginationResponse paginationResponse = (PaginationResponse) responseEntity.getBody();
+        assert paginationResponse != null;
+        Assert.assertEquals(6, paginationResponse.getTotalSize());
+        Assert.assertEquals(5, paginationResponse.getPhotoList().size());
+        PhotoResponse photo = paginationResponse.getPhotoList().get(0);
+        Assert.assertEquals(10, photo.getSize(), 0.0f);
+        Assert.assertEquals("photo 1", photo.getTitle());
+        Assert.assertEquals(creationDate, photo.getCreationDate());
+        Assert.assertEquals(shootingDate, photo.getShootingDate());
+        Assert.assertEquals("description", photo.getDescription());
+        Assert.assertTrue(photo.getTags().contains(tag));
+        Assert.assertEquals(1, photo.getId());
+        Assert.assertEquals("testUrl", photo.getUrl());
+    }
+
+    @Test
+    public void testGetInfosWithFilter() {
+        //GIVEN
+        createPhotoController();
+        List<Photo> listPhoto = new ArrayList<>();
+        Date creationDate = new Date();
+        Date shootingDate = new Date();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        Tag tag = new Tag().setUser(robert).setName("robertTag");
+        listPhoto.add((Photo) new Photo().setSize(10).setTitle("photo 1").setCreationDate(creationDate).setShootingDate(shootingDate).setDescription("description").addTag(tag).setId(1L));
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        FilterDto[] filterDtos = new FilterDto[]{
+                new FilterDto().setField("title").setOperator("contain").setValue("p"),
+                new FilterDto().setField("title").setOperator("is").setValue("photo"),
+                new FilterDto().setField("creationDate").setOperator("strictlyInferior").setValue("1"),
+                new FilterDto().setField("shootingDate").setOperator("strictlySuperior").setValue("2"),
+                new FilterDto().setField("shootingDate").setOperator("superiorEqual").setValue("3"),
+                new FilterDto().setField("creationDate").setOperator("inferiorEqual").setValue("4"),
+                new FilterDto().setField("description").setOperator("is").setValue("cool")
+        };
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%p%'  OR p.title LIKE 'photo' ) AND (p.description LIKE 'cool' ) AND (p.creationDate < '1'  OR p.creationDate <= '4' ) AND (p.shootingDate > '2'  OR p.shootingDate >= '3' ) GROUP BY p.id", Photo.class)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
+        when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(filterRequest);
+        //THEN
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        PaginationResponse paginationResponse = (PaginationResponse) responseEntity.getBody();
+        assert paginationResponse != null;
+        Assert.assertEquals(6, paginationResponse.getTotalSize());
+        Assert.assertEquals(5, paginationResponse.getPhotoList().size());
+        PhotoResponse photo = paginationResponse.getPhotoList().get(0);
+        Assert.assertEquals(10, photo.getSize(), 0.0f);
+        Assert.assertEquals("photo 1", photo.getTitle());
+        Assert.assertEquals(creationDate, photo.getCreationDate());
+        Assert.assertEquals(shootingDate, photo.getShootingDate());
+        Assert.assertEquals("description", photo.getDescription());
+        Assert.assertTrue(photo.getTags().contains(tag));
+        Assert.assertEquals(1, photo.getId());
+        Assert.assertEquals("testUrl", photo.getUrl());
+    }
+
+    @Test
+    public void testGetInfosWithFilterTags() {
+        //GIVEN
+        createPhotoController();
+        List<Photo> listPhoto = new ArrayList<>();
+        Date creationDate = new Date();
+        Date shootingDate = new Date();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        Tag tag = new Tag().setUser(robert).setName("robertTag");
+        listPhoto.add((Photo) new Photo().setSize(10).setTitle("photo 1").setCreationDate(creationDate).setShootingDate(shootingDate).setDescription("description").addTag(tag).setId(1L));
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        FilterDto[] filterDtos = new FilterDto[]{
+                new FilterDto().setField("tags").setValue("p1"),
+                new FilterDto().setField("tags").setValue("p2"),
+                new FilterDto().setField("tags").setValue("p3"),
+                new FilterDto().setField("title").setOperator("contain").setValue("p"),
+                new FilterDto().setField("title").setOperator("is").setValue("photo")
+        };
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%p%'  OR p.title LIKE 'photo' ) AND ('p1' IN (select t.name from p.tags t)  OR 'p2' IN (select t.name from p.tags t)  OR 'p3' IN (select t.name from p.tags t) ) GROUP BY p.id", Photo.class)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
+        when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(filterRequest);
+        //THEN
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         PaginationResponse paginationResponse = (PaginationResponse) responseEntity.getBody();
         assert paginationResponse != null;
         Assert.assertEquals(6, paginationResponse.getTotalSize());
@@ -185,8 +283,9 @@ public class PhotoTest {
         when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
+        FilterRequest filterRequest = new FilterRequest().setPage(-1).setPageSize(5);
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(5, -1);
+        ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(filterRequest);
         //THEN
         Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();

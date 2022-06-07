@@ -8,6 +8,7 @@ import {
   ITag
 } from '../utils';
 import Cookies from 'universal-cookie';
+import { IFilterPayload } from '../utils/types/Filter';
 
 const cookies = new Cookies();
 export default class PhotoService {
@@ -55,18 +56,22 @@ export default class PhotoService {
     pageSize: number,
     page: number,
     handleSuccess: (pagination: IPagination) => void,
-    handleError: (errorMessage: string) => void
+    handleError: (errorMessage: string) => void,
+    filterList?: IFilterPayload[]
   ) {
-    const URL = `/photo/infos?pageSize=${encodeURIComponent(
-      pageSize
-    )}&page=${encodeURIComponent(page)}`;
+    const URL = '/photo/infos';
     const userInfos = cookies.get('user');
     const requestOptions = {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + userInfos?.token
-      }
+      },
+      body: JSON.stringify({
+        pageSize: encodeURIComponent(pageSize),
+        page: encodeURIComponent(page),
+        filterList
+      })
     };
     const successFunction = (val: string) => {
       handleSuccess(JSON.parse(val));

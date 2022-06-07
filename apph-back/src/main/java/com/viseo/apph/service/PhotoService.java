@@ -21,9 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.io.InvalidObjectException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -83,27 +82,9 @@ public class PhotoService {
     }
 
     @Transactional
-    public PaginationResponse getUserPhotos(User user, int pageSize, int page) {
+    public PaginationResponse getUserPhotos(User user, FilterRequest filterRequest) {
         List<Photo> userPhotos = photoDao.getUserPhotos(user);
-        int startIndex = (page - 1) * pageSize;
-        int endIndex = page * pageSize;
-        PaginationResponse response = new PaginationResponse().setTotalSize(userPhotos.size());
-        List<PhotoResponse> responseList = userPhotos.subList(startIndex, Math.min(endIndex, userPhotos.size())).stream()
-                .map(photo -> new PhotoResponse()
-                        .setId(photo.getId())
-                        .setTitle(photo.getTitle())
-                        .setCreationDate(photo.getCreationDate())
-                        .setSize(photo.getSize())
-                        .setTags(photo.getTags())
-                        .setDescription(photo.getDescription())
-                        .setShootingDate(photo.getShootingDate())
-                        .setUrl(s3Dao.getPhotoUrl(photo))
-                        .setFormat(photo.getFormat())
-                ).collect(Collectors.toList());
-        for (PhotoResponse photo : responseList) {
-            response.addPhoto(photo);
-        }
-        return response;
+        return getPaginationResponse(filterRequest.getPageSize(), filterRequest.getPage(), userPhotos);
     }
 
     public PhotoResponse download(Long userId, PhotoRequest photoRequest) throws FileNotFoundException, UnauthorizedException {
@@ -175,6 +156,58 @@ public class PhotoService {
             }
         }
         response.addMessage("success: Le déplacement des photos est terminé.");
+        return response;
+    }
+
+    private String createFilterQuery(FilterDto[] filters) throws InvalidObjectException {
+        StringBuilder query = new StringBuilder("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user");
+        List<FilterDto> filterDtoList = Arrays.asList(filters);
+        filterDtoList.sort(FilterDto::compareTo);
+        String lastField = "first";
+        for (FilterDto filter : filterDtoList) {
+            if (!Objects.equals(filter.getField(), lastField)) {
+                if (!lastField.equals("first")) {query.append(") AND");}
+                if (lastField.equals("first")) {query.append(" AND");}
+                query.append(" (");
+                lastField = filter.getField();
+            } else {
+                query.append(" OR ");
+            }
+            query.append(filter.getFieldToSql()).append(" ");
+            query.append(filter.getOperatorToSql()).append(" ");
+            query.append(filter.getValueToSql()).append(" ");
+        }
+        if (!filterDtoList.isEmpty()) {query.append(")");}
+        query.append(" GROUP BY p.id");
+        return query.toString();
+    }
+
+    @Transactional
+    public PaginationResponse getUserFilteredPhotos(User user, FilterRequest filterRequest) throws InvalidObjectException {
+        String filterQuery = createFilterQuery(filterRequest.getFilters());
+        List<Photo> userPhotos = photoDao.getUserFilteredPhotos(user, filterQuery);
+        return getPaginationResponse(filterRequest.getPageSize(), filterRequest.getPage(), userPhotos);
+    }
+
+    private PaginationResponse getPaginationResponse(int pageSize, int page, List<Photo> userPhotos) {
+        int startIndex = (page - 1) * pageSize;
+        int endIndex = page * pageSize;
+        PaginationResponse response = new PaginationResponse().setTotalSize(userPhotos.size());
+        List<PhotoResponse> responseList = userPhotos.subList(startIndex, Math.min(endIndex, userPhotos.size())).stream()
+                .map(photo -> new PhotoResponse()
+                        .setId(photo.getId())
+                        .setTitle(photo.getTitle())
+                        .setCreationDate(photo.getCreationDate())
+                        .setSize(photo.getSize())
+                        .setTags(photo.getTags())
+                        .setDescription(photo.getDescription())
+                        .setShootingDate(photo.getShootingDate())
+                        .setUrl(s3Dao.getPhotoUrl(photo))
+                        .setFormat(photo.getFormat())
+                ).collect(Collectors.toList());
+        for (PhotoResponse photo : responseList) {
+            response.addPhoto(photo);
+        }
         return response;
     }
 }
