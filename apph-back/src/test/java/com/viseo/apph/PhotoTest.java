@@ -103,11 +103,11 @@ public class PhotoTest {
         Gson gson = builder.create();
         PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(robert);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
-        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", null)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(0L);
@@ -379,7 +379,7 @@ public class PhotoTest {
         PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setDescription("Description").setFile(failFile).setTags(gson.toJson(tags)).setFolderId(-1);
         User user = new User().setLogin("toto").setPassword("password");
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title", Long.class)).thenReturn(typedQueryLong);
@@ -510,11 +510,11 @@ public class PhotoTest {
         User user = new User().setLogin("toto").setPassword("password");
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
         when(utils.getUser()).thenReturn(user);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
-        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", null)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(1L);
@@ -565,11 +565,11 @@ public class PhotoTest {
         User user = new User().setLogin("toto").setPassword("password");
         when(utils.getUser()).thenReturn(user);
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
-        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", null)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(0L);
@@ -720,7 +720,7 @@ public class PhotoTest {
     }
 
     @Test
-    public void testMovePhotoWithUnautorizedFolder() {
+    public void testMovePhotoWithUnauthorizedFolder() {
         //GIVEN
         createPhotoController();
         User robert = (User) new User().setLogin("Robert").setId(1);
@@ -890,5 +890,79 @@ public class PhotoTest {
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("Le format du fichier n'est pas valide", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testUpdatePhotoFolder() {
+        //GIVEN
+        createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setFolderId(-1).setId(1);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.createQuery("UPDATE Photo SET title = :title, description = :description, folder = :folder WHERE id = :id")).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("title", request.getTitle())).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("description", request.getDescription())).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("folder", null)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("id", request.getId())).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.executeUpdate()).thenReturn(1);
+        when(em.find(Photo.class, 1L)).thenReturn(new Photo().setUser(robert));
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.updatePhotoInfo(request);
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testUpdatePhotoFolderWithFolderId() {
+        //GIVEN
+        createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        Folder folder = (Folder) new Folder().setId(1);
+        PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setFolderId(1).setId(42);
+
+        when(utils.getUser()).thenReturn(robert);
+        when(em.createQuery("UPDATE Photo SET title = :title, description = :description, folder = :folder WHERE id = :id")).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("title", request.getTitle())).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("description", request.getDescription())).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("folder", folder)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("id", request.getId())).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.executeUpdate()).thenReturn(1);
+        when(em.find(Photo.class, 42L)).thenReturn((Photo) new Photo().setUser(robert).setId(42));
+        when(em.find(Folder.class, 1L)).thenReturn(folder);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.updatePhotoInfo(request);
+        //THEN
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("Suppression effectuée avec succès.", messageResponse.getMessage());
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testUpdatePhotoFolderWithNotExistingPhoto() {
+        createPhotoController();
+        PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setFolderId(-1).setId(1);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.updatePhotoInfo(request);
+        //THEN
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("La photo n'existe pas.", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testUpdatePhotoFolderWithUnauthorized() {
+        createPhotoController();
+        PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setFolderId(-1).setId(1);
+        when(utils.getUser()).thenReturn(new User());
+        when(em.find(Photo.class, 1L)).thenReturn(new Photo().setUser((User) new User().setId(42)));
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.updatePhotoInfo(request);
+        //THEN
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("L'utilisateur n'a pas accès à cette action.", messageResponse.getMessage());
     }
 }

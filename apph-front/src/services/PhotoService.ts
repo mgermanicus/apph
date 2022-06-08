@@ -281,4 +281,36 @@ export default class PhotoService {
       errorFunction
     );
   }
+
+  static updatePhotoInfo(
+    id: number,
+    title: string,
+    description: string,
+    folderId: number,
+    handleSuccess: (message: { statusCode: number; message: string }) => void,
+    handleError: (errorMessage: IMessage) => void
+  ) {
+    const URL = `/photo/update`,
+      userInfos = cookies.get('user'),
+      requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + userInfos?.token
+        },
+        body: JSON.stringify({
+          id,
+          title,
+          description,
+          folderId
+        })
+      };
+    const successFunction = (message: string) => {
+      handleSuccess(JSON.parse(message));
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage));
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
 }

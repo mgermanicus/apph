@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { IFilterPayload } from '../types/Filter';
 import { IPagination, ITable } from '../index';
 import { useSelector } from 'react-redux';
-import PhotoDetails from '../../static/components/PhotoDetails';
+import { PhotoDetails } from '../../static/components/PhotoDetails';
 import PhotoService from '../../services/PhotoService';
 import { ButtonGroup } from '@mui/material';
 import { UploadImage } from '../../static/components/UploadImage';

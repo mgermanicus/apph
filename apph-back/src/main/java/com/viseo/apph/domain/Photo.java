@@ -131,6 +131,8 @@ public class Photo extends BaseEntity {
             if (folder != null) {
                 this.folder = folder;
                 this.folder.photos.add(this);
+            } else {
+                this.folder = null;
             }
         }
         return this;

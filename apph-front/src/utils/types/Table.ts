@@ -1,4 +1,6 @@
 import { ITag } from './Tag';
+import { Dispatch, SetStateAction } from 'react';
+import { AlertColor } from '@mui/material';
 
 export interface ITable {
   id: number;
@@ -25,4 +27,9 @@ export interface ITableDetails {
   size: number;
   tags: ITag[];
   format: string;
+  fromFolders?: boolean;
+  setRefresh?: Dispatch<SetStateAction<boolean>>;
+  setSnackbarOpen?: Dispatch<SetStateAction<boolean>>;
+  setSnackMessage?: Dispatch<SetStateAction<string>>;
+  setSnackSeverity?: Dispatch<SetStateAction<AlertColor>>;
 }

@@ -169,4 +169,17 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du ré-upload."));
         }
     }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping(value = "/update", produces = "application/json")
+    public ResponseEntity<IResponseDto> updatePhotoInfo(@RequestBody PhotoRequest photoRequest) {
+        User user = utils.getUser();
+        try {
+            return ResponseEntity.ok(photoService.updatePhotoFolder(user, photoRequest));
+        } catch (NotFoundException nfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
+        } catch (UnauthorizedException ue) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
+        }
+    }
 }
