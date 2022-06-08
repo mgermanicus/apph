@@ -31,7 +31,7 @@ public class TagService {
     }
 
     @Transactional
-    public Set<Tag> createListTags(String listOfTags, User user) throws JsonProcessingException {
+    public Set<Tag> createListTags(String listOfTags, User user) {
         // Parse tags from json to Tags[]
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();

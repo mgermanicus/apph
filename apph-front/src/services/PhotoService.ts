@@ -109,6 +109,42 @@ export default class PhotoService {
     );
   }
 
+  static editInfos(
+    id: number,
+    title: string,
+    description: string,
+    tags: ITag[],
+    shootingDate: Date,
+    handleSuccess: (message: string) => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = '/photo/editInfos';
+    const userInfos = cookies.get('user');
+    const formData = new FormData();
+    formData.append('id', id.toString());
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('tags', JSON.stringify(tags));
+    formData.append(
+      'shootingDate',
+      JSON.stringify(shootingDate.toLocaleString())
+    );
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + userInfos?.token
+      },
+      body: formData
+    };
+    const successFunction = (val: string) => {
+      handleSuccess(JSON.parse(val).message);
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
+
   static downloadImage(
     id: number,
     handleSuccess: (photo: IPhoto) => void,

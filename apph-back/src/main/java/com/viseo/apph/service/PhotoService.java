@@ -1,5 +1,6 @@
 package com.viseo.apph.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.GsonBuilder;
 import com.viseo.apph.dao.FolderDao;
 import com.viseo.apph.dao.PhotoDao;
@@ -73,6 +74,19 @@ public class PhotoService {
                 .setFolder(folder);
         photo = photoDao.addPhoto(photo);
         return s3Dao.upload(photoRequest.getFile(), photo);
+    }
+
+    @Transactional
+    public String editPhotoInfos(User user, PhotoRequest photoRequest) throws NotFoundException {
+        Photo photo = photoDao.getPhoto(photoRequest.getId());
+        if (photo == null) throw new NotFoundException("photo not found");
+        Set<Tag> newTags = tagService.createListTags(photoRequest.getTags(), user);
+        Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
+        photo.setTitle(photoRequest.getTitle())
+             .setDescription(photoRequest.getDescription())
+             .setShootingDate(shootingDate)
+             .setTags(newTags);
+        return "Photo édité";
     }
 
     public String getFormat(MultipartFile file) throws InvalidFileException {

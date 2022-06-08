@@ -16,7 +16,6 @@ import { wrapper } from '../utils/components/CustomWrapper';
 describe('Test UploadImage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.setTimeout(10000);
   });
 
   it('tests error when user picks file too large', async () => {
@@ -125,6 +124,7 @@ describe('Test UploadImage', () => {
 
   it('tests successful multiupload', async () => {
     //GIVEN
+    jest.setTimeout(10000);
     const files = [
       fakeFile(1000, 'image/png', '1.png'),
       fakeFile(1000, 'image/png', '2.png')
@@ -169,6 +169,7 @@ describe('Test UploadImage', () => {
 
   it('tests multiupload failure', async () => {
     //GIVEN
+    jest.setTimeout(10000);
     const files = [
       fakeFile(1000, 'image/png', '1.png'),
       fakeFile(1000, 'application/zip', '2.png')

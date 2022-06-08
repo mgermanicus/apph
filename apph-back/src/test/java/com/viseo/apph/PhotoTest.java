@@ -34,8 +34,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import static com.viseo.apph.utils.Utils.inject;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -117,6 +116,34 @@ public class PhotoTest {
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
         //THEN
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void TestEditPhotoInfos() {
+        //GIVEN
+        createPhotoController();
+        Set<Tag> oldTags = new HashSet<>();
+        Tag oneOldTag = new Tag().setName("+ Add New Tag tag");
+        oldTags.add(oneOldTag);
+        User user = new User().setLogin("toto").setPassword("password");
+        Photo oldPhoto = new Photo().setCreationDate(new Date()).setShootingDate(new Date()).setFormat(".png").setTitle("title").setDescription("desc").setSize(1).setUser(user).setTags(oldTags);
+        Set<Tag> newTags = new HashSet<>();
+        Tag oneNewTag = new Tag().setName("+ Add New Tag new tag");
+        newTags.add(oneNewTag);
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("newTitle").setTags(gson.toJson(newTags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setDescription("newDesc").setId(1L);
+        when(em.find(Photo.class, 1L)).thenReturn(oldPhoto);
+        when(utils.getUser()).thenReturn(user);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.editInfos(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("newTitle", oldPhoto.getTitle());
+        assertEquals("newDesc", oldPhoto.getDescription());
+        assertNotNull(oldPhoto.getShootingDate());
+        assertEquals(1, oldPhoto.getTags().size());
+        assertTrue(oldPhoto.getTags().contains(oneNewTag));
     }
 
     @Test

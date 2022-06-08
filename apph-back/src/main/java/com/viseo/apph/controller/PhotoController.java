@@ -64,6 +64,17 @@ public class PhotoController {
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping("/editInfos")
+    public ResponseEntity<IResponseDto> editInfos(@ModelAttribute PhotoRequest photoRequest) {
+        try {
+            User user = utils.getUser();
+            return ResponseEntity.ok(new MessageResponse(photoService.editPhotoInfos(user, photoRequest)));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Photo introuvable"));
+        }
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/upload")
     public ResponseEntity<IResponseDto> upload(@ModelAttribute PhotoRequest photoRequest) {
         try {

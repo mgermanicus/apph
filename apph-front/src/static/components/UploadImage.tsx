@@ -1,13 +1,10 @@
 import {
-  Autocomplete,
   Avatar,
   Box,
   Button,
   Container,
-  createFilterOptions,
   CssBaseline,
   Dialog,
-  FilterOptionsState,
   Input,
   Stack,
   TextField,
@@ -33,8 +30,7 @@ import { setTagList } from '../../redux/slices/tagSlice';
 import { UploadList } from './UploadList';
 import { Upload } from '@mui/icons-material';
 import { AlertSnackbar } from './AlertSnackbar';
-
-const filter = createFilterOptions<ITag>();
+import { TagInput } from './TagInput';
 
 export const UploadImage = ({
   setRefresh
@@ -47,7 +43,6 @@ export const UploadImage = ({
   const [description, setDescription] = useState<string>('');
   const [shootingDate, setShootingDate] = useState<Date>(new Date());
   const [open, setOpen] = useState<boolean>(false);
-  const tagsInput = createRef<HTMLInputElement>();
   const [files, setFiles] = useState<FileList>();
   const [globalUploadStatus, setGlobalUploadStatus] = useState<UploadStatus>({
     type: StatusType.None
@@ -55,6 +50,7 @@ export const UploadImage = ({
   const [uploadStatuses, setUploadStatuses] = useState<UploadStatus[]>([]);
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const tagList = useSelector(({ tagList }: { tagList: ITag[] }) => tagList);
+  const [tagsValidity, setTagsValidity] = useState<boolean>(true);
 
   const createUploadCallbacks = (nbFiles: number) => {
     const handleSuccess = [];
@@ -104,7 +100,7 @@ export const UploadImage = ({
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedTags.length < 1) {
-      tagsInput.current?.setCustomValidity('Veuillez renseigner ce champ.');
+      setTagsValidity(false);
       return;
     }
     const fileList = fileInput.current?.files;
@@ -188,21 +184,6 @@ export const UploadImage = ({
     });
     // Just enough time to see the success message
     setTimeout(handleClose, 1000);
-  };
-
-  const filterTags = (options: ITag[], params: FilterOptionsState<ITag>) => {
-    const filtered = filter(
-      options?.filter((tag) => tag.name !== null),
-      params
-    );
-    const { inputValue } = params;
-    const isExisting = options.some((option) => inputValue === option.name);
-    if (inputValue !== '' && !isExisting) {
-      filtered.push({
-        name: `+ Add New Tag ${inputValue}`
-      });
-    }
-    return filtered;
   };
 
   useEffect(() => {
@@ -303,38 +284,10 @@ export const UploadImage = ({
                       renderInput={(params) => <TextField {...params} />}
                     />
                   </LocalizationProvider>
-                  <Autocomplete
-                    data-testid="#autocomplete"
-                    multiple
-                    limitTags={2}
-                    id="tags"
-                    size="small"
-                    options={tagList}
-                    onChange={(event, tags) => {
-                      setSelectedTags(tags);
-                      tagsInput.current?.setCustomValidity('');
-                    }}
-                    filterOptions={(options, params) =>
-                      filterTags(options, params)
-                    }
-                    isOptionEqualToValue={(tag, value) =>
-                      tag.name === value.name
-                    }
-                    getOptionLabel={(tag) => tag.name}
-                    renderInput={(params) => (
-                      <TextField
-                        required={selectedTags.length === 0}
-                        {...params}
-                        inputProps={{
-                          ...params.inputProps,
-                          autoComplete: 'new-password',
-                          required: selectedTags.length === 0,
-                          maxLength: 255
-                        }}
-                        inputRef={tagsInput}
-                        label="Tags"
-                      />
-                    )}
+                  <TagInput
+                    allTags={tagList}
+                    onChange={(tags) => setSelectedTags(tags)}
+                    isValid={tagsValidity}
                   />
                   <Input
                     fullWidth
