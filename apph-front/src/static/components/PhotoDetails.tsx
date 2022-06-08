@@ -155,12 +155,12 @@ export const PhotoDetails = ({
             >
               {details.fromFolders && (
                 <Button
-                  name="Supprimer depuis le dossier"
+                  name="Supprimer du dossier"
                   variant="outlined"
                   sx={{ alignSelf: 'center' }}
                   onClick={() => setDialogOpen(true)}
                 >
-                  Supprimer depuis le dossier
+                  Supprimer du dossier
                 </Button>
               )}
               <Box sx={detailBoxStyle}>
@@ -234,7 +234,7 @@ export const PhotoDetails = ({
               setDialogOpen(false);
             }}
             title="Confirmez-vous la suppression?"
-            message="Si vous confirmez, la photo sera supprimer du dossier"
+            message="Si vous confirmez, la photo sera supprimée du dossier"
           />
         </Box>
       </Modal>
