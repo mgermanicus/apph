@@ -79,13 +79,9 @@ export const MyFoldersPage = (): JSX.Element => {
             <FolderTree folder={rootFolder} />
           </TreeView>
         </Box>
-        <div
-          style={{
-            width: '70%'
-          }}
-        >
+        <Box component="div" sx={{ width: '70%' }}>
           <DisplayPhoto selectedFolder={selectedFolder} />
-        </div>
+        </Box>
       </div>
     );
   }

@@ -2,6 +2,7 @@ import { ITable } from '../../utils';
 import {
   Alert,
   AlertColor,
+  Box,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -14,6 +15,7 @@ import { useEffect, useState } from 'react';
 import PhotoService from '../../services/PhotoService';
 import { PhotoDetails } from './PhotoDetails';
 import { AlertSnackbar } from './AlertSnackbar';
+import { MoveFolders } from './MoveFolders';
 import { useTranslation } from 'react-i18next';
 
 const tinySize = {
@@ -110,6 +112,33 @@ export const DisplayPhoto = ({
   } else {
     return (
       <>
+        <Box component="div" sx={{ display: 'flex' }}>
+          <FormControl sx={{ m: 1 }}>
+            <FormLabel id="photo-size-group-label">
+              Format d'affichage :
+            </FormLabel>
+            <RadioGroup
+              aria-labelledby="photo-size-group-label"
+              defaultValue="tiny"
+              name="photo-size-group"
+              row
+              onChange={handleChangeSize}
+            >
+              <FormControlLabel
+                value="tiny"
+                control={<Radio />}
+                label="Petit"
+              />
+              <FormControlLabel
+                value="medium"
+                control={<Radio />}
+                label="Moyen"
+              />
+              <FormControlLabel value="big" control={<Radio />} label="Grand" />
+            </RadioGroup>
+          </FormControl>
+          <MoveFolders selectedFolder={selectedFolder} />
+        </Box>
         <FormControl sx={{ m: 1 }}>
           <FormLabel id="photo-size-group-label">
             {t('photo.displayFormat')} :
