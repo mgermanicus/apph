@@ -23,6 +23,19 @@ export const DownloadZip = ({
   const [loading, setLoading] = useState<boolean>(false);
   const { t } = useTranslation();
 
+  const linkDownloadZip = (data: BinaryData, title: string) => {
+    const imageBase64 = `data:application/zip;base64,${data}`;
+    const link = document.createElement('a');
+    const event = new MouseEvent('click');
+    link.href = imageBase64;
+    link.download = title + '.zip';
+    link.dispatchEvent(event);
+  };
+  const traitError = (error: IMessage) => {
+    setMessage(error.message);
+    setSnackbarOpen(true);
+    setSeverity('error');
+  };
   const handleSubmit = () => {
     setLoading(true);
     if (ids.length != 0) {
@@ -39,37 +52,15 @@ export const DownloadZip = ({
       FolderService.downloadFolder(
         ids,
         titleZip,
-        (folder: IFolder) => {
-          const imageBase64 = `data:application/zip;base64,${folder.data}`;
-          const link = document.createElement('a');
-          const event = new MouseEvent('click');
-          link.href = imageBase64;
-          link.download = folder.name + '.zip';
-          link.dispatchEvent(event);
-        },
-        (error: IMessage) => {
-          setMessage(error.message);
-          setSnackbarOpen(true);
-          setSeverity('error');
-        }
+        (folder: IFolder) => linkDownloadZip(folder.data, folder.name),
+        (error) => traitError(error)
       ).then(() => setLoading(false));
     } else {
       PhotoService.downloadZip(
         ids,
         titleZip,
-        (photos: IPhoto) => {
-          const imageBase64 = `data:application/zip;base64,${photos.data}`;
-          const link = document.createElement('a');
-          const event = new MouseEvent('click');
-          link.href = imageBase64;
-          link.download = photos.title + '.zip';
-          link.dispatchEvent(event);
-        },
-        (error: IMessage) => {
-          setMessage(error.message);
-          setSnackbarOpen(true);
-          setSeverity('error');
-        }
+        (photos: IPhoto) => linkDownloadZip(photos.data, photos.title),
+        (error) => traitError(error)
       ).then(() => setLoading(false));
     }
   };
