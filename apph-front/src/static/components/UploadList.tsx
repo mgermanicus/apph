@@ -6,7 +6,7 @@ export const UploadList = ({
   files
 }: {
   statuses: UploadStatus[];
-  files: FileList | undefined;
+  files: File[] | undefined;
 }) => {
   return (
     <>

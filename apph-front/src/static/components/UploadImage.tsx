@@ -5,7 +5,6 @@ import {
   Container,
   CssBaseline,
   Dialog,
-  Input,
   Stack,
   TextField,
   Tooltip,
@@ -15,7 +14,6 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import PhotoService from '../../services/PhotoService';
 import { ITag, StatusType, UploadStatus } from '../../utils';
 import React, {
-  createRef,
   Dispatch,
   FormEvent,
   SetStateAction,
@@ -32,19 +30,19 @@ import { Upload } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { AlertSnackbar } from './AlertSnackbar';
 import { TagInput } from './TagInput';
+import { useDropzone } from 'react-dropzone';
 
 export const UploadImage = ({
   setRefresh
 }: {
   setRefresh?: Dispatch<SetStateAction<boolean>>;
 }): JSX.Element => {
-  const fileInput = createRef<HTMLInputElement>();
   const dispatch = useDispatch();
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [shootingDate, setShootingDate] = useState<Date>(new Date());
   const [open, setOpen] = useState<boolean>(false);
-  const [files, setFiles] = useState<FileList>();
+  const [files, setFiles] = useState<File[]>();
   const [globalUploadStatus, setGlobalUploadStatus] = useState<UploadStatus>({
     type: StatusType.None
   });
@@ -53,6 +51,9 @@ export const UploadImage = ({
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const tagList = useSelector(({ tagList }: { tagList: ITag[] }) => tagList);
   const [tagsValidity, setTagsValidity] = useState<boolean>(true);
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+    accept: { 'image/*': [] }
+  });
 
   const createUploadCallbacks = (nbFiles: number) => {
     const handleSuccess = [];
@@ -97,6 +98,7 @@ export const UploadImage = ({
     if (setRefresh) {
       setRefresh((refresh) => !refresh);
     }
+    acceptedFiles.length = 0;
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -105,24 +107,23 @@ export const UploadImage = ({
       setTagsValidity(false);
       return;
     }
-    const fileList = fileInput.current?.files;
-    if (fileList) {
-      setFiles(fileList);
+    if (acceptedFiles.length) {
+      setFiles(acceptedFiles);
       setGlobalUploadStatus({ type: StatusType.Uploading });
       setUploadStatuses(
-        Array(fileList.length).fill({ type: StatusType.Uploading })
+        Array(acceptedFiles.length).fill({ type: StatusType.Uploading })
       );
       const { handleSuccess, handleError } = createUploadCallbacks(
-        fileList.length
+        acceptedFiles.length
       );
 
       // We wait for the first upload to finish before sending the others because if new tags are created we need
       // their id in the following requests
       PhotoService.uploadImage(
-        fileList.length > 1 ? `${title}_1` : title,
+        acceptedFiles.length > 1 ? `${title}_1` : title,
         description,
         shootingDate,
-        fileList[0],
+        acceptedFiles[0],
         selectedTags,
         '-1',
         handleSuccess[0],
@@ -141,12 +142,12 @@ export const UploadImage = ({
                 ) ?? selectedTag
             );
             setSelectedTags(newSelectedTags);
-            for (let i = 1; i < fileList.length; i++) {
+            for (let i = 1; i < acceptedFiles.length; i++) {
               PhotoService.uploadImage(
                 `${title}_${i + 1}`,
                 description,
                 shootingDate,
-                fileList[i],
+                acceptedFiles[i],
                 newSelectedTags,
                 '-1',
                 handleSuccess[i],
@@ -292,17 +293,34 @@ export const UploadImage = ({
                     onChange={(tags) => setSelectedTags(tags)}
                     isValid={tagsValidity}
                   />
-                  <Input
-                    fullWidth
-                    inputRef={fileInput}
-                    inputProps={{
-                      type: 'file',
-                      accept: 'image/*',
-                      'data-testid': 'file-input',
-                      multiple: true
+                  <Box
+                    {...getRootProps()}
+                    sx={{
+                      borderWidth: '2px',
+                      borderStyle: 'dashed',
+                      borderColor: '#d0d0d0',
+                      backgroundColor: '#e8e8e8',
+                      color: '#bdbdbd',
+                      p: '20px',
+                      alignItems: 'center'
                     }}
-                    required
-                  />
+                  >
+                    <input {...getInputProps()} />
+                    <p>
+                      Glissez-déposez des fichiers ici, ou cliquez dans la zone
+                      pour sélectionner des fichiers à uploader.
+                    </p>
+                  </Box>
+                  {!!acceptedFiles.length && (
+                    <aside>
+                      <h4>Fichiers</h4>
+                      <ul>
+                        {acceptedFiles.map((file) => (
+                          <li key={file.name}>{file.name}</li>
+                        ))}
+                      </ul>
+                    </aside>
+                  )}
                   <UploadList statuses={uploadStatuses} files={files} />
                   <Button
                     type="submit"
