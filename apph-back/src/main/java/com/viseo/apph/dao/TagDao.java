@@ -1,8 +1,6 @@
 package com.viseo.apph.dao;
 
 import com.viseo.apph.domain.Tag;
-import com.viseo.apph.dto.TagResponse;
-import javafx.util.Pair;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -30,12 +28,12 @@ public class TagDao {
         return tag;
     }
 
-    public List<Pair<String, Integer>> getTagsCountByUser(long userId) {
+    public List<Object[]> getTagsCountByUser(long userId) {
         List tags = em.createQuery("SELECT t.name,COUNT(t) FROM Photo p JOIN p.tags AS t WHERE t.user.id=:userId GROUP BY t.name")
                 .setParameter("userId", userId).getResultList();
-        List<Pair<String, Integer>> filteredTag = new ArrayList<>();
+        List<Object[]> filteredTag = new ArrayList<>();
         for (Object[] tag : (List<Object[]>) tags) {
-            filteredTag.add(new Pair<String, Integer>((String) tag[0], (int) ((long) tag[1])));
+            filteredTag.add(new Object[]{(String) tag[0], (int) ((long) tag[1])});
         }
         return filteredTag;
     }

@@ -8,7 +8,6 @@ import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.TagListResponse;
 import com.viseo.apph.dto.TagResponse;
-import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,9 +54,9 @@ public class TagService {
     }
 
     public TagListResponse getTagsWithCount(User user) {
-        List<Pair<String, Integer>> tags = tagDao.getTagsCountByUser(user.getId());
+        List<Object[]> tags = tagDao.getTagsCountByUser(user.getId());
         List<TagResponse> tagResponses = new ArrayList<>();
-        tags.forEach(pair -> tagResponses.add(new TagResponse().setName(pair.getKey()).setCount(pair.getValue())));
+        tags.forEach(pair -> tagResponses.add(new TagResponse().setName((String) pair[0]).setCount((int) pair[1])));
         return new TagListResponse(tagResponses);
     }
 }
