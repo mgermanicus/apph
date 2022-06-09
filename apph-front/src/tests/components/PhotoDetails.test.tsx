@@ -55,7 +55,7 @@ describe('Test du composant PhotoDetails', () => {
     expect(screen.getAllByText(/testTitle/)).toBeInstanceOf(Array);
     expect(screen.getByText(/testDescription/)).toBeInTheDocument();
     expect(screen.getByText(/testTag/)).toBeInTheDocument();
-    expect(screen.getByText(/Supprimer depuis le dossier/)).toBeInTheDocument();
+    expect(screen.getByText(/Supprimer du dossier/)).toBeInTheDocument();
   });
 
   it('remove photo from folder', () => {
@@ -89,7 +89,7 @@ describe('Test du composant PhotoDetails', () => {
     );
     //WHEN
     clickButton(/photo-detail/i);
-    clickButton(/Supprimer depuis le dossier/);
+    clickButton(/Supprimer du dossier/);
     clickButton(/Continuer/);
     triggerRequestSuccess(
       '{"statusCode":1, "message: "Suppression effectuée avec succès""}'
@@ -133,7 +133,7 @@ describe('Test du composant PhotoDetails', () => {
     );
     //WHEN
     clickButton(/photo-detail/i);
-    clickButton(/Supprimer depuis le dossier/);
+    clickButton(/Supprimer du dossier/);
     clickButton(/Continuer/);
     triggerRequestFailure(
       '{"statusCode":0, "message: "La photo n\'existe pas""}'
@@ -172,12 +172,12 @@ describe('Test du composant PhotoDetails', () => {
     );
     //WHEN
     clickButton(/photo-detail/i);
-    clickButton(/Supprimer depuis le dossier/);
+    clickButton(/Supprimer du dossier/);
     clickButton(/Annuler/);
 
     expect(screen.getAllByText(/testTitle/)).toBeInstanceOf(Array);
     expect(screen.getByText(/testDescription/)).toBeInTheDocument();
     expect(screen.getByText(/testTag/)).toBeInTheDocument();
-    expect(screen.getByText(/Supprimer depuis le dossier/)).toBeInTheDocument();
+    expect(screen.getByText(/Supprimer du dossier/)).toBeInTheDocument();
   });
 });
