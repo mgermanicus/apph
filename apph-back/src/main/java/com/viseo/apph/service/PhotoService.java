@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -31,14 +32,19 @@ public class PhotoService {
 
     @Autowired
     PhotoDao photoDao;
+
     @Autowired
     UserDao userDao;
+
     @Autowired
     TagService tagService;
+
     @Autowired
     FolderDao folderDao;
+
     @Autowired
     S3Dao s3Dao;
+
     @Value("${max-zip-size-mb}")
     public long zipMaxSize;
 
@@ -297,7 +303,7 @@ public class PhotoService {
         }
         zipOut.closeEntry();
         zipOut.close();
-        return new PhotoResponse().setData(bos.toByteArray()).setTitle(photosRequest.getTitleZip()).setFormat(".zip");
+        return new PhotoResponse().setData(bos.toByteArray()).setTitle("APPH-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date())).setFormat(".zip");
     }
 
     @Transactional

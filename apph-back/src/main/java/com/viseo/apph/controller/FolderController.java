@@ -1,10 +1,8 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.FolderRequest;
-import com.viseo.apph.dto.FolderResponse;
-import com.viseo.apph.dto.IResponseDto;
-import com.viseo.apph.dto.MessageResponse;
+import com.viseo.apph.dto.*;
+import com.viseo.apph.exception.MaxSizeExceededException;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.exception.UnauthorizedException;
 import com.viseo.apph.security.Utils;
@@ -15,6 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import software.amazon.awssdk.services.s3.model.S3Exception;
+
+import java.io.IOException;
 
 @CrossOrigin
 @RestController
@@ -67,6 +68,21 @@ public class FolderController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
         } catch (NotFoundException nfe) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
+        }
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping(value = "download")
+    public ResponseEntity<IResponseDto> downloadZip(@RequestBody PhotosRequest request) {
+        try {
+            User user = utils.getUser();
+            return ResponseEntity.ok(folderService.download(user, request));
+        } catch (S3Exception | IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du téléchargement"));
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("L'utilisateur n'est pas autorisé à accéder à la ressource demandée"));
+        } catch (MaxSizeExceededException e) {
+            return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(new MessageResponse(e.getMessage()));
         }
     }
 }
