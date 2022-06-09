@@ -4,4 +4,5 @@ export interface IFolder {
   name: string;
   parentFolderId: string;
   childrenFolders: IFolder[];
+  data: BinaryData;
 }

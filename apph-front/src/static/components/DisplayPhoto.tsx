@@ -3,6 +3,7 @@ import {
   Alert,
   AlertColor,
   Box,
+  ButtonGroup,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -17,6 +18,7 @@ import { PhotoDetails } from './PhotoDetails';
 import { AlertSnackbar } from './AlertSnackbar';
 import { useTranslation } from 'react-i18next';
 import { MovePhotoOrFolder } from './MovePhotoOrFolder';
+import { DownloadZip } from './DownloadZip';
 
 const tinySize = {
   gridContainerSpacing: { xs: 1, md: 2 },
@@ -113,41 +115,52 @@ export const DisplayPhoto = ({
     );
   } else {
     return (
-      <>
-        <Box component="div" sx={{ display: 'flex', justifyContent: 'center' }}>
-          <FormControl sx={{ m: 1 }}>
-            <FormLabel id="photo-size-group-label">
-              {t('photo.displayFormat')} :
-            </FormLabel>
-            <RadioGroup
-              aria-labelledby="photo-size-group-label"
-              defaultValue="tiny"
-              name="photo-size-group"
-              row
-              onChange={handleChangeSize}
-            >
-              <FormControlLabel
-                value="tiny"
-                control={<Radio />}
-                label={t('size.small')}
-              />
-              <FormControlLabel
-                value="medium"
-                control={<Radio />}
-                label={t('size.medium')}
-              />
-              <FormControlLabel
-                value="big"
-                control={<Radio />}
-                label={t('size.large')}
-              />
-            </RadioGroup>
-          </FormControl>
-          <MovePhotoOrFolder
-            folderToBeMoved={selectedFolder}
-            folderId={rootFolder}
-          />
-        </Box>
+      <Grid container>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <FormControl sx={{ m: 1 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                <FormLabel id="photo-size-group-label" sx={{ m: 1 }}>
+                  {t('photo.displayFormat')} :
+                </FormLabel>
+                <RadioGroup
+                  aria-labelledby="photo-size-group-label"
+                  defaultValue="tiny"
+                  name="photo-size-group"
+                  row
+                  onChange={handleChangeSize}
+                >
+                  <FormControlLabel
+                    value="tiny"
+                    control={<Radio />}
+                    label={t('size.small')}
+                  />
+                  <FormControlLabel
+                    value="medium"
+                    control={<Radio />}
+                    label={t('size.medium')}
+                  />
+                  <FormControlLabel
+                    value="big"
+                    control={<Radio />}
+                    label={t('size.large')}
+                  />
+                </RadioGroup>
+              </Box>
+            </FormControl>
+          </Grid>
+          <Grid item xs={6}>
+            <Box display="flex" justifyContent="flex-start">
+              <ButtonGroup variant="outlined">
+                <DownloadZip ids={[parseInt(selectedFolder)]} isFolder={true} />
+                <MovePhotoOrFolder
+                  folderToBeMoved={selectedFolder}
+                  folderId={rootFolder}
+                />
+              </ButtonGroup>
+            </Box>
+          </Grid>
+        </Grid>
         <Grid
           container
           spacing={selectedSize.gridContainerSpacing}
@@ -194,7 +207,7 @@ export const DisplayPhoto = ({
           message={t(snackMessage)}
           onClose={setSnackbarOpen}
         />
-      </>
+      </Grid>
     );
   }
 };
