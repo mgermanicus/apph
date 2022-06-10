@@ -162,6 +162,11 @@ export const UploadImage = ({
             })
         );
       });
+    } else {
+      setGlobalUploadStatus({
+        type: StatusType.Error,
+        message: 'Veuillez ajouter des images'
+      });
     }
   };
 
@@ -305,7 +310,7 @@ export const UploadImage = ({
                       alignItems: 'center'
                     }}
                   >
-                    <input {...getInputProps()} />
+                    <input data-testid="drop-input" {...getInputProps()} />
                     <p>
                       Glissez-déposez des fichiers ici, ou cliquez dans la zone
                       pour sélectionner des fichiers à uploader.
@@ -315,7 +320,7 @@ export const UploadImage = ({
                     <aside>
                       <h4>Fichiers</h4>
                       <ul>
-                        {acceptedFiles.map((file) => (
+                        {acceptedFiles.map((file: File) => (
                           <li key={file.name}>{file.name}</li>
                         ))}
                       </ul>

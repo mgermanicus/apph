@@ -2,12 +2,9 @@ import { createEvent, fireEvent } from '@testing-library/react';
 import { ITag } from '../../utils';
 
 export function inputFile(files: File[], input: HTMLInputElement) {
-  fireEvent(
-    input,
-    createEvent('input', input, {
-      target: { files }
-    })
-  );
+  fireEvent.change(input, {
+    target: { files }
+  });
 }
 
 export function fakeFile(size: number, type: string, name?: string) {
