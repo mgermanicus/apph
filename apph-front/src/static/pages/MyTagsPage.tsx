@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import ReactWordcloud, { Scale, Spiral, Word } from 'react-wordcloud';
-import TagService from '../../services/TagService';
 import { AlertSnackbar } from '../components/AlertSnackbar';
+import { TagCloud } from '../components/TagCloud';
+import TagService from '../../services/TagService';
+import { Word } from 'react-wordcloud';
 
 export const MyTagsPage = (): JSX.Element => {
   const [tags, setTags] = useState<Word[]>([]);
@@ -20,25 +21,9 @@ export const MyTagsPage = (): JSX.Element => {
     })();
   }, []);
 
-  const options = {
-    enableTooltip: true,
-    deterministic: true,
-    fontFamily: 'impact',
-    fontSizes: [20, 100] as [number, number],
-    fontStyle: 'normal',
-    fontWeight: 'normal',
-    padding: 2,
-    rotations: 0,
-    scale: 'sqrt' as Scale,
-    spiral: 'archimedean' as Spiral,
-    transitionDuration: 1000
-  };
-
   return (
     <div>
-      <div style={{ width: '100%', height: '100%' }}>
-        <ReactWordcloud options={options} words={tags} />
-      </div>
+      <TagCloud tags={tags} />
       <AlertSnackbar
         open={!!errorMessage}
         severity={'warning'}
