@@ -12,6 +12,7 @@ import { DeleteImage } from '../../static/components/DeleteImage';
 import { Diaporama } from '../../static/components/Diaporama';
 import { PhotoTable } from '../../static/components/PhotoTable';
 import { DownloadZip } from '../../static/components/DownloadZip';
+import { GridSortModel } from '@mui/x-data-grid';
 
 export const usePhotoTable = (filterList?: IFilterPayload[]) => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -22,6 +23,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
   const [pageSize, setPageSize] = useState<number>(5);
   const [page, setPage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
   const selected = useSelector(
     ({ selectedPhotos }: { selectedPhotos: ITable[] }) => selectedPhotos
   );
@@ -41,9 +43,10 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
       page + 1,
       handleSuccess,
       handleError,
+      sortModel,
       filterList
     );
-  }, [refresh, page, pageSize, filterList ? filterList : null]);
+  }, [refresh, page, pageSize, sortModel, filterList ? filterList : null]);
 
   const handleError = (error: string) => {
     setErrorMessage(error);
@@ -73,6 +76,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
                 page + 1,
                 handleSuccess,
                 handleError,
+                sortModel,
                 filterList
               )
             }
@@ -84,6 +88,18 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
     setData(pagination.photoList);
     setTotalSize(pagination.totalSize);
     setLoading(false);
+  };
+
+  const handleSortModelChange = (model: GridSortModel) => {
+    setSortModel(model);
+    PhotoService.getData(
+      pageSize,
+      page + 1,
+      handleSuccess,
+      handleError,
+      sortModel,
+      filterList
+    );
   };
 
   const photoTable = (
@@ -104,6 +120,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
         setPageSize={setPageSize}
         totalSize={totalSize}
         loading={loading}
+        handleSortModelChange={handleSortModelChange}
       />
     </>
   );

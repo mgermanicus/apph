@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { Dispatch, useEffect, useState } from 'react';
-import { DataGrid, GridColDef, GridSelectionModel } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridSelectionModel,
+  GridSortModel
+} from '@mui/x-data-grid';
 import { Stack } from '@mui/material';
 import { ITable, ITag } from '../../utils';
 import { DownloadImage } from './DownloadImage';
@@ -17,6 +22,7 @@ interface photoTableProps {
   pageSize: number;
   setPageSize: Dispatch<React.SetStateAction<number>>;
   selected?: number[];
+  handleSortModelChange: (model: GridSortModel) => void;
 }
 
 export const PhotoTable = ({
@@ -27,7 +33,8 @@ export const PhotoTable = ({
   setPage,
   pageSize = 5,
   setPageSize,
-  selected
+  selected,
+  handleSortModelChange
 }: photoTableProps) => {
   const [selectionModel, setSelectionModel] = useState<GridSelectionModel>([]);
   const dispatch = useDispatch();
@@ -79,27 +86,30 @@ export const PhotoTable = ({
       flex: 1.5,
       align: 'center',
       headerAlign: 'center',
-      renderCell: (params) =>
-        params.row.tags.map((tag: ITag, index: number) => {
-          if (index !== params.row.tags.length - 1) {
-            return tag.name + ', ';
-          }
-          return tag.name;
-        })
-    },
-    {
-      field: 'url',
-      headerName: t('photoTable.url'),
+      sortable: false,
+    renderCell: (params) =>
+      params.row.tags.map((tag: ITag, index: number) => {
+        if (index !== params.row.tags.length - 1) {
+          return tag.name + ', ';
+        }
+        return tag.name;
+      })
+  },
+  {
+    field: 'url',
+    headerName: t('photoTable.url'),
       flex: 1,
       align: 'center',
-      headerAlign: 'center'
-    },
-    {
-      field: 'actions',
-      headerName: t('photoTable.actions'),
-      flex: 2,
-      align: 'center',
       headerAlign: 'center',
+    sortable: false
+  },
+  {
+    field: 'actions',
+    headerName: t('photoTable.actions'),
+    flex: 2,
+    align: 'center',
+    headerAlign: 'center',
+    sortable: false,
       renderCell: (params) => (
         <Stack spacing={2} direction="row">
           {params.row.details} <DownloadImage id={+params.id} />
@@ -144,6 +154,9 @@ export const PhotoTable = ({
         selectionModel={selectionModel}
         checkboxSelection
         disableSelectionOnClick
+        sortingMode="server"
+        onSortModelChange={handleSortModelChange}
+        disableColumnMenu
       />
     </div>
   );
