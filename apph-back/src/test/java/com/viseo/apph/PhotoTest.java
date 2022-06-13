@@ -226,16 +226,17 @@ public class PhotoTest {
         listPhoto.add(new Photo());
         FilterDto[] filterDtos = new FilterDto[]{
                 new FilterDto().setField("title").setOperator("contain").setValue("p"),
-                new FilterDto().setField("title").setOperator("is").setValue("photo"),
                 new FilterDto().setField("creationDate").setOperator("strictlyInferior").setValue("1"),
                 new FilterDto().setField("shootingDate").setOperator("strictlySuperior").setValue("2"),
                 new FilterDto().setField("shootingDate").setOperator("superiorEqual").setValue("3"),
                 new FilterDto().setField("creationDate").setOperator("inferiorEqual").setValue("4"),
-                new FilterDto().setField("description").setOperator("is").setValue("cool")
+                new FilterDto().setField("creationDate").setOperator("equal").setValue("5"),
+                new FilterDto().setField("description").setOperator("is").setValue("cool"),
+                new FilterDto().setField("title").setOperator("is").setValue("photo")
         };
         FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos);
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%p%'  OR p.title LIKE 'photo' ) AND (p.description LIKE 'cool' ) AND (p.creationDate < '1'  OR p.creationDate <= '4' ) AND (p.shootingDate > '2'  OR p.shootingDate >= '3' ) GROUP BY p.id", Photo.class)).thenReturn(typedQueryPhoto);
+        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%' || ?1 || '%'  OR p.title LIKE ?2 ) AND (p.description LIKE ?3 ) AND (p.creationDate < ?4  OR p.creationDate <= ?5  OR p.creationDate = ?6 ) AND (p.shootingDate > ?7  OR p.shootingDate >= ?8 ) GROUP BY p.id", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
@@ -282,7 +283,7 @@ public class PhotoTest {
         };
         FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos);
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%p%'  OR p.title LIKE 'photo' ) AND ('p1' IN (select t.name from p.tags t)  OR 'p2' IN (select t.name from p.tags t)  OR 'p3' IN (select t.name from p.tags t) ) GROUP BY p.id", Photo.class)).thenReturn(typedQueryPhoto);
+        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%' || ?1 || '%'  OR p.title LIKE ?2 ) AND (?3 IN (select t.name from p.tags t)  OR ?4 IN (select t.name from p.tags t)  OR ?5 IN (select t.name from p.tags t) ) GROUP BY p.id", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");

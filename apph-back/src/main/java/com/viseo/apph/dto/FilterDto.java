@@ -24,17 +24,9 @@ public class FilterDto implements Comparable<FilterDto> {
         return this;
     }
 
-    public String getOperator() {
-        return operator;
-    }
-
     public FilterDto setOperator(String operator) {
         this.operator = operator;
         return this;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     public FilterDto setValue(String value) {
