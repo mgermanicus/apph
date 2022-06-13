@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.NotNull;
 
 import java.io.InvalidObjectException;
+import java.util.Queue;
 
 public class FilterDto implements Comparable<FilterDto> {
 
@@ -41,7 +42,7 @@ public class FilterDto implements Comparable<FilterDto> {
         return this;
     }
 
-    public String getFieldToSql() throws InvalidObjectException {
+    public String getFieldToSql(Queue<String> argQueue) throws InvalidObjectException {
         switch (field) {
             case "title":
                 return "p.title";
@@ -52,7 +53,8 @@ public class FilterDto implements Comparable<FilterDto> {
             case "shootingDate":
                 return "p.shootingDate";
             case "tags":
-                return "'" + value + "'";
+                argQueue.add(value);
+                return "?" + argQueue.size();
             default:
                 throw new InvalidObjectException("champ non reconnu : " + field);
         }
@@ -85,13 +87,15 @@ public class FilterDto implements Comparable<FilterDto> {
         throw new InvalidObjectException("champ non reconnu");
     }
 
-    public String getValueToSql() {
+    public String getValueToSql(Queue<String> argQueue) {
         if (field.equals("tags")) {
             return "(select t.name from p.tags t)";
         } else if (operator.equals("contain")) {
-            return "'%" + value + "%'";
+            argQueue.add(value);
+            return "'%' || ?" + argQueue.size() + " || '%'";
         }
-        return "'" + value + "'";
+        argQueue.add(value);
+        return "?" + argQueue.size();
 
     }
 

@@ -43,6 +43,16 @@ public class PhotoService {
     @Value("${max-zip-size-mb}")
     public long zipMaxSize;
 
+    private class FilterQuery {
+        public String query;
+        public Queue<String> argQueue;
+
+        public FilterQuery(String query, Queue<String> argQueue) {
+            this.query = query;
+            this.argQueue = argQueue;
+        }
+    }
+
     @Transactional
     public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException, ConflictException {
         Folder folder = null;
@@ -175,7 +185,8 @@ public class PhotoService {
         return response;
     }
 
-    private String createFilterQuery(FilterDto[] filters) throws InvalidObjectException {
+    private FilterQuery createFilterQuery(FilterDto[] filters) throws InvalidObjectException {
+        Queue<String> argQueue = new LinkedList<>();
         StringBuilder query = new StringBuilder("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user");
         List<FilterDto> filterDtoList = Arrays.asList(filters);
         filterDtoList.sort(FilterDto::compareTo);
@@ -189,19 +200,19 @@ public class PhotoService {
             } else {
                 query.append(" OR ");
             }
-            query.append(filter.getFieldToSql()).append(" ");
+            query.append(filter.getFieldToSql(argQueue)).append(" ");
             query.append(filter.getOperatorToSql()).append(" ");
-            query.append(filter.getValueToSql()).append(" ");
+            query.append(filter.getValueToSql(argQueue)).append(" ");
         }
         if (!filterDtoList.isEmpty()) {query.append(")");}
         query.append(" GROUP BY p.id");
-        return query.toString();
+        return new FilterQuery(query.toString(), argQueue);
     }
 
     @Transactional
     public PaginationResponse getUserFilteredPhotos(User user, FilterRequest filterRequest) throws InvalidObjectException {
-        String filterQuery = createFilterQuery(filterRequest.getFilters());
-        List<Photo> userPhotos = photoDao.getUserFilteredPhotos(user, filterQuery);
+        FilterQuery filterQuery = createFilterQuery(filterRequest.getFilters());
+        List<Photo> userPhotos = photoDao.getUserFilteredPhotos(user, filterQuery.query, filterQuery.argQueue);
         return getPaginationResponse(filterRequest.getPageSize(), filterRequest.getPage(), userPhotos);
     }
 

@@ -3,11 +3,14 @@ package com.viseo.apph.dao;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
+import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.List;
+import java.util.Queue;
 
 @Repository
 public class PhotoDao {
@@ -48,9 +51,12 @@ public class PhotoDao {
         return !count.equals(0L);
     }
 
-    public List<Photo> getUserFilteredPhotos(User user, String filterQuery) {
-        return em.createQuery(filterQuery, Photo.class)
-                .setParameter("user", user)
-                .getResultList();
+    public List<Photo> getUserFilteredPhotos(User user, String filterQuery, Queue<String> argQueue) {
+        Query spSQLQuery = em.createQuery(filterQuery, Photo.class).setParameter("user", user);
+        for (int i = 1; !argQueue.isEmpty(); i++)
+        {
+            spSQLQuery.setParameter(i, argQueue.poll());
+        }
+        return spSQLQuery.getResultList();
     }
 }
