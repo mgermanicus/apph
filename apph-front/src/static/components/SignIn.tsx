@@ -52,7 +52,7 @@ export const SignIn = () => {
     const emailValidator =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!emailValidator.test(email ? email : '')) {
-      setErrorMessage(t('signin.error.email'));
+      setErrorMessage('signin.error.email');
     } else if (email && password) {
       AuthService.signIn(
         email,

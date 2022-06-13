@@ -22,7 +22,7 @@ const modalStyle = {
 export const DownloadImage = ({ id }: { id: number }): JSX.Element => {
   const [errorMessage, setErrorMessage] = useState('');
   const handleClose = () => setErrorMessage('');
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const handleSubmit = () => {
     PhotoService.downloadImage(

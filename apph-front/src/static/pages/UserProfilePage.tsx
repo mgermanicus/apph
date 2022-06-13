@@ -10,7 +10,7 @@ export const UserProfilePage = (): JSX.Element => {
   const [lastname, setLastname] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string>();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     (async () => {

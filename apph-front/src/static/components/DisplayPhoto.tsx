@@ -96,7 +96,7 @@ export const DisplayPhoto = ({
         setSelectedSize(bigSize);
         break;
       default:
-        setErrorMessage('Erreur lors de la modification du format');
+        setErrorMessage('photo.error.failChangeFormat');
         break;
     }
   }
@@ -112,7 +112,7 @@ export const DisplayPhoto = ({
       <>
         <FormControl sx={{ m: 1 }}>
           <FormLabel id="photo-size-group-label">
-            Format d'affichage :
+            {t('photo.displayFormat')} :
           </FormLabel>
           <RadioGroup
             aria-labelledby="photo-size-group-label"
@@ -121,13 +121,21 @@ export const DisplayPhoto = ({
             row
             onChange={handleChangeSize}
           >
-            <FormControlLabel value="tiny" control={<Radio />} label="Petit" />
+            <FormControlLabel
+              value="tiny"
+              control={<Radio />}
+              label={t('size.small')}
+            />
             <FormControlLabel
               value="medium"
               control={<Radio />}
-              label="Moyen"
+              label={t('size.medium')}
             />
-            <FormControlLabel value="big" control={<Radio />} label="Grand" />
+            <FormControlLabel
+              value="big"
+              control={<Radio />}
+              label={t('size.big')}
+            />
           </RadioGroup>
         </FormControl>
         <Grid
@@ -173,7 +181,7 @@ export const DisplayPhoto = ({
         <AlertSnackbar
           open={snackbarOpen}
           severity={snackSeverity}
-          message={snackMessage}
+          message={t(snackMessage)}
           onClose={setSnackbarOpen}
         />
       </>

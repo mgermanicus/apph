@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { createRef, useState } from 'react';
 import { ITag } from '../../utils';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   allTags: ITag[];
@@ -23,9 +24,9 @@ export const TagInput = ({
   const [selectedTags, setSelectedTags] = useState<ITag[]>(defaultValue ?? []);
   const filter = createFilterOptions<ITag>();
   const tagsInput = createRef<HTMLInputElement>();
+  const { t } = useTranslation();
 
-  if (!isValid)
-    tagsInput.current?.setCustomValidity('Veuillez renseigner ce champ.');
+  if (!isValid) tagsInput.current?.setCustomValidity('upload.fillField');
   else tagsInput.current?.setCustomValidity('');
 
   const filterTags = (options: ITag[], params: FilterOptionsState<ITag>) => {
@@ -37,7 +38,7 @@ export const TagInput = ({
     const isExisting = options.some((option) => inputValue === option.name);
     if (inputValue !== '' && !isExisting) {
       filtered.push({
-        name: `+ Add New Tag ${inputValue}`
+        name: `+ ${t('photo.addTag')} ${inputValue}`
       });
     }
     return filtered;

@@ -8,6 +8,15 @@ import {
   fillText
 } from '../utils';
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
+
 describe('test EditPhotoDetails', () => {
   beforeEach(() => jest.clearAllMocks());
   it('tests when user edits everything', () => {
@@ -30,12 +39,12 @@ describe('test EditPhotoDetails', () => {
     };
     render(<EditPhotoDetails id={0} {...photoDetails} onEdit={jest.fn()} />);
     //WHEN
-    clickButton(/Modifier/);
-    fillText(/Titre/, newPhotoDetails.title);
-    fillText(/Description/, newPhotoDetails.description);
+    clickButton(/action.modify/);
+    fillText(/photo.title/, newPhotoDetails.title);
+    fillText(/photoTable.description/, newPhotoDetails.description);
     fillDate(newPhotoDetails.shootingDate);
     fillTags(newPhotoDetails.tags);
-    clickButton(/Valider/);
+    clickButton(/action.confirm/);
     //THEN
     expect(spyRequestFunction).toBeCalledWith(
       '/photo/editInfos',
@@ -59,8 +68,8 @@ describe('test EditPhotoDetails', () => {
     };
     render(<EditPhotoDetails id={0} {...photoDetails} onEdit={jest.fn()} />);
     //WHEN
-    clickButton(/Modifier/);
-    clickButton(/Valider/);
+    clickButton(/action.modify/);
+    clickButton(/action.confirm/);
     //THEN
     expect(spyRequestFunction).toBeCalledWith(
       '/photo/editInfos',

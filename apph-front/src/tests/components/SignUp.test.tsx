@@ -13,6 +13,14 @@ import cryptoJS from 'crypto-js';
 import { useNavigate } from 'react-router-dom';
 import { screen } from '@testing-library/dom';
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
 const mockedUsedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -30,12 +38,12 @@ describe('Tests du composant SignUp.tsx', () => {
     triggerRequestSuccess(JWS_TOKEN);
     render(<SignUp />);
     //WHEN
-    fillText(/Email/, 'test@viseo.com');
-    fillPassword(/Mot de passe/, 'P@ssW0rd');
-    fillPassword(/Confirmer le mot de passe/, 'P@ssW0rd');
-    fillText(/Prénom/, 'Bob');
-    fillText(/Nom/, 'Dupont');
-    clickButton(/Créer votre compte/);
+    fillText(/user.email/, 'test@viseo.com');
+    fillPassword(/user.password /, 'P@ssW0rd');
+    fillPassword(/user.passwordConfirmation/, 'P@ssW0rd');
+    fillText(/user.firstName/, 'Bob');
+    fillText(/user.lastName/, 'Dupont');
+    clickButton(/signup.create/);
     //THEN
     expect(useNavigate()).toBeCalled();
   });
@@ -46,14 +54,14 @@ describe('Tests du composant SignUp.tsx', () => {
     triggerRequestSuccess(JWS_TOKEN);
     render(<SignUp />);
     //WHEN
-    fillText(/Email/, 'bad@Email');
-    fillPassword(/Mot de passe/, 'P@ssW0rd');
-    fillPassword(/Confirmer le mot de passe/, 'P@ssW0rd');
-    fillText(/Prénom/, 'Bob');
-    fillText(/Nom/, 'Dupont');
-    clickButton(/Créer votre compte/);
+    fillText(/user.email/, 'bad@Email');
+    fillPassword(/user.password /, 'P@ssW0rd');
+    fillPassword(/user.passwordConfirmation/, 'P@ssW0rd');
+    fillText(/user.firstName/, 'Bob');
+    fillText(/user.lastName/, 'Dupont');
+    clickButton(/signup.create/);
     //THEN
-    expect(screen.getByText(/Email invalide./)).toBeInTheDocument();
+    expect(screen.getByText(/signup.error.email/)).toBeInTheDocument();
     expect(useNavigate()).not.toBeCalled();
   });
 
@@ -63,18 +71,14 @@ describe('Tests du composant SignUp.tsx', () => {
     triggerRequestSuccess(JWS_TOKEN);
     render(<SignUp />);
     //WHEN
-    fillText(/Email/, 'test@viseo.com');
-    fillPassword(/Mot de passe/, 'P@ssW0rd');
-    fillPassword(/Confirmer le mot de passe/, 'NotSamePassword');
-    fillText(/Prénom/, 'Bob');
-    fillText(/Nom/, 'Dupont');
-    clickButton(/Créer votre compte/);
+    fillText(/user.email/, 'test@viseo.com');
+    fillPassword(/user.password /, 'P@ssW0rd');
+    fillPassword(/user.passwordConfirmation/, 'NotSamePassword');
+    fillText(/user.firstName/, 'Bob');
+    fillText(/user.lastName/, 'Dupont');
+    clickButton(/signup.create/);
     //THEN
-    expect(
-      screen.getByText(
-        /Ces mots de passe ne correspondent pas. Veuillez réessayer./
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText(/signup.error.password/)).toBeInTheDocument();
     expect(useNavigate()).not.toBeCalled();
   });
 
@@ -84,12 +88,12 @@ describe('Tests du composant SignUp.tsx', () => {
     triggerRequestFailure('Test error');
     render(<SignUp />);
     //WHEN
-    fillText(/Email/, 'test@viseo.com');
-    fillPassword(/Mot de passe/, 'P@ssW0rd');
-    fillPassword(/Confirmer le mot de passe/, 'P@ssW0rd');
-    fillText(/Prénom/, 'Bob');
-    fillText(/Nom/, 'Dupont');
-    clickButton(/Créer votre compte/);
+    fillText(/user.email/, 'test@viseo.com');
+    fillPassword(/user.password /, 'P@ssW0rd');
+    fillPassword(/user.passwordConfirmation/, 'P@ssW0rd');
+    fillText(/user.firstName/, 'Bob');
+    fillText(/user.lastName/, 'Dupont');
+    clickButton(/signup.create/);
     //THEN
     expect(screen.getByText(/Test error/)).toBeInTheDocument();
     expect(useNavigate()).not.toBeCalled();

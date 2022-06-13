@@ -168,7 +168,7 @@ public class UserTest {
         ResponseEntity<String> response = userController.editUserInfo(jws, request);
         //THEN
         Assert.assertTrue(response.getStatusCode().isError());
-        Assert.assertEquals("user.error.loginAlreadyToken", response.getBody());
+        Assert.assertEquals("signup.error.emailUsed", response.getBody());
         Assert.assertEquals("login", user.getLogin());
     }
 
@@ -217,7 +217,7 @@ public class UserTest {
         ResponseEntity<String> response = userController.editUserInfo(jws, request);
         //THEN
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        Assert.assertEquals("Le prénom ne peut pas dépasser les 127 caractères.", response.getBody());
+        Assert.assertEquals("signup.error.nameOverChar", response.getBody());
     }
 
     @Test
@@ -245,7 +245,7 @@ public class UserTest {
         ResponseEntity<String> response = userController.editUserInfo(jws, request);
         //THEN
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        Assert.assertEquals("Le nom ne peut pas dépasser les 127 caractères.", response.getBody());
+        Assert.assertEquals("signup.error.nameOverChar", response.getBody());
     }
 
     @Test
@@ -273,6 +273,6 @@ public class UserTest {
         ResponseEntity<String> response = userController.editUserInfo(jws, request);
         //THEN
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        Assert.assertEquals("Le login ne peut pas dépasser les 255 caractères.", response.getBody());
+        Assert.assertEquals("signup.error.loginOverChar", response.getBody());
     }
 }

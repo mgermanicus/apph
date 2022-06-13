@@ -139,7 +139,7 @@ public class AuthTest {
         ResponseEntity<String> responseEntity = authController.register(userRequest);
         //THEN
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-        Assert.assertEquals("Le nom ou le prénom ne peuvent pas dépasser les 127 caractères.", responseEntity.getBody());
+        Assert.assertEquals("signup.error.nameOverChar", responseEntity.getBody());
     }
 
     @Test
@@ -152,6 +152,6 @@ public class AuthTest {
         ResponseEntity<String> responseEntity = authController.register(userRequest);
         //THEN
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-        Assert.assertEquals("L'email ne peut pas dépasser les 255 caractères.", responseEntity.getBody());
+        Assert.assertEquals("signup.error.emailOverChar", responseEntity.getBody());
     }
 }

@@ -10,6 +10,15 @@ import {
 import { screen } from '@testing-library/dom';
 import { DownloadZip } from '../../static/components/DownloadZip';
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
+
 describe('Create download zip button tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -62,6 +71,6 @@ describe('Create download zip button tests', () => {
     //WHEN
     clickButton(/download-zip/i);
     //THEN
-    expect(screen.getByText('Aucune photo sélectionnée')).toBeInTheDocument();
+    expect(screen.getByText('photo.noneSelected')).toBeInTheDocument();
   });
 });

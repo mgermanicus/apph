@@ -136,7 +136,8 @@ export const UploadImage = ({
             const newSelectedTags = selectedTags.map(
               (selectedTag) =>
                 tagsConverted.find(
-                  (tag) => `+ Add New Tag ${tag.name}` == selectedTag.name
+                  (tag) =>
+                    `+ ${t('photo.addTag')} ${tag.name}` == selectedTag.name
                 ) ?? selectedTag
             );
             setSelectedTags(newSelectedTags);
@@ -176,13 +177,13 @@ export const UploadImage = ({
     if (uploadStatuses.some((status) => status.type === StatusType.Error)) {
       setGlobalUploadStatus({
         type: StatusType.Error,
-        message: "Certains fichiers n'ont pas pu être uploadés"
+        message: t('upload.error.manyUploads')
       });
       return;
     }
     setGlobalUploadStatus({
       type: StatusType.Success,
-      message: 'Vos fichiers ont bien été uploadés'
+      message: t('upload.manyUploads')
     });
     // Just enough time to see the success message
     setTimeout(handleClose, 1000);
@@ -322,7 +323,7 @@ export const UploadImage = ({
                       ? 'error'
                       : 'success'
                   }
-                  message={globalUploadStatus.message ?? ''}
+                  message={t(globalUploadStatus.message ?? '')}
                   onClose={() =>
                     setGlobalUploadStatus((status) => {
                       return { type: status.type, message: '' };

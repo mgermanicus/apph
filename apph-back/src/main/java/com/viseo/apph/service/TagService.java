@@ -38,7 +38,7 @@ public class TagService {
         Tag[] parsedTags = gson.fromJson(listOfTags, Tag[].class);
         List<Tag> tagsToCreate = Arrays.stream(parsedTags).filter(tag -> tag.getId() == 0).collect(Collectors.toList());
         if (Boolean.FALSE.equals(isTagValid(tagsToCreate)))
-            throw new IllegalArgumentException("Les tags ne peuvent pas dépasser 255 caractères.");
+            throw new IllegalArgumentException("photo.error.tagOverChar");
         Set<Tag> allTags = Arrays.stream(parsedTags).filter(tag -> tag.getId() != 0).collect(Collectors.toSet());
         for (Tag tag : tagsToCreate) {
             Tag newTag = tagDao.createTag(new Tag().setName(tag.getName().substring(14)).setUser(user));

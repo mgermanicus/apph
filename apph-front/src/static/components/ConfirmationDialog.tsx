@@ -25,10 +25,9 @@ export const ConfirmationDialog = ({
   const { t } = useTranslation();
   return (
     <Dialog open={open} sx={{ py: '20vh' }}>
-      <DialogTitle>{title}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>{message}</DialogContentText>
-      </DialogContent>
+      <DialogTitle>{t(title || '')}</DialogTitle>
+      <DialogContent></DialogContent>
+      <DialogContentText>{t(message || '')}</DialogContentText>
       <DialogActions>
         <Button color="error" onClick={onCancel}>
           {t('action.cancel')}

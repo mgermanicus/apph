@@ -19,6 +19,7 @@ import PhotoService from '../../services/PhotoService';
 import { TagInput } from './TagInput';
 import TagService from '../../services/TagService';
 import CloseIcon from '@mui/icons-material/Close';
+import { useTranslation } from 'react-i18next';
 
 export const EditPhotoDetails = (props: {
   id: number;
@@ -36,6 +37,7 @@ export const EditPhotoDetails = (props: {
   const [selectedTags, setSelectedTags] = useState<ITag[]>(props.tags);
   const [tagsValidity, setTagsValidity] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const { t } = useTranslation();
 
   useEffect(() => {
     TagService.getAllTags(
@@ -77,7 +79,7 @@ export const EditPhotoDetails = (props: {
   return (
     <Box>
       <Button variant="outlined" onClick={() => setOpen(true)}>
-        Modifier
+        {t('action.modify')}
       </Button>
       <Dialog open={open} onClose={handleClose}>
         <Container component="main">
@@ -109,7 +111,7 @@ export const EditPhotoDetails = (props: {
                     value={title}
                     onChange={(event) => setTitle(event.target.value)}
                     id="title"
-                    label="Titre de la photo"
+                    label={t('photo.title')}
                     name="title"
                     autoComplete="title"
                     autoFocus
@@ -120,14 +122,14 @@ export const EditPhotoDetails = (props: {
                     value={description}
                     onChange={(event) => setDescription(event.target.value)}
                     id="description"
-                    label="Description"
+                    label={t('photoTable.description')}
                     name="description"
                     autoComplete="description"
                     autoFocus
                   />
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DesktopDatePicker
-                      label="Date de prise en vue"
+                      label={t('photoTable.shootingDate')}
                       value={shootingDate}
                       onChange={(date) => {
                         if (date) setShootingDate(date);
@@ -143,7 +145,7 @@ export const EditPhotoDetails = (props: {
                     defaultValue={props.tags}
                   />
                   <Button type="submit" fullWidth variant="contained">
-                    Valider
+                    {t('action.confirm')}
                   </Button>
                   <Collapse in={errorMessage !== ''}>
                     <Alert
@@ -162,7 +164,7 @@ export const EditPhotoDetails = (props: {
                       sx={{ mb: 2 }}
                       severity="error"
                     >
-                      {errorMessage}
+                      {t(errorMessage)}
                     </Alert>
                   </Collapse>
                 </Stack>

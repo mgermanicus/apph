@@ -57,7 +57,7 @@ public class PhotoService {
     public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException, ConflictException {
         Folder folder = null;
         if (photoRequest.getTitle().length() > 255 || photoRequest.getDescription().length() > 255)
-            throw new IllegalArgumentException("Le titre ou la description ne peuvent pas dépasser les 255 caractères.");
+            throw new IllegalArgumentException("photo.error.titleOrDescriptionOverChar");
         if (photoRequest.getFolderId() >= 0) {
             folder = folderDao.getFolderById(photoRequest.getFolderId());
             if (folder == null)
@@ -87,14 +87,14 @@ public class PhotoService {
     @Transactional
     public String editPhotoInfos(User user, PhotoRequest photoRequest) throws NotFoundException {
         Photo photo = photoDao.getPhoto(photoRequest.getId());
-        if (photo == null) throw new NotFoundException("photo not found");
+        if (photo == null) throw new NotFoundException("photo.error.notFound");
         Set<Tag> newTags = tagService.createListTags(photoRequest.getTags(), user);
         Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
         photo.setTitle(photoRequest.getTitle())
              .setDescription(photoRequest.getDescription())
              .setShootingDate(shootingDate)
              .setTags(newTags);
-        return "Photo édité";
+        return "photo.edited";
     }
 
     public String getFormat(MultipartFile file) throws InvalidFileException {
@@ -250,7 +250,7 @@ public class PhotoService {
                 throw new FileNotFoundException();
             }
             if (user.getId() != photo.getUser().getId()) {
-                throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
+                throw new UnauthorizedException("download.accessDenied");
             }
             byte[] photoByte = s3Dao.download(photo);
             String name = photo.getTitle() + photo.getFormat();
@@ -261,7 +261,7 @@ public class PhotoService {
             zipOut.putNextEntry(zipEntry);
             zipOut.write(photoByte);
             if (bos.size() > zipMaxSize * 1024 * 1024) {
-                throw new MaxSizeExceededException("Erreur: Taille maximale du ZIP dépassée.");
+                throw new MaxSizeExceededException("download.error.oversize");
             }
         }
         zipOut.closeEntry();
@@ -273,10 +273,10 @@ public class PhotoService {
     public String changePhotoFile(Long userId, PhotoRequest photoRequest) throws IOException, UnauthorizedException, InvalidFileException {
         Photo photo = photoDao.getPhoto(photoRequest.getId());
         if (photo == null) {
-            throw new FileNotFoundException("Le fichier n'existe pas");
+            throw new FileNotFoundException("download.error.fileNotExist");
         }
         if (userId != photo.getUser().getId()) {
-            throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
+            throw new UnauthorizedException("download.error.accessDenied");
         }
         s3Dao.delete(photo);
         photo.setFormat(getFormat(photoRequest.getFile())).setSize((photoRequest.getFile().getSize() + .0F) / 1024);
@@ -287,11 +287,11 @@ public class PhotoService {
     public MessageResponse updatePhotoFolder(User user, PhotoRequest photoRequest) throws UnauthorizedException, NotFoundException {
         Photo photo = photoDao.getPhoto(photoRequest.getId());
         if (photo == null)
-            throw new NotFoundException("La photo n'existe pas.");
+            throw new NotFoundException("photo.error.notExist");
         if (photo.getUser().getId() != user.getId())
-            throw new UnauthorizedException("L'utilisateur n'a pas accès à cette action.");
+            throw new UnauthorizedException("action.forbidden");
         Folder folder = folderDao.getFolderById(photoRequest.getFolderId());
         photo.setFolder(folder);
-        return new MessageResponse("Suppression effectuée avec succès.");
+        return new MessageResponse("photo.successDelete");
     }
 }

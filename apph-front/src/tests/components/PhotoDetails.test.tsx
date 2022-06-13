@@ -9,6 +9,15 @@ import {
 import { ITag } from '../../utils';
 import React from 'react';
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
+
 describe('Test du composant PhotoDetails', () => {
   const mockPhoto = {
     id: 0,
@@ -55,7 +64,7 @@ describe('Test du composant PhotoDetails', () => {
     expect(screen.getAllByText(/testTitle/)).toBeInstanceOf(Array);
     expect(screen.getByText(/testDescription/)).toBeInTheDocument();
     expect(screen.getByText(/testTag/)).toBeInTheDocument();
-    expect(screen.getByText(/Supprimer du dossier/)).toBeInTheDocument();
+    expect(screen.getByText(/folder.delete/)).toBeInTheDocument();
   });
 
   it('remove photo from folder', () => {
@@ -89,8 +98,8 @@ describe('Test du composant PhotoDetails', () => {
     );
     //WHEN
     clickButton(/photo-detail/i);
-    clickButton(/Supprimer du dossier/);
-    clickButton(/Continuer/);
+    clickButton(/folder.delete/);
+    clickButton(/action.continue/);
     triggerRequestSuccess(
       '{"statusCode":1, "message: "Suppression effectuée avec succès""}'
     );
@@ -133,14 +142,14 @@ describe('Test du composant PhotoDetails', () => {
     );
     //WHEN
     clickButton(/photo-detail/i);
-    clickButton(/Supprimer du dossier/);
-    clickButton(/Continuer/);
+    clickButton(/folder.delete/);
+    clickButton(/action.continue/);
     triggerRequestFailure(
       '{"statusCode":0, "message: "La photo n\'existe pas""}'
     );
 
     setTimeout(async () => {
-      expect(screen.getByText(/La photo n'existe pas/)).toBeInTheDocument();
+      expect(screen.getByText(/folder.error.notExist/)).toBeInTheDocument();
     }, 1000);
   });
 
@@ -172,12 +181,12 @@ describe('Test du composant PhotoDetails', () => {
     );
     //WHEN
     clickButton(/photo-detail/i);
-    clickButton(/Supprimer du dossier/);
-    clickButton(/Annuler/);
+    clickButton(/folder.delete/);
+    clickButton(/action.cancel/);
 
     expect(screen.getAllByText(/testTitle/)).toBeInstanceOf(Array);
     expect(screen.getByText(/testDescription/)).toBeInTheDocument();
     expect(screen.getByText(/testTag/)).toBeInTheDocument();
-    expect(screen.getByText(/Supprimer du dossier/)).toBeInTheDocument();
+    expect(screen.getByText(/folder.delete/)).toBeInTheDocument();
   });
 });

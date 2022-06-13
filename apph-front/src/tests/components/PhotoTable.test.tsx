@@ -3,6 +3,15 @@ import * as React from 'react';
 import { PhotoTable } from '../../static/components/PhotoTable';
 import { wrapper } from '../utils/components/CustomWrapper';
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
+
 describe('Tests du composant PhotoTable.tsx', () => {
   beforeEach(() => {
     jest.clearAllMocks();

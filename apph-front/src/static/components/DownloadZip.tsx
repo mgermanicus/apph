@@ -5,6 +5,7 @@ import { AlertSnackbar } from './AlertSnackbar';
 import { IMessage, IPhoto } from '../../utils';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import { LoadingButton } from '@mui/lab';
+import { useTranslation } from 'react-i18next';
 
 export const DownloadZip = ({
   ids,
@@ -17,6 +18,7 @@ export const DownloadZip = ({
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [severity, setSeverity] = useState<AlertColor>();
   const [loading, setLoading] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   const handleSubmit = () => {
     setLoading(true);
@@ -24,7 +26,7 @@ export const DownloadZip = ({
       downloadImage();
     } else {
       setSnackbarOpen(true);
-      setMessage('Aucune photo sélectionnée');
+      setMessage('photo.noneSelected');
       setSeverity('warning');
       setLoading(false);
     }
@@ -51,7 +53,7 @@ export const DownloadZip = ({
 
   return (
     <Box sx={{ m: 1 }}>
-      <Tooltip title="Télécharger photos">
+      <Tooltip title={t('photo.download')}>
         <LoadingButton
           variant="outlined"
           onClick={handleSubmit}
@@ -65,7 +67,7 @@ export const DownloadZip = ({
       <AlertSnackbar
         open={snackbarOpen}
         severity={severity}
-        message={message}
+        message={t(message)}
         onClose={setSnackbarOpen}
       />
     </Box>

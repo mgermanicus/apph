@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { enUS, frFR } from '@mui/material/locale';
 import { useTranslation } from 'react-i18next';
 import Cookies from 'universal-cookie';
+
 const cookies = new Cookies();
 
 const appStyles = {

@@ -10,7 +10,7 @@ export const FolderTree = ({
   folder: IFolder | null;
   key?: number;
 }): JSX.Element => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   if (folder) {
     return (
       <TreeItem

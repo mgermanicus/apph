@@ -46,7 +46,7 @@ public class AuthController {
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("signup.error.emailUsed");
         } catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("request.error.illegalArgument");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(iae.getMessage());
         }
     }
 }

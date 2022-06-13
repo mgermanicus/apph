@@ -13,6 +13,15 @@ import {
 import { ITag } from '../../utils';
 import { wrapper } from '../utils/components/CustomWrapper';
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
+
 describe('Test UploadImage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -28,15 +37,13 @@ describe('Test UploadImage', () => {
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     const files = [fakeFile(100000000, 'image/png')];
     //WHEN
-    fillText(/Titre de la photo/, 'Titre');
-    fillText(/Description/, 'Description');
+    fillText(/photo.title/, 'Titre');
+    fillText(/photoTable.description/, 'Description');
     fillTags([{ name: 'tag' }]);
     inputFile(files, fileInput);
-    clickButton(/Ajouter/);
+    clickButton(/action.add/);
     //THEN
-    expect(
-      screen.getByText(/La taille du fichier excède la limite maximale/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/upload.error.overSize/)).toBeInTheDocument();
     expect(spyRequestFunction).not.toBeCalledWith(
       '/photo/upload',
       expect.anything(),
@@ -55,11 +62,11 @@ describe('Test UploadImage', () => {
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     //WHEN
-    fillText(/Titre de la photo/, 'Titre');
-    fillText(/Description/, 'Description');
+    fillText(/photo.title/, 'Titre');
+    fillText(/photoTable.description/, 'Description');
     fillTags([{ name: 'tag' }]);
     inputFile(files, fileInput);
-    clickButton(/Ajouter/);
+    clickButton(/action.add/);
     //THEN
     expect(spyRequestFunction).not.toBeCalledWith(
       '/photo/upload',
@@ -67,9 +74,7 @@ describe('Test UploadImage', () => {
       expect.anything(),
       expect.anything()
     );
-    expect(
-      screen.getByText(/Le format du fichier n'est pas valide/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/upload.error.wrongFormat/)).toBeInTheDocument();
   });
 
   it('tests handling of server error', async () => {
@@ -84,11 +89,11 @@ describe('Test UploadImage', () => {
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     //WHEN
-    fillText(/Titre de la photo/, 'Titre');
-    fillText(/Description/, 'Description');
+    fillText(/photo.title/, 'Titre');
+    fillText(/photoTable.description/, 'Description');
     fillTags([{ name: 'tag' }]);
     inputFile(files, fileInput);
-    clickButton(/Ajouter/);
+    clickButton(/action.add/);
     //THEN
     expect(
       await screen.findByText(
@@ -109,10 +114,10 @@ describe('Test UploadImage', () => {
     const title = 'Titre';
     const description = 'Description';
     //WHEN
-    fillText(/Titre de la photo/, title);
-    fillText(/Description/, description);
+    fillText(/photo.title/, title);
+    fillText(/photoTable.description/, description);
     inputFile(files, fileInput);
-    clickButton(/Ajouter/);
+    clickButton(/action.add/);
     //THEN
     expect(spyRequestFunction).not.toBeCalledWith(
       '/photo/upload',
@@ -143,11 +148,11 @@ describe('Test UploadImage', () => {
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     //WHEN
-    fillText(/Titre de la photo/, title);
-    fillText(/Description/, description);
+    fillText(/photo.title/, title);
+    fillText(/photoTable.description/, description);
     fillTags(tags);
     inputFile(files, fileInput);
-    clickButton(/Ajouter/);
+    clickButton(/action.add/);
     //THEN
     expect(spyRequestFunction).toBeCalledWith(
       requestParams[0].URL,
@@ -161,9 +166,7 @@ describe('Test UploadImage', () => {
       expect.anything(),
       expect.anything()
     );
-    expect(
-      await screen.findByText(/Vos fichiers ont bien été uploadés/)
-    ).toBeVisible();
+    expect(await screen.findByText(/upload.manyUploads/)).toBeVisible();
     expect((await screen.findAllByTestId('DoneIcon')).length).toBe(2);
   });
 
@@ -182,17 +185,13 @@ describe('Test UploadImage', () => {
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     //WHEN
-    fillText(/Titre de la photo/, title);
-    fillText(/Description/, description);
+    fillText(/photo.title/, title);
+    fillText(/photoTable.description/, description);
     fillTags(tags);
     inputFile(files, fileInput);
-    clickButton(/Ajouter/);
+    clickButton(/action.add/);
     //THEN
-    expect(
-      await screen.findByText(/Certains fichiers n'ont pas pu être uploadés/)
-    ).toBeVisible();
-    expect(
-      await screen.findByText(/Le format du fichier n'est pas valide/)
-    ).toBeVisible();
+    expect(await screen.findByText(/upload.error.manyUploads/)).toBeVisible();
+    expect(await screen.findByText(/upload.error.wrongFormat/)).toBeVisible();
   });
 });

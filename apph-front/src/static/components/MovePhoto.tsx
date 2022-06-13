@@ -49,7 +49,7 @@ export const MovePhoto = ({
   const [resultMessage, setResultMessage] = useState<string[]>([]);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     getFolders();
@@ -94,12 +94,12 @@ export const MovePhoto = ({
         setSnackbarOpen(false);
         setDialogVisible(true);
       } else {
-        setSnackMessage(t('folder.error.parentNotExist'));
+        setSnackMessage('folder.error.parentNotExist');
         setSnackSeverity('error');
         setSnackbarOpen(true);
       }
     } else {
-      setSnackMessage(t('photo.noneSelected'));
+      setSnackMessage('photo.noneSelected');
       setSnackSeverity('warning');
       setSnackbarOpen(true);
     }
@@ -149,7 +149,7 @@ export const MovePhoto = ({
                     key={index}
                     severity={stringToAlertColor(splitMessage[0])}
                   >
-                    {splitMessage[1]}
+                    {t(splitMessage[1])}
                   </Alert>
                 );
               })}
@@ -195,7 +195,7 @@ export const MovePhoto = ({
       <AlertSnackbar
         open={snackbarOpen}
         severity={snackSeverity}
-        message={snackMessage}
+        message={t(snackMessage)}
         onClose={setSnackbarOpen}
       />
     </Box>

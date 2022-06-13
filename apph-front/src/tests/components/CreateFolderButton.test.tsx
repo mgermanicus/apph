@@ -12,6 +12,15 @@ import {
 import Cookies from 'universal-cookie';
 import jwtDecode from 'jwt-decode';
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
+
 describe('Create Folder Button Tests', () => {
   const onSetRootFolder = jest.fn();
   const doAction = () => {
@@ -24,9 +33,9 @@ describe('Create Folder Button Tests', () => {
       <CreateFolderButton selected={'1'} setRootFolder={onSetRootFolder} />
     );
     //WHEN
-    clickButton(/Créer un dossier/);
-    fillText(/Nom du Dossier/, 'New Folder');
-    clickButton(/Créer/);
+    clickButton(/folder.createFolder/);
+    fillText(/folder.name/, 'folder.new');
+    clickButton(/folder.create/);
   };
   beforeEach(() => {
     jest.clearAllMocks();
@@ -38,9 +47,9 @@ describe('Create Folder Button Tests', () => {
       <CreateFolderButton selected={'1'} setRootFolder={onSetRootFolder} />
     );
     //WHEN
-    clickButton(/Créer un dossier/);
+    clickButton(/folder.createFolder/);
     //THEN
-    expect(screen.getByText("Création d'un dossier")).toBeInTheDocument();
+    expect(screen.getByText('folder.creation')).toBeInTheDocument();
   });
 
   it('create with success an folder', () => {

@@ -14,7 +14,10 @@
     "error": {
       "password": "Ces mots de passe ne correspondent pas. Veuillez réessayer.",
       "email": "Email invalide",
-      "emailUsed": "Email déjà utilisé"
+      "emailUsed": "Email déjà utilisé",
+      "nameOverChar": "Le nom ou le prénom ne peuvent pas dépasser les 127 caractères.",
+      "emailOverChar": "L'email ne peut pas dépasser les 255 caractères.",
+      "loginOverChar": "Le login ne peut pas dépasser les 255 caractères."
     },
     "create": "Créer un compte",
     "exist": "Vous avez déjà un compte ? Se connecter",
@@ -41,6 +44,7 @@
     "description": "Description",
     "creationDate": "Date de création",
     "shootingDate": "Date de prise de vue",
+    "lastModification": "Date de dernière modification",
     "size": "Taille",
     "tags": "Tags",
     "url": "Url",
@@ -57,6 +61,7 @@
   },
   "folder": {
     "create": "Créer",
+    "delete": "Supprimer du dossier",
     "createFolder": "Créer un dossier",
     "creation": "Création d'un dossier",
     "enterName": "Entrez le nom de dossier:",
@@ -65,6 +70,7 @@
     "moveInto": "Déplacer dans le dossier",
     "moveTo": "Déplacer vers un dossier",
     "move": "Déplacer",
+    "confirmDeletePhoto": "Si vous confirmez, la photo sera supprimée du dossier",
     "successMove": "Le déplacement des photos est terminé.",
     "error": {
       "error": "Error",
@@ -90,14 +96,25 @@
   },
   "photo": {
     "noneSelected": "Aucune photo sélectionnée",
+    "edited": "Photo édité",
+    "change": "Changer d'image",
+    "download": "Télécharger photos",
     "maySelected": "Veuillez sélectionner les photos à afficher.",
     "warningDeleting": "Si vous confirmez, vos photos seront définitivement effacés",
     "diaporama": "Diaporama",
     "addTag": "Ajouter un nouveau tag",
     "add": "Ajouter une photo",
     "title": "Titre de la photo",
+    "displayFormat": "Format d'affichage",
     "successDelete": "Suppression effectuée avec succès",
-    "failDelete": "Une erreur est survenue lors de la suppression"
+    "failDelete": "Une erreur est survenue lors de la suppression",
+    "error": {
+      "failChangeFormat": "Erreur lors de la modification du format",
+      "notFound": "Photo introuvable",
+      "notExist": "La photo n'existe pas.",
+      "titleOrDescriptionOverChar": "Le titre ou la description ne peuvent pas dépasser les 255 caractères.",
+      "tagsOverChar": "Les tags ne peuvent pas dépasser 255 caractères."
+    }
   },
   "token": {
     "notValid": "Token non valide",
@@ -105,17 +122,19 @@
   },
   "action": {
     "continue": "Continuer",
-    "confirm": "Valider",
+    "confirm": "Confirmer",
     "cancel": "Annuler",
     "delete": "Supprimer",
-    "confirmDelete": "Êtes vous sur de vouloir supprimer <?",
+    "confirmDelete": "Êtes vous sur de vouloir supprimer ?",
     "download": "Télécharger",
     "cancelChange": "Annuler les modifications",
     "willDisconnected": "Vous allez être deconnecté",
     "uploading": "Téléchargement",
     "upload": "Télécharger",
     "add": "Ajouter",
-    "modify": "Modifier"
+    "modify": "Modifier",
+    "search": "Rechercher",
+    "forbidden": "L'utilisateur n'a pas accès à cette action."
   },
   "profile": {
     "edit": "Modifier le profil"
@@ -123,17 +142,53 @@
   "upload": {
     "error": {
       "upload": "Une erreur est survenue lors de l'upload",
+      "manyUploads": "Certains fichiers n'ont pas pu être uploadés",
       "wrongFormat": "Le format du fichier n'est pas valide",
-      "folderNotExist": "Le dossier n'existe pas."
+      "folderNotExist": "Le dossier n'existe pas.",
+      "reUpload": "Une erreur est survenue lors du ré-upload.",
+      "overSize": "La taille du fichier excède la limite maximale"
     },
     "success": "Votre fichier a bien été uploadé",
-    "fillField": "Veuillez renseigner ce champ."
+    "manyUploads": "Vos fichiers ont bien été uploadés",
+    "fillField": "Veuillez renseigner ce champ.",
+    "successChange": "Le changement s'est effectué avec succèss.",
+    "maySelected": "Veuillez sélectionner un fichier."
   },
   "download": {
     "error": {
       "download": "Une erreur est survenue lors du téléchargement",
       "fileNotExist": "Le fichier n'existe pas",
-      "accessDenied": "L'utilisateur n'est pas autorisé à accéder à la ressource demandée"
+      "accessDenied": "L'utilisateur n'est pas autorisé à accéder à la ressource demandée",
+      "oversize": "Erreur: Taille maximale du ZIP dépassée."
+    }
+  },
+  "filter": {
+    "add": "Ajouter un filtre",
+    "value": "Valeur",
+    "field": "Champ",
+    "operator": "Opérateur",
+    "delete": "Supprimer un filtre",
+    "error": {
+      "addPayloadNaN": "Erreur dans l'ajout du filtre: le payload n'est pas un nombre.",
+      "deletePayloadNaN": "Erreur dans la suppression du filtre: le payload n'est pas un nombre",
+      "idNotMatch": "Erreur dans la mise à jour du filtre : l'id ne correspond à aucun filtre existant",
+      "gestion": "Erreur dans la gestion du filtre"
+    }
+  },
+  "size": {
+    "small": "Petit",
+    "medium": "Moyen",
+    "big": "Grand"
+  },
+  "operator": {
+    "equal": "EGAL",
+    "contain": "CONTIENT"
+  },
+  "request": {
+    "error": {
+      "illegalArgument": "Argument non valide",
+      "unauthorizedResource": "Vous n'avez pas accès à cette ressource",
+      "notFound": "Ressource non trouvée"
     }
   }
 }

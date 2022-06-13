@@ -34,10 +34,6 @@ public class TagController {
             return ResponseEntity.ok(tags);
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("user.error.notExist"));
-        } catch (SignatureException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("token.notValid"));
-        } catch (ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("token.expired"));
         }
     }
 }

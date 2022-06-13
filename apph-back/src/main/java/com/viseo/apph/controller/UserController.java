@@ -53,10 +53,9 @@ public class UserController {
         } catch (SignatureException | ExpiredJwtException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user.error.expiredSession");
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("user.error.loginAlreadyToken");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("request.error.illegalArgument"
-            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(iae.getMessage());
         }
     }
 }

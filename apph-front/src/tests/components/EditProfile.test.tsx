@@ -19,6 +19,15 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockedUsedNavigate
 }));
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
+
 describe('Test EditProfile', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -44,11 +53,11 @@ describe('Test EditProfile', () => {
     });
     render(<EditProfile />, { wrapper });
     //WHEN
-    fillText(/Nom/, editedUser.lastname);
-    fillText(/Prénom/, editedUser.firstname);
-    fillPassword(/Mot de passe/, 'P@ssw0rd');
-    fillPassword(/Confirmer le mot de passe/, 'P@ssw0rd');
-    clickButton(/Valider/);
+    fillText(/user.lastName/, editedUser.lastname);
+    fillText(/user.firstName/, editedUser.firstname);
+    fillPassword(/user.password$/, 'P@ssw0rd');
+    fillPassword(/user.passwordConfirmation/, 'P@ssw0rd');
+    clickButton(/action.confirm/);
     //THEN
     expect(spyUpdateUserCookie).toBeCalledWith(editedUserToken);
   });
@@ -71,12 +80,12 @@ describe('Test EditProfile', () => {
     });
     render(<EditProfile />, { wrapper });
     //WHEN
-    fillText(/Email/, editedUser.login);
-    clickButton(/Valider/);
+    fillText(/user.login/, editedUser.login);
+    clickButton(/action.confirm/);
     //THEN
-    expect(screen.getByText(/Vous allez être déconnecté/)).toBeInTheDocument();
-    expect(screen.getByText(/Continuer/)).toBeInTheDocument();
-    expect(screen.getByText('Annuler')).toBeInTheDocument();
+    expect(screen.getByText(/action.willDisconnected/)).toBeInTheDocument();
+    expect(screen.getByText(/action.continue/)).toBeInTheDocument();
+    expect(screen.getByText('action.cancel')).toBeInTheDocument();
   });
 
   it('tests the popup cancel when user edits login', async () => {
@@ -96,13 +105,13 @@ describe('Test EditProfile', () => {
     });
     render(<EditProfile />, { wrapper });
     //WHEN
-    fillText(/Login/, editedUser.login);
-    clickButton(/Valider/);
-    clickButton(/^Annuler$/);
+    fillText(/user.login/, editedUser.login);
+    clickButton(/action.confirm/);
+    clickButton(/^action.cancel$/);
     //THEN
     await waitFor(() => {
       expect(
-        screen.queryByText('Vous allez être déconnecté')
+        screen.queryByText('action.willDisconnected')
       ).not.toBeInTheDocument();
     });
   });
@@ -126,9 +135,9 @@ describe('Test EditProfile', () => {
     });
     render(<EditProfile />, { wrapper });
     //WHEN
-    fillText(/Login/, editedUser.login);
-    clickButton(/Valider/);
-    clickButton(/Continuer/);
+    fillText(/user.login/, editedUser.login);
+    clickButton(/action.confirm/);
+    clickButton(/action.continue/);
     //THEN
     expect(AuthService.logout).toBeCalled();
     expect(useNavigate()).toBeCalled();
@@ -146,13 +155,11 @@ describe('Test EditProfile', () => {
     });
     render(<EditProfile />, { wrapper });
     //WHEN
-    fillPassword(/Mot de passe/, 'P@ssw0rd');
-    fillPassword(/Confirmer le mot de passe/, 'WrongP@ssw0rd');
-    clickButton(/Valider/);
+    fillPassword(/user.password$/, 'P@ssw0rd');
+    fillPassword(/user.passwordConfirmation/, 'WrongP@ssw0rd');
+    clickButton(/action.confirm/);
     //THEN
-    expect(
-      screen.getByText(/Les mots de passe de correspondent pas/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/user.error.passwordNotMatch/)).toBeInTheDocument();
     expect(Server.request).not.toBeCalledWith(
       '/user/edit',
       expect.anything(),
@@ -178,11 +185,11 @@ describe('Test EditProfile', () => {
     });
     render(<EditProfile />, { wrapper });
     //WHEN
-    fillText(/Nom/, editedUser.lastname);
-    fillText(/Prénom/, editedUser.firstname);
-    fillPassword(/Mot de passe/, 'P@ssw0rd');
-    fillPassword(/Confirmer le mot de passe/, 'P@ssw0rd');
-    clickButton(/Annuler les modifications/);
+    fillText(/user.lastName/, editedUser.lastname);
+    fillText(/user.firstName/, editedUser.firstname);
+    fillPassword(/user.password$/, 'P@ssw0rd');
+    fillPassword(/user.passwordConfirmation/, 'P@ssw0rd');
+    clickButton(/action.cancelChange/);
     //THEN
     expect(screen.getByDisplayValue(user.firstname)).toBeInTheDocument();
     expect(screen.getByDisplayValue(user.lastname)).toBeInTheDocument();
@@ -213,8 +220,8 @@ describe('Test EditProfile', () => {
     });
     render(<EditProfile />, { wrapper });
     //WHEN
-    fillText(/Prénom/, 'Jean');
-    clickButton(/Valider/);
+    fillText(/user.firstName/, 'Jean');
+    clickButton(/action.confirm/);
     //THEN
     expect(screen.getByText(/Cannot edit user/)).toBeInTheDocument();
   });

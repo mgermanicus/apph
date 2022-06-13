@@ -50,7 +50,7 @@ export const PhotoDetails = ({
   };
 }) => {
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleOpenDetails = () => {
@@ -163,28 +163,34 @@ export const PhotoDetails = ({
                   sx={{ alignSelf: 'center' }}
                   onClick={() => setDialogOpen(true)}
                 >
-                  Supprimer du dossier
+                  {t('folder.delete')}
                 </Button>
               )}
               <Box sx={detailBoxStyle}>
-                <Typography sx={titleTypoStyle}>{t('photoTable.title')}:</Typography>
+                <Typography sx={titleTypoStyle}>
+                  {t('photoTable.title')}:
+                </Typography>
                 <Typography sx={detailTypoStyle}>{details.title}</Typography>
               </Box>
               <Box sx={detailBoxStyle}>
-                <Typography sx={titleTypoStyle}>{t('photoTable.description')}:</Typography>
+                <Typography sx={titleTypoStyle}>
+                  {t('photoTable.description')}:
+                </Typography>
                 <Typography sx={detailTypoStyle}>
                   {details.description}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
-                <Typography sx={titleTypoStyle}>{t('photoTable.creationDate')}:</Typography>
+                <Typography sx={titleTypoStyle}>
+                  {t('photoTable.creationDate')}:
+                </Typography>
                 <Typography sx={detailTypoStyle}>
                   {details.creationDate?.toLocaleString()}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>
-                  Date de dernière modification:
+                  {t('photoTable.lastModification')}:
                 </Typography>
                 <Typography sx={detailTypoStyle}>
                   {details.modificationDate?.toLocaleString()}
@@ -199,13 +205,17 @@ export const PhotoDetails = ({
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
-                <Typography sx={titleTypoStyle}>{t('photoTable.size')}:</Typography>
+                <Typography sx={titleTypoStyle}>
+                  {t('photoTable.size')}:
+                </Typography>
                 <Typography sx={detailTypoStyle}>{details.size} Ko</Typography>
               </Box>
               <Box sx={detailBoxStyle}>
                 <Stack direction="row" spacing={1}>
                   <Box sx={{ m: 0.5 }}>
-                    <Typography sx={titleTypoStyle}>{t('photoTable.tags')}:</Typography>
+                    <Typography sx={titleTypoStyle}>
+                      {t('photoTable.tags')}:
+                    </Typography>
                   </Box>
                   {details.tags.map((tag, index) => (
                     <Chip
@@ -236,8 +246,8 @@ export const PhotoDetails = ({
             onCancel={() => {
               setDialogOpen(false);
             }}
-            title="Confirmez-vous la suppression?"
-            message="Si vous confirmez, la photo sera supprimée du dossier"
+            title={t('action.confirmDelete')}
+            message={t('folder.confirmDeletePhoto')}
           />
         </Box>
       </Modal>

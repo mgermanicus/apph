@@ -324,7 +324,7 @@ public class PhotoTest {
         Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("photoTable.error", messageResponse.getMessage());
+        Assert.assertEquals("photoTable.error.illegalArgument", messageResponse.getMessage());
     }
 
     @Test
@@ -548,7 +548,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Le titre ou la description ne peuvent pas dépasser les 255 caractères.", messageResponse.getMessage());
+        Assert.assertEquals("photo.error.titleOrDescriptionOverChar", messageResponse.getMessage());
     }
 
     @Test
@@ -580,7 +580,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Les tags ne peuvent pas dépasser 255 caractères.", messageResponse.getMessage());
+        Assert.assertEquals("photo.error.tagOverChar", messageResponse.getMessage());
     }
 
     @Test
@@ -851,7 +851,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Le fichier n'existe pas", messageResponse.getMessage());
+        Assert.assertEquals("download.error.fileNotExist", messageResponse.getMessage());
     }
 
     @Test
@@ -871,7 +871,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("L'utilisateur n'est pas autorisé à accéder à la ressource demandée", messageResponse.getMessage());
+        Assert.assertEquals("download.error.accessDenied", messageResponse.getMessage());
     }
 
     @Test
@@ -890,7 +890,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Le format du fichier n'est pas valide", messageResponse.getMessage());
+        Assert.assertEquals("upload.error.wrongFormat", messageResponse.getMessage());
     }
 
     @Test
@@ -935,7 +935,7 @@ public class PhotoTest {
         //THEN
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Suppression effectuée avec succès.", messageResponse.getMessage());
+        Assert.assertEquals("photo.successDelete", messageResponse.getMessage());
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
@@ -949,7 +949,7 @@ public class PhotoTest {
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("La photo n'existe pas.", messageResponse.getMessage());
+        Assert.assertEquals("photo.error.notExist", messageResponse.getMessage());
     }
 
     @Test
@@ -964,6 +964,6 @@ public class PhotoTest {
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("L'utilisateur n'a pas accès à cette action.", messageResponse.getMessage());
+        Assert.assertEquals("action.forbidden", messageResponse.getMessage());
     }
 }
