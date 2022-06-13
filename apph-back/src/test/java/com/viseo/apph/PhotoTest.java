@@ -91,7 +91,7 @@ public class PhotoTest {
     }
 
     @Test
-    public void TestUploadPhoto() {
+    public void testUploadPhoto() {
         //GIVEN
         createPhotoController();
         MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
@@ -119,7 +119,7 @@ public class PhotoTest {
     }
 
     @Test
-    public void TestEditPhotoInfos() {
+    public void testEditPhotoInfos() {
         //GIVEN
         createPhotoController();
         Set<Tag> oldTags = new HashSet<>();
@@ -147,15 +147,32 @@ public class PhotoTest {
     }
 
     @Test
-    public void TestGetUserPhotosUrl() {
+    public void testEditNotFoundPhoto() {
+        //GIVEN
+        createPhotoController();
+        User user = new User().setLogin("toto");
+        PhotoRequest photoRequest = new PhotoRequest();
+        when(em.find(Photo.class, 1L)).thenReturn(null);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.editInfos(photoRequest);
+        //THEN
+        Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("Photo introuvable", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testGetUserPhotosUrl() {
         //GIVEN
         createPhotoController();
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         List<Photo> listPhoto = new ArrayList<>();
         listPhoto.add(new Photo());
-        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5);
+        SortDto[] sortModel = new ArrayList<SortDto>().toArray(new SortDto[0]);
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setSortModel(sortModel);
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQueryPhoto);
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user ORDER BY p.id DESC", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
@@ -183,9 +200,10 @@ public class PhotoTest {
         listPhoto.add(new Photo());
         listPhoto.add(new Photo());
         listPhoto.add(new Photo());
-        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5);
+        SortDto[] sortModel = new ArrayList<SortDto>().toArray(new SortDto[0]);
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setSortModel(sortModel);
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQueryPhoto);
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user ORDER BY p.id DESC", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
@@ -234,9 +252,10 @@ public class PhotoTest {
                 new FilterDto().setField("description").setOperator("is").setValue("cool"),
                 new FilterDto().setField("title").setOperator("is").setValue("photo")
         };
-        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos);
+        SortDto[] sortModel = new ArrayList<SortDto>().toArray(new SortDto[0]);
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos).setSortModel(sortModel);
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%' || ?1 || '%'  OR p.title LIKE ?2 ) AND (p.description LIKE ?3 ) AND (p.creationDate < ?4  OR p.creationDate <= ?5  OR p.creationDate = ?6 ) AND (p.shootingDate > ?7  OR p.shootingDate >= ?8 ) GROUP BY p.id", Photo.class)).thenReturn(typedQueryPhoto);
+        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%' || ?1 || '%'  OR p.title LIKE ?2 ) AND (p.description LIKE ?3 ) AND (p.creationDate < ?4  OR p.creationDate <= ?5  OR p.creationDate = ?6 ) AND (p.shootingDate > ?7  OR p.shootingDate >= ?8 ) GROUP BY p.id ORDER BY p.id DESC", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
@@ -281,9 +300,10 @@ public class PhotoTest {
                 new FilterDto().setField("title").setOperator("contain").setValue("p"),
                 new FilterDto().setField("title").setOperator("is").setValue("photo")
         };
-        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos);
+        SortDto[] sortModel = new ArrayList<SortDto>().toArray(new SortDto[0]);
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos).setSortModel(sortModel);
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%' || ?1 || '%'  OR p.title LIKE ?2 ) AND (?3 IN (select t.name from p.tags t)  OR ?4 IN (select t.name from p.tags t)  OR ?5 IN (select t.name from p.tags t) ) GROUP BY p.id", Photo.class)).thenReturn(typedQueryPhoto);
+        when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%' || ?1 || '%'  OR p.title LIKE ?2 ) AND (?3 IN (select t.name from p.tags t)  OR ?4 IN (select t.name from p.tags t)  OR ?5 IN (select t.name from p.tags t) ) GROUP BY p.id ORDER BY p.id DESC", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
         when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
@@ -314,10 +334,11 @@ public class PhotoTest {
         listPhoto.add(new Photo());
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)).thenReturn(typedQueryPhoto);
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user ORDER BY p.id DESC", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
-        FilterRequest filterRequest = new FilterRequest().setPage(-1).setPageSize(5);
+        SortDto[] sortModel = new ArrayList<SortDto>().toArray(new SortDto[0]);
+        FilterRequest filterRequest = new FilterRequest().setPage(-1).setPageSize(5).setSortModel(sortModel);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(filterRequest);
         //THEN
@@ -900,12 +921,6 @@ public class PhotoTest {
         User robert = (User) new User().setLogin("Robert").setId(1);
         PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setFolderId(-1).setId(1);
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("UPDATE Photo SET title = :title, description = :description, folder = :folder WHERE id = :id")).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.setParameter("title", request.getTitle())).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.setParameter("description", request.getDescription())).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.setParameter("folder", null)).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.setParameter("id", request.getId())).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.executeUpdate()).thenReturn(1);
         when(em.find(Photo.class, 1L)).thenReturn(new Photo().setUser(robert));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.updatePhotoInfo(request);
@@ -922,12 +937,6 @@ public class PhotoTest {
         PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setFolderId(1).setId(42);
 
         when(utils.getUser()).thenReturn(robert);
-        when(em.createQuery("UPDATE Photo SET title = :title, description = :description, folder = :folder WHERE id = :id")).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.setParameter("title", request.getTitle())).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.setParameter("description", request.getDescription())).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.setParameter("folder", folder)).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.setParameter("id", request.getId())).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.executeUpdate()).thenReturn(1);
         when(em.find(Photo.class, 42L)).thenReturn((Photo) new Photo().setUser(robert).setId(42));
         when(em.find(Folder.class, 1L)).thenReturn(folder);
         //WHEN
@@ -965,5 +974,57 @@ public class PhotoTest {
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("action.forbidden", messageResponse.getMessage());
+    }
+
+    private void testSorting(String field, String sort) {
+        //GIVEN
+        createPhotoController();
+        List<Photo> listPhoto = new ArrayList<>();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        listPhoto.add(new Photo());
+        SortDto sortDto = new SortDto().setField(field).setSort(sort);
+        ArrayList<SortDto> sortArray = new ArrayList<>();
+        sortArray.add(sortDto);
+        SortDto[] sortModel = sortArray.toArray(new SortDto[1]);
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setSortModel(sortModel);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user ORDER BY p." + field + " " + (sort.equals("asc") ? "ASC" : "DESC"), Photo.class)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
+        when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(filterRequest);
+        //THEN
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testSortTitle() {
+        testSorting("title", "asc");
+    }
+
+    @Test
+    public void testSortDescription() {
+        testSorting("description", "desc");
+    }
+
+    @Test
+    public void testSortCreationDate() {
+        testSorting("creationDate", "asc");
+    }
+
+    @Test
+    public void testSortShootingDate() {
+        testSorting("shootingDate", "desc");
+    }
+
+    @Test
+    public void testSortSize() {
+        testSorting("size", "asc");
+    }
+
+    @Test
+    public void testSortDefault() {
+        testSorting("id", "desc");
     }
 }

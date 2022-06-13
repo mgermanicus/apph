@@ -86,7 +86,8 @@ public class PhotoService {
     @Transactional
     public String editPhotoInfos(User user, PhotoRequest photoRequest) throws NotFoundException {
         Photo photo = photoDao.getPhoto(photoRequest.getId());
-        if (photo == null) throw new NotFoundException("photo.error.notFound");
+        if (photo == null)
+            throw new NotFoundException("photo.error.notFound");
         Set<Tag> newTags = tagService.createListTags(photoRequest.getTags(), user);
         Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
         photo.setTitle(photoRequest.getTitle())
@@ -140,7 +141,8 @@ public class PhotoService {
     @Transactional
     public PhotoListResponse getPhotosByFolder(long folderId, User user) throws NotFoundException, UnauthorizedException {
         Folder folder = folderDao.getFolderById(folderId);
-        if (folder == null) throw new NotFoundException("folder.error.notExist");
+        if (folder == null)
+            throw new NotFoundException("folder.error.notExist");
         if (folder.getUser().getId() != user.getId())
             throw new UnauthorizedException("folder.error.accessDenied");
         List<Photo> photoList = photoDao.getPhotosByFolder(folder);
@@ -163,7 +165,8 @@ public class PhotoService {
     @Transactional
     public MessageListResponse movePhotosToFolder(User user, PhotosRequest request) throws NotFoundException, UnauthorizedException {
         Folder folder = folderDao.getFolderById(request.getFolderId());
-        if (folder == null) throw new NotFoundException("folder.error.notExist");
+        if (folder == null)
+            throw new NotFoundException("folder.error.notExist");
         if (folder.getUser().getId() != user.getId())
             throw new UnauthorizedException("folder.error.accessDenied");
         MessageListResponse response = new MessageListResponse();
