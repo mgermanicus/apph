@@ -11,7 +11,7 @@ import { UserAvatar } from './UserAvatar';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Link } from 'react-router-dom';
-import { IUser, makeAppBarStyles } from '../../utils';
+import { IUser } from '../../utils';
 import { useState } from 'react';
 import { DrawerMenuItem } from './DrawerMenuItem';
 import {
@@ -25,8 +25,13 @@ import {
 import { useSelector } from 'react-redux';
 import AuthService from '../../services/AuthService';
 
+const appBarStyles = {
+  iconButton: {
+    mr: 2
+  }
+};
+
 export const Header = (): JSX.Element => {
-  const classes = makeAppBarStyles();
   const user = useSelector(
     ({ currentUser }: { currentUser: IUser }) => currentUser
   );
@@ -43,7 +48,7 @@ export const Header = (): JSX.Element => {
             edge="start"
             color="inherit"
             aria-label="menu"
-            className={classes.iconButton}
+            sx={appBarStyles.iconButton}
             onClick={() => setDrawerMenuVisible(true)}
           >
             <MenuIcon />

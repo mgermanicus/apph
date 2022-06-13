@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IUser, makeCardStyles } from '../../utils';
+import { IUser, cardStyle } from '../../utils';
 import {
   Button,
   Card,
@@ -15,9 +15,8 @@ export const UserProfile = ({
   login
 }: IUser): JSX.Element => {
   const navigate = useNavigate();
-  const classes = makeCardStyles();
   return (
-    <Card className={classes.cardStyle}>
+    <Card sx={cardStyle}>
       <CardHeader title={`${firstname} ${lastname}`} />
       <CardContent>
         <Typography variant="body2">Email: {login}</Typography>
