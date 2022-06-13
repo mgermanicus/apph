@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { ITable, makeDiapoStyles, openFullScreenById } from '../../utils';
+import { ITable, openFullScreenById } from '../../utils';
 import { Box, Button, IconButton, Modal, Tooltip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Autoplay, EffectCoverflow, Navigation, Pagination } from 'swiper';
@@ -13,12 +13,43 @@ import 'swiper/css/autoplay';
 import 'swiper/css/effect-coverflow';
 import { Slideshow } from '@mui/icons-material';
 
+const diapoStyles = {
+  displayContent: {
+    display: 'contents'
+  },
+  swiper: {
+    width: '80vw',
+    height: '95vh',
+    marginTop: '10px'
+  },
+  swiperSlide: {
+    textAlign: 'center' as const,
+    fontSize: '18px',
+    background: 'transparent',
+    display: 'flex',
+    justifyContent: 'center'
+  },
+  swiperImg: {
+    maxWidth: '90vw',
+    maxHeight: '90vh'
+  },
+  button: {
+    float: 'right',
+    '&:hover': {
+      color: '#0032ff'
+    },
+    color: '#fafafa'
+  },
+  swiperImgAutoPlay: {
+    maxWidth: '100vw',
+    maxHeight: '100vh'
+  }
+};
+
 export const Diaporama = ({ data }: { data: ITable[] }) => {
   const [open, setOpen] = useState(false);
   const [autoPlay, setAutoPlay] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
-
-  const classes = makeDiapoStyles();
 
   const handleFullScreen = () => {
     if (!document.fullscreenElement) {
@@ -49,11 +80,10 @@ export const Diaporama = ({ data }: { data: ITable[] }) => {
       <>
         <Modal open={open} onClose={() => setOpen(false)}>
           <>
-            <Box className={classes.displayContent}>
+            <Box sx={diapoStyles.displayContent}>
               <IconButton
                 onClick={() => setOpen(false)}
-                sx={{ color: '#fafafa' }}
-                className={classes.button}
+                sx={diapoStyles.button}
                 aria-label="close"
                 size="large"
               >
@@ -78,18 +108,18 @@ export const Diaporama = ({ data }: { data: ITable[] }) => {
               }}
               navigation={true}
               modules={[Pagination, Navigation, EffectCoverflow]}
-              className={classes.swiper}
+              style={diapoStyles.swiper}
             >
               {!!data?.length &&
                 data.map((photo, index) => (
                   <SwiperSlide
-                    className={classes.swiperSlide}
+                    style={diapoStyles.swiperSlide}
                     key={photo.id}
                     virtualIndex={index}
                   >
                     <Box component="div" sx={{ alignSelf: 'center' }}>
                       <img
-                        className={classes.swiperImg}
+                        style={diapoStyles.swiperImg}
                         src={photo.url}
                         alt={photo.title}
                         onClick={() => {
@@ -112,19 +142,19 @@ export const Diaporama = ({ data }: { data: ITable[] }) => {
               loop={true}
               modules={[Autoplay]}
               autoplay={{ delay: 1500 }}
-              className={classes.swiper}
+              style={diapoStyles.swiper}
               id="full-screen"
             >
               {!!data?.length &&
                 data.map((photo, index) => (
                   <SwiperSlide
-                    className={classes.swiperSlide}
+                    style={diapoStyles.swiperSlide}
                     key={photo.id}
                     virtualIndex={index}
                   >
                     <Box component="div" sx={{ alignSelf: 'center' }}>
                       <img
-                        className={classes.swiperImgAutoPlay}
+                        style={diapoStyles.swiperImgAutoPlay}
                         src={photo.url}
                         alt={photo.title}
                       />

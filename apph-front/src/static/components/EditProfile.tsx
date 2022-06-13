@@ -8,7 +8,7 @@ import {
   Stack,
   TextField
 } from '@mui/material';
-import { makeCardStyles, IUser, IUserRequest } from '../../utils';
+import { cardStyle, IUser, IUserRequest } from '../../utils';
 import { FormEvent, useEffect, useState } from 'react';
 import UserService from '../../services/UserService';
 import AuthService from '../../services/AuthService';
@@ -32,7 +32,6 @@ export const EditProfile = () => {
   const [alertMessage, setAlertMessage] = useState<string>();
   const [errorOccured, setErrorOccured] = useState(false);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const classes = makeCardStyles();
 
   const dispatch = useDispatch();
 
@@ -111,7 +110,7 @@ export const EditProfile = () => {
   };
 
   return (
-    <Card className={classes.cardStyle}>
+    <Card sx={cardStyle}>
       <CardHeader title="Modifier le profil" />
       <CardContent>
         <Box component="form" onSubmit={handleSubmit}>
