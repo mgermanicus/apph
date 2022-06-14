@@ -6,7 +6,7 @@ public class FilterRequest {
     @JsonValue
     FilterDto[] filterList;
     @JsonValue
-    SortDto[] sortModel;
+    SortDto sortModel;
     @JsonValue
     int pageSize;
     @JsonValue
@@ -39,11 +39,11 @@ public class FilterRequest {
         return this;
     }
 
-    public SortDto[] getSortModel() {
+    public SortDto getSortModel() {
         return sortModel;
     }
 
-    public FilterRequest setSortModel(SortDto[] sortModel) {
+    public FilterRequest setSortModel(SortDto sortModel) {
         this.sortModel = sortModel;
         return this;
     }

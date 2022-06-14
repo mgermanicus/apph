@@ -215,12 +215,12 @@ public class PhotoService {
         return new FilterQuery(query.toString(), argQueue);
     }
 
-    private String createSortQuery(SortDto[] sortModel) {
-        if (sortModel.length == 0) {
+    private String createSortQuery(SortDto sortModel) {
+        if (sortModel == null) {
             return " ORDER BY p.id DESC";
         }
         StringBuilder query = new StringBuilder(" ORDER BY ");
-        switch (sortModel[0].getField()) {
+        switch (sortModel.getField()) {
             case "title":
                 query.append("p.title");
                 break;
@@ -239,7 +239,7 @@ public class PhotoService {
             default:
                 query.append("p.id");
         }
-        if ("asc".equals(sortModel[0].getSort())) {
+        if ("asc".equals(sortModel.getSort())) {
             query.append(" ASC");
         } else {
             query.append(" DESC");

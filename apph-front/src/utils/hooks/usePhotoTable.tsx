@@ -43,7 +43,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
       page + 1,
       handleSuccess,
       handleError,
-      sortModel,
+      sortModel.length > 0 ? sortModel[0] : undefined,
       filterList
     );
   }, [refresh, page, pageSize, sortModel, filterList ? filterList : null]);
@@ -76,7 +76,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
                 page + 1,
                 handleSuccess,
                 handleError,
-                sortModel,
+                sortModel.length > 0 ? sortModel[0] : undefined,
                 filterList
               )
             }

@@ -169,8 +169,7 @@ public class PhotoTest {
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         List<Photo> listPhoto = new ArrayList<>();
         listPhoto.add(new Photo());
-        SortDto[] sortModel = new ArrayList<SortDto>().toArray(new SortDto[0]);
-        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setSortModel(sortModel);
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5);
         when(utils.getUser()).thenReturn(robert);
         when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user ORDER BY p.id DESC", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
@@ -200,8 +199,7 @@ public class PhotoTest {
         listPhoto.add(new Photo());
         listPhoto.add(new Photo());
         listPhoto.add(new Photo());
-        SortDto[] sortModel = new ArrayList<SortDto>().toArray(new SortDto[0]);
-        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setSortModel(sortModel);
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5);
         when(utils.getUser()).thenReturn(robert);
         when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user ORDER BY p.id DESC", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
@@ -252,8 +250,7 @@ public class PhotoTest {
                 new FilterDto().setField("description").setOperator("is").setValue("cool"),
                 new FilterDto().setField("title").setOperator("is").setValue("photo")
         };
-        SortDto[] sortModel = new ArrayList<SortDto>().toArray(new SortDto[0]);
-        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos).setSortModel(sortModel);
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos);
         when(utils.getUser()).thenReturn(robert);
         when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%' || ?1 || '%'  OR p.title LIKE ?2 ) AND (p.description LIKE ?3 ) AND (p.creationDate < ?4  OR p.creationDate <= ?5  OR p.creationDate = ?6 ) AND (p.shootingDate > ?7  OR p.shootingDate >= ?8 ) GROUP BY p.id ORDER BY p.id DESC", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
@@ -300,8 +297,7 @@ public class PhotoTest {
                 new FilterDto().setField("title").setOperator("contain").setValue("p"),
                 new FilterDto().setField("title").setOperator("is").setValue("photo")
         };
-        SortDto[] sortModel = new ArrayList<SortDto>().toArray(new SortDto[0]);
-        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos).setSortModel(sortModel);
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos);
         when(utils.getUser()).thenReturn(robert);
         when(em.createQuery("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user AND (p.title LIKE '%' || ?1 || '%'  OR p.title LIKE ?2 ) AND (?3 IN (select t.name from p.tags t)  OR ?4 IN (select t.name from p.tags t)  OR ?5 IN (select t.name from p.tags t) ) GROUP BY p.id ORDER BY p.id DESC", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
@@ -337,8 +333,7 @@ public class PhotoTest {
         when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user ORDER BY p.id DESC", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(listPhoto);
-        SortDto[] sortModel = new ArrayList<SortDto>().toArray(new SortDto[0]);
-        FilterRequest filterRequest = new FilterRequest().setPage(-1).setPageSize(5).setSortModel(sortModel);
+        FilterRequest filterRequest = new FilterRequest().setPage(-1).setPageSize(5);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.getUserPhotos(filterRequest);
         //THEN
@@ -982,10 +977,7 @@ public class PhotoTest {
         List<Photo> listPhoto = new ArrayList<>();
         User robert = (User) new User().setLogin("Robert").setId(1);
         listPhoto.add(new Photo());
-        SortDto sortDto = new SortDto().setField(field).setSort(sort);
-        ArrayList<SortDto> sortArray = new ArrayList<>();
-        sortArray.add(sortDto);
-        SortDto[] sortModel = sortArray.toArray(new SortDto[1]);
+        SortDto sortModel = new SortDto().setField(field).setSort(sort);
         FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setSortModel(sortModel);
         when(utils.getUser()).thenReturn(robert);
         when(em.createQuery("SELECT p FROM Photo p WHERE p.user = :user ORDER BY p." + field + " " + (sort.equals("asc") ? "ASC" : "DESC"), Photo.class)).thenReturn(typedQueryPhoto);

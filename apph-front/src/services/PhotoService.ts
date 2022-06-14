@@ -9,7 +9,7 @@ import {
 } from '../utils';
 import Cookies from 'universal-cookie';
 import { IFilterPayload } from '../utils/types/Filter';
-import { GridSortModel } from '@mui/x-data-grid';
+import { GridSortItem } from '@mui/x-data-grid';
 
 const cookies = new Cookies();
 export default class PhotoService {
@@ -58,7 +58,7 @@ export default class PhotoService {
     page: number,
     handleSuccess: (pagination: IPagination) => void,
     handleError: (errorMessage: string) => void,
-    sortModel: GridSortModel,
+    sortModel?: GridSortItem,
     filterList?: IFilterPayload[]
   ) {
     const URL = '/photo/infos';
