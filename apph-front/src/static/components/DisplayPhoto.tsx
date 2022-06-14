@@ -134,7 +134,7 @@ export const DisplayPhoto = ({
             <FormControlLabel
               value="big"
               control={<Radio />}
-              label={t('size.big')}
+              label={t('size.large')}
             />
           </RadioGroup>
         </FormControl>

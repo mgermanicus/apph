@@ -93,7 +93,7 @@ export const PhotoDetails = ({
       {
         {
           button: (
-            <Tooltip title="Details">
+            <Tooltip title={t('photo.details')}>
               <Button
                 variant="outlined"
                 onClick={handleOpenDetails}

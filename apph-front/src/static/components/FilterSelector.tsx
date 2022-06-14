@@ -47,6 +47,55 @@ const filterInitialState: IFilter[] = [
   }
 ];
 
+const filterReducers = (state: IFilter[], action: filterActions) => {
+  const { type, payload } = action;
+  switch (type) {
+    case filterActionKind.ADD:
+      if (typeof payload == 'number')
+        return [
+          ...state,
+          {
+            id: payload,
+            field: '',
+            operator: '',
+            value: ''
+          }
+        ];
+      throw new Error('filter.error.addPayloadNaN');
+    case filterActionKind.REMOVE:
+      if (typeof payload == 'number')
+        return state.filter((filter) => filter.id != action.payload);
+      throw new Error('filter.error.removePayloadNaN');
+    case filterActionKind.UPDATE:
+      if (typeof payload == 'object' && isInstanceOfIFilter(payload)) {
+        const filterIndex = state.findIndex(
+          (filter) => filter.id == payload.id
+        );
+        state[filterIndex] = {
+          id: state[filterIndex].id,
+          field:
+            payload.field !== 'undefined'
+              ? payload.field
+              : state[filterIndex].field,
+          operator:
+            payload.field === 'tags'
+              ? null
+              : payload.operator !== 'undefined'
+              ? payload.operator
+              : state[filterIndex].operator,
+          value:
+            payload.value !== 'undefined'
+              ? payload.value
+              : state[filterIndex].value
+        };
+        return [...state];
+      }
+      throw new Error('filter.error.idNotMatch');
+    default:
+      throw new Error('filter.error.gestion');
+  }
+};
+
 function* generateId() {
   let id = 1;
   while (true) yield id++;
@@ -62,54 +111,6 @@ export const FilterSelector = ({
   onFilterPhoto,
   onError
 }: filterSelectorProps) => {
-  const filterReducers = (state: IFilter[], action: filterActions) => {
-    const { type, payload } = action;
-    switch (type) {
-      case filterActionKind.ADD:
-        if (typeof payload == 'number')
-          return [
-            ...state,
-            {
-              id: payload,
-              field: '',
-              operator: '',
-              value: ''
-            }
-          ];
-        throw new Error(t('filter.error.addPayloadNaN'));
-      case filterActionKind.REMOVE:
-        if (typeof payload == 'number')
-          return state.filter((filter) => filter.id != action.payload);
-        throw new Error(t('filter.error.removePayloadNaN'));
-      case filterActionKind.UPDATE:
-        if (typeof payload == 'object' && isInstanceOfIFilter(payload)) {
-          const filterIndex = state.findIndex(
-            (filter) => filter.id == payload.id
-          );
-          state[filterIndex] = {
-            id: state[filterIndex].id,
-            field:
-              payload.field !== 'undefined'
-                ? payload.field
-                : state[filterIndex].field,
-            operator:
-              payload.field === 'tags'
-                ? null
-                : payload.operator !== 'undefined'
-                ? payload.operator
-                : state[filterIndex].operator,
-            value:
-              payload.value !== 'undefined'
-                ? payload.value
-                : state[filterIndex].value
-          };
-          return [...state];
-        }
-        throw new Error('filter.error.idNotMatch');
-      default:
-        throw new Error('filter.error.gestion');
-    }
-  };
   const [filterStates, dispatchFilterStates] = useReducer(
     filterReducers,
     filterInitialState

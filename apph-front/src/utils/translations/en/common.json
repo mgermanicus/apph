@@ -1,13 +1,13 @@
 {
   "signin": {
-    "forgottenPassword": "Forgotten password ?",
+    "forgottenPassword": "Forgot your password ?",
     "login": "Login",
     "rememberMe": "Remember me",
-    "noAccount": "You don't have an account yet? Register now!",
+    "noAccount": "No account yet ? Register !",
     "error": {
       "email": "Invalid Email",
       "credentials": "Login or password incorrect",
-      "serverConnection": "Server connection failure"
+      "serverConnection": "Server connection failed"
     }
   },
   "signup": {
@@ -29,14 +29,14 @@
     "firstName": "First name",
     "lastName": "Last name",
     "password": "Password",
-    "passwordConfirmation": "Confirmation password",
+    "passwordConfirmation": "Confirm your password",
     "error": {
       "passwordNotMatch": "The passwords do not match",
       "notAuthenticated": "The user is not authenticated",
       "sessionBindUserNotExist": "The user bound to this session does not exist",
       "expiredSession": "The session has expired. Please log in again",
       "loginAlreadyToken": "This login is already taken",
-      "notExist": "L'utilisateur n'existe pas"
+      "notExist": "The user does not exist"
     }
   },
   "photoTable": {
@@ -44,7 +44,7 @@
     "description": "Description",
     "creationDate": "Creation date",
     "shootingDate": "Shooting date",
-    "lastModification": "Date of last modification",
+    "lastModification": "Last modification date",
     "size": "Size",
     "tags": "Tags",
     "url": "Url",
@@ -56,7 +56,7 @@
     "folders": "My Folders",
     "trips": "My Trips",
     "tags": "My Tags",
-    "treatments": "My Treatments",
+    "treatments": "My Processing",
     "advancedSearch": "Advanced Search"
   },
   "folder": {
@@ -70,8 +70,8 @@
     "moveInto": "Move into the folder",
     "moveTo": "Move to a folder",
     "move": "Move",
-    "confirmDeletePhoto": "If you confirm, the photo will be deleted from the folder",
-    "successMove": "Moving the photos is finished.",
+    "confirmDeletePhoto": "Are you sure about removing this photo from this folder ?",
+    "successMove": "Photo successfully moved.",
     "error": {
       "error": "Error",
       "oneOf": {
@@ -80,7 +80,7 @@
         "alreadyExist": "One of the photos is already in the folder.",
         "existingName": "One of the photos has a name that already exists in the destination folder."
       },
-      "nullFolder": "Folder is null !",
+      "nullFolder": "The file could not be retrieved",
       "emptyFolder": "The folder name cannot be empty.",
       "existingFolder": "The file already exists in the current folder.",
       "notFound": "Parent folder not found.",
@@ -104,13 +104,14 @@
     "diaporama": "Slideshow",
     "addTag": "Add a new tag",
     "add": "Add a photo",
-    "title": "Title of the photo",
+    "title": "Photo title",
     "displayFormat": "Display format",
-    "successDelete": "Deletion successfully completed",
-    "failDelete": "An error occurred during deleting",
+    "details": "Details",
+    "successDelete": "Photo successfully deleted",
+    "failDelete": "An error occurred during deletion",
     "error": {
       "failChangeFormat": "Error when changing the format",
-      "notFound": "Photo introuvable",
+      "notFound": "Photo not found",
       "notExist": "The photo does not exist.",
       "titleOrDescriptionOverChar": "The title or description cannot exceed 255 characters.",
       "tagsOverChar": "Tags cannot exceed 255 characters."
@@ -125,23 +126,23 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "delete": "Delete",
-    "confirmDelete": "Do you confirm the deletion?",
+    "confirmDelete": "Are you sure about deleting these photos ?",
     "download": "Download",
     "cancelChange": "Cancel changes",
     "willDisconnected": "You will be disconnected",
     "uploading": "Uploading",
     "upload": "Upload",
-    "add": "Ajouter",
+    "add": "Add",
     "modify": "Modify",
     "search": "Search",
-    "forbidden": "The user does not have access to this action."
+    "forbidden": "This action is forbidden"
   },
   "profile": {
     "edit": "Edit profile"
   },
   "upload": {
     "error": {
-      "upload": "An error occurred during the upload",
+      "upload": "An error occurred while uploading",
       "manyUploads": "Some files could not be uploaded",
       "wrongFormat": "The file format is not valid",
       "folderNotExist": "The folder does not exist.",
@@ -149,9 +150,9 @@
       "oversize": "The file size exceeds the maximum limit"
     },
     "success": "Your file has been successfully uploaded",
-    "manyUploads": "Your files have been uploaded",
+    "manyUploads": "Your files have been successfully uploaded",
     "fillField": "Please fill in this field.",
-    "successChange": "The change was successful.",
+    "successChange": "File successfully changed.",
     "maySelected": "Please select a file."
   },
   "download": {
@@ -163,22 +164,22 @@
     }
   },
   "filter": {
-    "add": "add a filter",
-    "value": "Valeur",
+    "add": "add filter",
+    "value": "Value",
     "field": "Field",
     "operator": "Operator",
-    "delete": "Delete a filter",
+    "delete": "Delete filter",
     "error": {
-      "addPayloadNaN": "Error in adding the filter: the payload is not a number",
-      "deletePayloadNaN": "Error in deleting the filter: the payload is not a number",
-      "idNotMatch": "Error in filter update: id does not match any existing filter",
+      "addPayloadNaN": "Error while adding filter: payload is not a number",
+      "deletePayloadNaN": "Error while deleting filter: payload is not a number",
+      "idNotMatch": "Error while filter updating: id does not match any existing filter",
       "gestion": "Error in filter management"
     }
   },
   "size": {
     "small": "Small",
     "medium": "Medium",
-    "big": "Big"
+    "large": "Large"
   },
   "operator": {
     "equal": "EQUAL",
