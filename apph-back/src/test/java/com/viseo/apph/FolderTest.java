@@ -33,6 +33,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.viseo.apph.utils.Utils.inject;
@@ -51,10 +53,10 @@ public class FolderTest {
     TypedQuery<Photo> typedQueryPhoto;
 
     @Mock
-    TypedQuery<Folder> typedQueryFolder;
+    TypedQuery<Folder> typedQueryFolder, typedQuerySubFolder;
 
     @Mock
-    TypedQuery<Photo> typedQueryPhoto;
+    TypedQuery<Photo> typedQueryPhoto, typedQuerySubFolderPhoto;
 
     @Mock
     Utils utils;
@@ -413,18 +415,31 @@ public class FolderTest {
         FolderRequest request = new FolderRequest().setId(1L).setName(name);
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setUser(robert).setId(1);
+        Folder robertChild = (Folder) new Folder().setName("Robert Child").setParentFolderId(1L).setUser(robert).setId(2);
+        Photo photo_1 = (Photo) new Photo().setFormat("png").setTitle("Test_1").setUser(robert).setId(1L);
+        Photo photo_2 = (Photo) new Photo().setFormat("png").setTitle("Test_1").setUser(robert).setId(2L);
+        GetObjectResponse response = mock(GetObjectResponse.class);
+        ResponseBytes<GetObjectResponse> s3Object = ResponseBytes.fromByteArray(response, "".getBytes(StandardCharsets.UTF_8));
+        when(s3Client.getObject(any(GetObjectRequest.class), eq(ResponseTransformer.toBytes()))).thenReturn(s3Object);
         when(utils.getUser()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
         when(em.createQuery("SELECT p FROM Photo p WHERE p.folder =: folder", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("folder", robertRoot)).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.getResultList()).thenReturn(null);
+        when(typedQueryPhoto.setParameter("folder", robertChild)).thenReturn(typedQuerySubFolderPhoto);
+        when(typedQueryPhoto.getResultList()).thenReturn(Arrays.asList(photo_1, photo_2));
+        when(typedQuerySubFolderPhoto.getResultList()).thenReturn(null);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentFolderId", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("parentFolderId", 1L)).thenReturn(typedQueryFolder);
-        when(typedQueryFolder.getResultList()).thenReturn(null);
+        when(typedQueryFolder.setParameter("parentFolderId", 2L)).thenReturn(typedQuerySubFolder);
+        when(typedQueryFolder.getResultList()).thenReturn(Collections.singletonList(robertChild));
+        when(typedQuerySubFolder.getResultList()).thenReturn(null);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = folderController.downloadZip(request);
         //THEN
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        FolderResponse folderResponse = (FolderResponse) responseEntity.getBody();
+        assert folderResponse != null;
+        Assert.assertNotNull(folderResponse.getData());
     }
 
     @Test
@@ -450,7 +465,6 @@ public class FolderTest {
         createFolderController();
         String name = RandomString.make(256);
         FolderRequest request = new FolderRequest().setId(1L).setName(name);
-        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         User chris = (User) new User().setLogin("Chris").setPassword("P@ssw0rd").setId(2).setVersion(0);
         when(utils.getUser()).thenReturn(chris);
         when(em.find(Folder.class, 1L)).thenReturn(null);
@@ -468,12 +482,16 @@ public class FolderTest {
         String name = RandomString.make(256);
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Photo photo_1 = (Photo) new Photo().setFormat("png").setTitle("test").setUser(robert).setId(1L);
+        Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setUser(robert).setId(1);
         FolderRequest request = new FolderRequest().setId(1L).setName(name);
         GetObjectResponse response = mock(GetObjectResponse.class);
         ResponseBytes<GetObjectResponse> s3Object = ResponseBytes.fromByteArray(response, "".getBytes(StandardCharsets.UTF_8));
         when(utils.getUser()).thenReturn(robert);
-        when(em.find(any(), anyLong())).thenReturn(photo_1);
+        when(em.find(eq(Folder.class), anyLong())).thenReturn(robertRoot);
         when(s3Client.getObject(any(GetObjectRequest.class), eq(ResponseTransformer.toBytes()))).thenReturn(s3Object);
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.folder =: folder", Photo.class)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("folder", robertRoot)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.getResultList()).thenReturn(Arrays.asList(photo_1, photo_1));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = folderController.downloadZip(request);
         //THEN
