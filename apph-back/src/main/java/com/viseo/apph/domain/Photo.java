@@ -9,7 +9,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "photo")
-@Indexed
 public class Photo extends BaseEntity {
 
     String title;

@@ -53,8 +53,7 @@ public class PhotoDao {
 
     public List<Photo> getUserFilteredPhotos(User user, String filterQuery, Queue<String> argQueue) {
         Query spSQLQuery = em.createQuery(filterQuery, Photo.class).setParameter("user", user);
-        for (int i = 1; !argQueue.isEmpty(); i++)
-        {
+        for (int i = 1; !argQueue.isEmpty(); i++) {
             spSQLQuery.setParameter(i, argQueue.poll());
         }
         return spSQLQuery.getResultList();
