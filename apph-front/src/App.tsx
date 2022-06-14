@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Box, createTheme, ThemeProvider } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { PrivateRoutes } from './privateRoutes';
 import { BrowserRouter } from 'react-router-dom';
 import AuthService from './services/AuthService';
@@ -8,11 +7,11 @@ import { changeCurrentUser } from './redux/slices/userSlice';
 import { useDispatch } from 'react-redux';
 import { frFR } from '@mui/material/locale';
 
-const useStyles = makeStyles({
+const appStyles = {
   textAlignCenter: {
     textAlign: 'center'
   }
-});
+};
 
 const theme = createTheme(
   {
@@ -26,7 +25,6 @@ const theme = createTheme(
 );
 
 export const App = () => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const authenticated = AuthService.isTokenValid();
   useEffect(() => {
@@ -41,7 +39,7 @@ export const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
-        <Box className={classes.textAlignCenter}>
+        <Box sx={appStyles.textAlignCenter}>
           <PrivateRoutes authenticated={authenticated} />
         </Box>
       </BrowserRouter>
