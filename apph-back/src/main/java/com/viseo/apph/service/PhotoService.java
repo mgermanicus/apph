@@ -239,7 +239,7 @@ public class PhotoService {
             default:
                 query.append("p.id");
         }
-        if ("asc".equals(sortModel.getSort())) {
+        if (sortModel.getSort().equals("asc")) {
             query.append(" ASC");
         } else {
             query.append(" DESC");
