@@ -3,9 +3,9 @@ package com.viseo.apph.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TagResponse {
-    @JsonProperty("text")
-    String name;
     @JsonProperty("value")
+    String name;
+    @JsonProperty("count")
     int count;
 
     public String getName() {

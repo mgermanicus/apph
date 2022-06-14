@@ -1,6 +1,5 @@
 import { getTokenHeader } from '../utils';
 import Server from './Server';
-import { Word } from 'react-wordcloud';
 
 export default class TagService {
   static getAllTags(
@@ -15,7 +14,7 @@ export default class TagService {
   }
 
   static getAllTagsCount(
-    handleSuccess: (tags: Word[]) => void,
+    handleSuccess: (tags: { value: string; count: number }[]) => void,
     handleError: (errorMessage: string) => void
   ) {
     const requestOptions = {
