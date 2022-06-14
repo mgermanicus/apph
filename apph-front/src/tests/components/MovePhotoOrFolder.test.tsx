@@ -6,7 +6,7 @@ import {
   triggerRequestSuccess
 } from '../utils';
 import { screen } from '@testing-library/dom';
-import { MovePhoto } from '../../static/components/MovePhoto';
+import { MovePhotoOrFolder } from '../../static/components/MovePhotoOrFolder';
 import React from 'react';
 import Cookies from 'universal-cookie';
 import jwtDecode from 'jwt-decode';
@@ -36,7 +36,7 @@ describe('Test MovePhoto', () => {
     if (decodedToken !== null && typeof decodedToken === 'object') {
       cookies.set('user', { ...decodedToken, token: JWS_TOKEN });
     }
-    render(<MovePhoto photoIds={[1]} />);
+    render(<MovePhotoOrFolder photoIds={[1]} />);
     clickButton(/move-photo/i);
     //WHEN
     triggerRequestSuccess(
@@ -67,7 +67,7 @@ describe('Test MovePhoto', () => {
     if (decodedToken !== null && typeof decodedToken === 'object') {
       cookies.set('user', { ...decodedToken, token: JWS_TOKEN });
     }
-    render(<MovePhoto photoIds={[1]} />);
+    render(<MovePhotoOrFolder photoIds={[1]} />);
     clickButton(/move-photo/i);
     //WHEN
     triggerRequestFailure(
@@ -87,7 +87,7 @@ describe('Test MovePhoto', () => {
     if (decodedToken !== null && typeof decodedToken === 'object') {
       cookies.set('user', { ...decodedToken, token: JWS_TOKEN });
     }
-    render(<MovePhoto photoIds={[]} />);
+    render(<MovePhotoOrFolder photoIds={[]} />);
     //WHEN
     clickButton(/move-photo/i);
     //THEN
@@ -97,7 +97,7 @@ describe('Test MovePhoto', () => {
   it('render move photo without parent folder', () => {
     //GIVEN
     jest.spyOn(FolderService, 'getFolders').mockResolvedValue();
-    render(<MovePhoto photoIds={[1]} />);
+    render(<MovePhotoOrFolder photoIds={[1]} />);
     //WHEN
     clickButton(/move-photo/i);
     //THEN

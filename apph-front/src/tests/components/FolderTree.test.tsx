@@ -1,14 +1,6 @@
-import * as React from 'react';
-import {
-  JWS_TOKEN,
-  triggerRequestFailure,
-  triggerRequestSuccess
-} from '../utils';
+import { FolderTree } from '../../static/components/FolderTree';
 import { render, screen } from '@testing-library/react';
-import { MyFoldersPage } from '../../static/pages/MyFoldersPage';
-import Cookies from 'universal-cookie';
-import jwtDecode from 'jwt-decode';
-import PhotoService from '../../services/PhotoService';
+import { IFolder } from '../../utils';
 
 jest.mock('react-i18next', () => ({
   // this mock makes sure any components using the translate hook can use it without a warning being shown
@@ -19,39 +11,37 @@ jest.mock('react-i18next', () => ({
   }
 }));
 
-describe('Folder Tree Tests', () => {
+describe('FolderTree test', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-
-  it('render folder tree with success', () => {
+  it('should render', () => {
     //GIVEN
-    triggerRequestSuccess(
-      '{"id":1,"version":0,"name":"Elie_root","parentFolderId":null,"childrenFolders":[{"id":2,"version":0,"name":"Elie_child_1","parentFolderId":1,"childrenFolders":[]},{"id":3,"version":0,"name":"Elie_child_2","parentFolderId":1,"childrenFolders":[]}]}'
-    );
-    jest.spyOn(PhotoService, 'getFolderPhotos').mockResolvedValue();
-    const cookies = new Cookies();
-    const decodedToken = jwtDecode(JWS_TOKEN);
-    if (decodedToken !== null && typeof decodedToken === 'object') {
-      cookies.set('user', { ...decodedToken, token: JWS_TOKEN });
-    }
+    const folder: IFolder = {
+      id: '1',
+      name: 'Elie_root',
+      childrenFolders: [
+        {
+          id: '2',
+          name: 'Elie_child',
+          childrenFolders: [],
+          parentFolderId: '1',
+          version: '0'
+        }
+      ],
+      parentFolderId: '',
+      version: '0'
+    };
     //WHEN
-    render(<MyFoldersPage />);
+    render(<FolderTree folder={folder} />);
     //THEN
     expect(screen.getByText(/Elie_root/)).toBeInTheDocument();
   });
 
-  it('render folder tree with error', () => {
-    //GIVEN
-    triggerRequestFailure('{"message": "User not found."}');
-    const cookies = new Cookies();
-    const decodedToken = jwtDecode(JWS_TOKEN);
-    if (decodedToken !== null && typeof decodedToken === 'object') {
-      cookies.set('user', { ...decodedToken, token: JWS_TOKEN });
-    }
+  it('should render folder null', () => {
     //WHEN
-    render(<MyFoldersPage />);
+    render(<FolderTree folder={null} />);
     //THEN
-    expect(screen.getByText(/User not found./)).toBeInTheDocument();
+    expect(screen.getByText(/Folder is null !/)).toBeInTheDocument();
   });
 });

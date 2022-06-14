@@ -28,7 +28,17 @@ public class FolderDao {
     }
 
     public Folder getParentFolderByUser(User user) throws NoResultException {
-        return em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)
+        return em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)
                 .setParameter("user", user).getSingleResult();
+    }
+
+    public List<Folder> getByParentFolderId(long folderId) throws NoResultException {
+        return em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :folderId", Folder.class)
+                .setParameter("folderId", folderId).getResultList();
+    }
+
+    public List<Folder> getFoldersByParentId(long parentId) {
+        return em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentId", Folder.class)
+                .setParameter("parentId", parentId).getResultList();
     }
 }

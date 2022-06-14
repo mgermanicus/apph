@@ -25,24 +25,23 @@ export const CreateFolderButton = ({
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState<boolean>(false);
   const { t } = useTranslation();
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (folderName === '') {
       setErrorMessage('folder.error.emptyFolder');
     } else {
       setLoading(true);
-      FolderService.createFolder(
+      await FolderService.createFolder(
         folderName,
         selected,
         (folder: IFolder) => {
           setRootFolder(folder);
-          setLoading(false);
           setShowModal(false);
         },
         (error: string) => {
           setErrorMessage(error);
-          setLoading(false);
         }
       );
+      setLoading(false);
     }
   };
 
@@ -84,10 +83,10 @@ export const CreateFolderButton = ({
             size="small"
             disabled={loading}
             inputProps={{ maxLength: 255 }}
-            onKeyDown={(event) => {
+            onKeyDown={async (event) => {
               if (event.key === 'Enter') {
                 event.preventDefault();
-                handleSubmit();
+                await handleSubmit();
               }
             }}
           />
@@ -100,9 +99,9 @@ export const CreateFolderButton = ({
         </DialogContent>
         <DialogActions>
           <Button
-            onClick={(event) => {
+            onClick={async (event) => {
               event.preventDefault();
-              handleSubmit();
+              await handleSubmit();
             }}
             disabled={loading}
           >

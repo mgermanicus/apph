@@ -27,13 +27,13 @@ export const MyFoldersPage = (): JSX.Element => {
       (parentFolder: IFolder) => {
         setRootFolder(parentFolder);
         setSelectedFolder(parentFolder.id.toString());
-        setLoading(false);
       },
       (error: string) => {
         setErrorMessage(error);
-        setLoading(false);
-      }
+      },
+      '-1'
     );
+    setLoading(false);
   };
 
   if (loading) {
@@ -80,7 +80,10 @@ export const MyFoldersPage = (): JSX.Element => {
           </TreeView>
         </Box>
         <Box component="div" sx={{ width: '70%' }}>
-          <DisplayPhoto selectedFolder={selectedFolder} />
+          <DisplayPhoto
+            selectedFolder={selectedFolder}
+            rootFolder={rootFolder?.id}
+          />
         </Box>
       </div>
     );

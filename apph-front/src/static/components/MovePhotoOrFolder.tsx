@@ -36,10 +36,14 @@ const stringToAlertColor = (status: string): AlertColor => {
   }
 };
 
-export const MovePhoto = ({
-  photoIds
+export const MovePhotoOrFolder = ({
+  photoIds,
+  folderToBeMoved,
+  folderId
 }: {
-  photoIds: number[];
+  photoIds?: number[];
+  folderToBeMoved?: string;
+  folderId?: string;
 }): JSX.Element => {
   const [rootFolder, setRootFolder] = useState<IFolder | null>(null);
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
@@ -59,48 +63,70 @@ export const MovePhoto = ({
     FolderService.getFolders(
       (parentFolder: IFolder) => {
         setRootFolder(parentFolder);
-        setSelectedFolder(parentFolder.id.toString());
+        setSelectedFolder(parentFolder.id?.toString());
       },
       (error: string) => {
         setSnackMessage(error);
         setSnackSeverity('error');
         setSnackbarOpen(true);
-      }
+      },
+      folderId ? folderId : '-1'
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setLoading(false);
-    PhotoService.movePhotos(
-      photoIds,
-      selectedFolder,
-      (message: string[]) => {
-        setResultMessage(message);
-        setLoading(false);
-      },
-      (error: IMessage) => {
-        setSnackMessage(error.message);
-        setSnackSeverity('error');
-        setLoading(false);
-      }
-    );
+    if (photoIds) {
+      await PhotoService.movePhotos(
+        photoIds,
+        selectedFolder,
+        (message: string[]) => {
+          setResultMessage(message);
+        },
+        (error: IMessage) => {
+          setSnackMessage(error.message);
+          setSnackSeverity('error');
+        }
+      );
+    }
+    if (folderToBeMoved) {
+      await FolderService.moveFolder(
+        folderToBeMoved,
+        selectedFolder,
+        (message) => {
+          const messages = [];
+          messages.push(message.message);
+          setResultMessage(messages);
+        },
+        (errorMessage) => {
+          setSnackSeverity('error');
+          setSnackMessage(errorMessage.message);
+        }
+      );
+    }
+    setLoading(false);
   };
 
   const handleOpenDialog = () => {
-    if (photoIds.length) {
-      if (rootFolder != null) {
-        setSelectedFolder(rootFolder.id.toString());
-        setResultMessage([]);
-        setSnackbarOpen(false);
-        setDialogVisible(true);
-      } else {
-        setSnackMessage('folder.error.parentNotExist');
-        setSnackSeverity('error');
-        setSnackbarOpen(true);
-      }
-    } else {
+    if (
+      folderToBeMoved &&
+      folderToBeMoved.toString() === rootFolder?.id.toString()
+    ) {
+      setSnackMessage('Dossier parent ne peut pas être déplacer');
+      setSnackSeverity('warning');
+      setSnackbarOpen(true);
+    } else if (!photoIds?.length && folderToBeMoved === undefined) {
       setSnackMessage('photo.noneSelected');
       setSnackSeverity('warning');
+      setSnackbarOpen(true);
+    } else if (rootFolder !== null) {
+      setSelectedFolder(rootFolder.id.toString());
+      setResultMessage([]);
+      setSnackbarOpen(false);
+      setDialogVisible(true);
+    } else {
+      setSnackMessage('folder.error.parentNotExist');
+      setSnackSeverity('error');
       setSnackbarOpen(true);
     }
   };
