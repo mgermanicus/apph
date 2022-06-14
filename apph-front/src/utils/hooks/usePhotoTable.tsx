@@ -92,14 +92,6 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
 
   const handleSortModelChange = (model: GridSortModel) => {
     setSortModel(model);
-    PhotoService.getData(
-      pageSize,
-      page + 1,
-      handleSuccess,
-      handleError,
-      sortModel,
-      filterList
-    );
   };
 
   const photoTable = (
