@@ -24,9 +24,6 @@ public class FolderResponse implements IResponseDto {
     @JsonProperty("data")
     byte[] data;
 
-    @JsonProperty("format")
-    String format;
-
     public FolderResponse() {
         this.childrenFolders = new ArrayList<>();
     }
@@ -82,15 +79,6 @@ public class FolderResponse implements IResponseDto {
 
     public FolderResponse setData(byte[] data) {
         this.data = data;
-        return this;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    public FolderResponse setFormat(String format) {
-        this.format = format;
         return this;
     }
 }

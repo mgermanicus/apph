@@ -30,6 +30,7 @@ import software.amazon.awssdk.services.s3.model.*;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -795,7 +796,7 @@ public class PhotoTest {
         verify(em, times(2)).find(eq(Photo.class), anyLong());
         PhotoResponse photoResponse = (PhotoResponse) responseEntity.getBody();
         assert photoResponse != null;
-        Assert.assertEquals("photos", photoResponse.getTitle());
+        Assert.assertEquals("APPH-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()), photoResponse.getTitle());
         Assert.assertEquals(".zip", photoResponse.getFormat());
         Assert.assertNotNull(photoResponse.getData());
     }

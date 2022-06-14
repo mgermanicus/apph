@@ -50,8 +50,7 @@ export const DownloadZip = ({
   const downloadImage = () => {
     if (isFolder) {
       FolderService.downloadFolder(
-        ids,
-        titleZip,
+        ids[0],
         (folder: IFolder) => linkDownloadZip(folder.data, folder.name),
         (error) => traitError(error)
       ).then(() => setLoading(false));

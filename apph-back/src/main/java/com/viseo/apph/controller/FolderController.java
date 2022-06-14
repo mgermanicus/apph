@@ -1,7 +1,10 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.*;
+import com.viseo.apph.dto.FolderRequest;
+import com.viseo.apph.dto.FolderResponse;
+import com.viseo.apph.dto.IResponseDto;
+import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.exception.MaxSizeExceededException;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.exception.UnauthorizedException;
@@ -73,7 +76,7 @@ public class FolderController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(value = "download")
-    public ResponseEntity<IResponseDto> downloadZip(@RequestBody PhotosRequest request) {
+    public ResponseEntity<IResponseDto> downloadZip(@RequestBody FolderRequest request) {
         try {
             User user = utils.getUser();
             return ResponseEntity.ok(folderService.download(user, request));

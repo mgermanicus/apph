@@ -3,6 +3,7 @@ package com.viseo.apph;
 import com.viseo.apph.controller.FolderController;
 import com.viseo.apph.dao.FolderDao;
 import com.viseo.apph.dao.PhotoDao;
+import com.viseo.apph.dao.S3Dao;
 import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
@@ -22,16 +23,21 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.sync.ResponseTransformer;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.viseo.apph.utils.Utils.inject;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FolderTest {
@@ -45,8 +51,18 @@ public class FolderTest {
     TypedQuery<Photo> typedQueryPhoto;
 
     @Mock
+    TypedQuery<Folder> typedQueryFolder;
+
+    @Mock
+    TypedQuery<Photo> typedQueryPhoto;
+
+    @Mock
     Utils utils;
 
+    @Mock
+    S3Client s3Client;
+
+    long zipMaxSize = 50;
 
     FolderService folderService;
     FolderController folderController;
@@ -58,14 +74,18 @@ public class FolderTest {
         inject(photoDao, "em", em);
         UserDao userDao = new UserDao();
         inject(userDao, "em", em);
+        S3Dao s3Dao = new S3Dao();
+        s3Client = mock(S3Client.class, RETURNS_DEEP_STUBS);
+        inject(s3Dao, "s3Client", s3Client);
         folderService = new FolderService();
+        folderService.zipMaxSize = zipMaxSize;
+        inject(folderService, "photoDao", photoDao);
         inject(folderService, "folderDao", folderDao);
         inject(folderService, "userDao", userDao);
-        inject(folderService, "photoDao", photoDao);
+        inject(folderService, "s3Dao", s3Dao);
         folderController = new FolderController();
         inject(folderController, "folderService", folderService);
         inject(folderController, "utils", utils);
-
     }
 
     @Test
@@ -383,5 +403,80 @@ public class FolderTest {
         assert messageResponse != null;
         Assert.assertEquals("request.error.illegalArgument", messageResponse.getMessage());
 
+    }
+
+    @Test
+    public void testDownloadFolder() {
+        //GIVEN
+        createFolderController();
+        String name = RandomString.make(256);
+        FolderRequest request = new FolderRequest().setId(1L).setName(name);
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setUser(robert).setId(1);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
+        when(em.createQuery("SELECT p FROM Photo p WHERE p.folder =: folder", Photo.class)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("folder", robertRoot)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.getResultList()).thenReturn(null);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentFolderId", Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("parentFolderId", 1L)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getResultList()).thenReturn(null);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = folderController.downloadZip(request);
+        //THEN
+        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testDownloadFolderUnauthorized() {
+        //GIVEN
+        createFolderController();
+        String name = RandomString.make(256);
+        FolderRequest request = new FolderRequest().setId(1L).setName(name);
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        User chris = (User) new User().setLogin("Chris").setPassword("P@ssw0rd").setId(2).setVersion(0);
+        Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setUser(robert).setId(1);
+        when(utils.getUser()).thenReturn(chris);
+        when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = folderController.downloadZip(request);
+        //THEN
+        Assert.assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testDownloadFolderNotFound() {
+        //GIVEN
+        createFolderController();
+        String name = RandomString.make(256);
+        FolderRequest request = new FolderRequest().setId(1L).setName(name);
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        User chris = (User) new User().setLogin("Chris").setPassword("P@ssw0rd").setId(2).setVersion(0);
+        when(utils.getUser()).thenReturn(chris);
+        when(em.find(Folder.class, 1L)).thenReturn(null);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = folderController.downloadZip(request);
+        //THEN
+        Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testDownloadZipLarge() {
+        //GIVEN
+        zipMaxSize = 0;
+        createFolderController();
+        String name = RandomString.make(256);
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        Photo photo_1 = (Photo) new Photo().setFormat("png").setTitle("test").setUser(robert).setId(1L);
+        FolderRequest request = new FolderRequest().setId(1L).setName(name);
+        GetObjectResponse response = mock(GetObjectResponse.class);
+        ResponseBytes<GetObjectResponse> s3Object = ResponseBytes.fromByteArray(response, "".getBytes(StandardCharsets.UTF_8));
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(any(), anyLong())).thenReturn(photo_1);
+        when(s3Client.getObject(any(GetObjectRequest.class), eq(ResponseTransformer.toBytes()))).thenReturn(s3Object);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = folderController.downloadZip(request);
+        //THEN
+        Assert.assertEquals(HttpStatus.PAYLOAD_TOO_LARGE, responseEntity.getStatusCode());
     }
 }

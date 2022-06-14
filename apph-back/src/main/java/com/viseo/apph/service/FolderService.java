@@ -9,7 +9,6 @@ import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FolderRequest;
 import com.viseo.apph.dto.FolderResponse;
-import com.viseo.apph.dto.PhotosRequest;
 import com.viseo.apph.exception.MaxSizeExceededException;
 import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.exception.NotFoundException;
@@ -39,11 +38,11 @@ public class FolderService {
     @Autowired
     UserDao userDao;
 
-    @Autowired
-    PhotoDao photoDao;
-
     @Value("${max-zip-size-mb}")
     public long zipMaxSize;
+
+    @Autowired
+    PhotoDao photoDao;
 
     @Autowired
     S3Dao s3Dao;
@@ -174,23 +173,21 @@ public class FolderService {
         return parentFolder;
     }
 
-    public FolderResponse download(User user, PhotosRequest photosRequest) throws UnauthorizedException, IOException, MaxSizeExceededException {
-        long[] ids = photosRequest.getIds();
+    public FolderResponse download(User user, FolderRequest folderRequest) throws UnauthorizedException, IOException, MaxSizeExceededException {
+        long id = folderRequest.getId();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ZipOutputStream zipOut = new ZipOutputStream(bos);
-        for (Long id : ids) {
-            Folder folder = folderDao.getFolderById(id);
-            if (folder == null) {
-                throw new FileNotFoundException();
-            }
-            if (user.getId() != folder.getUser().getId()) {
-                throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
-            }
-            zipSubFolder(bos, zipOut, folder, "");
+        Folder folder = folderDao.getFolderById(id);
+        if (folder == null) {
+            throw new FileNotFoundException();
         }
+        if (user.getId() != folder.getUser().getId()) {
+            throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
+        }
+        zipSubFolder(bos, zipOut, folder, "");
         zipOut.closeEntry();
         zipOut.close();
-        return new FolderResponse().setData(bos.toByteArray()).setName("APPH-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date())).setFormat(".zip");
+        return new FolderResponse().setData(bos.toByteArray()).setName("APPH-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
     }
 
     void zipSubFolder(ByteArrayOutputStream bos, ZipOutputStream zipOut, Folder folder, String parentFolders) throws IOException, MaxSizeExceededException {

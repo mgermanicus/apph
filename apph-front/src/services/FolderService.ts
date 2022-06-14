@@ -97,8 +97,7 @@ export class FolderService {
   }
 
   static downloadFolder(
-    ids: number[],
-    titleZip: string,
+    id: number,
     handleSuccess: (folder: IFolder) => void,
     handleError: (errorMessage: IMessage) => void
   ) {
@@ -111,8 +110,7 @@ export class FolderService {
           Authorization: 'Bearer ' + userInfos?.token
         },
         body: JSON.stringify({
-          ids,
-          titleZip
+          id
         })
       };
     const successFunction = (folder: string) => {
