@@ -65,8 +65,8 @@ export class FolderService {
   }
 
   static moveFolder(
-    folderToBeMoved: string,
-    moveTo: string,
+    folderIdToBeMoved: string,
+    destinationFolderId: string,
     handleSuccess: (message: { message: string }) => void,
     handleError: (errorMessage: IMessage) => void
   ) {
@@ -78,8 +78,8 @@ export class FolderService {
         Authorization: 'Bearer ' + user.token
       },
       body: JSON.stringify({
-        folderToBeMoved,
-        moveTo
+        folderIdToBeMoved,
+        destinationFolderId
       })
     };
     const successFunction = (message: string) => {

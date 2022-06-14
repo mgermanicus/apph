@@ -1,6 +1,6 @@
 import { IFolder } from '../../utils';
 import { TreeItem } from '@mui/lab';
-import { Alert, Button } from '@mui/material';
+import { Alert } from '@mui/material';
 import * as React from 'react';
 import { useState } from 'react';
 import { FolderService } from '../../services/FolderService';
@@ -14,7 +14,7 @@ export const FolderTree = ({
   key?: number;
 }): JSX.Element => {
   const { t } = useTranslation();
-  const [errorMessage, setErrorMessage] = useState('Folder is null !');
+  const [errorMessage, setErrorMessage] = useState('folder.error.nullFolder');
   const [data, setData] = useState(folder);
 
   const handleGetChildrenFolders = async (parent: IFolder) => {
@@ -36,13 +36,7 @@ export const FolderTree = ({
     );
   };
   const renderLabel = (folder: IFolder) => (
-    <Button
-      type="button"
-      onClick={() => handleGetChildrenFolders(folder)}
-      sx={{ color: 'black' }}
-    >
-      {folder.name}
-    </Button>
+    <span onClick={() => handleGetChildrenFolders(folder)}>{folder.name}</span>
   );
 
   if (data) {
@@ -61,8 +55,7 @@ export const FolderTree = ({
   } else {
     return (
       <Alert sx={{ mb: 2 }} severity="error">
-        {t('folder.error.nullFolder')}
-        {errorMessage}
+        {t(errorMessage)}
       </Alert>
     );
   }

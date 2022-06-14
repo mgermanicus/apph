@@ -71,7 +71,7 @@
     "moveTo": "Move to a folder",
     "move": "Move",
     "confirmDeletePhoto": "Are you sure about removing this photo from this folder ?",
-    "successMove": "Photo successfully moved.",
+    "successMove": "Folder successfully moved.",
     "error": {
       "error": "Error",
       "oneOf": {
@@ -81,6 +81,7 @@
         "existingName": "One of the photos has a name that already exists in the destination folder."
       },
       "nullFolder": "The file could not be retrieved",
+      "moveFolder": "Folder cannot be moved",
       "emptyFolder": "The folder name cannot be empty.",
       "existingFolder": "The file already exists in the current folder.",
       "notFound": "Parent folder not found.",
@@ -91,7 +92,8 @@
       "warning": "Warning",
       "notExist": "The folder does not exist.",
       "accessDenied": "The user does not have access to this folder.",
-      "titleAlreadyUsed": "Title already used in the folder."
+      "titleAlreadyUsed": "Title already used in the folder.",
+      "folderNameOverChar": "Folder Name cannot exceed 255 characters."
     }
   },
   "photo": {
@@ -109,6 +111,7 @@
     "details": "Details",
     "successDelete": "Photo successfully deleted",
     "failDelete": "An error occurred during deletion",
+    "successMove": "Photo successfully moved.",
     "error": {
       "failChangeFormat": "Error when changing the format",
       "notFound": "Photo not found",

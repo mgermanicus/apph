@@ -16,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.NoResultException;
-
 @CrossOrigin
 @RestController
 @RequestMapping("/folder")
@@ -33,11 +31,9 @@ public class FolderController {
     public ResponseEntity<IResponseDto> getFoldersByUser(@PathVariable long folderId) {
         try {
             User user = utils.getUser();
-            FolderResponse folder;
-            folder = folderService.getFoldersByParentId(folderId, user);
-            return ResponseEntity.ok(folder);
-        } catch (NoResultException nre) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("folder.error.userNotExist"));
+            return ResponseEntity.ok(folderService.getFoldersByParentId(folderId, user));
+        } catch (IllegalArgumentException iae) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(iae.getMessage()));
         }
     }
 

@@ -46,7 +46,7 @@ public class FolderService {
     }
 
     @Transactional
-    public FolderResponse getFoldersByParentId(long parentId, User user) {
+    public FolderResponse getFoldersByParentId(long parentId, User user) throws IllegalArgumentException {
         List<Folder> folderList = new ArrayList<>();
         Folder parentFolder;
         if (parentId != -1) {
@@ -55,12 +55,15 @@ public class FolderService {
         } else {
             parentFolder = folderDao.getParentFolderByUser(user);
         }
-        FolderResponse parentFolderResponse = new FolderResponse()
-                .setId(parentFolder.getId())
-                .setVersion(parentFolder.getVersion())
-                .setName(parentFolder.getName())
-                .setParentFolderId(parentFolder.getParentFolderId());
-        return connectFolderToChildrenFolder(parentFolderResponse, folderList);
+        if(folderList!= null && parentFolder != null) {
+            FolderResponse parentFolderResponse = new FolderResponse()
+                    .setId(parentFolder.getId())
+                    .setVersion(parentFolder.getVersion())
+                    .setName(parentFolder.getName())
+                    .setParentFolderId(parentFolder.getParentFolderId());
+            return connectFolderToChildrenFolder(parentFolderResponse, folderList);
+        }
+        throw new IllegalArgumentException("request.error.illegalArgument");
     }
 
     @Transactional
@@ -71,7 +74,7 @@ public class FolderService {
         }
         if (request.getName().length() > 255) {
             logger.error("The folder name cannot exceed 255 characters.");
-            throw new IllegalArgumentException("Le nom du dossier ne peut pas dépasser 255 caractères.");
+            throw new IllegalArgumentException("folder.error.folderNameOverChar");
         }
         Folder parentFolder = folderDao.getFolderById(request.getParentFolderId());
         if (parentFolder == null) {
@@ -89,45 +92,44 @@ public class FolderService {
 
     @Transactional
     public MessageResponse moveFolder(User user, FolderRequest request) throws UnauthorizedException, NotFoundException {
-        if (request.getFolderToBeMoved() == null || request.getMoveTo() == null) {
+        if (request.getFolderIdToBeMoved() == null || request.getDestinationFolderId() == null) {
             logger.error("Folder to be moved can not be null");
-            throw new UnauthorizedException("Impossible de déplacer le dossier.");
+            throw new UnauthorizedException("folder.error.moveFolder");
         } else {
-            Folder toBeMoved = folderDao.getFolderById(request.getFolderToBeMoved());
-            Folder moveToFolder = folderDao.getFolderById(request.getMoveTo());
+            Folder toBeMoved = folderDao.getFolderById(request.getFolderIdToBeMoved());
+            Folder moveToFolder = folderDao.getFolderById(request.getDestinationFolderId());
             if (toBeMoved == null || moveToFolder == null) {
                 logger.error("Folder not found.");
-                throw new NotFoundException("Dossier introuvable.");
-            } else if (folderDao.getParentFolderByUser(user).getId() == request.getFolderToBeMoved()) {
+                throw new NotFoundException("folder.error.nullFolder");
+            } else if (folderDao.getParentFolderByUser(user).getId() == request.getFolderIdToBeMoved()) {
                 logger.error("Root folder can not be moved");
-                throw new UnauthorizedException("Dossier racine ne peut pas être déplacer.");
-            } else if (moveToFolder.getParentFolderId() != null && moveToFolder.getParentFolderId().equals(request.getFolderToBeMoved())) {
+                throw new UnauthorizedException("folder.error.moveFolder");
+            } else if (moveToFolder.getParentFolderId() != null && moveToFolder.getParentFolderId().equals(request.getFolderIdToBeMoved())) {
                 logger.error("Folder parent can not be moved to it's child folder");
-                throw new UnauthorizedException("Dossier parent ne peut pas être déplacé vers son dossier enfant.");
+                throw new UnauthorizedException("folder.error.moveFolder");
             } else {
-                return moveFolder(toBeMoved, request.getMoveTo());
+                return moveFolder(toBeMoved, request.getDestinationFolderId());
             }
         }
-
     }
 
     MessageResponse moveFolder(Folder folderToBeMoved, Long toMoveToFolder) {
-        List<Folder> folders = folderDao.getByParentFolderId(toMoveToFolder);
+        List<Folder> folders = folderDao.getFoldersByParentId(toMoveToFolder);
         for (Folder folder : folders) {
             if (folder.getName().equals(folderToBeMoved.getName())) {
                 List<Photo> photosToBeMoved = photoDao.getPhotosByFolder(folderToBeMoved);
-                List<Folder> foldersToBeMoved = folderDao.getByParentFolderId(folderToBeMoved.getId());
+                List<Folder> foldersToBeMoved = folderDao.getFoldersByParentId(folderToBeMoved.getId());
                 for (Photo p : photosToBeMoved) {
                     p.setFolder(folder);
                 }
                 for (Folder f : foldersToBeMoved) {
                     f.setParentFolderId(folder.getId());
                 }
-                return new MessageResponse("success: Le déplacement du dossier est terminé.");
+                return new MessageResponse("success: folder.successMove");
             }
         }
         folderToBeMoved.setParentFolderId(toMoveToFolder);
-        return new MessageResponse("success: Le déplacement du dossier est terminé.");
+        return new MessageResponse("success: folder.successMove");
     }
 
     Folder getParentFolder(List<Folder> folders) throws NotFoundException {

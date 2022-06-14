@@ -70,7 +70,7 @@ export const MovePhotoOrFolder = ({
         setSnackSeverity('error');
         setSnackbarOpen(true);
       },
-      folderId ? folderId : '-1'
+      folderId || '-1'
     );
   };
 
@@ -112,7 +112,7 @@ export const MovePhotoOrFolder = ({
       folderToBeMoved &&
       folderToBeMoved.toString() === rootFolder?.id.toString()
     ) {
-      setSnackMessage('Dossier parent ne peut pas être déplacer');
+      setSnackMessage('folder.error.moveFolder');
       setSnackSeverity('warning');
       setSnackbarOpen(true);
     } else if (!photoIds?.length && folderToBeMoved === undefined) {

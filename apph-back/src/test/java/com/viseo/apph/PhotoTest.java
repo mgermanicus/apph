@@ -716,7 +716,7 @@ public class PhotoTest {
         Assert.assertEquals("warning: folder.error.oneOf.alreadyExist", response.getMessageList().get(1));
         Assert.assertEquals("error: folder.error.oneOf.existingName", response.getMessageList().get(2));
         Assert.assertEquals("error: folder.error.oneOf.photoNotExist", response.getMessageList().get(3));
-        Assert.assertEquals("success: folder.successMove", response.getMessageList().get(4));
+        Assert.assertEquals("success: photo.successMove", response.getMessageList().get(4));
     }
 
     @Test

@@ -23,7 +23,7 @@ describe("Display Folder's Photo Tests", () => {
     jest.clearAllMocks();
   });
 
-  it('render display photo with success', () => {
+  it('render display photo with success', async () => {
     //GIVEN
     triggerRequestSuccess(
       '{"photoList":[{"id":1,"title":"photo","description":"photo test","creationDate":"2022-05-17T08:51:46.551+00:00","shootingDate":"2022-05-17T08:51:46.551+00:00","size":1300.0,"tags":[{"id":1,"version":0,"name":"tag"}],"url":"url","data":null,"format":".png"}]}'
@@ -35,10 +35,8 @@ describe("Display Folder's Photo Tests", () => {
     }
     //WHEN
     render(<DisplayPhoto rootFolder="0" selectedFolder="1" />);
-    setTimeout(
-      () => expect(screen.getByText(/photo.png/)).toBeInTheDocument(),
-      500
-    );
+    //THEN
+    expect(await screen.findByText(/photo.png/)).toBeInTheDocument();
   });
 
   it('render display photo with error', () => {

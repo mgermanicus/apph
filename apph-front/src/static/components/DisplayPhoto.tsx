@@ -15,7 +15,6 @@ import { useEffect, useState } from 'react';
 import PhotoService from '../../services/PhotoService';
 import { PhotoDetails } from './PhotoDetails';
 import { AlertSnackbar } from './AlertSnackbar';
-import { MoveFolders } from './MoveFolders';
 import { useTranslation } from 'react-i18next';
 import { MovePhotoOrFolder } from './MovePhotoOrFolder';
 
@@ -118,7 +117,7 @@ export const DisplayPhoto = ({
         <Box component="div" sx={{ display: 'flex', justifyContent: 'center' }}>
           <FormControl sx={{ m: 1 }}>
             <FormLabel id="photo-size-group-label">
-              Format d'affichage :
+              {t('photo.displayFormat')} :
             </FormLabel>
             <RadioGroup
               aria-labelledby="photo-size-group-label"
@@ -130,14 +129,18 @@ export const DisplayPhoto = ({
               <FormControlLabel
                 value="tiny"
                 control={<Radio />}
-                label="Petit"
+                label={t('size.small')}
               />
               <FormControlLabel
                 value="medium"
                 control={<Radio />}
-                label="Moyen"
+                label={t('size.medium')}
               />
-              <FormControlLabel value="big" control={<Radio />} label="Grand" />
+              <FormControlLabel
+                value="big"
+                control={<Radio />}
+                label={t('size.large')}
+              />
             </RadioGroup>
           </FormControl>
           <MovePhotoOrFolder
@@ -145,34 +148,6 @@ export const DisplayPhoto = ({
             folderId={rootFolder}
           />
         </Box>
-        <FormControl sx={{ m: 1 }}>
-          <FormLabel id="photo-size-group-label">
-            {t('photo.displayFormat')} :
-          </FormLabel>
-          <RadioGroup
-            aria-labelledby="photo-size-group-label"
-            defaultValue="tiny"
-            name="photo-size-group"
-            row
-            onChange={handleChangeSize}
-          >
-            <FormControlLabel
-              value="tiny"
-              control={<Radio />}
-              label={t('size.small')}
-            />
-            <FormControlLabel
-              value="medium"
-              control={<Radio />}
-              label={t('size.medium')}
-            />
-            <FormControlLabel
-              value="big"
-              control={<Radio />}
-              label={t('size.large')}
-            />
-          </RadioGroup>
-        </FormControl>
         <Grid
           container
           spacing={selectedSize.gridContainerSpacing}

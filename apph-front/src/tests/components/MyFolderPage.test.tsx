@@ -15,7 +15,7 @@ describe('MyFolderPage Tests', () => {
     jest.clearAllMocks();
   });
 
-  it('render folder tree with success', () => {
+  it('render folder tree with success', async () => {
     //GIVEN
     triggerRequestSuccess(
       '{"id":1,"version":0,"name":"Elie_root","parentFolderId":null,"childrenFolders":[]}'
@@ -29,12 +29,10 @@ describe('MyFolderPage Tests', () => {
     //WHEN
     render(<MyFoldersPage />);
 
-    setTimeout(() => {
-      expect(screen.getByText(/Elie_root/)).toBeInTheDocument();
-    }, 500);
+    expect(await screen.findByText(/Elie_root/)).toBeInTheDocument();
   });
 
-  it('render folder tree with error', () => {
+  it('render folder tree with error', async () => {
     //GIVEN
     triggerRequestFailure('{"message": "User not found."}');
     const cookies = new Cookies();
@@ -45,8 +43,6 @@ describe('MyFolderPage Tests', () => {
     //WHEN
     render(<MyFoldersPage />);
     //THEN
-    setTimeout(() => {
-      expect(screen.getByText(/User not found./)).toBeInTheDocument();
-    }, 500);
+    expect(await screen.findByText(/User not found./)).toBeInTheDocument();
   });
 });

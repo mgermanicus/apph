@@ -42,6 +42,6 @@ describe('FolderTree test', () => {
     //WHEN
     render(<FolderTree folder={null} />);
     //THEN
-    expect(screen.getByText(/Folder is null !/)).toBeInTheDocument();
+    expect(screen.getByText(/folder.error.nullFolder/)).toBeInTheDocument();
   });
 });

@@ -22,10 +22,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
@@ -184,14 +182,14 @@ public class FolderTest {
         Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Le nom du dossier ne peut pas dépasser 255 caractères.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.folderNameOverChar", messageResponse.getMessage());
     }
 
     @Test
     public void testMoveFolderWithFolderToBeMovedNull() {
         //GIVEN
         createFolderController();
-        FolderRequest request = new FolderRequest().setMoveTo(1L);
+        FolderRequest request = new FolderRequest().setDestinationFolderId(1L);
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         when(utils.getUser()).thenReturn(robert);
         //WHEN
@@ -200,14 +198,14 @@ public class FolderTest {
         Assert.assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Impossible de déplacer le dossier.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.moveFolder", messageResponse.getMessage());
     }
 
     @Test
     public void testMoveFolderWithFoldersNull() {
         //GIVEN
         createFolderController();
-        FolderRequest request = new FolderRequest().setMoveTo(1L).setFolderToBeMoved(0L);
+        FolderRequest request = new FolderRequest().setDestinationFolderId(1L).setFolderIdToBeMoved(0L);
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         when(utils.getUser()).thenReturn(robert);
         when(em.find(Folder.class, 1L)).thenReturn(null);
@@ -218,14 +216,14 @@ public class FolderTest {
         Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Dossier introuvable.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.nullFolder", messageResponse.getMessage());
     }
 
     @Test
     public void testMoveRootFolder() {
         //GIVEN
         createFolderController();
-        FolderRequest request = new FolderRequest().setMoveTo(1L).setFolderToBeMoved(0L);
+        FolderRequest request = new FolderRequest().setDestinationFolderId(1L).setFolderIdToBeMoved(0L);
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Folder parent = new Folder().setUser(robert);
         when(utils.getUser()).thenReturn(robert);
@@ -240,7 +238,7 @@ public class FolderTest {
         Assert.assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Dossier racine ne peut pas être déplacer.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.moveFolder", messageResponse.getMessage());
     }
 
     @Test
@@ -250,7 +248,7 @@ public class FolderTest {
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Folder parent = new Folder().setUser(robert).setParentFolderId(5L);
         Folder child = new Folder().setUser(robert).setParentFolderId(parent.getId());
-        FolderRequest request = new FolderRequest().setMoveTo(child.getId()).setFolderToBeMoved(parent.getId());
+        FolderRequest request = new FolderRequest().setDestinationFolderId(child.getId()).setFolderIdToBeMoved(parent.getId());
         when(utils.getUser()).thenReturn(robert);
         when(em.find(Folder.class, 0L)).thenReturn(child);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
@@ -262,7 +260,7 @@ public class FolderTest {
         Assert.assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Dossier parent ne peut pas être déplacé vers son dossier enfant.", messageResponse.getMessage());
+        Assert.assertEquals("folder.error.moveFolder", messageResponse.getMessage());
     }
 
     @Test
@@ -272,7 +270,7 @@ public class FolderTest {
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Folder toBeMoved = (Folder) new Folder().setUser(robert).setName("Same Name").setParentFolderId(5L).setId(0L);
         Folder moveTo = (Folder) new Folder().setParentFolderId(42L).setId(2L);
-        FolderRequest request = new FolderRequest().setMoveTo(moveTo.getId()).setFolderToBeMoved(toBeMoved.getId());
+        FolderRequest request = new FolderRequest().setDestinationFolderId(moveTo.getId()).setFolderIdToBeMoved(toBeMoved.getId());
         List<Folder> folders = new ArrayList<>();
         folders.add((Folder) new Folder().setParentFolderId(2L).setName("Same Name").setId(9L));
         List<Folder> foldersToBeMoved = new ArrayList<>();
@@ -285,14 +283,14 @@ public class FolderTest {
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn((Folder) new Folder().setId(99L));
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :folderId", Folder.class)).thenReturn(typedQueryFolder);
-        when(typedQueryFolder.setParameter("folderId", moveTo.getId())).thenReturn(typedQueryFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentId", Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("parentId", moveTo.getId())).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getResultList()).thenReturn(folders);
         when(em.createQuery("SELECT p FROM Photo p WHERE p.folder =: folder", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("folder", toBeMoved)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(photos);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :folderId", Folder.class)).thenReturn(typedQueryFolder);
-        when(typedQueryFolder.setParameter("folderId", toBeMoved.getId())).thenReturn(typedQueryFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentId", Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("parentId", toBeMoved.getId())).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getResultList()).thenReturn(folders);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = folderController.moveFolder(request);
@@ -300,7 +298,7 @@ public class FolderTest {
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("success: Le déplacement du dossier est terminé.", messageResponse.getMessage());
+        Assert.assertEquals("success: folder.successMove", messageResponse.getMessage());
     }
 
     @Test
@@ -312,13 +310,13 @@ public class FolderTest {
         Folder moveTo = (Folder) new Folder().setParentFolderId(42L).setId(2L);
         List<Folder> folders = new ArrayList<>();
         folders.add((Folder) new Folder().setParentFolderId(4L).setName("Name").setId(9L));
-        FolderRequest request = new FolderRequest().setMoveTo(moveTo.getId()).setFolderToBeMoved(toBeMoved.getId());
+        FolderRequest request = new FolderRequest().setDestinationFolderId(moveTo.getId()).setFolderIdToBeMoved(toBeMoved.getId());
         Folder parentFolder = (Folder) new Folder().setParentFolderId(null).setId(6L);
         when(utils.getUser()).thenReturn(robert);
         when(em.find(Folder.class, 0L)).thenReturn(toBeMoved);
         when(em.find(Folder.class, 2L)).thenReturn(moveTo);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :folderId", Folder.class)).thenReturn(typedQueryFolder);
-        when(typedQueryFolder.setParameter("folderId", moveTo.getId())).thenReturn(typedQueryFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentId", Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("parentId", moveTo.getId())).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getResultList()).thenReturn(folders);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
@@ -329,7 +327,7 @@ public class FolderTest {
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("success: Le déplacement du dossier est terminé.", messageResponse.getMessage());
+        Assert.assertEquals("success: folder.successMove", messageResponse.getMessage());
     }
 
     @Test
@@ -365,5 +363,25 @@ public class FolderTest {
         ResponseEntity<IResponseDto> responseEntity = folderController.getFoldersByUser(-1);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testGetFoldersByUserWithArgumentIllegal() {
+        //GIVEN
+        createFolderController();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        Folder parentFolder = (Folder) new Folder().setParentFolderId(null).setId(6L);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentId", Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("parentId", 100000000L)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getResultList()).thenReturn(null);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = folderController.getFoldersByUser(100000000);
+        //THEN
+        Assert.assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("request.error.illegalArgument", messageResponse.getMessage());
+
     }
 }
