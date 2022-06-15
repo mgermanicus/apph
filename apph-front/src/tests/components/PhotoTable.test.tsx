@@ -55,6 +55,9 @@ describe('Tests du composant PhotoTable.tsx', () => {
         pageSize={5}
         setPage={() => 0}
         setPageSize={() => 5}
+        handleSortModelChange={(model) => {
+          model.toString();
+        }}
       />,
       {
         wrapper

@@ -1,6 +1,5 @@
 package com.viseo.apph.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.GsonBuilder;
 import com.viseo.apph.dao.FolderDao;
 import com.viseo.apph.dao.PhotoDao;
@@ -87,7 +86,8 @@ public class PhotoService {
     @Transactional
     public String editPhotoInfos(User user, PhotoRequest photoRequest) throws NotFoundException {
         Photo photo = photoDao.getPhoto(photoRequest.getId());
-        if (photo == null) throw new NotFoundException("photo.error.notFound");
+        if (photo == null)
+            throw new NotFoundException("photo.error.notFound");
         Set<Tag> newTags = tagService.createListTags(photoRequest.getTags(), user);
         Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
         photo.setTitle(photoRequest.getTitle())
@@ -108,8 +108,10 @@ public class PhotoService {
     }
 
     @Transactional
-    public PaginationResponse getUserPhotos(User user, FilterRequest filterRequest) {
-        List<Photo> userPhotos = photoDao.getUserPhotos(user);
+    public PaginationResponse getUserPhotos(User user, FilterRequest filterRequest) throws InvalidObjectException {
+        FilterQuery filterQuery = createFilterQuery(filterRequest.getFilters());
+        String sortQuery = createSortQuery(filterRequest.getSortModel());
+        List<Photo> userPhotos = photoDao.getUserPhotos(user, filterQuery.query + sortQuery, filterQuery.argQueue);
         return getPaginationResponse(filterRequest.getPageSize(), filterRequest.getPage(), userPhotos);
     }
 
@@ -139,7 +141,8 @@ public class PhotoService {
     @Transactional
     public PhotoListResponse getPhotosByFolder(long folderId, User user) throws NotFoundException, UnauthorizedException {
         Folder folder = folderDao.getFolderById(folderId);
-        if (folder == null) throw new NotFoundException("folder.error.notExist");
+        if (folder == null)
+            throw new NotFoundException("folder.error.notExist");
         if (folder.getUser().getId() != user.getId())
             throw new UnauthorizedException("folder.error.accessDenied");
         List<Photo> photoList = photoDao.getPhotosByFolder(folder);
@@ -162,7 +165,8 @@ public class PhotoService {
     @Transactional
     public MessageListResponse movePhotosToFolder(User user, PhotosRequest request) throws NotFoundException, UnauthorizedException {
         Folder folder = folderDao.getFolderById(request.getFolderId());
-        if (folder == null) throw new NotFoundException("folder.error.notExist");
+        if (folder == null)
+            throw new NotFoundException("folder.error.notExist");
         if (folder.getUser().getId() != user.getId())
             throw new UnauthorizedException("folder.error.accessDenied");
         MessageListResponse response = new MessageListResponse();
@@ -186,6 +190,8 @@ public class PhotoService {
     }
 
     private FilterQuery createFilterQuery(FilterDto[] filters) throws InvalidObjectException {
+        if (filters == null)
+            return new FilterQuery("SELECT p FROM Photo p WHERE p.user = :user", new LinkedList<>());
         Queue<String> argQueue = new LinkedList<>();
         StringBuilder query = new StringBuilder("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user");
         List<FilterDto> filterDtoList = Arrays.asList(filters);
@@ -209,11 +215,36 @@ public class PhotoService {
         return new FilterQuery(query.toString(), argQueue);
     }
 
-    @Transactional
-    public PaginationResponse getUserFilteredPhotos(User user, FilterRequest filterRequest) throws InvalidObjectException {
-        FilterQuery filterQuery = createFilterQuery(filterRequest.getFilters());
-        List<Photo> userPhotos = photoDao.getUserFilteredPhotos(user, filterQuery.query, filterQuery.argQueue);
-        return getPaginationResponse(filterRequest.getPageSize(), filterRequest.getPage(), userPhotos);
+    private String createSortQuery(SortDto sortModel) {
+        if (sortModel == null) {
+            return " ORDER BY p.id DESC";
+        }
+        StringBuilder query = new StringBuilder(" ORDER BY ");
+        switch (sortModel.getField()) {
+            case "title":
+                query.append("p.title");
+                break;
+            case "description":
+                query.append("p.description");
+                break;
+            case "creationDate":
+                query.append("p.creationDate");
+                break;
+            case "shootingDate":
+                query.append("p.shootingDate");
+                break;
+            case "size":
+                query.append("p.size");
+                break;
+            default:
+                query.append("p.id");
+        }
+        if (sortModel.getSort().equals("asc")) {
+            query.append(" ASC");
+        } else {
+            query.append(" DESC");
+        }
+        return query.toString();
     }
 
     private PaginationResponse getPaginationResponse(int pageSize, int page, List<Photo> userPhotos) {

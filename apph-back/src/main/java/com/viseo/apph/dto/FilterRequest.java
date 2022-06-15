@@ -1,11 +1,12 @@
 package com.viseo.apph.dto;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.google.gson.GsonBuilder;
 
 public class FilterRequest {
     @JsonValue
     FilterDto[] filterList;
+    @JsonValue
+    SortDto sortModel;
     @JsonValue
     int pageSize;
     @JsonValue
@@ -35,6 +36,15 @@ public class FilterRequest {
 
     public FilterRequest setFilterList(FilterDto[] filterList) {
         this.filterList = filterList;
+        return this;
+    }
+
+    public SortDto getSortModel() {
+        return sortModel;
+    }
+
+    public FilterRequest setSortModel(SortDto sortModel) {
+        this.sortModel = sortModel;
         return this;
     }
 }

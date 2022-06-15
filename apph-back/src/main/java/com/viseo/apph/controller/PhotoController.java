@@ -36,11 +36,7 @@ public class PhotoController {
         try {
             User user = utils.getUser();
             PaginationResponse response;
-            if (filterRequest.getFilters() == null) {
-                response = photoService.getUserPhotos(user, filterRequest);
-            } else {
-                response = photoService.getUserFilteredPhotos(user, filterRequest);
-            }
+            response = photoService.getUserPhotos(user, filterRequest);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("photoTable.error.illegalArgument"));

@@ -22,10 +22,12 @@ public class PhotoDao {
         return photo;
     }
 
-    public List<Photo> getUserPhotos(User user) {
-        return em.createQuery("SELECT p FROM Photo p WHERE p.user = :user", Photo.class)
-                .setParameter("user", user)
-                .getResultList();
+    public List<Photo> getUserPhotos(User user, String filterQuery, Queue<String> argQueue) {
+        Query spSQLQuery = em.createQuery(filterQuery, Photo.class).setParameter("user", user);
+        for (int i = 1; !argQueue.isEmpty(); i++) {
+            spSQLQuery.setParameter(i, argQueue.poll());
+        }
+        return spSQLQuery.getResultList();
     }
 
     public Photo getPhoto(long id) {
@@ -49,13 +51,5 @@ public class PhotoDao {
                 .setParameter("format", format)
                 .getSingleResult();
         return !count.equals(0L);
-    }
-
-    public List<Photo> getUserFilteredPhotos(User user, String filterQuery, Queue<String> argQueue) {
-        Query spSQLQuery = em.createQuery(filterQuery, Photo.class).setParameter("user", user);
-        for (int i = 1; !argQueue.isEmpty(); i++) {
-            spSQLQuery.setParameter(i, argQueue.poll());
-        }
-        return spSQLQuery.getResultList();
     }
 }
