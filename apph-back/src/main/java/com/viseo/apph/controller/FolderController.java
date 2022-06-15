@@ -81,9 +81,9 @@ public class FolderController {
             User user = utils.getUser();
             return ResponseEntity.ok(folderService.download(user, request));
         } catch (S3Exception | IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du téléchargement"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("download.error.download"));
         } catch (UnauthorizedException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("L'utilisateur n'est pas autorisé à accéder à la ressource demandée"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("request.error.unauthorizedResource"));
         } catch (MaxSizeExceededException e) {
             return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(new MessageResponse(e.getMessage()));
         }

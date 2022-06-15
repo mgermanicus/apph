@@ -182,7 +182,7 @@ public class FolderService {
             throw new FileNotFoundException();
         }
         if (user.getId() != folder.getUser().getId()) {
-            throw new UnauthorizedException("L'utilisateur n'est pas autorisé à accéder à la ressource demandée");
+            throw new UnauthorizedException("request.error.unauthorizedResource");
         }
         zipSubFolder(bos, zipOut, folder, "");
         zipOut.closeEntry();
@@ -206,7 +206,7 @@ public class FolderService {
                 zipOut.putNextEntry(zipEntry);
                 zipOut.write(photoByte);
                 if (bos.size() > zipMaxSize * 1024 * 1024) {
-                    throw new MaxSizeExceededException("Erreur: Taille maximale du ZIP dépassée.");
+                    throw new MaxSizeExceededException("download.error.oversize");
                 }
             }
         }
