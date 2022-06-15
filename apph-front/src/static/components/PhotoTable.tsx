@@ -6,82 +6,7 @@ import { ITable, ITag } from '../../utils';
 import { DownloadImage } from './DownloadImage';
 import { useDispatch } from 'react-redux';
 import { replaceSelectedPhotos } from '../../redux/slices/photoSlice';
-
-const columns: GridColDef[] = [
-  {
-    field: 'title',
-    headerName: 'Titre',
-    flex: 1,
-    align: 'center',
-    headerAlign: 'center'
-  },
-  {
-    field: 'description',
-    headerName: 'Description',
-    flex: 1.7,
-    align: 'center',
-    headerAlign: 'center'
-  },
-  {
-    field: 'creationDate',
-    headerName: 'Date de création',
-    type: 'date',
-    flex: 2.2,
-    align: 'center',
-    headerAlign: 'center',
-    renderCell: (params) => params.row.creationDate?.toLocaleString()
-  },
-  {
-    field: 'shootingDate',
-    headerName: 'Date de prise de vue',
-    type: 'date',
-    flex: 2.2,
-    align: 'center',
-    headerAlign: 'center',
-    renderCell: (params) => params.row.shootingDate?.toLocaleString()
-  },
-  {
-    field: 'size',
-    headerName: 'Taille(Ko)',
-    type: 'number',
-    flex: 1,
-    align: 'center',
-    headerAlign: 'center'
-  },
-  {
-    field: 'tags',
-    headerName: 'Tags',
-    flex: 1.5,
-    align: 'center',
-    headerAlign: 'center',
-    renderCell: (params) =>
-      params.row.tags.map((tag: ITag, index: number) => {
-        if (index !== params.row.tags.length - 1) {
-          return tag.name + ', ';
-        }
-        return tag.name;
-      })
-  },
-  {
-    field: 'url',
-    headerName: 'Url',
-    flex: 1,
-    align: 'center',
-    headerAlign: 'center'
-  },
-  {
-    field: 'actions',
-    headerName: 'Actions',
-    flex: 2,
-    align: 'center',
-    headerAlign: 'center',
-    renderCell: (params) => (
-      <Stack spacing={2} direction="row">
-        {params.row.details} <DownloadImage id={+params.id} />
-      </Stack>
-    )
-  }
-];
+import { useTranslation } from 'react-i18next';
 
 interface photoTableProps {
   data: ITable[];
@@ -106,6 +31,82 @@ export const PhotoTable = ({
 }: photoTableProps) => {
   const [selectionModel, setSelectionModel] = useState<GridSelectionModel>([]);
   const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const columns: GridColDef[] = [
+    {
+      field: 'title',
+      headerName: t('photoTable.title'),
+      flex: 1,
+      align: 'center',
+      headerAlign: 'center'
+    },
+    {
+      field: 'description',
+      headerName: t('photoTable.description'),
+      flex: 1.7,
+      align: 'center',
+      headerAlign: 'center'
+    },
+    {
+      field: 'creationDate',
+      headerName: t('photoTable.creationDate'),
+      type: 'date',
+      flex: 2.2,
+      align: 'center',
+      headerAlign: 'center',
+      renderCell: (params) => params.row.creationDate?.toLocaleString()
+    },
+    {
+      field: 'shootingDate',
+      headerName: t('photoTable.shootingDate'),
+      type: 'date',
+      flex: 2.2,
+      align: 'center',
+      headerAlign: 'center',
+      renderCell: (params) => params.row.shootingDate?.toLocaleString()
+    },
+    {
+      field: 'size',
+      headerName: t('photoTable.size') + '(Ko)',
+      type: 'number',
+      flex: 1,
+      align: 'center',
+      headerAlign: 'center'
+    },
+    {
+      field: 'tags',
+      headerName: t('photoTable.tags'),
+      flex: 1.5,
+      align: 'center',
+      headerAlign: 'center',
+      renderCell: (params) =>
+        params.row.tags.map((tag: ITag, index: number) => {
+          if (index !== params.row.tags.length - 1) {
+            return tag.name + ', ';
+          }
+          return tag.name;
+        })
+    },
+    {
+      field: 'url',
+      headerName: t('photoTable.url'),
+      flex: 1,
+      align: 'center',
+      headerAlign: 'center'
+    },
+    {
+      field: 'actions',
+      headerName: t('photoTable.actions'),
+      flex: 2,
+      align: 'center',
+      headerAlign: 'center',
+      renderCell: (params) => (
+        <Stack spacing={2} direction="row">
+          {params.row.details} <DownloadImage id={+params.id} />
+        </Stack>
+      )
+    }
+  ];
 
   useEffect(() => {
     if (selected) setSelectionModel(selected);

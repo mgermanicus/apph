@@ -3,13 +3,14 @@ import { clickButton, fillText, selectOptionInListBox } from '../utils';
 import { wrapper } from '../utils/components/CustomWrapper';
 import { FilterSelector } from '../../static/components/FilterSelector';
 
-/*jest.mock('../../utils/hooks/usePhotoTable.tsx', () => () => ({
-  errorState: {
-    getMessage: '',
-    setMessage: () => null
-  },
-  photoTable: null
-}));*/
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
 
 describe('Test du fonctionnement des filtres', () => {
   beforeEach(() => {
@@ -24,9 +25,9 @@ describe('Test du fonctionnement des filtres', () => {
       wrapper
     });
     //WHEN
-    clickButton(/Ajouter un filtre/);
+    clickButton(/filter.add/);
     //THEN
-    expect(screen.getAllByLabelText(/Champ/).length).toBe(2);
+    expect(screen.getAllByLabelText(/filter.field/).length).toBe(2);
   });
 
   it('test if a filter is correctly deleted', () => {
@@ -37,9 +38,9 @@ describe('Test du fonctionnement des filtres', () => {
       wrapper
     });
     //WHEN
-    clickButton(/Supprimer un filtre/);
+    clickButton(/filter.delete/);
     //THEN
-    expect(screen.queryByText(/Champ/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/filter.field/)).not.toBeInTheDocument();
   });
 
   it('test that filter datas are correctly submitted', () => {
@@ -50,13 +51,13 @@ describe('Test du fonctionnement des filtres', () => {
       <FilterSelector onFilterPhoto={spyFilterPhoto} onError={spyOpenAlert} />,
       { wrapper }
     );
-    const fieldInput = screen.getByLabelText(/Champ/);
-    const operatorInput = screen.getByLabelText(/Opérateur/);
+    const fieldInput = screen.getByLabelText(/filter.field/);
+    const operatorInput = screen.getByLabelText(/filter.operator/);
     //WHEN
-    selectOptionInListBox(fieldInput, /Titre/);
-    selectOptionInListBox(operatorInput, /EGAL/);
-    fillText(/Valeur/, 'Test');
-    clickButton(/Rechercher/);
+    selectOptionInListBox(fieldInput, /photoTable.title/);
+    selectOptionInListBox(operatorInput, /operator.equal/);
+    fillText(/filter.value/, 'Test');
+    clickButton(/action.search/);
     //THEN
     expect(spyFilterPhoto).toBeCalledWith([
       {

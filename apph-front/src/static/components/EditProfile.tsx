@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { ConfirmationDialog } from './ConfirmationDialog';
 import { changeCurrentUser } from '../../redux/slices/userSlice';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 export const EditProfile = () => {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ export const EditProfile = () => {
   const [alertMessage, setAlertMessage] = useState<string>();
   const [errorOccured, setErrorOccured] = useState(false);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   const dispatch = useDispatch();
 
@@ -111,27 +113,27 @@ export const EditProfile = () => {
 
   return (
     <Card sx={cardStyle}>
-      <CardHeader title="Modifier le profil" />
+      <CardHeader title={t('profile.edit')} />
       <CardContent>
         <Box component="form" onSubmit={handleSubmit}>
           <Stack spacing={2}>
             <TextField
               required
-              label="Nom"
+              label={t('user.lastName')}
               value={lastName}
               inputProps={{ maxLength: 127 }}
               onChange={(e) => setLastName(e.target.value)}
             />
             <TextField
               required
-              label="Prénom"
+              label={t('user.firstName')}
               value={firstName}
               inputProps={{ maxLength: 127 }}
               onChange={(e) => setFirstName(e.target.value)}
             />
             <TextField
               required
-              label="Login"
+              label={t('user.login')}
               value={login}
               inputProps={{ maxLength: 255 }}
               onChange={(e) => setLogin(e.target.value)}
@@ -139,30 +141,30 @@ export const EditProfile = () => {
             />
             <TextField
               type="password"
-              label="Mot de passe"
+              label={t('user.password')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
             <TextField
               type="password"
-              label="Confirmer le mot de passe"
+              label={t('user.passwordConfirmation')}
               required={!!password}
               value={passwordConfirmation}
               onChange={(e) => setPasswordConfirmation(e.target.value)}
               error={password != passwordConfirmation}
               helperText={
                 password != passwordConfirmation
-                  ? 'Les mots de passe de correspondent pas'
+                  ? t('user.error.passwordNotMatch')
                   : ''
               }
             />
-            <Button type="submit">Valider</Button>
+            <Button type="submit">{t('action.confirm')}</Button>
             <Button color="error" onClick={resetChanges}>
-              Annuler les modifications
+              {t('action.cancelChange')}
             </Button>
             {alertMessage ? (
               <Alert severity={errorOccured ? 'error' : 'success'} id="alert">
-                {alertMessage}
+                {t(alertMessage)}
               </Alert>
             ) : (
               <></>
@@ -178,7 +180,7 @@ export const EditProfile = () => {
           onCancel={() => {
             setDialogOpen(false);
           }}
-          message="Vous allez être déconnecté"
+          message={t('action.willDisconnected')}
         />
       </CardContent>
     </Card>

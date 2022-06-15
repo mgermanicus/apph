@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 import PhotoService from '../../services/PhotoService';
 import { PhotoDetails } from './PhotoDetails';
 import { AlertSnackbar } from './AlertSnackbar';
+import { useTranslation } from 'react-i18next';
 
 const tinySize = {
   gridContainerSpacing: { xs: 1, md: 2 },
@@ -61,6 +62,7 @@ export const DisplayPhoto = ({
 }): JSX.Element => {
   const [photoList, setPhotoList] = useState<ITable[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const { t } = useTranslation();
   const [selectedSize, setSelectedSize] = useState(tinySize);
   const [refresh, setRefresh] = useState(false);
   const [snackMessage, setSnackMessage] = useState<string>('');
@@ -94,7 +96,7 @@ export const DisplayPhoto = ({
         setSelectedSize(bigSize);
         break;
       default:
-        setErrorMessage('Erreur lors de la modification du format');
+        setErrorMessage('photo.error.failChangeFormat');
         break;
     }
   }
@@ -102,7 +104,7 @@ export const DisplayPhoto = ({
   if (errorMessage) {
     return (
       <Alert sx={{ mb: 2 }} severity="error">
-        {errorMessage}
+        {t(errorMessage)}
       </Alert>
     );
   } else {
@@ -110,7 +112,7 @@ export const DisplayPhoto = ({
       <>
         <FormControl sx={{ m: 1 }}>
           <FormLabel id="photo-size-group-label">
-            Format d'affichage :
+            {t('photo.displayFormat')} :
           </FormLabel>
           <RadioGroup
             aria-labelledby="photo-size-group-label"
@@ -119,13 +121,21 @@ export const DisplayPhoto = ({
             row
             onChange={handleChangeSize}
           >
-            <FormControlLabel value="tiny" control={<Radio />} label="Petit" />
+            <FormControlLabel
+              value="tiny"
+              control={<Radio />}
+              label={t('size.small')}
+            />
             <FormControlLabel
               value="medium"
               control={<Radio />}
-              label="Moyen"
+              label={t('size.medium')}
             />
-            <FormControlLabel value="big" control={<Radio />} label="Grand" />
+            <FormControlLabel
+              value="big"
+              control={<Radio />}
+              label={t('size.large')}
+            />
           </RadioGroup>
         </FormControl>
         <Grid
@@ -171,7 +181,7 @@ export const DisplayPhoto = ({
         <AlertSnackbar
           open={snackbarOpen}
           severity={snackSeverity}
-          message={snackMessage}
+          message={t(snackMessage)}
           onClose={setSnackbarOpen}
         />
       </>

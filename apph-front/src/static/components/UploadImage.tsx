@@ -29,6 +29,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setTagList } from '../../redux/slices/tagSlice';
 import { UploadList } from './UploadList';
 import { Upload } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import { AlertSnackbar } from './AlertSnackbar';
 import { TagInput } from './TagInput';
 
@@ -47,6 +48,7 @@ export const UploadImage = ({
   const [globalUploadStatus, setGlobalUploadStatus] = useState<UploadStatus>({
     type: StatusType.None
   });
+  const { t } = useTranslation();
   const [uploadStatuses, setUploadStatuses] = useState<UploadStatus[]>([]);
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const tagList = useSelector(({ tagList }: { tagList: ITag[] }) => tagList);
@@ -134,7 +136,8 @@ export const UploadImage = ({
             const newSelectedTags = selectedTags.map(
               (selectedTag) =>
                 tagsConverted.find(
-                  (tag) => `+ Add New Tag ${tag.name}` == selectedTag.name
+                  (tag) =>
+                    `+ ${t('photo.addTag')} ${tag.name}` == selectedTag.name
                 ) ?? selectedTag
             );
             setSelectedTags(newSelectedTags);
@@ -174,13 +177,13 @@ export const UploadImage = ({
     if (uploadStatuses.some((status) => status.type === StatusType.Error)) {
       setGlobalUploadStatus({
         type: StatusType.Error,
-        message: "Certains fichiers n'ont pas pu être uploadés"
+        message: t('upload.error.manyUploads')
       });
       return;
     }
     setGlobalUploadStatus({
       type: StatusType.Success,
-      message: 'Vos fichiers ont bien été uploadés'
+      message: t('upload.manyUploads')
     });
     // Just enough time to see the success message
     setTimeout(handleClose, 1000);
@@ -210,7 +213,7 @@ export const UploadImage = ({
 
   return (
     <Box sx={{ m: 1 }}>
-      <Tooltip title="Upload">
+      <Tooltip title={t('action.upload')}>
         <Button
           variant="outlined"
           onClick={handleClickOpen}
@@ -234,7 +237,7 @@ export const UploadImage = ({
                 <PhotoCamera />
               </Avatar>
               <Typography component="h1" variant="h5">
-                Ajouter une photo
+                {t('photo.add')}
               </Typography>
               <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
                 <Stack
@@ -255,7 +258,7 @@ export const UploadImage = ({
                     value={title}
                     onChange={(event) => setTitle(event.target.value)}
                     id="title"
-                    label="Titre de la photo"
+                    label={t('photo.title')}
                     name="title"
                     autoComplete="title"
                     autoFocus
@@ -267,7 +270,7 @@ export const UploadImage = ({
                     value={description}
                     onChange={(event) => setDescription(event.target.value)}
                     id="description"
-                    label="Description"
+                    label={t('photoTable.description')}
                     name="description"
                     autoComplete="description"
                     autoFocus
@@ -275,7 +278,7 @@ export const UploadImage = ({
                   />
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DesktopDatePicker
-                      label="Date de prise en vue"
+                      label={t('photoTable.shootingDate')}
                       value={shootingDate}
                       onChange={(date) => {
                         if (date) setShootingDate(date);
@@ -310,7 +313,7 @@ export const UploadImage = ({
                       globalUploadStatus.type === StatusType.Success
                     }
                   >
-                    Ajouter
+                    {t('action.add')}
                   </Button>
                 </Stack>
                 <AlertSnackbar
@@ -320,7 +323,7 @@ export const UploadImage = ({
                       ? 'error'
                       : 'success'
                   }
-                  message={globalUploadStatus.message ?? ''}
+                  message={t(globalUploadStatus.message ?? '')}
                   onClose={() =>
                     setGlobalUploadStatus((status) => {
                       return { type: status.type, message: '' };

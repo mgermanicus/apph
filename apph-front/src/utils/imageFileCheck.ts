@@ -4,13 +4,11 @@ export const imageFileCheck = (
   maxFileSizeMb = 10
 ) => {
   if (!/image\/.*/.test(imageFile.type)) {
-    handleError("Le format du fichier n'est pas valide");
+    handleError('upload.error.wrongFormat');
     return false;
   }
   if (imageFile.size > maxFileSizeMb * 1000000) {
-    handleError(
-      `La taille du fichier excède la limite maximale (${maxFileSizeMb} MB)`
-    );
+    handleError(`upload.error.overSize`);
     return false;
   }
   return true;

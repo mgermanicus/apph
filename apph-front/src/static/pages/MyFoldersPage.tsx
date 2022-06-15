@@ -10,13 +10,14 @@ import ChevronRight from '@mui/icons-material/ChevronRight';
 import { Alert, Box } from '@mui/material';
 import { CreateFolderButton } from '../components/CreateFolderButton';
 import { DisplayPhoto } from '../components/DisplayPhoto';
+import { useTranslation } from 'react-i18next';
 
 export const MyFoldersPage = (): JSX.Element => {
   const [rootFolder, setRootFolder] = useState<IFolder | null>(null);
   const [selectedFolder, setSelectedFolder] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState<boolean>(true);
-
+  const { t } = useTranslation();
   useEffect(() => {
     getFolders().catch(console.error);
   }, []);
@@ -41,7 +42,7 @@ export const MyFoldersPage = (): JSX.Element => {
   } else if (errorMessage) {
     return (
       <Alert sx={{ mb: 2 }} severity="error">
-        {errorMessage}
+        {t(errorMessage)}
       </Alert>
     );
   } else {

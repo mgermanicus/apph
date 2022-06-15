@@ -44,7 +44,7 @@ public class FolderService {
     public FolderResponse createFolder(String login, FolderRequest request) throws NotFoundException, UnauthorizedException {
         if (request.getParentFolderId() == null) {
             logger.error("Cannot create a root folder.");
-            throw new UnauthorizedException("Impossible de créer un dossier racine.");
+            throw new UnauthorizedException("folder.error.root");
         }
         if (request.getName().length() > 255) {
             logger.error("The folder name cannot exceed 255 characters.");
@@ -54,11 +54,11 @@ public class FolderService {
         User user = userDao.getUserByLogin(login);
         if (parentFolder == null) {
             logger.error("Parent folder not found.");
-            throw new NotFoundException("Dossier parent introuvable.");
+            throw new NotFoundException("folder.error.notFound");
         }
         if (parentFolder.getUser().getId() != user.getId()) {
             logger.error("User doesn't have access to this folder.");
-            throw new UnauthorizedException("L'utilisateur n'a pas accès à ce dossier.");
+            throw new UnauthorizedException("folder.error.unauthorized");
         }
         Folder folder = new Folder().setName(request.getName()).setParentFolderId(request.getParentFolderId()).setUser(user);
         folderDao.createFolder(folder);
@@ -73,7 +73,7 @@ public class FolderService {
             }
         }
         logger.error("Parent folder not found.");
-        throw new NotFoundException("Dossier parent introuvable.");
+        throw new NotFoundException("folder.error.notFound");
     }
 
     FolderResponse connectFolderToChildrenFolder(FolderResponse parentFolder, List<Folder> folders) {

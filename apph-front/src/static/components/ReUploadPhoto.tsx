@@ -14,6 +14,7 @@ import { Upload } from '@mui/icons-material';
 import React, { createRef, useState } from 'react';
 import { AlertSnackbar } from './AlertSnackbar';
 import PhotoService from '../../services/PhotoService';
+import { useTranslation } from 'react-i18next';
 
 export const ReUploadPhoto = ({
   photoId,
@@ -28,6 +29,7 @@ export const ReUploadPhoto = ({
   const [snackSeverity, setSnackSeverity] = useState<AlertColor>();
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   const handleSubmit = () => {
     setLoading(true);
@@ -41,7 +43,7 @@ export const ReUploadPhoto = ({
           () => {
             updateData();
             setSnackSeverity('success');
-            setSnackMessage("Le changement s'est effectué avec succèss.");
+            setSnackMessage('upload.successChange');
             setSnackbarOpen(true);
             setLoading(false);
             setTimeout(handleCloseModal, 1000);
@@ -55,7 +57,7 @@ export const ReUploadPhoto = ({
         );
       } else {
         setSnackSeverity('error');
-        setSnackMessage('Veuillez sélectionner un fichier.');
+        setSnackMessage('upload.maySelected');
         setSnackbarOpen(true);
         setLoading(false);
       }
@@ -77,7 +79,7 @@ export const ReUploadPhoto = ({
 
   return (
     <Box>
-      <Tooltip title="Changer d'image">
+      <Tooltip title={t('photo.change')}>
         <Button
           variant="outlined"
           onClick={handleOpenModal}
@@ -87,7 +89,9 @@ export const ReUploadPhoto = ({
         </Button>
       </Tooltip>
       <Dialog open={showModal} onClose={handleCloseModal}>
-        <DialogTitle sx={{ fontWeight: 'bold' }}>Changer l'image</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 'bold' }}>
+          {t('photo.change')}
+        </DialogTitle>
         <DialogContent>
           <Input
             fullWidth
@@ -108,13 +112,13 @@ export const ReUploadPhoto = ({
             }}
             disabled={loading}
           >
-            {loading ? <CircularProgress /> : <>Confirmer</>}
+            {loading ? <CircularProgress /> : <>{t('action.confirm')}</>}
           </Button>
         </DialogActions>
         <AlertSnackbar
           open={snackbarOpen}
           severity={snackSeverity}
-          message={snackMessage}
+          message={t(snackMessage)}
           onClose={setSnackbarOpen}
         />
       </Dialog>

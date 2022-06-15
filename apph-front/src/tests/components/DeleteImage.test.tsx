@@ -10,6 +10,15 @@ import {
 import { screen } from '@testing-library/dom';
 import { DeleteImage } from '../../static/components/DeleteImage';
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
+
 describe('Create delete button tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -26,7 +35,7 @@ describe('Create delete button tests', () => {
     );
     const requestParams = fakeDeleteRequestParams(ids);
     //WHEN
-    clickButton(/Continuer/);
+    clickButton(/action.continue/);
     //THEN
     expect(spyRequestFunction).toBeCalledWith(
       requestParams.URL,
@@ -45,7 +54,7 @@ describe('Create delete button tests', () => {
       '{ "message": "Une erreur est survenue lors de la suppresion" }';
     triggerRequestFailure(serverError);
     //WHEN
-    clickButton(/Continuer/);
+    clickButton(/action.continue/);
     //THEN
     expect(
       screen.getByText('Une erreur est survenue lors de la suppresion')
@@ -58,6 +67,6 @@ describe('Create delete button tests', () => {
     //WHEN
     clickButton(/delete-photo/i);
     //THEN
-    expect(screen.getByText('Aucune photo sélectionnée')).toBeInTheDocument();
+    expect(screen.getByText('photo.noneSelected')).toBeInTheDocument();
   });
 });

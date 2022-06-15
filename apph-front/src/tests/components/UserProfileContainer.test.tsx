@@ -17,6 +17,15 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockedUsedNavigate
 }));
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
+
 describe('UserAvatar Component Tests', () => {
   it('render when user is connected', () => {
     //GIVEN
@@ -56,7 +65,7 @@ describe('UserProfile test', () => {
     //GIVEN
     render(<UserProfile firstname="" lastname="" login="" />);
     //WHEN
-    clickButton(/Modifier/);
+    clickButton(/action.modify/);
     //THEN
     expect(mockedUsedNavigate).toBeCalledWith('/me/edit');
   });

@@ -4,6 +4,7 @@ import reportWebVitals from './reportWebVitals';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import store from './redux/store/store';
+import './i18n';
 
 const container = document.getElementById('root');
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

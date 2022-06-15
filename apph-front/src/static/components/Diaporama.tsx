@@ -12,6 +12,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/autoplay';
 import 'swiper/css/effect-coverflow';
 import { Slideshow } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 const diapoStyles = {
   displayContent: {
@@ -50,6 +51,7 @@ export const Diaporama = ({ data }: { data: ITable[] }) => {
   const [open, setOpen] = useState(false);
   const [autoPlay, setAutoPlay] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
+  const { t } = useTranslation();
 
   const handleFullScreen = () => {
     if (!document.fullscreenElement) {
@@ -67,7 +69,7 @@ export const Diaporama = ({ data }: { data: ITable[] }) => {
 
   return (
     <Box sx={{ m: 1 }}>
-      <Tooltip title="Diaporama">
+      <Tooltip title={t('photo.diaporama')}>
         <Button
           variant="outlined"
           onClick={() => {
@@ -168,7 +170,7 @@ export const Diaporama = ({ data }: { data: ITable[] }) => {
       <AlertSnackbar
         open={alertOpen}
         severity={'warning'}
-        message={'Veuillez sélectionner les photos à afficher.'}
+        message={t('photo.maySelected')}
         onClose={setAlertOpen}
       />
     </Box>

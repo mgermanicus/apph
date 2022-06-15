@@ -41,9 +41,9 @@ public class UserService {
     @Transactional
     public void registerUser(UserRequest userRequest) {
         if (userRequest.getLastName().length() > 127 || userRequest.getFirstName().length() > 127)
-            throw new IllegalArgumentException("Le nom ou le prénom ne peuvent pas dépasser les 127 caractères.");
+            throw new IllegalArgumentException("signup.error.nameOverChar");
         if (userRequest.getLogin().length() > 255)
-            throw new IllegalArgumentException("L'email ne peut pas dépasser les 255 caractères.");
+            throw new IllegalArgumentException("signup.error.emailOverChar");
         Set<Role> set = new HashSet<>();
         Role roleUser = roleDao.getRole(ERole.ROLE_USER);
         set.add(roleUser);
@@ -62,14 +62,14 @@ public class UserService {
         if (userEntity == null) throw new NotFoundException("");
         if (request.getFirstName() != null) {
             if (request.getFirstName().length() > 127)
-                throw new IllegalArgumentException("Le prénom ne peut pas dépasser les 127 caractères.");
+                throw new IllegalArgumentException("signup.error.nameOverChar");
             userEntity.setFirstname(request.getFirstName());
             newClaims.put("firstname", request.getFirstName());
             rootFolder.setName(userEntity.getFirstname() + " " + userEntity.getLastname());
         }
         if (request.getLastName() != null) {
             if (request.getLastName().length() > 127)
-                throw new IllegalArgumentException("Le nom ne peut pas dépasser les 127 caractères.");
+                throw new IllegalArgumentException("signup.error.nameOverChar");
             userEntity.setLastname(request.getLastName());
             newClaims.put("lastname", request.getLastName());
             rootFolder.setName(userEntity.getFirstname() + " " + userEntity.getLastname());
@@ -78,9 +78,9 @@ public class UserService {
             userEntity.setPassword(encoder.encode(request.getPassword()));
         if (request.getLogin() != null) {
             if (request.getLogin().length() > 255)
-                throw new IllegalArgumentException("Le login ne peut pas dépasser les 255 caractères.");
+                throw new IllegalArgumentException("signup.error.loginOverChar");
             if (userDao.existByLogin(request.getLogin()))
-                throw new DataIntegrityViolationException("");
+                throw new DataIntegrityViolationException("signup.error.emailUsed");
             userEntity.setLogin(request.getLogin());
             newClaims.put("login", request.getLogin());
         }

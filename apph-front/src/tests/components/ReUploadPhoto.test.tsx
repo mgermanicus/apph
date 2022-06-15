@@ -11,6 +11,15 @@ import jwtDecode from 'jwt-decode';
 import { render, screen } from '@testing-library/react';
 import { ReUploadPhoto } from '../../static/components/ReUploadPhoto';
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
+
 describe('Test ReUploadPhoto', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -37,11 +46,9 @@ describe('Test ReUploadPhoto', () => {
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     inputFile(files, fileInput);
     //WHEN
-    clickButton(/Confirmer/);
+    clickButton(/action.confirm/);
     //THEN
-    expect(
-      screen.getByText(/Le changement s'est effectué avec succèss./)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/upload.successChange/)).toBeInTheDocument();
   });
 
   it('render re-upload photo without file', () => {
@@ -62,11 +69,9 @@ describe('Test ReUploadPhoto', () => {
     );
     clickButton(/re-upload-photo/i);
     //WHEN
-    clickButton(/Confirmer/);
+    clickButton(/action.confirm/);
     //THEN
-    expect(
-      screen.getByText(/Veuillez sélectionner un fichier./)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/upload.maySelected/)).toBeInTheDocument();
   });
 
   it('render re-upload photo with server erreur', () => {
@@ -90,7 +95,7 @@ describe('Test ReUploadPhoto', () => {
     const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
     inputFile(files, fileInput);
     //WHEN
-    clickButton(/Confirmer/);
+    clickButton(/action.confirm/);
     //THEN
     expect(screen.getByText(/Le fichier n'existe pas/)).toBeInTheDocument();
   });

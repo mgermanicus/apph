@@ -12,6 +12,15 @@ import Cookies from 'universal-cookie';
 import jwtDecode from 'jwt-decode';
 import { FolderService } from '../../services/FolderService';
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
+
 describe('Test MovePhoto', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -33,7 +42,7 @@ describe('Test MovePhoto', () => {
     triggerRequestSuccess(
       '{"messageList":["warning: L\'une des photos est déjà dans le dossier.","error: L\'une des photos comporte un nom existant déjà dans le dossier destinataire.","success: Le déplacement des photos est terminé."]}'
     );
-    clickButton(/Déplacer/);
+    clickButton(/folder.move/);
     //THEN
     expect(
       screen.getByText(/L'une des photos est déjà dans le dossier./)
@@ -64,7 +73,7 @@ describe('Test MovePhoto', () => {
     triggerRequestFailure(
       '{"message": "L\'utilisateur n\'a pas accès au dossier."}'
     );
-    clickButton(/Déplacer/);
+    clickButton(/folder.move/);
     //THEN
   });
 
@@ -82,7 +91,7 @@ describe('Test MovePhoto', () => {
     //WHEN
     clickButton(/move-photo/i);
     //THEN
-    expect(screen.getByText(/Aucune photo sélectionnée/)).toBeInTheDocument();
+    expect(screen.getByText(/photo.noneSelected/)).toBeInTheDocument();
   });
 
   it('render move photo without parent folder', () => {
@@ -92,8 +101,6 @@ describe('Test MovePhoto', () => {
     //WHEN
     clickButton(/move-photo/i);
     //THEN
-    expect(
-      screen.getByText(/Dossier parent non existant./)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/folder.error.parentNotExist/)).toBeInTheDocument();
   });
 });

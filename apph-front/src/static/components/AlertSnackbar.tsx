@@ -1,6 +1,7 @@
 import { AlertColor, Snackbar } from '@mui/material';
 import React from 'react';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { useTranslation } from 'react-i18next';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -24,6 +25,7 @@ export const AlertSnackbar = ({ open, severity, message, onClose }: Props) => {
     if (reason === 'clickaway') return;
     onClose(false);
   };
+  const { t } = useTranslation();
 
   return (
     <Snackbar
@@ -33,7 +35,7 @@ export const AlertSnackbar = ({ open, severity, message, onClose }: Props) => {
       onClose={handleSnackbarClose}
     >
       <Alert onClose={handleSnackbarClose} severity={severity}>
-        {message}
+        {t(message)}
       </Alert>
     </Snackbar>
   );

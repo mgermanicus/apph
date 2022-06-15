@@ -42,9 +42,9 @@ public class AuthController {
     public ResponseEntity<String> register(@RequestBody UserRequest userRequest) {
         try {
             userService.registerUser(userRequest);
-            return ResponseEntity.ok().body("Utilisateur crée");
+            return ResponseEntity.ok().body("signup.created");
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email déjà utilisé.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("signup.error.emailUsed");
         } catch (IllegalArgumentException iae) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(iae.getMessage());
         }

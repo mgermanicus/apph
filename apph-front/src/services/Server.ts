@@ -30,7 +30,7 @@ export default class Server {
         }
       })
       .catch((error) => {
-        errorFunction('{"message":"Échec de connexion au serveur"}');
+        errorFunction('signin.error.serverConnection');
         console.error(error);
       });
   }

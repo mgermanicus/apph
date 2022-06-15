@@ -18,6 +18,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { ITag } from '../../utils';
 import { IFilter } from '../../utils/types/Filter';
 import { filterActionKind, filterActions } from './FilterSelector';
+import { useTranslation } from 'react-i18next';
 
 const selectFieldStyle = {
   minWidth: '6vw',
@@ -40,6 +41,7 @@ export const FilterComponent = ({
   dispatchFilterState,
   tagList
 }: filterComponentProps) => {
+  const { t } = useTranslation();
   const handleChangeField = (event: SelectChangeEvent) => {
     dispatchFilterState({
       type: filterActionKind.UPDATE,
@@ -84,11 +86,11 @@ export const FilterComponent = ({
       onChange={handleChangeField}
       sx={selectFieldStyle}
     >
-      <MenuItem value={'title'}>Titre</MenuItem>
-      <MenuItem value={'description'}>Description</MenuItem>
-      <MenuItem value={'creationDate'}>Date de création</MenuItem>
-      <MenuItem value={'shootingDate'}>Date de prise de vue</MenuItem>
-      <MenuItem value={'tags'}>Tags</MenuItem>
+      <MenuItem value="title">{t('photoTable.title')}</MenuItem>
+      <MenuItem value="description">{t('photoTable.description')}</MenuItem>
+      <MenuItem value="creationDate">{t('photoTable.creationDate')}</MenuItem>
+      <MenuItem value="shootingDate">{t('photoTable.shootingDate')}</MenuItem>
+      <MenuItem value="tags">{t('photoTable.tags')}</MenuItem>
     </Select>
   );
 
@@ -104,8 +106,8 @@ export const FilterComponent = ({
             onChange={handleChangeOperator}
             sx={selectOperatorStyle}
           >
-            <MenuItem value={'is'}>EGAL</MenuItem>
-            <MenuItem value={'contain'}>CONTIENT</MenuItem>
+            <MenuItem value={'is'}>{t('operator.equal')}</MenuItem>
+            <MenuItem value={'contain'}>{t('operator.contain')}</MenuItem>
           </Select>
         );
       case 'creationDate':
@@ -156,7 +158,11 @@ export const FilterComponent = ({
             }}
             sx={{ minWidth: 200 }}
             renderInput={(params) => (
-              <TextField {...params} label="Valeur" placeholder="Tags" />
+              <TextField
+                {...params}
+                label={t('filter.value')}
+                placeholder="Tags"
+              />
             )}
           />
         );
@@ -170,7 +176,7 @@ export const FilterComponent = ({
         return (
           <TextField
             id="fill-value-text"
-            label="Valeur"
+            label={t('filter.value')}
             multiline
             maxRows={3}
             size="small"
@@ -189,7 +195,7 @@ export const FilterComponent = ({
         return (
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
-              label="Valeur"
+              label={t('filter.value')}
               value={state.value || handleChangeValue(new Date())}
               onChange={(value) => {
                 if (value) handleChangeValue(value);
@@ -202,22 +208,29 @@ export const FilterComponent = ({
         );
       default:
         return (
-          <TextField id="fill-value" label="Valeur" size="small" disabled />
+          <TextField
+            id="fill-value"
+            label={t('filter.value')}
+            size="small"
+            disabled
+          />
         );
     }
   };
   return (
     <Box>
       <FormControl size="small">
-        <InputLabel id="select-field-label">Champ</InputLabel>
+        <InputLabel id="select-field-label">{t('filter.field')}</InputLabel>
         {getFields()}
       </FormControl>
       <FormControl size="small">
-        <InputLabel id="select-operator-label">Opérateur</InputLabel>
+        <InputLabel id="select-operator-label">
+          {t('filter.operator')}
+        </InputLabel>
         {getOperators()}
       </FormControl>
       <FormControl>{getInputValue()}</FormControl>
-      <Tooltip title="Supprimer un filtre" arrow>
+      <Tooltip title={t('filter.delete')} arrow>
         <IconButton
           onClick={() =>
             dispatchFilterState({

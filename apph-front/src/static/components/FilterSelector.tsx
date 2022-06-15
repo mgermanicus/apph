@@ -9,6 +9,7 @@ import { ITag } from '../../utils';
 import { setTagList } from '../../redux/slices/tagSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { IFilter } from '../../utils/types/Filter';
+import { useTranslation } from 'react-i18next';
 
 const filterSelectorBoxStyle = {
   display: 'flex',
@@ -60,15 +61,11 @@ const filterReducers = (state: IFilter[], action: filterActions) => {
             value: ''
           }
         ];
-      throw new Error(
-        "Erreur dans l'ajout du filtre: le payload n'est pas un nombre."
-      );
+      throw new Error('filter.error.addPayloadNaN');
     case filterActionKind.REMOVE:
       if (typeof payload == 'number')
         return state.filter((filter) => filter.id != action.payload);
-      throw new Error(
-        "Erreur dans la suppression du filtre: le payload n'est pas un nombre"
-      );
+      throw new Error('filter.error.removePayloadNaN');
     case filterActionKind.UPDATE:
       if (typeof payload == 'object' && isInstanceOfIFilter(payload)) {
         const filterIndex = state.findIndex(
@@ -93,11 +90,9 @@ const filterReducers = (state: IFilter[], action: filterActions) => {
         };
         return [...state];
       }
-      throw new Error(
-        "Erreur dans la mise à jour du filtre : l'id ne correspond à aucun filtre existant"
-      );
+      throw new Error('filter.error.idNotMatch');
     default:
-      throw new Error('Erreur dans la gestion du filtre');
+      throw new Error('filter.error.gestion');
   }
 };
 
@@ -122,6 +117,7 @@ export const FilterSelector = ({
   );
   const tagList = useSelector(({ tagList }: { tagList: ITag[] }) => tagList);
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   useEffect(() => {
     TagService.getAllTags(
@@ -160,12 +156,12 @@ export const FilterSelector = ({
     <Box sx={filterSelectorBoxStyle}>
       {getFilterList()}
       <Box>
-        <Tooltip title="Ajouter un filtre" arrow>
+        <Tooltip title={t('filter.add')} arrow>
           <IconButton onClick={createNewFilter} sx={filterButtonStyle}>
             <AddCircle />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Rechercher" arrow>
+        <Tooltip title={t('action.search')} arrow>
           <IconButton
             color="primary"
             onClick={handleFilterPhoto}

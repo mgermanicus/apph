@@ -33,11 +33,7 @@ public class TagController {
             List<Tag> tags = tagService.getTags(user);
             return ResponseEntity.ok(tags);
         } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User does not exist"));
-        } catch (SignatureException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Token not valid"));
-        } catch (ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Token expired"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("user.error.notExist"));
         }
     }
 }

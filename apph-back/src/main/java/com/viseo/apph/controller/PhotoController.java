@@ -43,9 +43,9 @@ public class PhotoController {
             }
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Argument illégal."));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("photoTable.error.illegalArgument"));
         } catch (InvalidObjectException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("photoTable.error.invalidObject"));
         }
     }
 
@@ -70,7 +70,7 @@ public class PhotoController {
             User user = utils.getUser();
             return ResponseEntity.ok(new MessageResponse(photoService.editPhotoInfos(user, photoRequest)));
         } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Photo introuvable"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
         }
     }
 
@@ -81,17 +81,18 @@ public class PhotoController {
             User user = utils.getUser();
             return ResponseEntity.ok(new MessageResponse(photoService.addPhoto(user, photoRequest)));
         } catch (IOException | S3Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de l'upload"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("upload.error.upload"));
         } catch (InvalidFileException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Le format du fichier n'est pas valide"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("upload.error.wrongFormat"));
         } catch (UnauthorizedException ue) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
         } catch (NoResultException | NotFoundException nfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Le dossier n'existe pas."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("upload.error.folderNotExist"));
         } catch (ConflictException ce) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(ce.getMessage()));
         } catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(iae.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(iae.getMessage()
+            ));
         }
     }
 
@@ -103,11 +104,11 @@ public class PhotoController {
             long userId = user.getId();
             return ResponseEntity.ok(photoService.download(userId, photoRequest));
         } catch (S3Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du téléchargement"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("download.error.download"));
         } catch (FileNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Le fichier n'existe pas"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("download.error.fileNotExist"));
         } catch (UnauthorizedException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("L'utilisateur n'est pas autorisé à accéder à la ressource demandée"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(e.getMessage()));
         }
     }
 
@@ -117,9 +118,9 @@ public class PhotoController {
         try {
             User user = utils.getUser();
             photoService.deletePhotos(user, photosRequest.getIds());
-            return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Suppression effectuée avec succès"));
+            return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("photo.successDelete"));
         } catch (S3Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors de la suppression"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("photo.failDelete"));
         }
 
     }
@@ -145,9 +146,9 @@ public class PhotoController {
             User user = utils.getUser();
             return ResponseEntity.ok(photoService.downloadZip(user, photosRequest));
         } catch (S3Exception | IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du téléchargement"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("download.error.download"));
         } catch (UnauthorizedException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("L'utilisateur n'est pas autorisé à accéder à la ressource demandée"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(e.getMessage()));
         } catch (MaxSizeExceededException e) {
             return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(new MessageResponse(e.getMessage()));
         }
@@ -164,9 +165,9 @@ public class PhotoController {
         } catch (UnauthorizedException ue) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
         } catch (InvalidFileException ife) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Le format du fichier n'est pas valide"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("upload.error.wrongFormat"));
         } catch (S3Exception | IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Une erreur est survenue lors du ré-upload."));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("upload.error.reUpload"));
         }
     }
 

@@ -37,7 +37,7 @@ public class UserController {
             return ResponseEntity.ok(new UserResponse().setLogin(user.getLogin()).setFirstname(user.getFirstname())
                     .setLastname(user.getLastname()));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body((new MessageResponse("L'utilisateur n'est pas authentifié")));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body((new MessageResponse("user.error.notAuthenticated")));
         }
     }
 
@@ -49,11 +49,11 @@ public class UserController {
             String newToken = userService.editUser(user, request, token);
             return ResponseEntity.ok(newToken);
         } catch (NullPointerException | NotFoundException | NoResultException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("L'utilisateur lié à cette session n'existe pas");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("user.error.sessionBindUserNotExist");
         } catch (SignatureException | ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("La session a expiré. Veuillez vous reconnecter");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user.error.expiredSession");
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Ce login est déjà pris");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (IllegalArgumentException iae) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(iae.getMessage());
         }

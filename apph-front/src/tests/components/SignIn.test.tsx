@@ -13,6 +13,15 @@ import cryptoJS from 'crypto-js';
 import Cookies from 'universal-cookie';
 import { wrapper } from '../utils/components/CustomWrapper';
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    };
+  }
+}));
+
 describe('Tests du composant SignIn.tsx', () => {
   const cookies = new Cookies();
   beforeEach(() => {
@@ -30,9 +39,9 @@ describe('Tests du composant SignIn.tsx', () => {
     triggerRequestSuccess(JWS_TOKEN);
     render(<SignIn />, { wrapper });
     //WHEN
-    fillText(/Adresse email/, 'test@viseo.com');
-    fillPassword(/Mot de passe/, 'P@ssW0rd');
-    clickButton(/Connexion/);
+    fillText(/user.email/, 'test@viseo.com');
+    fillPassword(/user.password/, 'P@ssW0rd');
+    clickButton(/signin.login/);
     //THEN
     expect(cookies.get('user')).toStrictEqual({
       token: JWS_TOKEN
@@ -45,9 +54,9 @@ describe('Tests du composant SignIn.tsx', () => {
     triggerRequestFailure('Test error');
     render(<SignIn />, { wrapper });
     //WHEN
-    fillText(/Adresse email/, 'test@viseo.com');
-    fillPassword(/Mot de passe/, 'P@ssW0rd');
-    clickButton(/Connexion/);
+    fillText(/user.email/, 'test@viseo.com');
+    fillPassword(/user.password/, 'P@ssW0rd');
+    clickButton(/signin.login/);
     //THEN
     expect(cookies.get('user')).toStrictEqual(undefined);
   });
@@ -58,9 +67,9 @@ describe('Tests du composant SignIn.tsx', () => {
     triggerRequestSuccess(JWS_TOKEN);
     render(<SignIn />, { wrapper });
     //WHEN
-    fillText(/Adresse email/, 'bad@email');
-    fillPassword(/Mot de passe/, 'P@ssW0rd');
-    clickButton(/Connexion/);
+    fillText(/user.email/, 'bad@email');
+    fillPassword(/user.password/, 'P@ssW0rd');
+    clickButton(/signin.login/);
     //THEN
     expect(cookies.get('user')).toStrictEqual(undefined);
   });

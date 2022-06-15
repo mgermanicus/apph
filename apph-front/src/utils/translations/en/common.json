@@ -1,0 +1,195 @@
+{
+  "signin": {
+    "forgottenPassword": "Forgot your password ?",
+    "login": "Login",
+    "rememberMe": "Remember me",
+    "noAccount": "No account yet ? Register !",
+    "error": {
+      "email": "Invalid Email",
+      "credentials": "Login or password incorrect",
+      "serverConnection": "Server connection failed"
+    }
+  },
+  "signup": {
+    "error": {
+      "password": "These passwords do not match. Please try again.",
+      "email": "Invalid email.",
+      "emailUsed": "Email already used",
+      "nameOverChar": "The first or last name cannot exceed 127 characters.",
+      "emailOverChar": "The email cannot exceed 255 characters.",
+      "loginOverChar": "The login cannot exceed 255 characters."
+    },
+    "create": "Create an account",
+    "exist": "Already have an account? Sign in",
+    "created": "User created"
+  },
+  "user": {
+    "email": "Email",
+    "login": "Login",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "password": "Password",
+    "passwordConfirmation": "Confirm your password",
+    "error": {
+      "passwordNotMatch": "The passwords do not match",
+      "notAuthenticated": "The user is not authenticated",
+      "sessionBindUserNotExist": "The user bound to this session does not exist",
+      "expiredSession": "The session has expired. Please log in again",
+      "loginAlreadyToken": "This login is already taken",
+      "notExist": "The user does not exist"
+    }
+  },
+  "photoTable": {
+    "title": "Title",
+    "description": "Description",
+    "creationDate": "Creation date",
+    "shootingDate": "Shooting date",
+    "lastModification": "Last modification date",
+    "size": "Size",
+    "tags": "Tags",
+    "url": "Url",
+    "actions": "Actions",
+    "error": "Illegal argument."
+  },
+  "field": {
+    "photos": "My Pictures",
+    "folders": "My Folders",
+    "trips": "My Trips",
+    "tags": "My Tags",
+    "treatments": "My Processing",
+    "advancedSearch": "Advanced Search"
+  },
+  "folder": {
+    "create": "Create",
+    "delete": "Delete from folder",
+    "createFolder": "Create a folder",
+    "creation": "Creating a file",
+    "enterName": "Enter the folder name:",
+    "name": "Name of the folder",
+    "new": "New folder",
+    "moveInto": "Move into the folder",
+    "moveTo": "Move to a folder",
+    "move": "Move",
+    "confirmDeletePhoto": "Are you sure about removing this photo from this folder ?",
+    "successMove": "Photo successfully moved.",
+    "error": {
+      "error": "Error",
+      "oneOf": {
+        "notExist": "One of the photos does not exist.",
+        "notBelongUser": "One of the photos does not belong to the user.",
+        "alreadyExist": "One of the photos is already in the folder.",
+        "existingName": "One of the photos has a name that already exists in the destination folder."
+      },
+      "nullFolder": "The file could not be retrieved",
+      "emptyFolder": "The folder name cannot be empty.",
+      "existingFolder": "The file already exists in the current folder.",
+      "notFound": "Parent folder not found.",
+      "unauthorized": "User doesn't have access to this folder.",
+      "root": "Cannot create a root folder.",
+      "userNotExist": "The user does not exist.",
+      "parentNotExist": "Non-existent parent folder.",
+      "warning": "Warning",
+      "notExist": "The folder does not exist.",
+      "accessDenied": "The user does not have access to this folder.",
+      "titleAlreadyUsed": "Title already used in the folder."
+    }
+  },
+  "photo": {
+    "noneSelected": "No photo selected",
+    "edited": "Photo edited",
+    "change": "Change image",
+    "download": "Download photos",
+    "maySelected": "Please select the photos to be displayed.",
+    "warningDeleting": "If you confirm, your photos will be permanently deleted",
+    "diaporama": "Slideshow",
+    "addTag": "Add a new tag",
+    "add": "Add a photo",
+    "title": "Photo title",
+    "displayFormat": "Display format",
+    "details": "Details",
+    "successDelete": "Photo successfully deleted",
+    "failDelete": "An error occurred during deletion",
+    "error": {
+      "failChangeFormat": "Error when changing the format",
+      "notFound": "Photo not found",
+      "notExist": "The photo does not exist.",
+      "titleOrDescriptionOverChar": "The title or description cannot exceed 255 characters.",
+      "tagsOverChar": "Tags cannot exceed 255 characters."
+    }
+  },
+  "token": {
+    "notValid": "Token not valid",
+    "expired": "Token expired"
+  },
+  "action": {
+    "continue": "Continue",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure about deleting these photos ?",
+    "download": "Download",
+    "cancelChange": "Cancel changes",
+    "willDisconnected": "You will be disconnected",
+    "uploading": "Uploading",
+    "upload": "Upload",
+    "add": "Add",
+    "modify": "Modify",
+    "search": "Search",
+    "forbidden": "This action is forbidden"
+  },
+  "profile": {
+    "edit": "Edit profile"
+  },
+  "upload": {
+    "error": {
+      "upload": "An error occurred while uploading",
+      "manyUploads": "Some files could not be uploaded",
+      "wrongFormat": "The file format is not valid",
+      "folderNotExist": "The folder does not exist.",
+      "reUpload": "An error occurred during the re-upload.",
+      "oversize": "The file size exceeds the maximum limit"
+    },
+    "success": "Your file has been successfully uploaded",
+    "manyUploads": "Your files have been successfully uploaded",
+    "fillField": "Please fill in this field.",
+    "successChange": "File successfully changed.",
+    "maySelected": "Please select a file."
+  },
+  "download": {
+    "error": {
+      "download": "An error occurred during the download",
+      "fileNotExist": "The file does not exist",
+      "accessDenied": "The user is not allowed to access the requested resource",
+      "oversize": "Error: Maximum ZIP size exceeded."
+    }
+  },
+  "filter": {
+    "add": "add filter",
+    "value": "Value",
+    "field": "Field",
+    "operator": "Operator",
+    "delete": "Delete filter",
+    "error": {
+      "addPayloadNaN": "Error while adding filter: payload is not a number",
+      "deletePayloadNaN": "Error while deleting filter: payload is not a number",
+      "idNotMatch": "Error while filter updating: id does not match any existing filter",
+      "gestion": "Error in filter management"
+    }
+  },
+  "size": {
+    "small": "Small",
+    "medium": "Medium",
+    "large": "Large"
+  },
+  "operator": {
+    "equal": "EQUAL",
+    "contain": "CONTAIN"
+  },
+  "request": {
+    "error": {
+      "illegalArgument": "Illegal argument",
+      "unauthorizedResource": "You do not have access to this resource",
+      "notFound": "Resource not found"
+    }
+  }
+}

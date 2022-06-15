@@ -16,8 +16,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import AuthService from '../../services/AuthService';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUser } from '../../redux/slices/userSlice';
-import { IUser } from '../../utils';
+import { IUser, flagStyles } from '../../utils';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { setCookieLanguage } from '../../utils/setCookieLanguage';
 
 const Copyright = (props: { sx: SxProps }) => {
   return (
@@ -41,6 +43,7 @@ export const SignIn = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -49,7 +52,7 @@ export const SignIn = () => {
     const emailValidator =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!emailValidator.test(email ? email : '')) {
-      setErrorMessage('Email invalide.');
+      setErrorMessage('signin.error.email');
     } else if (email && password) {
       AuthService.signIn(
         email,
@@ -80,7 +83,7 @@ export const SignIn = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Connexion
+          {t('signin.login')}
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
@@ -88,7 +91,7 @@ export const SignIn = () => {
             required
             fullWidth
             id="email"
-            label="Adresse email"
+            label={t('user.email')}
             name="email"
             autoComplete="email"
             autoFocus
@@ -99,14 +102,14 @@ export const SignIn = () => {
             required
             fullWidth
             name="password"
-            label="Mot de passe"
+            label={t('user.password')}
             type="password"
             id="password"
             autoComplete="current-password"
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
-            label="Se souvenir de moi"
+            label={t('signin.rememberMe')}
           />
           <Button
             type="submit"
@@ -114,19 +117,33 @@ export const SignIn = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Connexion
+            {t('signin.login')}
           </Button>
           <Link href="#" variant="body2">
-            Mot de passe oublié ?
+            {t('signin.forgottenPassword')}
           </Link>
           <br />
           <br />
           <Link href="signUp" variant="body2">
-            Vous n'avez pas encore de compte ? Enregistrez-vous !
+            {t('signin.noAccount')}
           </Link>
         </Box>
       </Box>
       <Copyright sx={{ mt: 8, mb: 4 }} />
+      <button
+        onClick={() => {
+          setCookieLanguage('fr');
+          i18n.changeLanguage('fr');
+        }}
+        style={flagStyles.fr}
+      />
+      <button
+        onClick={() => {
+          setCookieLanguage('en');
+          i18n.changeLanguage('en');
+        }}
+        style={flagStyles.en}
+      />
       <Collapse in={errorMessage !== ''}>
         <Alert
           action={
@@ -144,7 +161,7 @@ export const SignIn = () => {
           sx={{ mb: 2 }}
           severity="error"
         >
-          {errorMessage}
+          {t(errorMessage)}
         </Alert>
       </Collapse>
     </Container>
