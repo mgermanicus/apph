@@ -65,3 +65,13 @@ export function fakeDownloadZipRequestParams(ids: number[]) {
   };
   return { URL: `/photo/download/zip`, requestOptions };
 }
+
+export function fakeDownloadZipFolderRequestParams(id: number) {
+  const requestOptions = {
+    method: 'POST',
+    body: JSON.stringify({
+      id
+    })
+  };
+  return { URL: `/folder/download`, requestOptions };
+}

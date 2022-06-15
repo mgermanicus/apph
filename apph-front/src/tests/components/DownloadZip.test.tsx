@@ -2,6 +2,7 @@ import { act, render } from '@testing-library/react';
 
 import {
   clickButton,
+  fakeDownloadZipFolderRequestParams,
   fakeDownloadZipRequestParams,
   spyRequestSuccessBody,
   triggerRequestFailure,
@@ -72,5 +73,44 @@ describe('Create download zip button tests', () => {
     clickButton(/download-zip/i);
     //THEN
     expect(screen.getByText('photo.noneSelected')).toBeInTheDocument();
+  });
+
+  it('test successful folder downloaded', async () => {
+    //GIVEN
+    const ids = [1];
+    render(<DownloadZip ids={ids} titleZip={'test'} isFolder={true} />);
+    triggerRequestSuccess('{"title":"folder","data":"test"}');
+    const spyRequestFunction = spyRequestSuccessBody(
+      '{"title":"folder","data":"test"}'
+    );
+    const requestParams = fakeDownloadZipFolderRequestParams(ids[0]);
+    //WHEN
+    await act(async () => {
+      await clickButton(/download-zip/i);
+    });
+    //THEN
+    expect(spyRequestFunction).toBeCalledWith(
+      requestParams.URL,
+      expect.anything(),
+      expect.anything(),
+      expect.anything()
+    );
+  });
+
+  it('test error handling folder', async () => {
+    //GIVEN
+    const ids = [100];
+    render(<DownloadZip ids={ids} titleZip={'test'} isFolder={true} />);
+    const serverError =
+      '{ "message": "Une erreur est survenue lors du téléchargement" }';
+    triggerRequestFailure(serverError);
+    //WHEN
+    await act(async () => {
+      await clickButton(/download-zip/i);
+    });
+    //THEN
+    expect(
+      screen.getByText('Une erreur est survenue lors du téléchargement')
+    ).toBeInTheDocument();
   });
 });
