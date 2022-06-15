@@ -53,31 +53,6 @@ describe('Test UploadImage', () => {
     );
   });
 
-  it('tests error when user picks invalid file format', async () => {
-    //GIVEN
-    const files = [fakeFile(1000, 'application/zip')];
-    const spyRequestFunction = fakeRequest({
-      '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' }
-    });
-    render(<UploadImage />, { wrapper });
-    clickButton(/upload-photo/i);
-    const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
-    //WHEN
-    fillText(/photo.title/, 'Titre');
-    fillText(/photoTable.description/, 'Description');
-    fillTags([{ name: 'tag' }]);
-    await act(async () => inputFile(files, fileInput));
-    clickButton(/action.add/);
-    //THEN
-    expect(spyRequestFunction).not.toBeCalledWith(
-      '/photo/upload',
-      expect.anything(),
-      expect.anything(),
-      expect.anything()
-    );
-    expect(screen.getByText(/upload.error.wrongFormat/)).toBeInTheDocument();
-  });
-
   it('tests handling of server error', async () => {
     //GIVEN
     const serverError = { message: "Une erreur est survenue lors de l'upload" };
