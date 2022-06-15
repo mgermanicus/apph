@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { UploadImage } from '../../static/components/UploadImage';
 import {
   clickButton,
@@ -12,6 +12,7 @@ import {
 } from '../utils';
 import { ITag } from '../../utils';
 import { wrapper } from '../utils/components/CustomWrapper';
+import PhotoService from '../../services/PhotoService';
 
 jest.mock('react-i18next', () => ({
   // this mock makes sure any components using the translate hook can use it without a warning being shown
@@ -34,13 +35,13 @@ describe('Test UploadImage', () => {
     });
     render(<UploadImage />, { wrapper });
     clickButton(/upload-photo/i);
-    const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
+    const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     const files = [fakeFile(100000000, 'image/png')];
     //WHEN
     fillText(/photo.title/, 'Titre');
     fillText(/photoTable.description/, 'Description');
     fillTags([{ name: 'tag' }]);
-    inputFile(files, fileInput);
+    await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
     //THEN
     expect(screen.getByText(/upload.error.overSize/)).toBeInTheDocument();
@@ -50,31 +51,6 @@ describe('Test UploadImage', () => {
       expect.anything(),
       expect.anything()
     );
-  });
-
-  it('tests error when user picks invalid file format', async () => {
-    //GIVEN
-    const files = [fakeFile(1000, 'application/zip')];
-    const spyRequestFunction = fakeRequest({
-      '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' }
-    });
-    render(<UploadImage />, { wrapper });
-    clickButton(/upload-photo/i);
-    const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
-    //WHEN
-    fillText(/photo.title/, 'Titre');
-    fillText(/photoTable.description/, 'Description');
-    fillTags([{ name: 'tag' }]);
-    inputFile(files, fileInput);
-    clickButton(/action.add/);
-    //THEN
-    expect(spyRequestFunction).not.toBeCalledWith(
-      '/photo/upload',
-      expect.anything(),
-      expect.anything(),
-      expect.anything()
-    );
-    expect(screen.getByText(/upload.error.wrongFormat/)).toBeInTheDocument();
   });
 
   it('tests handling of server error', async () => {
@@ -87,12 +63,12 @@ describe('Test UploadImage', () => {
     const files = [fakeFile(1000, 'image/png')];
     render(<UploadImage />, { wrapper });
     clickButton(/upload-photo/i);
-    const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
+    const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     //WHEN
     fillText(/photo.title/, 'Titre');
     fillText(/photoTable.description/, 'Description');
     fillTags([{ name: 'tag' }]);
-    inputFile(files, fileInput);
+    await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
     //THEN
     expect(
@@ -109,14 +85,14 @@ describe('Test UploadImage', () => {
     });
     render(<UploadImage />, { wrapper });
     clickButton(/upload-photo/i);
-    const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
+    const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     const files = [fakeFile(1000, 'image/png')];
     const title = 'Titre';
     const description = 'Description';
     //WHEN
     fillText(/photo.title/, title);
     fillText(/photoTable.description/, description);
-    inputFile(files, fileInput);
+    await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
     //THEN
     expect(spyRequestFunction).not.toBeCalledWith(
@@ -146,12 +122,12 @@ describe('Test UploadImage', () => {
     ];
     render(<UploadImage />, { wrapper });
     clickButton(/upload-photo/i);
-    const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
+    const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     //WHEN
     fillText(/photo.title/, title);
     fillText(/photoTable.description/, description);
     fillTags(tags);
-    inputFile(files, fileInput);
+    await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
     //THEN
     expect(spyRequestFunction).toBeCalledWith(
@@ -170,28 +146,37 @@ describe('Test UploadImage', () => {
     expect((await screen.findAllByTestId('DoneIcon')).length).toBe(2);
   });
 
-  it('tests multiupload failure', async () => {
+  it('tests bad multiupload', async () => {
     //GIVEN
     jest.setTimeout(10000);
+    jest.spyOn(PhotoService, 'uploadImage');
     const files = [
       fakeFile(1000, 'image/png', '1.png'),
       fakeFile(1000, 'application/zip', '2.png')
     ];
     const title = 'Titre';
     const description = 'Description';
-    const tags = [{ name: 'tag' }] as ITag[];
+    const tags = [{ name: 'tag' }];
     spyRequestSuccessBody('[{"id":"0","name":"tag","version":0}]');
     render(<UploadImage />, { wrapper });
     clickButton(/upload-photo/i);
-    const fileInput = screen.getByTestId<HTMLInputElement>('file-input');
+    const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     //WHEN
     fillText(/photo.title/, title);
     fillText(/photoTable.description/, description);
     fillTags(tags);
-    inputFile(files, fileInput);
+    await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
     //THEN
-    expect(await screen.findByText(/upload.error.manyUploads/)).toBeVisible();
-    expect(await screen.findByText(/upload.error.wrongFormat/)).toBeVisible();
+    expect(PhotoService.uploadImage).toBeCalledWith(
+      title,
+      description,
+      expect.anything(),
+      files[0],
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+      expect.anything()
+    );
   });
 });

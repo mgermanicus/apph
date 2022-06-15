@@ -147,13 +147,16 @@
       "wrongFormat": "The file format is not valid",
       "folderNotExist": "The folder does not exist.",
       "reUpload": "An error occurred during the re-upload.",
-      "oversize": "The file size exceeds the maximum limit"
+      "oversize": "The file size exceeds the maximum limit",
+      "addImage": "Please add at least one image"
     },
     "success": "Your file has been successfully uploaded",
     "manyUploads": "Your files have been successfully uploaded",
     "fillField": "Please fill in this field.",
     "successChange": "File successfully changed.",
-    "maySelected": "Please select a file."
+    "maySelected": "Please select a file.",
+    "selectFile": "Drag and drop files here, or click to select files.",
+    "files": "Files"
   },
   "download": {
     "error": {

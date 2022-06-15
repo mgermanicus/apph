@@ -147,13 +147,15 @@
       "wrongFormat": "Le format du fichier n'est pas valide",
       "folderNotExist": "Le dossier n'existe pas.",
       "reUpload": "Une erreur est survenue lors du ré-upload.",
-      "overSize": "Le fichier est trop volumineux"
+      "overSize": "Le fichier est trop volumineux",
+      "addImage": "Veuillez ajouter des images"
     },
     "success": "Votre fichier a bien été uploadé",
     "manyUploads": "Vos fichiers ont bien été uploadés",
     "fillField": "Veuillez renseigner ce champ.",
     "successChange": "Le changement s'est effectué avec succèss.",
-    "maySelected": "Veuillez sélectionner un fichier."
+    "selectFile": "Glissez-déposez des fichiers ici, ou cliquez dans la zone pour sélectionner des fichiers à uploader.",
+    "files": "Fichiers"
   },
   "download": {
     "error": {
