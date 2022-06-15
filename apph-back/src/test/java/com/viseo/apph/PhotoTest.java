@@ -159,7 +159,7 @@ public class PhotoTest {
         Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
-        Assert.assertEquals("Photo introuvable", messageResponse.getMessage());
+        Assert.assertEquals("photo.error.notFound", messageResponse.getMessage());
     }
 
     @Test

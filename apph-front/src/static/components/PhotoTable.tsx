@@ -87,29 +87,29 @@ export const PhotoTable = ({
       align: 'center',
       headerAlign: 'center',
       sortable: false,
-    renderCell: (params) =>
-      params.row.tags.map((tag: ITag, index: number) => {
-        if (index !== params.row.tags.length - 1) {
-          return tag.name + ', ';
-        }
-        return tag.name;
-      })
-  },
-  {
-    field: 'url',
-    headerName: t('photoTable.url'),
+      renderCell: (params) =>
+        params.row.tags.map((tag: ITag, index: number) => {
+          if (index !== params.row.tags.length - 1) {
+            return tag.name + ', ';
+          }
+          return tag.name;
+        })
+    },
+    {
+      field: 'url',
+      headerName: t('photoTable.url'),
       flex: 1,
       align: 'center',
       headerAlign: 'center',
-    sortable: false
-  },
-  {
-    field: 'actions',
-    headerName: t('photoTable.actions'),
-    flex: 2,
-    align: 'center',
-    headerAlign: 'center',
-    sortable: false,
+      sortable: false
+    },
+    {
+      field: 'actions',
+      headerName: t('photoTable.actions'),
+      flex: 2,
+      align: 'center',
+      headerAlign: 'center',
+      sortable: false,
       renderCell: (params) => (
         <Stack spacing={2} direction="row">
           {params.row.details} <DownloadImage id={+params.id} />
