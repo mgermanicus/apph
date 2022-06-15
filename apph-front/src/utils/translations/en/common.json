@@ -148,7 +148,7 @@
       "folderNotExist": "The folder does not exist.",
       "reUpload": "An error occurred during the re-upload.",
       "oversize": "The file size exceeds the maximum limit",
-      "addImage": "Please at least one image"
+      "addImage": "Please add at least one image"
     },
     "success": "Your file has been successfully uploaded",
     "manyUploads": "Your files have been successfully uploaded",
