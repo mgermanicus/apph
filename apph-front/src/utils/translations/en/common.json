@@ -147,7 +147,7 @@
       "wrongFormat": "The file format is not valid",
       "folderNotExist": "The folder does not exist.",
       "reUpload": "An error occurred during the re-upload.",
-      "oversize": "The file size exceeds the maximum limit",
+      "overSize": "The file size exceeds the maximum limit",
       "addImage": "Please add at least one image"
     },
     "success": "Your file has been successfully uploaded",
