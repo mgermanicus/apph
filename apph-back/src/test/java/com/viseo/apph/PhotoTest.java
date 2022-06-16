@@ -150,8 +150,7 @@ public class PhotoTest {
     public void testEditNotFoundPhoto() {
         //GIVEN
         createPhotoController();
-        User user = new User().setLogin("toto");
-        PhotoRequest photoRequest = new PhotoRequest();
+        PhotoRequest photoRequest = new PhotoRequest().setShootingDate("13/05/2022, 12:07:57");
         when(em.find(Photo.class, 1L)).thenReturn(null);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.editInfos(photoRequest);
@@ -160,6 +159,20 @@ public class PhotoTest {
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("photo.error.notFound", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testEditWithInvalidDate() {
+        //GIVEN
+        createPhotoController();
+        PhotoRequest photoRequest = new PhotoRequest().setShootingDate("\"Invalid Date\"");
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.editInfos(photoRequest);
+        //THEN
+        Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("photo.error.invalidDate", messageResponse.getMessage());
     }
 
     @Test
