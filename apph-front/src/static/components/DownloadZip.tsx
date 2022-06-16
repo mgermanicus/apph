@@ -10,7 +10,6 @@ import { FolderService } from '../../services/FolderService';
 
 export const DownloadZip = ({
   ids,
-  titleZip = 'photos',
   isFolder = false
 }: {
   ids: number[];
@@ -57,7 +56,6 @@ export const DownloadZip = ({
     } else {
       PhotoService.downloadZip(
         ids,
-        titleZip,
         (photos: IPhoto) => linkDownloadZip(photos.data, photos.title),
         (error) => traitError(error)
       ).then(() => setLoading(false));

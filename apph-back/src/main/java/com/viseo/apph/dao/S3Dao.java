@@ -1,7 +1,6 @@
 package com.viseo.apph.dao;
 
 import com.viseo.apph.domain.Photo;
-import com.viseo.apph.exception.InvalidFileException;
 import org.apache.commons.codec.digest.MurmurHash2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,32 +33,24 @@ public class S3Dao {
         return String.valueOf(MurmurHash2.hash32(string));
     }
 
-    public File convertMultiPartToFile(MultipartFile file, String name) throws IOException, InvalidFileException {
-        if (name != null) {
-            File convertedFile = new File(name);
-            try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
-                fos.write(file.getBytes());
-                return convertedFile;
-            }
-        } else {
-            throw new InvalidFileException("Le nom est null");
+    public File convertMultiPartToFile(MultipartFile file, String name) throws IOException {
+        File convertedFile = new File(name);
+        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
+            fos.write(file.getBytes());
+            return convertedFile;
         }
     }
 
-    public String upload(MultipartFile file, Photo photo) throws InvalidFileException, IOException {
-        if (file != null) {
-            String name = hashString(String.valueOf(photo.getId())) + photo.getFormat();
-            File fileToSave = convertMultiPartToFile(file, name);
-            PutObjectResponse por = s3Client.putObject(PutObjectRequest.builder()
-                    .bucket(bucketName).key(user + fileToSave.getName())
-                    .contentLength(fileToSave.length()).build(), RequestBody.fromFile(fileToSave));
-            if (fileToSave.exists()) {
-                Files.delete(Paths.get(fileToSave.getAbsolutePath()));
-            }
-            return por.eTag();
-        } else {
-            throw new InvalidFileException("Fichier invalide");
+    public String upload(MultipartFile file, Photo photo) throws IOException {
+        String name = hashString(String.valueOf(photo.getId())) + photo.getFormat();
+        File fileToSave = convertMultiPartToFile(file, name);
+        PutObjectResponse por = s3Client.putObject(PutObjectRequest.builder()
+                .bucket(bucketName).key(user + fileToSave.getName())
+                .contentLength(fileToSave.length()).build(), RequestBody.fromFile(fileToSave));
+        if (fileToSave.exists()) {
+            Files.delete(Paths.get(fileToSave.getAbsolutePath()));
         }
+        return por.eTag();
     }
 
     public String getPhotoUrl(Photo photo) {

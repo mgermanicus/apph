@@ -212,7 +212,7 @@ export const PhotoDetails = ({
               </Box>
               <Box sx={detailBoxStyle}>
                 <Stack direction="row" spacing={1}>
-                  <Box sx={{ m: 0.5 }}>
+                  <Box sx={{ marginTop: 0.5 }}>
                     <Typography sx={titleTypoStyle}>
                       {t('photoTable.tags')}:
                     </Typography>
