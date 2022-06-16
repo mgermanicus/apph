@@ -1,4 +1,4 @@
-import { createEvent, fireEvent } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import { ITag } from '../../utils';
 
 export function inputFile(files: File[], input: HTMLInputElement) {
