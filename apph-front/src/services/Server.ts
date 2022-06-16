@@ -17,9 +17,9 @@ export default class Server {
         if (response.ok) {
           successFunction(body);
         } else {
-          if (body === 'Token invalide') {
+          if (body === 'signin.error.credentials') {
             if (cookies.get('user') == undefined) {
-              errorFunction('Login ou mot de passe incorrect.');
+              errorFunction('signin.error.credentials');
             } else {
               AuthService.logout();
               errorFunction(body);
