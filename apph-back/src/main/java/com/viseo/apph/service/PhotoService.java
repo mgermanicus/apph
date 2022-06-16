@@ -85,6 +85,8 @@ public class PhotoService {
 
     @Transactional
     public String editPhotoInfos(User user, PhotoRequest photoRequest) throws NotFoundException {
+        if (photoRequest.getShootingDate().equals("\"Invalid Date\""))
+            throw new IllegalArgumentException("photo.error.invalidDate");
         Photo photo = photoDao.getPhoto(photoRequest.getId());
         if (photo == null)
             throw new NotFoundException("photo.error.notFound");
