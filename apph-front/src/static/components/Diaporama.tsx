@@ -81,7 +81,7 @@ export const Diaporama = ({ data }: { data: ITable[] }) => {
       </Tooltip>
       <>
         <Modal open={open} onClose={() => setOpen(false)}>
-          <>
+          <Box>
             <Box sx={diapoStyles.displayContent}>
               <IconButton
                 onClick={() => setOpen(false)}
@@ -134,7 +134,7 @@ export const Diaporama = ({ data }: { data: ITable[] }) => {
                   </SwiperSlide>
                 ))}
             </Swiper>
-          </>
+          </Box>
         </Modal>
         <Modal open={autoPlay} onClose={() => setAutoPlay(false)}>
           <>
