@@ -118,7 +118,8 @@
       "notExist": "The photo does not exist.",
       "titleOrDescriptionOverChar": "The title or description cannot exceed 255 characters.",
       "tagsOverChar": "Tags cannot exceed 255 characters.",
-      "invalidDate": "Invalid date."
+      "invalidDate": "Invalid date.",
+      "nameExistInFolder": "There is already a file with the same name in this folder."
     }
   },
   "token": {

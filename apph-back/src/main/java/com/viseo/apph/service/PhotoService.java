@@ -84,12 +84,14 @@ public class PhotoService {
     }
 
     @Transactional
-    public String editPhotoInfos(User user, PhotoRequest photoRequest) throws NotFoundException {
+    public String editPhotoInfos(User user, PhotoRequest photoRequest) throws NotFoundException, ConflictException {
         if (photoRequest.getShootingDate().equals("\"Invalid Date\""))
             throw new IllegalArgumentException("photo.error.invalidDate");
         Photo photo = photoDao.getPhoto(photoRequest.getId());
         if (photo == null)
             throw new NotFoundException("photo.error.notFound");
+        if (!photo.getTitle().equals(photoRequest.getTitle()) && photo.getFolder() != null && photoDao.existNameInFolder(photo.getFolder(), photoRequest.getTitle(), photo.getFormat()))
+            throw new ConflictException("photo.error.nameExistInFolder");
         Set<Tag> newTags = tagService.createListTags(photoRequest.getTags(), user);
         Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
         photo.setTitle(photoRequest.getTitle())

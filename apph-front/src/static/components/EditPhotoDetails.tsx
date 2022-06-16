@@ -73,6 +73,7 @@ export const EditPhotoDetails = (props: {
     setDescription(props.description);
     setShootingDate(props.shootingDate);
     setSelectedTags(props.tags);
+    setErrorMessage('');
     setOpen(false);
   };
 
