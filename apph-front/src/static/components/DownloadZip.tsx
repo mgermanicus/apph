@@ -22,7 +22,7 @@ export const DownloadZip = ({
   const [loading, setLoading] = useState<boolean>(false);
   const { t } = useTranslation();
 
-  const linkDownloadZip = (data: BinaryData, title: string) => {
+  const linkDownloadZip = (title: string, data?: BinaryData) => {
     const imageBase64 = `data:application/zip;base64,${data}`;
     const link = document.createElement('a');
     const event = new MouseEvent('click');
@@ -50,13 +50,13 @@ export const DownloadZip = ({
     if (isFolder) {
       FolderService.downloadFolder(
         ids[0],
-        (folder: IFolder) => linkDownloadZip(folder.data, folder.name),
+        (folder: IFolder) => linkDownloadZip(folder.name, folder.data),
         (error) => traitError(error)
       ).then(() => setLoading(false));
     } else {
       PhotoService.downloadZip(
         ids,
-        (photos: IPhoto) => linkDownloadZip(photos.data, photos.title),
+        (photos: IPhoto) => linkDownloadZip(photos.title, photos.data),
         (error) => traitError(error)
       ).then(() => setLoading(false));
     }
