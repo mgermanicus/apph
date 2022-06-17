@@ -6,7 +6,7 @@
     "noAccount": "No account yet ? Register !",
     "error": {
       "email": "Invalid Email",
-      "credentials": "Login or password incorrect",
+      "credentials": "Wrong login or password",
       "serverConnection": "Server connection failed"
     }
   },

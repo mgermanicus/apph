@@ -6,7 +6,7 @@
     "noAccount": "Vous n'avez pas encore de compte ? Enregistrez-vous !",
     "error": {
       "email": "Email invalide",
-      "credentials": "Email ou mot de passe incorrecte",
+      "credentials": "Login ou mot de passe incorrecte",
       "serverConnection": "Échec de connexion au serveur"
     }
   },
