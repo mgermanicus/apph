@@ -18,6 +18,7 @@ public class Photo extends BaseEntity {
     Date shootingDate;
     float size;
     String format;
+    String url;
 
     @ManyToMany
     @JoinTable(name = "photo_tag",
@@ -138,5 +139,14 @@ public class Photo extends BaseEntity {
             }
         }
         return this;
+    }
+
+    public Photo setUrl(String url) {
+        this.url = url;
+        return this;
+    }
+
+    public String getUrl() {
+        return url;
     }
 }

@@ -13,6 +13,7 @@ import 'swiper/css/autoplay';
 import 'swiper/css/effect-coverflow';
 import { Slideshow } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import PhotoService from '../../services/PhotoService';
 
 const diapoStyles = {
   displayContent: {
@@ -47,10 +48,11 @@ const diapoStyles = {
   }
 };
 
-export const Diaporama = ({ data }: { data: ITable[] }) => {
+export const Diaporama = ({ ids }: { ids: number[] }) => {
   const [open, setOpen] = useState(false);
   const [autoPlay, setAutoPlay] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
+  const [data, setData] = useState<ITable[]>([]);
   const { t } = useTranslation();
 
   const handleFullScreen = () => {
@@ -66,6 +68,19 @@ export const Diaporama = ({ data }: { data: ITable[] }) => {
     return () =>
       window.removeEventListener('fullscreenchange', handleFullScreen);
   }, [handleFullScreen]);
+
+  useEffect(() => {
+    if (ids.length)
+      PhotoService.getPhotoUrls(
+        ids,
+        (list: ITable[]) => {
+          setData(list);
+        },
+        () => {
+          setAlertOpen(true);
+        }
+      );
+  }, [ids]);
 
   return (
     <Box sx={{ m: 1 }}>

@@ -1019,4 +1019,38 @@ public class PhotoTest {
     public void testSortDefault() {
         testSorting("id", "desc");
     }
+
+    @Test
+    public void testGetUrlsByIdsWithEmptyIds() {
+        //GIVEN
+        createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        when(utils.getUser()).thenReturn(robert);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotosByIds(new ArrayList<>());
+        //THEN
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("photo.maySelected", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testGetUrlsByIds() {
+        //GIVEN
+        createPhotoController();
+        List<Long> ids = new ArrayList<>();
+        ids.add(0L);
+        ids.add(1L);
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.createQuery("SELECT photo FROM Photo photo WHERE photo.id IN :ids AND photo.user = :user", Photo.class)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("ids", ids)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
+        when(typedQueryPhoto.getResultList()).thenReturn(new ArrayList<>());
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.getPhotosByIds(ids);
+        //THEN
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
 }

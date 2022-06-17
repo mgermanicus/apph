@@ -316,4 +316,29 @@ export default class PhotoService {
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
+
+  static getPhotoUrls(
+    ids: number[],
+    handleSuccess: (photoList: ITable[]) => void,
+    handleError: () => void
+  ) {
+    const userInfos = cookies.get('user');
+    const requestOptions = {
+      method: 'Get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + userInfos?.token
+      }
+    };
+    const successFunction = (photoList: string) => {
+      handleSuccess(JSON.parse(photoList).photoList);
+    };
+
+    return Server.request(
+      `/photo/${ids}`,
+      requestOptions,
+      successFunction,
+      handleError
+    );
+  }
 }

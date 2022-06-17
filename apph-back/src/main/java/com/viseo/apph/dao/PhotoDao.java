@@ -3,7 +3,6 @@ package com.viseo.apph.dao;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
-import org.springframework.stereotype.Indexed;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -51,5 +50,12 @@ public class PhotoDao {
                 .setParameter("format", format)
                 .getSingleResult();
         return !count.equals(0L);
+    }
+
+    public List<Photo> getPhotosByUserAndIds(List<Long> ids, User user) {
+        return em.createQuery("SELECT photo FROM Photo photo WHERE photo.id IN :ids AND photo.user = :user", Photo.class)
+                .setParameter("ids", ids)
+                .setParameter("user", user)
+                .getResultList();
     }
 }
