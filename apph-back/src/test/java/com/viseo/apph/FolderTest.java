@@ -47,12 +47,6 @@ public class FolderTest {
     EntityManager em;
 
     @Mock
-    TypedQuery<Folder> typedQueryFolder;
-
-    @Mock
-    TypedQuery<Photo> typedQueryPhoto;
-
-    @Mock
     TypedQuery<Folder> typedQueryFolder, typedQuerySubFolder;
 
     @Mock
@@ -428,9 +422,9 @@ public class FolderTest {
         when(typedQueryPhoto.setParameter("folder", robertChild)).thenReturn(typedQuerySubFolderPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(Arrays.asList(photo_1, photo_2));
         when(typedQuerySubFolderPhoto.getResultList()).thenReturn(null);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentFolderId", Folder.class)).thenReturn(typedQueryFolder);
-        when(typedQueryFolder.setParameter("parentFolderId", 1L)).thenReturn(typedQueryFolder);
-        when(typedQueryFolder.setParameter("parentFolderId", 2L)).thenReturn(typedQuerySubFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentId", Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("parentId", 1L)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("parentId", 2L)).thenReturn(typedQuerySubFolder);
         when(typedQueryFolder.getResultList()).thenReturn(Collections.singletonList(robertChild));
         when(typedQuerySubFolder.getResultList()).thenReturn(null);
         //WHEN
