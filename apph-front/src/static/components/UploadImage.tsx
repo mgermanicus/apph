@@ -137,8 +137,7 @@ export const UploadImage = ({
             const newSelectedTags = selectedTags.map(
               (selectedTag) =>
                 tagsConverted.find(
-                  (tag) =>
-                    `+ ${t('photo.addTag')} ${tag.name}` == selectedTag.name
+                  (tag) => `+ ${tag.name}` == selectedTag.name
                 ) ?? selectedTag
             );
             setSelectedTags(newSelectedTags);
