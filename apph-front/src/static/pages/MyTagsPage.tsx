@@ -25,7 +25,7 @@ export const MyTagsPage = (): JSX.Element => {
       <WordCloud tags={tags} />
       <AlertSnackbar
         open={!!errorMessage}
-        severity={'warning'}
+        severity="warning"
         message={errorMessage}
         onClose={() => setErrorMessage('')}
       />
