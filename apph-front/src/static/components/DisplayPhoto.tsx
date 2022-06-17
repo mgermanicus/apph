@@ -2,6 +2,7 @@ import { ITable } from '../../utils';
 import {
   Alert,
   AlertColor,
+  Box,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -15,6 +16,7 @@ import PhotoService from '../../services/PhotoService';
 import { PhotoDetails } from './PhotoDetails';
 import { AlertSnackbar } from './AlertSnackbar';
 import { useTranslation } from 'react-i18next';
+import { MovePhotoOrFolder } from './MovePhotoOrFolder';
 
 const tinySize = {
   gridContainerSpacing: { xs: 1, md: 2 },
@@ -56,9 +58,11 @@ const bigSize = {
 };
 
 export const DisplayPhoto = ({
-  selectedFolder
+  selectedFolder,
+  rootFolder
 }: {
   selectedFolder: string;
+  rootFolder: string | undefined;
 }): JSX.Element => {
   const [photoList, setPhotoList] = useState<ITable[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -68,8 +72,8 @@ export const DisplayPhoto = ({
   const [snackMessage, setSnackMessage] = useState<string>('');
   const [snackSeverity, setSnackSeverity] = useState<AlertColor>('info');
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
-  const getPhotos = async () => {
-    await PhotoService.getFolderPhotos(
+  const getPhotos = () => {
+    PhotoService.getFolderPhotos(
       selectedFolder,
       (list: ITable[]) => {
         setPhotoList(list);
@@ -110,34 +114,40 @@ export const DisplayPhoto = ({
   } else {
     return (
       <>
-        <FormControl sx={{ m: 1 }}>
-          <FormLabel id="photo-size-group-label">
-            {t('photo.displayFormat')} :
-          </FormLabel>
-          <RadioGroup
-            aria-labelledby="photo-size-group-label"
-            defaultValue="tiny"
-            name="photo-size-group"
-            row
-            onChange={handleChangeSize}
-          >
-            <FormControlLabel
-              value="tiny"
-              control={<Radio />}
-              label={t('size.small')}
-            />
-            <FormControlLabel
-              value="medium"
-              control={<Radio />}
-              label={t('size.medium')}
-            />
-            <FormControlLabel
-              value="big"
-              control={<Radio />}
-              label={t('size.large')}
-            />
-          </RadioGroup>
-        </FormControl>
+        <Box component="div" sx={{ display: 'flex', justifyContent: 'center' }}>
+          <FormControl sx={{ m: 1 }}>
+            <FormLabel id="photo-size-group-label">
+              {t('photo.displayFormat')} :
+            </FormLabel>
+            <RadioGroup
+              aria-labelledby="photo-size-group-label"
+              defaultValue="tiny"
+              name="photo-size-group"
+              row
+              onChange={handleChangeSize}
+            >
+              <FormControlLabel
+                value="tiny"
+                control={<Radio />}
+                label={t('size.small')}
+              />
+              <FormControlLabel
+                value="medium"
+                control={<Radio />}
+                label={t('size.medium')}
+              />
+              <FormControlLabel
+                value="big"
+                control={<Radio />}
+                label={t('size.large')}
+              />
+            </RadioGroup>
+          </FormControl>
+          <MovePhotoOrFolder
+            folderToBeMoved={selectedFolder}
+            folderId={rootFolder}
+          />
+        </Box>
         <Grid
           container
           spacing={selectedSize.gridContainerSpacing}

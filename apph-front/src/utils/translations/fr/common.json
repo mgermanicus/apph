@@ -71,7 +71,7 @@
     "moveTo": "Déplacer vers un dossier",
     "move": "Déplacer",
     "confirmDeletePhoto": "Si vous confirmez, la photo sera supprimée du dossier",
-    "successMove": "Le déplacement des photos est terminé.",
+    "successMove": "Le déplacement des dossiers est terminé.",
     "error": {
       "error": "Erreur",
       "oneOf": {
@@ -80,6 +80,7 @@
         "alreadyExist": "L'une des photos est déjà dans le dossier.",
         "existingName": "L'une des photos comporte un nom existant déjà dans le dossier destinataire."
       },
+      "moveFolder": "Impossible de déplacer le dossier",
       "nullFolder": "Le dossier n'a pas pu être récuperé",
       "emptyFolder": "Le nom du dossier ne peux pas être vide",
       "existingFolder": "Le dossier existe déjà dans le dossier actuel.",
@@ -91,7 +92,8 @@
       "warning": "Attention",
       "notExist": "Le dossier n'existe pas.",
       "accessDenied": "L'utilisateur n'a pas accès à ce dossier.",
-      "titleAlreadyUsed": "Titre déjà utilisé dans le dossier."
+      "titleAlreadyUsed": "Titre déjà utilisé dans le dossier.",
+      "folderNameOverChar": "Le nom du dossier ne peut pas dépasser 255 caractères."
     }
   },
   "photo": {
@@ -109,6 +111,7 @@
     "details": "Détails",
     "successDelete": "Suppression effectuée avec succès",
     "failDelete": "Une erreur est survenue lors de la suppression",
+    "successMove": "Le déplacement des photos est terminé.",
     "error": {
       "failChangeFormat": "Erreur lors de la modification du format",
       "notFound": "Photo introuvable",

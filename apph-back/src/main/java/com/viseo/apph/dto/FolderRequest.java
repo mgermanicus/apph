@@ -7,7 +7,10 @@ public class FolderRequest {
     String name;
     @JsonProperty("parentFolderId")
     Long parentFolderId;
-
+    @JsonProperty("folderIdToBeMoved")
+    Long folderIdToBeMoved;
+    @JsonProperty("destinationFolderId")
+    Long destinationFolderId;
     public String getName() {
         return name;
     }
@@ -23,6 +26,24 @@ public class FolderRequest {
 
     public FolderRequest setParentFolderId(Long parentFolderId) {
         this.parentFolderId = parentFolderId;
+        return this;
+    }
+
+    public Long getFolderIdToBeMoved() {
+        return folderIdToBeMoved;
+    }
+
+    public FolderRequest setFolderIdToBeMoved(Long folderIdToBeMoved) {
+        this.folderIdToBeMoved = folderIdToBeMoved;
+        return this;
+    }
+
+    public Long getDestinationFolderId() {
+        return destinationFolderId;
+    }
+
+    public FolderRequest setDestinationFolderId(Long destinationFolderId) {
+        this.destinationFolderId = destinationFolderId;
         return this;
     }
 }

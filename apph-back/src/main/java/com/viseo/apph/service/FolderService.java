@@ -1,11 +1,14 @@
 package com.viseo.apph.service;
 
 import com.viseo.apph.dao.FolderDao;
+import com.viseo.apph.dao.PhotoDao;
 import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Folder;
+import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FolderRequest;
 import com.viseo.apph.dto.FolderResponse;
+import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.exception.UnauthorizedException;
 import org.slf4j.Logger;
@@ -27,9 +30,11 @@ public class FolderService {
     @Autowired
     UserDao userDao;
 
+    @Autowired
+    PhotoDao photoDao;
+
     @Transactional
-    public FolderResponse getFoldersByUser(String login) throws NotFoundException {
-        User user = userDao.getUserByLogin(login);
+    public FolderResponse getFoldersByUser(User user) throws NotFoundException {
         List<Folder> folderList = folderDao.getFolderByUser(user.getId());
         Folder parentFolder = getParentFolder(folderList);
         FolderResponse parentFolderResponse = new FolderResponse()
@@ -41,17 +46,37 @@ public class FolderService {
     }
 
     @Transactional
-    public FolderResponse createFolder(String login, FolderRequest request) throws NotFoundException, UnauthorizedException {
+    public FolderResponse getFoldersByParentId(long parentId, User user) throws IllegalArgumentException {
+        List<Folder> folderList = new ArrayList<>();
+        Folder parentFolder;
+        if (parentId != -1) {
+            folderList = folderDao.getFoldersByParentId(parentId);
+            parentFolder = folderDao.getFolderById(parentId);
+        } else {
+            parentFolder = folderDao.getParentFolderByUser(user);
+        }
+        if(folderList!= null && parentFolder != null) {
+            FolderResponse parentFolderResponse = new FolderResponse()
+                    .setId(parentFolder.getId())
+                    .setVersion(parentFolder.getVersion())
+                    .setName(parentFolder.getName())
+                    .setParentFolderId(parentFolder.getParentFolderId());
+            return connectFolderToChildrenFolder(parentFolderResponse, folderList);
+        }
+        throw new IllegalArgumentException("request.error.illegalArgument");
+    }
+
+    @Transactional
+    public FolderResponse createFolder(User user, FolderRequest request) throws NotFoundException, UnauthorizedException {
         if (request.getParentFolderId() == null) {
             logger.error("Cannot create a root folder.");
             throw new UnauthorizedException("folder.error.root");
         }
         if (request.getName().length() > 255) {
             logger.error("The folder name cannot exceed 255 characters.");
-            throw new IllegalArgumentException("Le nom du dossier ne peut pas dépasser 255 caractères.");
+            throw new IllegalArgumentException("folder.error.folderNameOverChar");
         }
         Folder parentFolder = folderDao.getFolderById(request.getParentFolderId());
-        User user = userDao.getUserByLogin(login);
         if (parentFolder == null) {
             logger.error("Parent folder not found.");
             throw new NotFoundException("folder.error.notFound");
@@ -62,7 +87,49 @@ public class FolderService {
         }
         Folder folder = new Folder().setName(request.getName()).setParentFolderId(request.getParentFolderId()).setUser(user);
         folderDao.createFolder(folder);
-        return getFoldersByUser(login);
+        return getFoldersByUser(user);
+    }
+
+    @Transactional
+    public MessageResponse moveFolder(User user, FolderRequest request) throws UnauthorizedException, NotFoundException {
+        if (request.getFolderIdToBeMoved() == null || request.getDestinationFolderId() == null) {
+            logger.error("Folder to be moved can not be null");
+            throw new UnauthorizedException("folder.error.moveFolder");
+        } else {
+            Folder toBeMoved = folderDao.getFolderById(request.getFolderIdToBeMoved());
+            Folder moveToFolder = folderDao.getFolderById(request.getDestinationFolderId());
+            if (toBeMoved == null || moveToFolder == null) {
+                logger.error("Folder not found.");
+                throw new NotFoundException("folder.error.nullFolder");
+            } else if (folderDao.getParentFolderByUser(user).getId() == request.getFolderIdToBeMoved()) {
+                logger.error("Root folder can not be moved");
+                throw new UnauthorizedException("folder.error.moveFolder");
+            } else if (moveToFolder.getParentFolderId() != null && moveToFolder.getParentFolderId().equals(request.getFolderIdToBeMoved())) {
+                logger.error("Folder parent can not be moved to it's child folder");
+                throw new UnauthorizedException("folder.error.moveFolder");
+            } else {
+                return moveFolder(toBeMoved, request.getDestinationFolderId());
+            }
+        }
+    }
+
+    MessageResponse moveFolder(Folder folderToBeMoved, Long toMoveToFolder) {
+        List<Folder> folders = folderDao.getFoldersByParentId(toMoveToFolder);
+        for (Folder folder : folders) {
+            if (folder.getName().equals(folderToBeMoved.getName())) {
+                List<Photo> photosToBeMoved = photoDao.getPhotosByFolder(folderToBeMoved);
+                List<Folder> foldersToBeMoved = folderDao.getFoldersByParentId(folderToBeMoved.getId());
+                for (Photo p : photosToBeMoved) {
+                    p.setFolder(folder);
+                }
+                for (Folder f : foldersToBeMoved) {
+                    f.setParentFolderId(folder.getId());
+                }
+                return new MessageResponse("success: folder.successMove");
+            }
+        }
+        folderToBeMoved.setParentFolderId(toMoveToFolder);
+        return new MessageResponse("success: folder.successMove");
     }
 
     Folder getParentFolder(List<Folder> folders) throws NotFoundException {

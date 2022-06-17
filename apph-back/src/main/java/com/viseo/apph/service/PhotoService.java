@@ -185,7 +185,7 @@ public class PhotoService {
                 photo.setModificationDate(new Date());
             }
         }
-        response.addMessage("success: folder.successMove");
+        response.addMessage("success: photo.successMove");
         return response;
     }
 
