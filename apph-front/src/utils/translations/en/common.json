@@ -168,7 +168,8 @@
     "successChange": "File successfully changed.",
     "maySelected": "Please select a file.",
     "selectFile": "Drag and drop files here, or click to select files.",
-    "files": "Files"
+    "files": "Files",
+    "address": "Address"
   },
   "download": {
     "error": {

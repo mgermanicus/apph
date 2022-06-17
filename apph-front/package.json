@@ -34,6 +34,7 @@
     "react-router-dom": "^6.3.0",
     "react-tagcloud": "^2.2.0",
     "swiper": "^8.1.5",
+    "ts-debounce": "^4.0.0",
     "typescript": "^4.6.3",
     "universal-cookie": "^4.0.4",
     "web-vitals": "^2.1.4"

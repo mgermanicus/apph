@@ -168,7 +168,8 @@
     "successChange": "Le changement s'est effectué avec succèss.",
     "maySelected": "Veuillez sélectionner un fichier.",
     "selectFile": "Glissez-déposez des fichiers ici, ou cliquez dans la zone pour sélectionner des fichiers à uploader.",
-    "files": "Fichiers"
+    "files": "Fichiers",
+    "address": "Adresse"
   },
   "download": {
     "error": {

@@ -31,6 +31,8 @@ import { useTranslation } from 'react-i18next';
 import { AlertSnackbar } from './AlertSnackbar';
 import { TagInput } from './TagInput';
 import { useDropzone } from 'react-dropzone';
+import { LocationPicker } from './LocationPicker';
+import { ILocation } from '../../utils/types/Location';
 import 'moment/locale/fr';
 import moment from 'moment';
 import i18n from 'i18next';
@@ -47,6 +49,7 @@ export const UploadImage = ({
   const [shootingDate, setShootingDate] = useState<string>(
     moment().format('MM/DD/YYYY')
   );
+  const [location, setLocation] = useState<ILocation>();
   const [open, setOpen] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>();
   const [globalUploadStatus, setGlobalUploadStatus] = useState<UploadStatus>({
@@ -319,6 +322,12 @@ export const UploadImage = ({
                       renderInput={(params) => <TextField {...params} />}
                     />
                   </LocalizationProvider>
+                  <LocationPicker
+                    onChange={(value) => {
+                      console.log(value);
+                      setLocation(value);
+                    }}
+                  />
                   <TagInput
                     allTags={tagList}
                     onChange={(tags) => setSelectedTags(tags)}
