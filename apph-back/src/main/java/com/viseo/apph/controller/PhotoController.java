@@ -67,6 +67,8 @@ public class PhotoController {
             return ResponseEntity.ok(new MessageResponse(photoService.editPhotoInfos(user, photoRequest)));
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+        } catch (IllegalArgumentException iae) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(iae.getMessage()));
         }
     }
 

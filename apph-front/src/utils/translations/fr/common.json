@@ -117,7 +117,8 @@
       "notFound": "Photo introuvable",
       "notExist": "La photo n'existe pas.",
       "titleOrDescriptionOverChar": "Le titre ou la description ne peuvent pas dépasser les 255 caractères.",
-      "tagsOverChar": "Les tags ne peuvent pas dépasser 255 caractères."
+      "tagsOverChar": "Les tags ne peuvent pas dépasser 255 caractères.",
+      "invalidDate": "Date invalide."
     }
   },
   "token": {
