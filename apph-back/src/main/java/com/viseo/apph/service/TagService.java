@@ -47,7 +47,7 @@ public class TagService {
 
     Boolean isTagValid(List<Tag> list) {
         for (Tag tag : list) {
-            if (tag.getName().substring(2).length() > 255)
+            if (tag.getName().length() > 255 + 2)
                 return false;
         }
         return true;
