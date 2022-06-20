@@ -2,6 +2,7 @@ export interface IUser {
   firstname: string;
   lastname: string;
   login: string;
+  isAdmin?: boolean;
 }
 
 export interface IUserRequest {

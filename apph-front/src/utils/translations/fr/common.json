@@ -51,13 +51,19 @@
     "actions": "Actions",
     "error": "Argument illégal."
   },
+  "userTable": {
+    "firstname": "Prénom",
+    "lastname": "Nom",
+    "email": "Email"
+  },
   "field": {
     "photos": "Mes Photos",
     "folders": "Mes Dossiers",
     "trips": "Mes Voyages",
     "tags": "Mes Tags",
-    "treatments": "Mes traitements",
-    "advancedSearch": "Recherche avancée"
+    "treatments": "Mes Traitements",
+    "advancedSearch": "Recherche Avancée",
+    "users": "Liste des Utilisateurs"
   },
   "folder": {
     "create": "Créer",

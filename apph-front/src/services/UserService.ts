@@ -1,7 +1,9 @@
 import Server from './Server';
-import { IUserRequest } from '../utils/types';
+import { getTokenHeader, IUser, IUserRequest, IUserTable } from '../utils';
 import cryptoJS from 'crypto-js';
-import { getTokenHeader } from '../utils';
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
 
 export default class UserService {
   static getUser(
@@ -35,5 +37,36 @@ export default class UserService {
       handleSuccess,
       handleError
     );
+  }
+
+  static getUserList(
+    handleSuccess: (list: IUserTable[]) => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = '/admin/users';
+    const userInfos = cookies.get('user');
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + userInfos?.token
+      }
+    };
+    const successFunction = (val: string) => {
+      handleSuccess(
+        JSON.parse(val).map((user: IUser) => {
+          return {
+            id: user.login,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.login
+          } as IUserTable;
+        })
+      );
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
 }

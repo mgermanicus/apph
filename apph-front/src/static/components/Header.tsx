@@ -20,6 +20,7 @@ import {
   AutoFixHigh,
   Flight,
   Folder,
+  Group,
   InsertPhoto,
   LocalOffer,
   Search
@@ -104,6 +105,13 @@ export const Header = (): JSX.Element => {
                   url="/research"
                   icon={<Search />}
                 />
+                {user.isAdmin && (
+                  <DrawerMenuItem
+                    title={t('field.users')}
+                    url="/users"
+                    icon={<Group />}
+                  />
+                )}
               </List>
             </Box>
           </Drawer>
