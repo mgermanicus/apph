@@ -8,6 +8,7 @@ import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Role;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.UserRequest;
+import com.viseo.apph.dto.UserResponse;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -85,5 +84,13 @@ public class UserService {
             newClaims.put("login", request.getLogin());
         }
         return jwtUtils.setClaimOnToken(newToken, newClaims);
+    }
+    
+    @Transactional
+    public List<UserResponse> getUserList() {
+        return userDao.getUserList().stream().map((user) -> new UserResponse()
+                .setLogin(user.getLogin())
+                .setFirstname(user.getFirstname())
+                .setLastname(user.getLastname())).collect(Collectors.toList());
     }
 }
