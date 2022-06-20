@@ -27,4 +27,14 @@ public class TagDao {
         em.persist(tag);
         return tag;
     }
+
+    public List<Object[]> getTagsCountByUser(long userId) {
+        List tags = em.createQuery("SELECT t.name,COUNT(t) FROM Photo p JOIN p.tags AS t WHERE t.user.id=:userId GROUP BY t.name")
+                .setParameter("userId", userId).getResultList();
+        List<Object[]> filteredTag = new ArrayList<>();
+        for (Object[] tag : (List<Object[]>) tags) {
+            filteredTag.add(new Object[]{(String) tag[0], (int) ((long) tag[1])});
+        }
+        return filteredTag;
+    }
 }

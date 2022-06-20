@@ -6,13 +6,13 @@ import com.viseo.apph.dao.TagDao;
 import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.TagListResponse;
+import com.viseo.apph.dto.TagResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,5 +51,12 @@ public class TagService {
                 return false;
         }
         return true;
+    }
+
+    public TagListResponse getTagsWithCount(User user) {
+        List<Object[]> tags = tagDao.getTagsCountByUser(user.getId());
+        List<TagResponse> tagResponses = new ArrayList<>();
+        tags.forEach(pair -> tagResponses.add(new TagResponse().setName((String) pair[0]).setCount((int) pair[1])));
+        return new TagListResponse(tagResponses);
     }
 }

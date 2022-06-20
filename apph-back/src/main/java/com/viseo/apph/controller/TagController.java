@@ -2,7 +2,10 @@ package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.MessageResponse;
+import com.viseo.apph.dto.TagListResponse;
+import com.viseo.apph.dto.TagResponse;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.TagService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -35,5 +38,12 @@ public class TagController {
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("user.error.notExist"));
         }
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<IResponseDto> getTagsWithCount() {
+        User user = utils.getUser();
+        TagListResponse tags = tagService.getTagsWithCount(user);
+        return ResponseEntity.ok(tags);
     }
 }

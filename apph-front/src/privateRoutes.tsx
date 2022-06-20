@@ -4,6 +4,7 @@ import { SignIn } from './static/components/SignIn';
 import { SignUp } from './static/components/SignUp';
 import { TODOPage } from './static/pages/TODOPage';
 import { MyFoldersPage } from './static/pages/MyFoldersPage';
+import { MyTagsPage } from './static/pages/MyTagsPage';
 import { PrivatePageContainer } from './static/pages/PrivatePageContainer';
 import { useSelector } from 'react-redux';
 import { IUser } from './utils';
@@ -67,9 +68,7 @@ export const PrivateRoutes = ({
         <Route
           path="/tags"
           element={needAuthenticationRoute(
-            <PrivatePageContainer
-              element={<TODOPage todo="Page: Mes Tags" />}
-            />
+            <PrivatePageContainer element={<MyTagsPage />} />
           )}
         />
         <Route
