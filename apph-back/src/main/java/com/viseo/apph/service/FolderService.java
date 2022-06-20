@@ -139,6 +139,7 @@ public class FolderService {
                 for (Folder f : foldersToBeMoved) {
                     f.setParentFolderId(folder.getId());
                 }
+                folderDao.delete(folderToBeMoved);
                 return new MessageResponse("success: folder.successMove");
             }
         }
