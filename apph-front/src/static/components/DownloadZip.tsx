@@ -64,7 +64,7 @@ export const DownloadZip = ({
 
   return (
     <Box sx={{ m: 1 }}>
-      <Tooltip title={t('photo.download')}>
+      <Tooltip title={isFolder ? t('folder.download') : t('photo.download')}>
         <LoadingButton
           variant="outlined"
           onClick={handleSubmit}

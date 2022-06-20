@@ -428,7 +428,7 @@ public class FolderTest {
         when(typedQueryFolder.getResultList()).thenReturn(Collections.singletonList(robertChild));
         when(typedQuerySubFolder.getResultList()).thenReturn(null);
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = folderController.downloadZip(request);
+        ResponseEntity<IResponseDto> responseEntity = folderController.downloadFolderToZip(request);
         //THEN
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         FolderResponse folderResponse = (FolderResponse) responseEntity.getBody();
@@ -448,7 +448,7 @@ public class FolderTest {
         when(utils.getUser()).thenReturn(chris);
         when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = folderController.downloadZip(request);
+        ResponseEntity<IResponseDto> responseEntity = folderController.downloadFolderToZip(request);
         //THEN
         Assert.assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
     }
@@ -463,7 +463,7 @@ public class FolderTest {
         when(utils.getUser()).thenReturn(chris);
         when(em.find(Folder.class, 1L)).thenReturn(null);
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = folderController.downloadZip(request);
+        ResponseEntity<IResponseDto> responseEntity = folderController.downloadFolderToZip(request);
         //THEN
         Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
@@ -487,7 +487,7 @@ public class FolderTest {
         when(typedQueryPhoto.setParameter("folder", robertRoot)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(Arrays.asList(photo_1, photo_1));
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = folderController.downloadZip(request);
+        ResponseEntity<IResponseDto> responseEntity = folderController.downloadFolderToZip(request);
         //THEN
         Assert.assertEquals(HttpStatus.PAYLOAD_TOO_LARGE, responseEntity.getStatusCode());
     }

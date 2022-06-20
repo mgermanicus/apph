@@ -9,8 +9,8 @@ import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FolderRequest;
 import com.viseo.apph.dto.FolderResponse;
-import com.viseo.apph.exception.MaxSizeExceededException;
 import com.viseo.apph.dto.MessageResponse;
+import com.viseo.apph.exception.MaxSizeExceededException;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.exception.UnauthorizedException;
 import org.slf4j.Logger;
@@ -173,7 +173,7 @@ public class FolderService {
         return parentFolder;
     }
 
-    public FolderResponse download(User user, FolderRequest folderRequest) throws UnauthorizedException, IOException, MaxSizeExceededException {
+    public FolderResponse downloadFolder(User user, FolderRequest folderRequest) throws UnauthorizedException, IOException, MaxSizeExceededException {
         long id = folderRequest.getId();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ZipOutputStream zipOut = new ZipOutputStream(bos);

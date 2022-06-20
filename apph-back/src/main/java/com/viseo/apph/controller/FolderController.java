@@ -76,10 +76,10 @@ public class FolderController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(value = "download")
-    public ResponseEntity<IResponseDto> downloadZip(@RequestBody FolderRequest request) {
+    public ResponseEntity<IResponseDto> downloadFolderToZip(@RequestBody FolderRequest request) {
         try {
             User user = utils.getUser();
-            return ResponseEntity.ok(folderService.download(user, request));
+            return ResponseEntity.ok(folderService.downloadFolder(user, request));
         } catch (S3Exception | IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("download.error.download"));
         } catch (UnauthorizedException e) {
