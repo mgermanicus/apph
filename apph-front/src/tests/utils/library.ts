@@ -23,7 +23,7 @@ export function clickLoadingButton(label: RegExp) {
 }
 
 export function fillTags(tags: ITag[]) {
-  const autocomplete = screen.getByRole('combobox');
+  const autocomplete = within(screen.getByTestId('tags')).getByRole('combobox');
   tags.forEach((tag) => {
     fireEvent.change(autocomplete, {
       target: { value: tag.name }
