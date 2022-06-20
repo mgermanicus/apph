@@ -116,6 +116,8 @@
     "title": "Titre de la photo",
     "displayFormat": "Format d'affichage",
     "details": "Détails",
+    "modifyDetails": "Modifier les détails",
+    "modifyDetailsTitle": "Modifier les détails des photos sélectionnées",
     "successDelete": "Suppression effectuée avec succès",
     "failDelete": "Une erreur est survenue lors de la suppression",
     "successMove": "Le déplacement des photos est terminé.",

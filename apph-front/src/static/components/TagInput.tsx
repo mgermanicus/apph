@@ -10,7 +10,7 @@ import { ITag } from '../../utils';
 type Props = {
   allTags: ITag[];
   onChange: (selectedTags: ITag[]) => void;
-  isValid: boolean;
+  isValid?: boolean;
   defaultValue?: ITag[];
 };
 

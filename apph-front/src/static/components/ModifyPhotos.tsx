@@ -1,19 +1,129 @@
-import { Box, Button, Tooltip } from '@mui/material';
+import { Box, Button, Dialog, Stack, TextField, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { ITag } from '../../utils';
+import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { TagInput } from './TagInput';
+import { useTranslation } from 'react-i18next';
+import TagService from '../../services/TagService';
+import { AlertSnackbar } from './AlertSnackbar';
+import Typography from '@mui/material/Typography';
 
-export const ModifyPhotos = () => {
+interface modifyPhotosProps {
+  ids: number[];
+}
+
+export const ModifyPhotos = ({ ids }: modifyPhotosProps): JSX.Element => {
+  const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
+  const [shootingDate, setShootingDate] = useState<Date | null>(null);
+  const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
+  const [allTags, setAllTags] = useState<ITag[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    TagService.getAllTags(
+      (tags: string) => {
+        const tagsConverted: ITag[] = JSON.parse(tags);
+        setAllTags(tagsConverted);
+      },
+      (errorMessage: string) => {
+        setErrorMessage(errorMessage);
+      }
+    );
+  }, []);
+
+  function handleOpenForm() {
+    setIsFormOpen(true);
+  }
+
+  function handleCloseForm() {
+    setShootingDate(null);
+    setSelectedTags([]);
+    setIsFormOpen(false);
+  }
+
+  function handleSubmit() {
+    console.log(shootingDate + ' ' + selectedTags);
+  }
+
   return (
-    <Box sx={{ m: 1 }}>
-      <Tooltip title={'Modifier'}>
-        <Button
-          variant="outlined"
-          onClick={() => console.log('click !')}
-          aria-label="upload-photo"
+    <>
+      <Box sx={{ m: 1 }}>
+        <Tooltip title={t('photo.modifyDetails')}>
+          <Button
+            variant="outlined"
+            onClick={handleOpenForm}
+            aria-label="upload-photo"
+          >
+            <EditIcon />
+          </Button>
+        </Tooltip>
+      </Box>
+      <Dialog
+        open={isFormOpen}
+        onClose={handleCloseForm}
+        aria-labelledby="modal-modal-title"
+      >
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            m: 3,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}
         >
-          <EditIcon />
-        </Button>
-      </Tooltip>
-    </Box>
+          <Typography
+            id="modal-modal-title"
+            component="h1"
+            align="center"
+            sx={{ fontSize: '2rem' }}
+          >
+            {t('photo.modifyDetailsTitle')}
+          </Typography>
+          <Stack
+            direction="column"
+            spacing={2}
+            sx={{
+              width: {
+                xs: 200,
+                sm: 300,
+                lg: 400,
+                xl: 400
+              },
+              m: 2
+            }}
+          >
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DesktopDatePicker
+                label={t('photoTable.shootingDate')}
+                value={shootingDate}
+                onChange={(date) => {
+                  if (date) setShootingDate(date);
+                  else setShootingDate(new Date());
+                }}
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </LocalizationProvider>
+            <TagInput
+              allTags={allTags}
+              onChange={(tags) => setSelectedTags(tags)}
+            />
+            <Button type="submit" fullWidth variant="contained">
+              {t('action.confirm')}
+            </Button>
+          </Stack>
+        </Box>
+        <AlertSnackbar
+          open={!!errorMessage}
+          severity={'warning'}
+          message={errorMessage}
+          onClose={() => setErrorMessage('')}
+        />
+      </Dialog>
+    </>
   );
 };

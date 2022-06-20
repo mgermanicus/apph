@@ -116,6 +116,8 @@
     "title": "Photo title",
     "displayFormat": "Display format",
     "details": "Details",
+    "modifyDetails": "Modify Details",
+    "modifyDetailsTitle": "Edit selected photo's details",
     "successDelete": "Photo successfully deleted",
     "failDelete": "An error occurred during deletion",
     "successMove": "Photo successfully moved.",
