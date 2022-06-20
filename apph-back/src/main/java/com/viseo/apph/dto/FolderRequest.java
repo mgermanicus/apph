@@ -11,6 +11,9 @@ public class FolderRequest {
     Long folderIdToBeMoved;
     @JsonProperty("destinationFolderId")
     Long destinationFolderId;
+    @JsonProperty("id")
+    Long id;
+
     public String getName() {
         return name;
     }
@@ -44,6 +47,15 @@ public class FolderRequest {
 
     public FolderRequest setDestinationFolderId(Long destinationFolderId) {
         this.destinationFolderId = destinationFolderId;
+        return this;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public FolderRequest setId(Long id) {
+        this.id = id;
         return this;
     }
 }

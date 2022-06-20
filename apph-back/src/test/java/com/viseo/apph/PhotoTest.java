@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -30,6 +31,7 @@ import software.amazon.awssdk.services.s3.model.*;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -383,6 +385,28 @@ public class PhotoTest {
     }
 
     @Test
+    public void testDownloadS3Down() {
+        // GIVEN
+        createPhotoController();
+        long id = 1L;
+        long idUser = 2;
+        String title = "test";
+        String extension = "jpg";
+        User user = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setLastname("test").setFirstname("test").setId(idUser);
+        Photo photo = (Photo) new Photo().setFormat(extension).setTitle(title).setUser(user).setId(id);
+        PhotoRequest photoRequest = new PhotoRequest().setId(id);
+        ResponseBytes<GetObjectResponse> s3Object = mock(ResponseBytes.class);
+        when(utils.getUser()).thenReturn(user);
+        when(em.find(any(), anyLong())).thenReturn(photo);
+        doThrow(S3Exception.class).when(s3Client).getObject(any(GetObjectRequest.class), eq(ResponseTransformer.toBytes()));
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.download(photoRequest);
+        //THEN
+        verify(em, times(1)).find(Photo.class, id);
+        Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
     public void testDownloadUserNotAllowed() {
         //GIVEN
         createPhotoController();
@@ -421,6 +445,36 @@ public class PhotoTest {
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
         //THEN
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testUploadS3Down() {
+        //GIVEN
+        createPhotoController();
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
+        Tag tag = new Tag().setName("+ Add New Tag totoTestTag");
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        Set<Tag> tags = new HashSet<>();
+        tags.add(tag);
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
+        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(robert);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", null)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
+        when(typedQueryLong.getSingleResult()).thenReturn(0L);
+        when(utils.getUser()).thenReturn(robert);
+        doThrow(S3Exception.class).when(s3Client).putObject(any(PutObjectRequest.class), any(RequestBody.class));
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        verify(s3Client, times(1)).putObject(any(PutObjectRequest.class), any(RequestBody.class));
     }
 
     @Test
@@ -795,7 +849,7 @@ public class PhotoTest {
         long[] ids = {1L, 1L};
         User user = (User) new User().setLogin("test@test").setId(2);
         Photo photo_1 = (Photo) new Photo().setFormat("png").setTitle("test").setUser(user).setId(ids[0]);
-        PhotosRequest photosRequest = new PhotosRequest().setIds(ids).setTitleZip("photos");
+        PhotosRequest photosRequest = new PhotosRequest().setIds(ids);
         GetObjectResponse response = mock(GetObjectResponse.class);
         ResponseBytes<GetObjectResponse> s3Object = ResponseBytes.fromByteArray(response, "".getBytes(StandardCharsets.UTF_8));
         when(utils.getUser()).thenReturn(user);
@@ -808,7 +862,7 @@ public class PhotoTest {
         verify(em, times(2)).find(eq(Photo.class), anyLong());
         PhotoResponse photoResponse = (PhotoResponse) responseEntity.getBody();
         assert photoResponse != null;
-        Assert.assertEquals("photos", photoResponse.getTitle());
+        Assert.assertEquals("APPH-" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()), photoResponse.getTitle());
         Assert.assertEquals(".zip", photoResponse.getFormat());
         Assert.assertNotNull(photoResponse.getData());
     }
@@ -863,6 +917,24 @@ public class PhotoTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(".png", photo.getFormat());
         assertEquals(2, photo.getSize(), 0.1);
+    }
+
+    @Test
+    public void testChangePhotoFileS3Down() {
+        //GIVEN
+        createPhotoController();
+        String imageString = RandomString.make(2000);
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", imageString.getBytes());
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        PhotoRequest photoRequest = new PhotoRequest().setFile(file).setId(0);
+        Photo photo = (Photo) new Photo().setFormat(".jpeg").setSize(50).setUser(robert).setId(0);
+        when(em.find(Photo.class, 0L)).thenReturn(photo);
+        when(utils.getUser()).thenReturn(robert);
+        doThrow(S3Exception.class).when(s3Client).putObject(any(PutObjectRequest.class), any(RequestBody.class));
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.changePhotoFile(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 
     @Test

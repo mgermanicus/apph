@@ -4,7 +4,6 @@ import {
   Drawer,
   IconButton,
   List,
-  ToggleButton,
   ToggleButtonGroup,
   Toolbar,
   Typography
@@ -28,12 +27,21 @@ import { useSelector } from 'react-redux';
 import AuthService from '../../services/AuthService';
 import { useTranslation } from 'react-i18next';
 import { setCookieLanguage } from '../../utils/setCookieLanguage';
+import MuiToggleButton from '@mui/material/ToggleButton';
+import { styled } from '@mui/material/styles';
 
 const appBarStyles = {
   iconButton: {
     mr: 2
   }
 };
+
+const ToggleButton = styled(MuiToggleButton)({
+  '&.Mui-selected, &.Mui-selected:hover': {
+    color: 'white',
+    backgroundColor: '#455a64'
+  }
+});
 
 export const Header = (): JSX.Element => {
   const user = useSelector(
@@ -111,10 +119,11 @@ export const Header = (): JSX.Element => {
             APPH
           </Typography>
           <ToggleButtonGroup
-            color="secondary"
+            color="standard"
             value={i18n.language}
             exclusive
             onChange={handleChange}
+            sx={{ background: '#e3f2fd' }}
           >
             <ToggleButton value="fr">fr</ToggleButton>
             <ToggleButton value="en">en</ToggleButton>

@@ -64,6 +64,7 @@
     "delete": "Delete from folder",
     "createFolder": "Create a folder",
     "creation": "Creating a file",
+    "download": "Download a folder",
     "enterName": "Enter the folder name:",
     "name": "Name of the folder",
     "new": "New folder",

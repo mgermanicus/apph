@@ -27,13 +27,4 @@ public class PhotosRequest {
         this.folderId = folderId;
         return this;
     }
-
-    public String getTitleZip() {
-        return titleZip;
-    }
-
-    public PhotosRequest setTitleZip(String titleZip) {
-        this.titleZip = titleZip;
-        return this;
-    }
 }

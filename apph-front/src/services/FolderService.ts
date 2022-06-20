@@ -95,4 +95,30 @@ export class FolderService {
       errorFunction
     );
   }
+
+  static downloadFolder(
+    id: number,
+    handleSuccess: (folder: IFolder) => void,
+    handleError: (errorMessage: IMessage) => void
+  ) {
+    const URL = `/folder/download`,
+      userInfos = cookies.get('user'),
+      requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + userInfos?.token
+        },
+        body: JSON.stringify({
+          id
+        })
+      };
+    const successFunction = (folder: string) => {
+      handleSuccess(JSON.parse(folder));
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage));
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
 }
