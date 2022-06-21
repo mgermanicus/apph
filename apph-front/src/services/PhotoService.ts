@@ -352,8 +352,8 @@ export default class PhotoService {
         },
         body: JSON.stringify({
           ids,
-          shootingDate,
-          selectedTags
+          shootingDate: JSON.stringify(shootingDate.toLocaleString()),
+          tags: JSON.stringify(selectedTags)
         })
       };
     const successFunction = () => {

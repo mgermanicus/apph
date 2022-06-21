@@ -91,7 +91,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
         <DownloadZip ids={selectedIds} />
         <DeleteImage ids={selectedIds} setRefresh={setRefresh} />
         <Diaporama ids={selectedIds} />
-        <ModifyPhotos ids={selectedIds} />
+        <ModifyPhotos ids={selectedIds} setRefresh={setRefresh} />
       </ButtonGroup>
       <PhotoTable
         data={data}

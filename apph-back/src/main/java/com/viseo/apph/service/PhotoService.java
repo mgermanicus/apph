@@ -391,4 +391,14 @@ public class PhotoService {
         photo.setFolder(folder);
         return new MessageResponse("photo.successDelete");
     }
+
+    @Transactional
+    public void updatePhotoList(User user, PhotosRequest photosRequest) {
+        Date shootingDate = photosRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photosRequest.getShootingDate(), Date.class) : new Date();
+        Set<Tag> newTags = tagService.createListTags(photosRequest.getTags(), user);
+        for(long id : photosRequest.getIds()) {
+            Photo photo = photoDao.getPhoto(id);
+            photo.setShootingDate(shootingDate).setTags(newTags);
+        }
+    }
 }

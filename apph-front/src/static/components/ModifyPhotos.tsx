@@ -1,6 +1,12 @@
 import { Box, Button, Dialog, Stack, TextField, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, {
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useEffect,
+  useState
+} from 'react';
 import { ITag } from '../../utils';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -13,9 +19,13 @@ import PhotoService from '../../services/PhotoService';
 
 interface modifyPhotosProps {
   ids: number[];
+  setRefresh: Dispatch<SetStateAction<boolean>>;
 }
 
-export const ModifyPhotos = ({ ids }: modifyPhotosProps): JSX.Element => {
+export const ModifyPhotos = ({
+  ids,
+  setRefresh
+}: modifyPhotosProps): JSX.Element => {
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [shootingDate, setShootingDate] = useState<Date>(new Date());
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
@@ -56,7 +66,10 @@ export const ModifyPhotos = ({ ids }: modifyPhotosProps): JSX.Element => {
       ids,
       shootingDate,
       selectedTags,
-      handleCloseForm,
+      () => {
+        setRefresh((refresh) => !refresh);
+        handleCloseForm();
+      },
       (errorMessage: string) => setErrorMessage(errorMessage)
     );
   };
