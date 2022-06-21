@@ -9,7 +9,7 @@
     "@mui/icons-material": "^5.6.1",
     "@mui/lab": "^5.0.0-alpha.78",
     "@mui/material": "^5.6.1",
-    "@mui/x-data-grid": "^5.10.0",
+    "@mui/x-data-grid": "5.12.2",
     "@mui/x-date-pickers": "^5.0.0-alpha.5",
     "@reduxjs/toolkit": "^1.8.1",
     "@testing-library/react": "13.1.1",

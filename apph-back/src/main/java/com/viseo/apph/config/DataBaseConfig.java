@@ -33,8 +33,8 @@ public class DataBaseConfig {
     @EventListener(ContextRefreshedEvent.class)
     public void onApplicationEvent(ContextRefreshedEvent event) {
         event.getApplicationContext().getBean(DataBaseConfig.class).initializeRole();
-        event.getApplicationContext().getBean(DataBaseConfig.class).initializeAdmin();
         if (this.init) {
+            event.getApplicationContext().getBean(DataBaseConfig.class).initializeAdmin();
             event.getApplicationContext().getBean(DataBaseConfig.class).initialize();
         }
     }
