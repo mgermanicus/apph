@@ -17,6 +17,7 @@ import javax.persistence.NoResultException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -32,7 +33,6 @@ public class PhotoController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(value = "/infos", produces = "application/json")
     public ResponseEntity<IResponseDto> getUserPhotos(@RequestBody FilterRequest filterRequest) {
-
         try {
             User user = utils.getUser();
             PaginationResponse response;
@@ -181,6 +181,18 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
         } catch (UnauthorizedException ue) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
+        }
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping(value = "/{photoIds}")
+    public ResponseEntity<IResponseDto> getPhotosByIds(@PathVariable List<Long> photoIds) {
+        try {
+            User user = utils.getUser();
+            PhotoListResponse responseList = photoService.getPhotosByIds(photoIds, user);
+            return ResponseEntity.ok().body(responseList);
+        } catch (NotFoundException nfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
         }
     }
 }

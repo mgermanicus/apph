@@ -11,6 +11,8 @@ import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.*;
 import com.viseo.apph.exception.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,8 @@ public class PhotoService {
     @Value("${max-zip-size-mb}")
     public long zipMaxSize;
 
+    Logger logger = LoggerFactory.getLogger(PhotoService.class);
+
     private class FilterQuery {
         public String query;
         public Queue<String> argQueue;
@@ -61,17 +65,25 @@ public class PhotoService {
     @Transactional
     public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException, ConflictException {
         Folder folder = null;
-        if (photoRequest.getTitle().length() > 255 || photoRequest.getDescription().length() > 255)
+        if (photoRequest.getTitle().length() > 255 || photoRequest.getDescription().length() > 255) {
+            logger.error("title or description over than 255");
             throw new IllegalArgumentException("photo.error.titleOrDescriptionOverChar");
+        }
         if (photoRequest.getFolderId() >= 0) {
             folder = folderDao.getFolderById(photoRequest.getFolderId());
-            if (folder == null)
+            if (folder == null) {
+                logger.error("Folder with id: " + photoRequest.getFolderId() + " do not exist");
                 throw new NotFoundException("folder.error.notExist");
-            if (folder.getUser().getId() != user.getId())
+            }
+            if (folder.getUser().getId() != user.getId()) {
+                logger.error("User cannot access to the folder");
                 throw new UnauthorizedException("folder.error.accessDenied");
+            }
         }
-        if (photoDao.existNameInFolder(folder, photoRequest.getTitle(), getFormat(photoRequest.getFile())))
+        if (photoDao.existNameInFolder(folder, photoRequest.getTitle(), getFormat(photoRequest.getFile()))) {
+            logger.error("Folder with name: " + photoRequest.getTitle() + " already exist");
             throw new ConflictException("folder.error.titleAlreadyUsed");
+        }
         Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
         Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
         Photo photo = new Photo()
@@ -101,9 +113,9 @@ public class PhotoService {
         Set<Tag> newTags = tagService.createListTags(photoRequest.getTags(), user);
         Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
         photo.setTitle(photoRequest.getTitle())
-             .setDescription(photoRequest.getDescription())
-             .setShootingDate(shootingDate)
-             .setTags(newTags);
+                .setDescription(photoRequest.getDescription())
+                .setShootingDate(shootingDate)
+                .setTags(newTags);
         return "photo.edited";
     }
 
@@ -113,6 +125,7 @@ public class PhotoService {
             String[] types = contentType.split("/");
             return "." + types[1];
         } else {
+            logger.error("Wrong format");
             throw new InvalidFileException("upload.error.wrongFormat");
         }
     }
@@ -128,9 +141,11 @@ public class PhotoService {
     public PhotoResponse download(Long userId, PhotoRequest photoRequest) throws FileNotFoundException, UnauthorizedException {
         Photo photo = photoDao.getPhoto(photoRequest.getId());
         if (photo == null) {
+            logger.error("No photo with id: " + photoRequest.getId());
             throw new FileNotFoundException();
         }
         if (userId != photo.getUser().getId()) {
+            logger.error("User: " + userId + " cannot download the photo");
             throw new UnauthorizedException("download.error.accessDenied");
         }
         byte[] photoByte = s3Dao.download(photo);
@@ -151,10 +166,14 @@ public class PhotoService {
     @Transactional
     public PhotoListResponse getPhotosByFolder(long folderId, User user) throws NotFoundException, UnauthorizedException {
         Folder folder = folderDao.getFolderById(folderId);
-        if (folder == null)
+        if (folder == null) {
+            logger.error("Folder with id: " + folderId + " do not exist");
             throw new NotFoundException("folder.error.notExist");
-        if (folder.getUser().getId() != user.getId())
+        }
+        if (folder.getUser().getId() != user.getId()) {
+            logger.error(user.getFirstname() + " " + user.getLastname() + " cannot access to the folder");
             throw new UnauthorizedException("folder.error.accessDenied");
+        }
         List<Photo> photoList = photoDao.getPhotosByFolder(folder);
         PhotoListResponse response = new PhotoListResponse();
         photoList.forEach(photo -> response.addPhoto(new PhotoResponse()
@@ -173,12 +192,32 @@ public class PhotoService {
     }
 
     @Transactional
+    public PhotoListResponse getPhotosByIds(List<Long> ids, User user) throws NotFoundException {
+        if (ids.size() == 0) {
+            logger.error("ids empty");
+            throw new NotFoundException("photo.maySelected");
+        }
+        List<Photo> urlList = photoDao.getPhotosByUserAndIds(ids, user);
+        PhotoListResponse response = new PhotoListResponse();
+        urlList.forEach(photo -> response.addPhoto(new PhotoResponse()
+                .setId(photo.getId())
+                .setTitle(photo.getTitle())
+                .setUrl(s3Dao.getPhotoUrl(photo))
+        ));
+        return response;
+    }
+
+    @Transactional
     public MessageListResponse movePhotosToFolder(User user, PhotosRequest request) throws NotFoundException, UnauthorizedException {
         Folder folder = folderDao.getFolderById(request.getFolderId());
-        if (folder == null)
+        if (folder == null) {
+            logger.error("Folder with id: " + request.getFolderId() + " do not exist");
             throw new NotFoundException("folder.error.notExist");
-        if (folder.getUser().getId() != user.getId())
+        }
+        if (folder.getUser().getId() != user.getId()) {
+            logger.error(user.getFirstname() + " " + user.getLastname() + " cannot access to the folder");
             throw new UnauthorizedException("folder.error.accessDenied");
+        }
         MessageListResponse response = new MessageListResponse();
         for (long id : request.getIds()) {
             Photo photo = photoDao.getPhoto(id);
@@ -209,8 +248,12 @@ public class PhotoService {
         String lastField = "first";
         for (FilterDto filter : filterDtoList) {
             if (!Objects.equals(filter.getField(), lastField)) {
-                if (!lastField.equals("first")) {query.append(") AND");}
-                if (lastField.equals("first")) {query.append(" AND");}
+                if (!lastField.equals("first")) {
+                    query.append(") AND");
+                }
+                if (lastField.equals("first")) {
+                    query.append(" AND");
+                }
                 query.append(" (");
                 lastField = filter.getField();
             } else {
@@ -220,7 +263,9 @@ public class PhotoService {
             query.append(filter.getOperatorToSql()).append(" ");
             query.append(filter.getValueToSql(argQueue)).append(" ");
         }
-        if (!filterDtoList.isEmpty()) {query.append(")");}
+        if (!filterDtoList.isEmpty()) {
+            query.append(")");
+        }
         query.append(" GROUP BY p.id");
         return new FilterQuery(query.toString(), argQueue);
     }
@@ -288,9 +333,11 @@ public class PhotoService {
         for (Long id : ids) {
             Photo photo = photoDao.getPhoto(id);
             if (photo == null) {
+                logger.error("Photo with id: " + id + " do not exist");
                 throw new FileNotFoundException();
             }
             if (user.getId() != photo.getUser().getId()) {
+                logger.error(user.getFirstname() + " " + user.getLastname() + " cannot download the photo");
                 throw new UnauthorizedException("download.accessDenied");
             }
             byte[] photoByte = s3Dao.download(photo);
@@ -302,6 +349,7 @@ public class PhotoService {
             zipOut.putNextEntry(zipEntry);
             zipOut.write(photoByte);
             if (bos.size() > zipMaxSize * 1024 * 1024) {
+                logger.error("Attachment too big");
                 throw new MaxSizeExceededException("download.error.oversize");
             }
         }
@@ -314,9 +362,11 @@ public class PhotoService {
     public String changePhotoFile(Long userId, PhotoRequest photoRequest) throws IOException, UnauthorizedException, InvalidFileException {
         Photo photo = photoDao.getPhoto(photoRequest.getId());
         if (photo == null) {
+            logger.error("Photo with id: " + photoRequest.getId() + " do not exist");
             throw new FileNotFoundException("download.error.fileNotExist");
         }
         if (userId != photo.getUser().getId()) {
+            logger.error(userId + " cannot modify the file");
             throw new UnauthorizedException("download.error.accessDenied");
         }
         s3Dao.delete(photo);
@@ -327,10 +377,14 @@ public class PhotoService {
     @Transactional
     public MessageResponse updatePhotoFolder(User user, PhotoRequest photoRequest) throws UnauthorizedException, NotFoundException {
         Photo photo = photoDao.getPhoto(photoRequest.getId());
-        if (photo == null)
+        if (photo == null) {
+            logger.error("Photo with id: " + photoRequest.getId() + " do not exist");
             throw new NotFoundException("photo.error.notExist");
-        if (photo.getUser().getId() != user.getId())
+        }
+        if (photo.getUser().getId() != user.getId()) {
+            logger.error(user.getFirstname() + " " + user.getLastname() + " cannot access to the photo");
             throw new UnauthorizedException("action.forbidden");
+        }
         Folder folder = folderDao.getFolderById(photoRequest.getFolderId());
         photo.setFolder(folder);
         return new MessageResponse("photo.successDelete");

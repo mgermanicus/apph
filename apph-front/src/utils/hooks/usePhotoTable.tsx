@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { IFilterPayload } from '../types/Filter';
 import { IPagination, ITable } from '../index';
-import { useSelector } from 'react-redux';
 import { PhotoDetails } from '../../static/components/PhotoDetails';
 import PhotoService from '../../services/PhotoService';
 import { ButtonGroup } from '@mui/material';
@@ -24,17 +23,6 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
   const [page, setPage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
-  const selected = useSelector(
-    ({ selectedPhotos }: { selectedPhotos: ITable[] }) => selectedPhotos
-  );
-
-  useEffect(() => {
-    setSelectedIds((values) =>
-      Array.from(
-        new Set(values.concat(selected.map((photo: ITable) => +photo['id'])))
-      )
-    );
-  }, [selected]);
 
   useEffect(() => {
     setLoading(true);
@@ -101,15 +89,15 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
         <MovePhotoOrFolder photoIds={selectedIds} />
         <DownloadZip ids={selectedIds} />
         <DeleteImage ids={selectedIds} setRefresh={setRefresh} />
-        <Diaporama data={selected} />
+        <Diaporama ids={selectedIds} />
       </ButtonGroup>
       <PhotoTable
         data={data}
-        selected={selectedIds}
         page={page}
         pageSize={pageSize}
         setPage={setPage}
         setPageSize={setPageSize}
+        setSelectedIds={setSelectedIds}
         totalSize={totalSize}
         loading={loading}
         handleSortModelChange={handleSortModelChange}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dispatch, useEffect, useState } from 'react';
+import { Dispatch, useState } from 'react';
 import {
   DataGrid,
   GridColDef,
@@ -9,8 +9,6 @@ import {
 import { Stack } from '@mui/material';
 import { ITable, ITag } from '../../utils';
 import { DownloadImage } from './DownloadImage';
-import { useDispatch } from 'react-redux';
-import { replaceSelectedPhotos } from '../../redux/slices/photoSlice';
 import { useTranslation } from 'react-i18next';
 
 interface photoTableProps {
@@ -21,6 +19,7 @@ interface photoTableProps {
   setPage: Dispatch<React.SetStateAction<number>>;
   pageSize: number;
   setPageSize: Dispatch<React.SetStateAction<number>>;
+  setSelectedIds: Dispatch<React.SetStateAction<number[]>>;
   selected?: number[];
   handleSortModelChange: (model: GridSortModel) => void;
 }
@@ -33,11 +32,10 @@ export const PhotoTable = ({
   setPage,
   pageSize = 5,
   setPageSize,
-  selected,
+  setSelectedIds,
   handleSortModelChange
 }: photoTableProps) => {
   const [selectionModel, setSelectionModel] = useState<GridSelectionModel>([]);
-  const dispatch = useDispatch();
   const { t } = useTranslation();
   const columns: GridColDef[] = [
     {
@@ -118,13 +116,10 @@ export const PhotoTable = ({
     }
   ];
 
-  useEffect(() => {
-    if (selected) setSelectionModel(selected);
-  }, [data]);
-
   return (
     <div style={{ height: 115 + pageSize * 52, width: '100%' }}>
       <DataGrid
+        keepNonExistentRowsSelected
         pagination
         paginationMode="server"
         page={page}
@@ -143,13 +138,7 @@ export const PhotoTable = ({
         columnBuffer={9}
         onSelectionModelChange={(ids: GridSelectionModel) => {
           setSelectionModel(ids);
-          const selectedIDs = new Set(ids);
-          const selectedRowData = data.filter((rows) =>
-            selectedIDs.has(rows.id)
-          );
-          if (selectedRowData.length) {
-            dispatch(replaceSelectedPhotos(JSON.stringify(selectedRowData)));
-          }
+          setSelectedIds(ids as number[]);
         }}
         selectionModel={selectionModel}
         checkboxSelection
