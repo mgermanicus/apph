@@ -1,8 +1,10 @@
 import { StatusType, UploadStatus } from '../../utils';
 import DoneIcon from '@mui/icons-material/Done';
 import { Box, LinearProgress, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 export const UploadListItem = (props: { file: File; status: UploadStatus }) => {
+  const { t } = useTranslation();
   const uploadBody = () => {
     switch (props.status.type) {
       case StatusType.Success:
@@ -10,7 +12,7 @@ export const UploadListItem = (props: { file: File; status: UploadStatus }) => {
       case StatusType.Error:
         return (
           <Typography color="error" variant="caption">
-            {props.status.message}
+            {t(props.status.message ?? '')}
           </Typography>
         );
       case StatusType.Uploading:

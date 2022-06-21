@@ -165,6 +165,7 @@
     "manyUploads": "Vos fichiers ont bien été uploadés",
     "fillField": "Veuillez renseigner ce champ.",
     "successChange": "Le changement s'est effectué avec succèss.",
+    "maySelected": "Veuillez sélectionner un fichier.",
     "selectFile": "Glissez-déposez des fichiers ici, ou cliquez dans la zone pour sélectionner des fichiers à uploader.",
     "files": "Fichiers"
   },
