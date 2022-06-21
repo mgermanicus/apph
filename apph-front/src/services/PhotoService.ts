@@ -334,4 +334,34 @@ export default class PhotoService {
       handleError
     );
   }
+
+  static editPhotoListInfos(
+    ids: number[],
+    shootingDate: Date,
+    selectedTags: ITag[],
+    handleSuccess: () => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = `/photo/editPhotoList`,
+      userInfos = cookies.get('user'),
+      requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + userInfos?.token
+        },
+        body: JSON.stringify({
+          ids,
+          shootingDate,
+          selectedTags
+        })
+      };
+    const successFunction = () => {
+      handleSuccess();
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
 }

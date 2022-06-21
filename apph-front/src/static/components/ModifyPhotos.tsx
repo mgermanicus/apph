@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, Stack, TextField, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import React, { useEffect, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { ITag } from '../../utils';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import TagService from '../../services/TagService';
 import { AlertSnackbar } from './AlertSnackbar';
 import Typography from '@mui/material/Typography';
+import PhotoService from '../../services/PhotoService';
 
 interface modifyPhotosProps {
   ids: number[];
@@ -16,9 +17,10 @@ interface modifyPhotosProps {
 
 export const ModifyPhotos = ({ ids }: modifyPhotosProps): JSX.Element => {
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
-  const [shootingDate, setShootingDate] = useState<Date | null>(null);
+  const [shootingDate, setShootingDate] = useState<Date>(new Date());
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const [allTags, setAllTags] = useState<ITag[]>([]);
+  const [tagsValidity, setTagsValidity] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const { t } = useTranslation();
 
@@ -34,19 +36,30 @@ export const ModifyPhotos = ({ ids }: modifyPhotosProps): JSX.Element => {
     );
   }, []);
 
-  function handleOpenForm() {
+  const handleOpenForm = () => {
     setIsFormOpen(true);
-  }
+  };
 
-  function handleCloseForm() {
-    setShootingDate(null);
+  const handleCloseForm = () => {
+    setShootingDate(new Date());
     setSelectedTags([]);
     setIsFormOpen(false);
-  }
+  };
 
-  function handleSubmit() {
-    console.log(shootingDate + ' ' + selectedTags);
-  }
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (selectedTags.length < 1) {
+      setTagsValidity(false);
+      return;
+    }
+    PhotoService.editPhotoListInfos(
+      ids,
+      shootingDate,
+      selectedTags,
+      handleCloseForm,
+      (errorMessage: string) => setErrorMessage(errorMessage)
+    );
+  };
 
   return (
     <>
@@ -105,12 +118,13 @@ export const ModifyPhotos = ({ ids }: modifyPhotosProps): JSX.Element => {
                   if (date) setShootingDate(date);
                   else setShootingDate(new Date());
                 }}
-                renderInput={(params) => <TextField {...params} />}
+                renderInput={(params) => <TextField {...params} required />}
               />
             </LocalizationProvider>
             <TagInput
               allTags={allTags}
               onChange={(tags) => setSelectedTags(tags)}
+              isValid={tagsValidity}
             />
             <Button type="submit" fullWidth variant="contained">
               {t('action.confirm')}
