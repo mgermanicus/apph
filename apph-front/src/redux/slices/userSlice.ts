@@ -6,13 +6,15 @@ export const currentUserSlice = createSlice({
   initialState: {
     firstname: '',
     lastname: '',
-    login: ''
+    login: '',
+    isAdmin: false
   } as IUser,
   reducers: {
     changeCurrentUser: (state: Draft<IUser>, action: PayloadAction<IUser>) => {
       state.firstname = action.payload.firstname;
       state.lastname = action.payload.lastname;
       state.login = action.payload.login;
+      state.isAdmin = action.payload.isAdmin;
     }
   }
 });

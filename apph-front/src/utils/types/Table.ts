@@ -33,3 +33,10 @@ export interface ITableDetails {
   setSnackMessage?: Dispatch<SetStateAction<string>>;
   setSnackSeverity?: Dispatch<SetStateAction<AlertColor>>;
 }
+
+export interface IUserTable {
+  id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+}

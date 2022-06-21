@@ -32,12 +32,14 @@ export default class AuthService {
       const user: IUser = {
         firstname: '',
         lastname: '',
-        login: ''
+        login: '',
+        isAdmin: false
       };
       if (typeof decodedToken === 'object') {
         user.login = decodedToken.login;
         user.lastname = decodedToken.lastname;
         user.firstname = decodedToken.firstname;
+        user.isAdmin = decodedToken.isAdmin;
         cookies.set(
           'user',
           { token: jws },

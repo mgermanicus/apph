@@ -6,7 +6,6 @@ import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.IResponseDto;
-import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.security.UserDetailsImpl;
@@ -64,7 +63,6 @@ public class UserTest {
         inject(userController, "userService", userService);
         inject(userService, "encoder", passwordEncoder);
         inject(userController, "utils", utils);
-
     }
 
     @Test

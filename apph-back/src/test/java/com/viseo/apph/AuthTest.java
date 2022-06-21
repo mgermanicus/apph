@@ -8,7 +8,6 @@ import com.viseo.apph.domain.ERole;
 import com.viseo.apph.domain.Role;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.LoginRequest;
-import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.security.UserDetailsImpl;
@@ -18,7 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -72,11 +71,20 @@ public class AuthTest {
     }
 
     @Test
-    public void testLogin() {
+    public void testLoginUser() {
+        testLogin(ERole.ROLE_USER);
+    }
+
+    @Test
+    public void testLoginAdmin() {
+        testLogin(ERole.ROLE_ADMIN);
+    }
+
+    public void testLogin(ERole role) {
         //GIVEN
         createAuthController();
-        Set<Role> set = new HashSet<Role>();
-        set.add(new Role(ERole.ROLE_USER));
+        Set<Role> set = new HashSet<>();
+        set.add(new Role(role));
         User user = (User) new User().setLogin("tintin")
                 .setPassword("P@ssw0rd")
                 .setLastname("test")
@@ -88,12 +96,14 @@ public class AuthTest {
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
         SecurityContext securityContext = mock(SecurityContext.class);
-        Mockito.mockStatic(SecurityContextHolder.class).when(SecurityContextHolder::getContext).thenReturn(securityContext);
+        MockedStatic<SecurityContextHolder> staticMock = mockStatic(SecurityContextHolder.class);
+        staticMock.when(SecurityContextHolder::getContext).thenReturn(securityContext);
         LoginRequest loginRequest = new LoginRequest().setLogin("tintin").setPassword("P@ssw0rd");
         //WHEN
         ResponseEntity<String> responseEntity = authController.login(loginRequest);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        staticMock.close();
     }
 
     @Test

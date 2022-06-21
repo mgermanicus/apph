@@ -95,6 +95,14 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 
+    public boolean isAdmin() {
+        for (GrantedAuthority authority : authorities) {
+            if (authority.getAuthority().equals("ROLE_ADMIN"))
+                return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

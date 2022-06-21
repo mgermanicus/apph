@@ -11,6 +11,7 @@ import { IUser } from './utils';
 import { EditProfile } from './static/components/EditProfile';
 import { MyPhotoPage } from './static/pages/MyPhotoPage';
 import { AdvancedResearchPage } from './static/pages/AdvancedResearchPage';
+import { UserListPage } from './static/pages/UserListPage';
 
 export const PrivateRoutes = ({
   authenticated
@@ -28,6 +29,11 @@ export const PrivateRoutes = ({
   const needNoAuthenticationRoute = (element: JSX.Element): JSX.Element => {
     return !isAuthenticated ? element : <Navigate to="/pictures" />;
   };
+
+  const needAdminAuthenticationRoute = (element: JSX.Element): JSX.Element => {
+    return isAuthenticated && user.isAdmin ? element : <Navigate to={'/'} />;
+  };
+
   return (
     <>
       <Routes>
@@ -83,6 +89,12 @@ export const PrivateRoutes = ({
           path="/research"
           element={needAuthenticationRoute(
             <PrivatePageContainer element={<AdvancedResearchPage />} />
+          )}
+        />
+        <Route
+          path="/users"
+          element={needAdminAuthenticationRoute(
+            <PrivatePageContainer element={<UserListPage />} />
           )}
         />
         <Route path="*" element={<Navigate to="/" />} />

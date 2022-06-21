@@ -51,13 +51,19 @@
     "actions": "Actions",
     "error": "Illegal argument."
   },
+  "userTable": {
+    "firstname": "First name",
+    "lastname": "Last name",
+    "email": "Email"
+  },
   "field": {
     "photos": "My Pictures",
     "folders": "My Folders",
     "trips": "My Trips",
     "tags": "My Tags",
     "treatments": "My Processing",
-    "advancedSearch": "Advanced Search"
+    "advancedSearch": "Advanced Search",
+    "users": "Users List"
   },
   "folder": {
     "create": "Create",

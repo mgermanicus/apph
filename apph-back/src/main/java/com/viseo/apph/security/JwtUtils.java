@@ -26,6 +26,7 @@ public class JwtUtils {
                 .claim("id", userPrincipal.getId())
                 .claim("firstname", userPrincipal.getFirstname())
                 .claim("lastname", userPrincipal.getLastname())
+                .claim("isAdmin", userPrincipal.isAdmin())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(key)

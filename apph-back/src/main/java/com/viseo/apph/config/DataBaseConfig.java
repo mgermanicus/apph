@@ -33,6 +33,7 @@ public class DataBaseConfig {
     @EventListener(ContextRefreshedEvent.class)
     public void onApplicationEvent(ContextRefreshedEvent event) {
         event.getApplicationContext().getBean(DataBaseConfig.class).initializeRole();
+        event.getApplicationContext().getBean(DataBaseConfig.class).initializeAdmin();
         if (this.init) {
             event.getApplicationContext().getBean(DataBaseConfig.class).initialize();
         }
@@ -50,15 +51,25 @@ public class DataBaseConfig {
     }
 
     @Transactional
+    public void initializeAdmin() {
+        Role roleAdmin = roleDao.getRole(ERole.ROLE_ADMIN);
+        Set<Role> roleSet = new HashSet<>();
+        roleSet.add(roleAdmin);
+        User admin = new User().setLogin("admin@viseo.com").setPassword(encoder.encode("c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f"))
+                .setFirstname("Admin").setLastname("VISEO").setRoles(roleSet);
+        em.persist(admin);
+        Folder adminRoot = new Folder().setName("Admin VISEO").setParentFolderId(null).setUser(admin);
+        em.persist(adminRoot);
+    }
+
+    @Transactional
     public void initialize() {
         this.init = false;
         //Role
-        Role roleAdmin = roleDao.getRole(ERole.ROLE_ADMIN);
         Role roleUser = roleDao.getRole(ERole.ROLE_USER);
         //User
         Set<Role> set = new HashSet<>();
         set.add(roleUser);
-        set.add(roleAdmin);
         User alexandre = new User().setLogin("alexandre@viseo.com").setPassword(encoder.encode("13e15721c9d4ad58d34983344dfba265a90d80f63db77c2eb3804379d9608889"))
                 .setFirstname("Alexandre").setLastname("HU").setRoles(set);
         User baptiste = new User().setLogin("baptiste@viseo.com").setPassword(encoder.encode("15cc3b2994423d897d1e1ba43a670870fda7c4d62548416603a8ddddf7b9e06e"))
