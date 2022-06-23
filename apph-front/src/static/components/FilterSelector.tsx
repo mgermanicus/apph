@@ -4,10 +4,8 @@ import { AddCircle } from '@mui/icons-material';
 import { FilterComponent } from './FilterComponent';
 import { Box, IconButton, Tooltip } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import TagService from '../../services/TagService';
 import { ITag } from '../../utils';
-import { setTagList } from '../../redux/slices/tagSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { IFilter } from '../../utils/types/Filter';
 import { useTranslation } from 'react-i18next';
 
@@ -100,6 +98,7 @@ function* generateId() {
   let id = 1;
   while (true) yield id++;
 }
+
 const iterator = generateId();
 
 interface filterSelectorProps {
@@ -108,26 +107,30 @@ interface filterSelectorProps {
 }
 
 export const FilterSelector = ({
-  onFilterPhoto,
-  onError
-}: filterSelectorProps) => {
+  tagName,
+  onFilterPhoto
+}: { tagName?: string } & filterSelectorProps) => {
   const [filterStates, dispatchFilterStates] = useReducer(
     filterReducers,
     filterInitialState
   );
   const tagList = useSelector(({ tagList }: { tagList: ITag[] }) => tagList);
-  const dispatch = useDispatch();
   const { t } = useTranslation();
 
   useEffect(() => {
-    TagService.getAllTags(
-      (tags: string) => {
-        const tagsConverted: ITag[] = JSON.parse(tags);
-        dispatch(setTagList(tagsConverted));
-      },
-      (errorMessage: string) => onError(errorMessage)
-    );
-  }, []);
+    if (tagName && tagList.length) {
+      dispatchFilterStates({
+        type: filterActionKind.UPDATE,
+        payload: {
+          id: 0,
+          field: 'tags',
+          operator: null,
+          value: tagList.filter((t) => t.name === tagName)
+        }
+      });
+      handleFilterPhoto();
+    }
+  }, [tagList]);
 
   const createNewFilter = () => {
     const currentIterator = iterator.next();

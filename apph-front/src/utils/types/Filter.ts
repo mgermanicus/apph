@@ -11,5 +11,5 @@ export interface IFilterPayload {
   id?: number;
   field: string;
   operator: string | null;
-  value: string | Date;
+  value: string | Date | ITag;
 }

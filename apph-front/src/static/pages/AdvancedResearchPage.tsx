@@ -1,29 +1,46 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FilterSelector } from '../components/FilterSelector';
 import { IFilter, IFilterPayload } from '../../utils/types/Filter';
 import { AlertSnackbar } from '../components/AlertSnackbar';
 import { usePhotoTable } from '../../utils/hooks/usePhotoTable';
 import { deepCopy } from '../../utils/DeepCopy';
+import { useLocation } from 'react-router-dom';
+import TagService from '../../services/TagService';
+import { ITag } from '../../utils';
+import { setTagList } from '../../redux/slices/tagSlice';
+import { useDispatch } from 'react-redux';
 
 export const AdvancedResearchPage = (): JSX.Element => {
-  const [filterList, setFilterList] = useState<IFilterPayload[]>();
-
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const [filterList, setFilterList] = useState<IFilterPayload[]>([]);
   const { errorState, photoTable } = usePhotoTable(filterList);
+
+  useEffect(() => {
+    TagService.getAllTags(
+      (tags: string) => {
+        const tagsConverted: ITag[] = JSON.parse(tags);
+        dispatch(setTagList(tagsConverted));
+      },
+      (errorMessage: string) => errorState.setMessage(errorMessage)
+    );
+  }, []);
 
   const getFilterPayload = (filterList: IFilter[]): void => {
     if (
       filterList.length === 0 ||
-      filterList.some((filterState) =>
+      (filterList.some((filterState) =>
         Object.values(filterState).some(
           (value) =>
             value === undefined ||
             value === '' ||
             (Array.isArray(value) && value.length === 0)
         )
-      )
+      ) &&
+        location.state === null)
     ) {
-      errorState.setMessage('Au moins un filtre possède un champ vide.');
+      errorState.setMessage('filter.error.fieldNull');
     } else {
       const filterPayload = filterList as IFilterPayload[];
       setFilterList(deserializeArray(filterPayload));
@@ -59,10 +76,11 @@ export const AdvancedResearchPage = (): JSX.Element => {
   return (
     <>
       <FilterSelector
+        tagName={(location?.state as { tagName: string })?.tagName}
         onFilterPhoto={handleFilterPhoto}
         onError={errorState.setMessage}
       />
-      {filterList?.length && photoTable}
+      {!!filterList?.length && photoTable}
       <AlertSnackbar
         open={!!errorState.getMessage}
         severity={'warning'}

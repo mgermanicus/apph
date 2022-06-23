@@ -187,7 +187,8 @@
       "addPayloadNaN": "Erreur lors de l'ajout du filtre.",
       "deletePayloadNaN": "Erreur lors de la suppression du filtre.",
       "idNotMatch": "Erreur lors de la mise à jour du filtre.",
-      "gestion": "Erreur lors de la gestion du filtre"
+      "gestion": "Erreur lors de la gestion du filtre",
+      "fieldNull": "Au moins un filtre possède un champ vide"
     }
   },
   "size": {
