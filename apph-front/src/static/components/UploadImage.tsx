@@ -60,6 +60,7 @@ export const UploadImage = ({
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const tagList = useSelector(({ tagList }: { tagList: ITag[] }) => tagList);
   const [tagsValidity, setTagsValidity] = useState<boolean>(true);
+  const [locationValidity, setLocationValidity] = useState<boolean>(true);
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
     accept: { 'image/*': [] }
   });
@@ -129,6 +130,10 @@ export const UploadImage = ({
     event.preventDefault();
     if (selectedTags.length < 1) {
       setTagsValidity(false);
+      return;
+    }
+    if (!location) {
+      setLocationValidity(false);
       return;
     }
     if (acceptedFiles.length) {
@@ -324,9 +329,9 @@ export const UploadImage = ({
                   </LocalizationProvider>
                   <LocationPicker
                     onChange={(value) => {
-                      console.log(value);
                       setLocation(value);
                     }}
+                    isValid={locationValidity}
                   />
                   <TagInput
                     allTags={tagList}

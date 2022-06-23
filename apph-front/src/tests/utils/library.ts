@@ -3,6 +3,8 @@ import Server from '../../services/Server';
 import { FakeRequestResults } from './types/FakeRequestResults';
 import AuthService from '../../services/AuthService';
 import { ITag } from '../../utils';
+import userEvent from '@testing-library/user-event';
+import { isValidElement } from 'react';
 
 export function fillText(label: RegExp, value: string) {
   const textInput = screen.getByRole('textbox', { name: label });
@@ -32,6 +34,19 @@ export function fillTags(tags: ITag[]) {
     fireEvent.keyDown(autocomplete, { key: 'Enter' });
   });
   return;
+}
+
+export async function fillLocation(query: string) {
+  const autocomplete = within(screen.getByTestId('location')).getByRole(
+    'combobox'
+  );
+  const user = userEvent.setup();
+  await user.click(screen.getByTestId('location'));
+  await user.keyboard(query);
+  await setTimeout(() => {
+    fireEvent.keyDown(autocomplete, { key: 'ArrowDown' });
+    fireEvent.keyDown(autocomplete, { key: 'Enter' });
+  }, 1000);
 }
 
 export function fillDate(date: Date) {
@@ -107,7 +122,9 @@ export const fakeRequest = (requestResults: FakeRequestResults) => {
       successFunction: (body: string) => void | undefined,
       errorFunction: (error: string) => void
     ) => {
-      const result = requestResults[URL];
+      const result = Object.entries(requestResults).filter(([key, value]) =>
+          URL.includes(key)
+      )[0][1];
       if (result?.error) {
         errorFunction(result.error);
       } else if (result?.body) {

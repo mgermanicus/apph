@@ -17,11 +17,9 @@ export class LocationService {
     };
     const successFunction = (results: string) => {
       const response: IGeocodeResponse = JSON.parse(results);
-      console.log(response);
       const locations = response.items.map((result): ILocation => {
         return { address: result.address.label, position: result.position };
       });
-      console.log(locations);
       handleSuccess(locations);
     };
     const errorFunction = (errorMessage: string) => {
