@@ -10,8 +10,6 @@ public class SettingResponse implements IResponseDto{
     public SettingResponse(){}
 
     public SettingResponse(Setting setting) {
-        System.out.println(setting.getUploadSize());
-        System.out.println(setting.getDownloadSize());
         this.uploadSize = setting.getUploadSize();
         this.downloadSize = setting.getDownloadSize();
     }
@@ -20,18 +18,8 @@ public class SettingResponse implements IResponseDto{
         return uploadSize;
     }
 
-    public SettingResponse setUploadSize(long uploadSize) {
-        this.uploadSize = uploadSize;
-        return this;
-    }
-
     public long getDownloadSize() {
-        return uploadSize;
-    }
-
-    public SettingResponse setDownloadSize(long downloadSize) {
-        this.downloadSize = downloadSize;
-        return this;
+        return downloadSize;
     }
 
     public String getMessage() {
