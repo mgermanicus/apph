@@ -220,7 +220,7 @@
         "valueNotValid": "Les valeurs saissis sont incorect"
       },
       "success": {
-        "modifySuccess": "Les paramètres ont été modifier"
+        "modifySuccess": "Les paramètres ont été modifiées"
       }
     }
   }

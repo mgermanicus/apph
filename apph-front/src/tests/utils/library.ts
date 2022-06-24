@@ -108,9 +108,9 @@ export const fakeRequest = (requestResults: FakeRequestResults) => {
       errorFunction: (error: string) => void
     ) => {
       const result = requestResults[URL];
-      if (result.error) {
+      if (result?.error) {
         errorFunction(result.error);
-      } else if (result.body) {
+      } else if (result?.body) {
         successFunction(result.body);
       }
       return Promise.resolve();

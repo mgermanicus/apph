@@ -2,7 +2,6 @@ package com.viseo.apph.controller;
 
 import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.SettingRequest;
-import com.viseo.apph.dto.SettingResponse;
 import com.viseo.apph.dto.UserResponse;
 import com.viseo.apph.service.SettingService;
 import com.viseo.apph.service.UserService;

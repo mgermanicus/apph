@@ -68,7 +68,7 @@ public class DataBaseConfig {
         em.persist(admin);
         Folder adminRoot = new Folder().setName("Admin VISEO").setParentFolderId(null).setUser(admin);
         em.persist(adminRoot);
-        Setting setting = new Setting().setUploadSize(10).setDownloadSize(20);
+        Setting setting = new Setting().setUploadSize(10).setDownloadSize(15);
         em.persist(setting);
     }
 

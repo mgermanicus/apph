@@ -6,8 +6,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "setting")
 public class Setting extends BaseEntity {
-    long uploadSize;
-    long downloadSize;
+    long uploadSize = 10;
+    long downloadSize = 15;
 
     public Setting() {
         super();

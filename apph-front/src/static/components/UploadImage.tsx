@@ -61,8 +61,6 @@ export const UploadImage = ({
     (async () => {
       await SettingService.getSettings(
         (data) => {
-          console.log(data);
-          console.log('data');
           const settings: ISetting = JSON.parse(data);
           setUploadSize(settings.uploadSize);
         },
