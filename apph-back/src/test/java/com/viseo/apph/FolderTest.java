@@ -1,12 +1,10 @@
 package com.viseo.apph;
 
 import com.viseo.apph.controller.FolderController;
-import com.viseo.apph.dao.FolderDao;
-import com.viseo.apph.dao.PhotoDao;
-import com.viseo.apph.dao.S3Dao;
-import com.viseo.apph.dao.UserDao;
+import com.viseo.apph.dao.*;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.domain.Setting;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FolderRequest;
 import com.viseo.apph.dto.FolderResponse;
@@ -53,12 +51,13 @@ public class FolderTest {
     TypedQuery<Photo> typedQueryPhoto, typedQuerySubFolderPhoto;
 
     @Mock
+    TypedQuery<Setting> typedQuerySetting;
+
+    @Mock
     Utils utils;
 
     @Mock
     S3Client s3Client;
-
-    long zipMaxSize = 50;
 
     FolderService folderService;
     FolderController folderController;
@@ -66,10 +65,12 @@ public class FolderTest {
     private void createFolderController() {
         FolderDao folderDao = new FolderDao();
         PhotoDao photoDao = new PhotoDao();
+        UserDao userDao = new UserDao();
+        SettingDao settingDao = new SettingDao();
         inject(folderDao, "em", em);
         inject(photoDao, "em", em);
-        UserDao userDao = new UserDao();
         inject(userDao, "em", em);
+        inject(settingDao, "em", em);
         S3Dao s3Dao = new S3Dao();
         s3Client = mock(S3Client.class, RETURNS_DEEP_STUBS);
         inject(s3Dao, "s3Client", s3Client);
@@ -78,6 +79,7 @@ public class FolderTest {
         inject(folderService, "folderDao", folderDao);
         inject(folderService, "userDao", userDao);
         inject(folderService, "s3Dao", s3Dao);
+        inject(folderService, "settingDao", settingDao);
         folderController = new FolderController();
         inject(folderController, "folderService", folderService);
         inject(folderController, "utils", utils);
@@ -426,6 +428,8 @@ public class FolderTest {
         when(typedQueryFolder.setParameter("parentId", 2L)).thenReturn(typedQuerySubFolder);
         when(typedQueryFolder.getResultList()).thenReturn(Collections.singletonList(robertChild));
         when(typedQuerySubFolder.getResultList()).thenReturn(null);
+        when(em.createQuery("SELECT setting from Setting setting", Setting.class)).thenReturn(typedQuerySetting);
+        when(typedQuerySetting.getSingleResult()).thenReturn(new Setting().setDownloadSize(10).setUploadSize(20));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = folderController.downloadFolderToZip(request);
         //THEN
@@ -470,7 +474,6 @@ public class FolderTest {
     @Test
     public void testDownloadZipLarge() {
         //GIVEN
-        zipMaxSize = 0;
         createFolderController();
         String name = RandomString.make(256);
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
@@ -485,6 +488,8 @@ public class FolderTest {
         when(em.createQuery("SELECT p FROM Photo p WHERE p.folder =: folder", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("folder", robertRoot)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.getResultList()).thenReturn(Arrays.asList(photo_1, photo_1));
+        when(em.createQuery("SELECT setting from Setting setting", Setting.class)).thenReturn(typedQuerySetting);
+        when(typedQuerySetting.getSingleResult()).thenReturn(new Setting().setDownloadSize(0).setUploadSize(0));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = folderController.downloadFolderToZip(request);
         //THEN

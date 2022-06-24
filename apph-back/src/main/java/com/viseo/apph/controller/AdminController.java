@@ -31,7 +31,6 @@ public class AdminController {
 
     @GetMapping("/getSettings")
     public ResponseEntity<IResponseDto> getSettings() {
-        System.out.println(settingService.getSettings());
         return ResponseEntity.ok(settingService.getSettings());
     }
 
