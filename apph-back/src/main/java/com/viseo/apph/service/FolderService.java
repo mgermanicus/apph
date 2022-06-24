@@ -1,9 +1,6 @@
 package com.viseo.apph.service;
 
-import com.viseo.apph.dao.FolderDao;
-import com.viseo.apph.dao.PhotoDao;
-import com.viseo.apph.dao.S3Dao;
-import com.viseo.apph.dao.UserDao;
+import com.viseo.apph.dao.*;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
@@ -38,14 +35,14 @@ public class FolderService {
     @Autowired
     UserDao userDao;
 
-    @Value("${max-zip-size-mb}")
-    public long zipMaxSize;
-
     @Autowired
     PhotoDao photoDao;
 
     @Autowired
     S3Dao s3Dao;
+
+    @Autowired
+    SettingDao settingDao;
 
     @Transactional
     public FolderResponse getFoldersByUser(User user) throws NotFoundException {
@@ -196,6 +193,7 @@ public class FolderService {
         zipOut.putNextEntry(new ZipEntry(prefix));
         Set<String> names = new HashSet<>();
         List<Photo> photoList = photoDao.getPhotosByFolder(folder);
+        long zipMaxSize = settingDao.getSetting().getDownloadSize();
         if (photoList != null) {
             for (Photo photo : photoList) {
                 byte[] photoByte = s3Dao.download(photo);

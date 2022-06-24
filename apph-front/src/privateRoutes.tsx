@@ -12,6 +12,7 @@ import { EditProfile } from './static/components/EditProfile';
 import { MyPhotoPage } from './static/pages/MyPhotoPage';
 import { AdvancedResearchPage } from './static/pages/AdvancedResearchPage';
 import { UserListPage } from './static/pages/UserListPage';
+import { AppSettingsPage } from './static/pages/AppSettingsPage';
 
 export const PrivateRoutes = ({
   authenticated
@@ -95,6 +96,12 @@ export const PrivateRoutes = ({
           path="/users"
           element={needAdminAuthenticationRoute(
             <PrivatePageContainer element={<UserListPage />} />
+          )}
+        />
+        <Route
+          path="/settings"
+          element={needAdminAuthenticationRoute(
+            <PrivatePageContainer element={<AppSettingsPage />} />
           )}
         />
         <Route path="*" element={<Navigate to="/" />} />

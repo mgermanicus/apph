@@ -74,7 +74,6 @@ public class FolderTest {
         s3Client = mock(S3Client.class, RETURNS_DEEP_STUBS);
         inject(s3Dao, "s3Client", s3Client);
         folderService = new FolderService();
-        folderService.zipMaxSize = zipMaxSize;
         inject(folderService, "photoDao", photoDao);
         inject(folderService, "folderDao", folderDao);
         inject(folderService, "userDao", userDao);

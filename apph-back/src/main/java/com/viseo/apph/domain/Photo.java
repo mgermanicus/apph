@@ -1,7 +1,5 @@
 package com.viseo.apph.domain;
 
-import org.springframework.stereotype.Indexed;
-
 import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;

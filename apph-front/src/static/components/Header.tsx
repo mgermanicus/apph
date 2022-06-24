@@ -22,7 +22,8 @@ import {
   Group,
   InsertPhoto,
   LocalOffer,
-  Search
+  Search,
+  Settings
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import AuthService from '../../services/AuthService';
@@ -114,11 +115,18 @@ export const Header = (): JSX.Element => {
                   icon={<Search />}
                 />
                 {user.isAdmin && (
-                  <DrawerMenuItem
-                    title={t('field.users')}
-                    url="/users"
-                    icon={<Group />}
-                  />
+                  <>
+                    <DrawerMenuItem
+                      title={t('field.users')}
+                      url="/users"
+                      icon={<Group />}
+                    />
+                    <DrawerMenuItem
+                      title={t('field.settings')}
+                      url="/settings"
+                      icon={<Settings />}
+                    />
+                  </>
                 )}
               </List>
             </Box>

@@ -63,7 +63,8 @@
     "tags": "My Tags",
     "treatments": "My Processing",
     "advancedSearch": "Advanced Search",
-    "users": "Users List"
+    "users": "Users List",
+    "settings": "Settings"
   },
   "folder": {
     "create": "Create",
@@ -205,6 +206,22 @@
       "illegalArgument": "Illegal argument",
       "unauthorizedResource": "You do not have access to this resource",
       "notFound": "Resource not found"
+    }
+  },
+  "admin": {
+    "setting": {
+      "edit": "Edit parameters",
+      "uploadSize": "Maximum uploadable size",
+      "downloadSize": "Maximum downloadable size",
+      "warningUpdate": "Parameters will be updated",
+      "error": {
+        "modifyFailed": "Error while modifying parameters",
+        "errorGet": "Error while get parameters",
+        "valueNotValid": "Input value not valid"
+      },
+      "success": {
+        "modifySuccess": "Parameters successfully modifying"
+      }
     }
   }
 }

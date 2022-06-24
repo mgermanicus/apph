@@ -1,10 +1,7 @@
 package com.viseo.apph.service;
 
 import com.google.gson.GsonBuilder;
-import com.viseo.apph.dao.FolderDao;
-import com.viseo.apph.dao.PhotoDao;
-import com.viseo.apph.dao.S3Dao;
-import com.viseo.apph.dao.UserDao;
+import com.viseo.apph.dao.*;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.Tag;
@@ -47,8 +44,8 @@ public class PhotoService {
     @Autowired
     S3Dao s3Dao;
 
-    @Value("${max-zip-size-mb}")
-    public long zipMaxSize;
+    @Autowired
+    SettingDao settingDao;
 
     Logger logger = LoggerFactory.getLogger(PhotoService.class);
 
@@ -348,6 +345,7 @@ public class PhotoService {
             zipEntry.setSize(photoByte.length);
             zipOut.putNextEntry(zipEntry);
             zipOut.write(photoByte);
+            long zipMaxSize = settingDao.getSetting().getDownloadSize();
             if (bos.size() > zipMaxSize * 1024 * 1024) {
                 logger.error("Attachment too big");
                 throw new MaxSizeExceededException("download.error.oversize");

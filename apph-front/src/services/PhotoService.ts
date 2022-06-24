@@ -20,10 +20,11 @@ export default class PhotoService {
     imageFile: File,
     selectedTags: ITag[],
     folderId: string,
+    maxFileSizeMb: number,
     handleSuccess: () => void,
     handleError: (errorMessage: string) => void
   ) {
-    if (!imageFileCheck(imageFile, handleError)) return;
+    if (!imageFileCheck(imageFile, handleError, maxFileSizeMb)) return;
     const userInfos = cookies.get('user');
     const formData = new FormData();
     formData.append('file', imageFile);
