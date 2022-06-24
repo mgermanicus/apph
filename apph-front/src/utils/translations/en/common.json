@@ -187,7 +187,8 @@
       "addPayloadNaN": "Error while adding filter: payload is not a number",
       "deletePayloadNaN": "Error while deleting filter: payload is not a number",
       "idNotMatch": "Error while filter updating: id does not match any existing filter",
-      "gestion": "Error in filter management"
+      "gestion": "Error in filter management",
+      "fieldNull": "One of the field is empty"
     }
   },
   "size": {

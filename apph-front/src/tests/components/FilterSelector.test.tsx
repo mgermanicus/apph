@@ -68,4 +68,19 @@ describe('Test du fonctionnement des filtres', () => {
       }
     ]);
   });
+
+  it('should render with tagName', () => {
+    const spyFilterPhoto = jest.fn();
+    const spyOpenAlert = jest.fn();
+
+    const tree = render(
+      <FilterSelector
+        tagName={'Tag_1'}
+        onFilterPhoto={spyFilterPhoto}
+        onError={spyOpenAlert}
+      />,
+      { wrapper }
+    );
+    expect(tree).toMatchSnapshot();
+  });
 });
