@@ -31,7 +31,8 @@ describe('Test UploadImage', () => {
   it('tests error when user picks file too large', async () => {
     //GIVEN
     const spyRequestFunction = fakeRequest({
-      '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' }
+      '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
+      '/admin/getSettings': { body: '{"uploadSize":1,"downloadSize":1}' }
     });
     render(<UploadImage />, { wrapper });
     clickButton(/upload-photo/i);
@@ -57,6 +58,7 @@ describe('Test UploadImage', () => {
     //GIVEN
     const serverError = { message: "Une erreur est survenue lors de l'upload" };
     fakeRequest({
+      '/admin/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' },
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { error: JSON.stringify(serverError) }
     });
@@ -81,7 +83,8 @@ describe('Test UploadImage', () => {
   it('tests tag is required', async () => {
     //GIVEN
     const spyRequestFunction = fakeRequest({
-      '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' }
+      '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
+      '/admin/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' }
     });
     render(<UploadImage />, { wrapper });
     clickButton(/upload-photo/i);
@@ -175,6 +178,7 @@ describe('Test UploadImage', () => {
       files[0],
       expect.anything(),
       expect.anything(),
+      undefined,
       expect.anything(),
       expect.anything()
     );
