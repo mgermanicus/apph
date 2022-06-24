@@ -16,7 +16,7 @@ export default class PhotoService {
   static uploadImage(
     title: string,
     description: string,
-    shootingDate: Date,
+    shootingDate: string,
     imageFile: File,
     selectedTags: ITag[],
     folderId: string,
@@ -31,10 +31,7 @@ export default class PhotoService {
     formData.append('tags', JSON.stringify(selectedTags));
     formData.append('title', title);
     formData.append('description', description);
-    formData.append(
-      'shootingDate',
-      JSON.stringify(shootingDate.toLocaleString())
-    );
+    formData.append('shootingDate', shootingDate);
     formData.append('folderId', folderId);
     const requestOptions = {
       method: 'POST',

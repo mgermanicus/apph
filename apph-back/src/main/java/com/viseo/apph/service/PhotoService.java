@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,7 +61,7 @@ public class PhotoService {
     }
 
     @Transactional
-    public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException, ConflictException {
+    public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException, ConflictException, ParseException {
         Folder folder = null;
         if (photoRequest.getTitle().length() > 255 || photoRequest.getDescription().length() > 255) {
             logger.error("title or description over than 255");
@@ -82,7 +83,8 @@ public class PhotoService {
             throw new ConflictException("folder.error.titleAlreadyUsed");
         }
         Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
-        Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
+        Date shootingDate = new SimpleDateFormat("dd/MM/yyyy").parse(photoRequest.getShootingDate());
+        System.out.println(shootingDate);
         Photo photo = new Photo()
                 .setTitle(photoRequest.getTitle())
                 .setFormat(getFormat(photoRequest.getFile()))
