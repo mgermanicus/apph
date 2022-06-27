@@ -29,6 +29,7 @@ describe('Test du composant PhotoDetails', () => {
     shootingDate: new Date(),
     size: 0,
     format: 'jpeg',
+    location: { address: 'Paris, France', position: { lat: 0, lng: 0 } },
     tags: [{ id: 1, name: 'testTag' }] as ITag[]
   };
 
@@ -49,6 +50,7 @@ describe('Test du composant PhotoDetails', () => {
           modificationDate: mockPhoto.modificationDate,
           shootingDate: mockPhoto.shootingDate,
           size: mockPhoto.size,
+          location: mockPhoto.location,
           tags: mockPhoto.tags,
           format: mockPhoto.format,
           fromFolders: true
@@ -83,6 +85,7 @@ describe('Test du composant PhotoDetails', () => {
           modificationDate: mockPhoto.modificationDate,
           shootingDate: mockPhoto.shootingDate,
           size: mockPhoto.size,
+          location: mockPhoto.location,
           tags: mockPhoto.tags,
           format: mockPhoto.format,
           fromFolders: true,
@@ -127,6 +130,7 @@ describe('Test du composant PhotoDetails', () => {
           modificationDate: mockPhoto.modificationDate,
           shootingDate: mockPhoto.shootingDate,
           size: mockPhoto.size,
+          location: mockPhoto.location,
           tags: mockPhoto.tags,
           format: mockPhoto.format,
           fromFolders: true,
@@ -166,6 +170,7 @@ describe('Test du composant PhotoDetails', () => {
           modificationDate: mockPhoto.modificationDate,
           shootingDate: mockPhoto.shootingDate,
           size: mockPhoto.size,
+          location: mockPhoto.location,
           tags: mockPhoto.tags,
           format: mockPhoto.format,
           fromFolders: true,

@@ -16,6 +16,9 @@ public class Photo extends BaseEntity {
     LocalDate shootingDate;
     float size;
     String format;
+    String address;
+    float lat;
+    float lng;
     String url;
 
     @ManyToMany
@@ -138,4 +141,36 @@ public class Photo extends BaseEntity {
         }
         return this;
     }
+
+    public Photo setUrl(String url) {
+        this.url = url;
+        return this;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getAddress() { return this.address; }
+
+    public Photo setAddress(String address) {
+        this.address = address;
+        return this;
+    }
+
+    public float getLat() { return this.lat; }
+
+    public Photo setLat(float lat) {
+        this.lat = lat;
+        return this;
+    }
+
+    public float getLng() { return this.lng; }
+
+    public Photo setLng(float lng) {
+        this.lng = lng;
+        return this;
+    }
+
+
 }

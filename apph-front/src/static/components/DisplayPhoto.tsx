@@ -185,6 +185,7 @@ export const DisplayPhoto = ({
                   modificationDate: photo.modificationDate,
                   shootingDate: photo.shootingDate,
                   size: photo.size,
+                  location: photo.location,
                   tags: photo.tags,
                   format: photo.format,
                   fromFolders: true,

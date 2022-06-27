@@ -8,8 +8,7 @@ import {
   fillLocation,
   fillTags,
   fillText,
-  inputFile,
-  spyRequestSuccessBody
+  inputFile
 } from '../utils';
 import { ITag } from '../../utils';
 import { wrapper } from '../utils/components/CustomWrapper';
@@ -25,6 +24,10 @@ jest.mock('react-i18next', () => ({
   }
 }));
 
+jest.mock('ts-debounce', () => ({
+  debounce: (func: (query: string) => Promise<void>, waitMs: number) => func
+}));
+
 jest.setTimeout(10000);
 
 describe('Test UploadImage', () => {
@@ -35,14 +38,13 @@ describe('Test UploadImage', () => {
   it('tests error when user picks file too large', async () => {
     //GIVEN
     const query = 'paris';
-    const geocodeUrl = `/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`;
     const location = {
       address: 'Paris, France',
       position: { lat: 0.0, lng: 0.0 }
     };
     const spyRequestFunction = fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
-      [geocodeUrl]: {
+      '/geocode': {
         body: JSON.stringify({
           items: [
             {
@@ -66,7 +68,10 @@ describe('Test UploadImage', () => {
     await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
     //THEN
-    expect(screen.getByText(/upload.error.overSize/)).toBeInTheDocument();
+    screen.debug(undefined, Infinity);
+    expect(
+      await screen.findByText(/upload.error.overSize/)
+    ).toBeInTheDocument();
     expect(spyRequestFunction).not.toBeCalledWith(
       '/photo/upload',
       expect.anything(),
@@ -78,7 +83,6 @@ describe('Test UploadImage', () => {
   it('tests handling of server error', async () => {
     //GIVEN
     const query = 'paris';
-    const geocodeUrl = `/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`;
     const location = {
       address: 'Paris, France',
       position: { lat: 0.0, lng: 0.0 }
@@ -88,7 +92,7 @@ describe('Test UploadImage', () => {
       '/user/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' },
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { error: JSON.stringify(serverError) },
-      [geocodeUrl]: {
+      '/geocode': {
         body: JSON.stringify({
           items: [
             {
@@ -121,14 +125,13 @@ describe('Test UploadImage', () => {
   it('tests tag is required', async () => {
     //GIVEN
     const query = 'paris';
-    const geocodeUrl = `/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`;
     const location = {
       address: 'Paris, France',
       position: { lat: 0.0, lng: 0.0 }
     };
     const spyRequestFunction = fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
-      [geocodeUrl]: {
+      '/geocode': {
         body: JSON.stringify({
           items: [
             {
@@ -173,7 +176,6 @@ describe('Test UploadImage', () => {
     const description = 'Description';
     const tags = [{ name: 'tag' }] as ITag[];
     const query = 'paris';
-    const geocodeUrl = `/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`;
     const location = {
       address: 'Paris, France',
       position: { lat: 0.0, lng: 0.0 }
@@ -181,7 +183,7 @@ describe('Test UploadImage', () => {
     const spyRequestFunction = fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { body: "{ message: 'message' }" },
-      [geocodeUrl]: {
+      '/geocode': {
         body: JSON.stringify({
           items: [
             {
@@ -236,7 +238,6 @@ describe('Test UploadImage', () => {
     const description = 'Description';
     const tags = [{ name: 'tag' }];
     const query = 'paris';
-    const geocodeUrl = `/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`;
     const location = {
       address: 'Paris, France',
       position: { lat: 0.0, lng: 0.0 }
@@ -245,7 +246,7 @@ describe('Test UploadImage', () => {
     fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { body: "{ message: 'message' }" },
-      [geocodeUrl]: {
+      '/geocode': {
         body: JSON.stringify({
           items: [
             {
@@ -276,6 +277,17 @@ describe('Test UploadImage', () => {
       expect.anything(),
       expect.anything(),
       undefined,
+      expect.anything(),
+      expect.anything(),
+      expect.anything()
+    );
+    expect(PhotoService.uploadImage).not.toBeCalledWith(
+      title,
+      description,
+      expect.anything(),
+      files[1],
+      expect.anything(),
+      expect.anything(),
       expect.anything(),
       expect.anything()
     );

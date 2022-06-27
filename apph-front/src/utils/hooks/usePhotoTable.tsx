@@ -55,6 +55,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
               modificationDate: row.modificationDate,
               shootingDate: row.shootingDate,
               size: row.size,
+              location: row.location,
               tags: row.tags,
               format: row.format
             }}

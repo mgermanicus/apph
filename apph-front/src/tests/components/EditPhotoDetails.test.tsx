@@ -29,6 +29,7 @@ describe('test EditPhotoDetails', () => {
       title: 'Title',
       description: 'Description',
       shootingDate: new Date(),
+      location: { address: 'Paris, France', position: { lat: 0, lng: 0 } },
       tags: [{ name: 'tag' }]
     };
     const newPhotoDetails = {
@@ -64,6 +65,7 @@ describe('test EditPhotoDetails', () => {
       title: 'Title',
       description: 'Description',
       shootingDate: new Date(),
+      location: { address: 'Paris, France', position: { lat: 0, lng: 0 } },
       tags: [{ name: 'tag' }]
     };
     render(<EditPhotoDetails id={0} {...photoDetails} onEdit={jest.fn()} />);

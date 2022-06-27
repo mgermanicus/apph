@@ -8,10 +8,17 @@ import { useTranslation } from 'react-i18next';
 type Props = {
   onChange: (value: ILocation) => void;
   isValid: boolean;
+  defaultValue?: ILocation;
 };
-export const LocationPicker = ({ onChange, isValid }: Props): JSX.Element => {
+export const LocationPicker = ({
+  onChange,
+  isValid,
+  defaultValue
+}: Props): JSX.Element => {
   const { t, i18n } = useTranslation();
-  const [selectedLocation, setSelectedLocation] = useState<ILocation>();
+  const [selectedLocation, setSelectedLocation] = useState<ILocation>(
+    defaultValue ?? { address: '', position: { lat: 0, lng: 0 } }
+  );
   const [suggestions, setSuggestions] = useState<ILocation[]>([]);
   const locationInput = createRef<HTMLInputElement>();
 
@@ -45,6 +52,7 @@ export const LocationPicker = ({ onChange, isValid }: Props): JSX.Element => {
       onChange={(event, value) => {
         handleChange(value);
       }}
+      defaultValue={defaultValue}
       renderInput={(params) => (
         <TextField
           required

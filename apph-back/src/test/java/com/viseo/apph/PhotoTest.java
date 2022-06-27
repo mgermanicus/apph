@@ -106,9 +106,10 @@ public class PhotoTest {
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Set<Tag> tags = new HashSet<>();
         tags.add(tag);
+        Location location = new Location().setAddress("Paris, France").setPosition(new Position().setLng(0).setLat(0));
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate("05/13/2022").setFolderId(-1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate("05/13/2022").setLocation(gson.toJson(location)).setFolderId(-1);
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(robert);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
@@ -137,9 +138,10 @@ public class PhotoTest {
         Set<Tag> newTags = new HashSet<>();
         Tag oneNewTag = new Tag().setName("+ Add New Tag new tag");
         newTags.add(oneNewTag);
+        Location location = new Location().setAddress("Paris, France").setPosition(new Position().setLng(0).setLat(0));
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("newTitle").setTags(gson.toJson(newTags)).setShootingDate("05/13/2022").setDescription("newDesc").setId(1L);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("newTitle").setTags(gson.toJson(newTags)).setShootingDate("05/13/2022").setDescription("newDesc").setLocation(gson.toJson(location)).setId(1L);
         when(em.find(Photo.class, 1L)).thenReturn(oldPhoto);
         when(utils.getUser()).thenReturn(user);
         //WHEN
@@ -562,9 +564,10 @@ public class PhotoTest {
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Set<Tag> tags = new HashSet<>();
         tags.add(tag);
+        Location location = new Location().setAddress("Paris, France").setPosition(new Position().setLng(0).setLat(0));
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate("05/13/2022").setFolderId(-1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate("05/13/2022").setLocation(gson.toJson(location)).setFolderId(-1);
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(robert);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);

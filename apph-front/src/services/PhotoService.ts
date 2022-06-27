@@ -10,6 +10,7 @@ import {
 import Cookies from 'universal-cookie';
 import { IFilterPayload } from '../utils/types/Filter';
 import { GridSortItem } from '@mui/x-data-grid';
+import { ILocation } from '../utils/types/Location';
 
 const cookies = new Cookies();
 export default class PhotoService {
@@ -18,6 +19,7 @@ export default class PhotoService {
     description: string,
     shootingDate: string,
     imageFile: File,
+    location: ILocation,
     selectedTags: ITag[],
     folderId: string,
     maxFileSizeMb: number,
@@ -28,6 +30,7 @@ export default class PhotoService {
     const userInfos = cookies.get('user');
     const formData = new FormData();
     formData.append('file', imageFile);
+    formData.append('location', JSON.stringify(location));
     formData.append('tags', JSON.stringify(selectedTags));
     formData.append('title', title);
     formData.append('description', description);
@@ -114,6 +117,7 @@ export default class PhotoService {
     id: number,
     title: string,
     description: string,
+    location: ILocation,
     tags: ITag[],
     shootingDate: string,
     handleSuccess: (message: string) => void,
@@ -125,6 +129,7 @@ export default class PhotoService {
     formData.append('id', id.toString());
     formData.append('title', title);
     formData.append('description', description);
+    formData.append('location', JSON.stringify(location));
     formData.append('tags', JSON.stringify(tags));
     formData.append('shootingDate', shootingDate);
     const requestOptions = {

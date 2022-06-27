@@ -116,6 +116,7 @@ export const UploadImage = ({
     setDescription('');
     setShootingDate(moment().format('MM/DD/YYYY'));
     setSelectedTags([]);
+    setLocation(undefined);
     setUploadStatuses([]);
     setFiles(undefined);
     setGlobalUploadStatus({ type: StatusType.None });
@@ -153,6 +154,7 @@ export const UploadImage = ({
         description,
         shootingDate,
         acceptedFiles[0],
+        location,
         selectedTags,
         '-1',
         uploadSize,
@@ -177,6 +179,7 @@ export const UploadImage = ({
                 description,
                 shootingDate,
                 acceptedFiles[i],
+                location,
                 newSelectedTags,
                 '-1',
                 uploadSize,

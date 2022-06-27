@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import Server from '../../services/Server';
 import { FakeRequestResults } from './types/FakeRequestResults';
 import AuthService from '../../services/AuthService';
@@ -37,16 +37,10 @@ export function fillTags(tags: ITag[]) {
 }
 
 export async function fillLocation(query: string) {
-  const autocomplete = within(screen.getByTestId('location')).getByRole(
-    'combobox'
-  );
   const user = userEvent.setup();
-  await user.click(screen.getByTestId('location'));
-  await user.keyboard(query);
-  await setTimeout(() => {
-    fireEvent.keyDown(autocomplete, { key: 'ArrowDown' });
-    fireEvent.keyDown(autocomplete, { key: 'Enter' });
-  }, 1000);
+  await user.type(screen.getByTestId('location'), query);
+  //await new Promise((r) => setTimeout(r, 1000));
+  await user.keyboard('{arrowdown}{enter}');
 }
 
 export function fillDate(date: Date) {

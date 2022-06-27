@@ -1,6 +1,7 @@
 import { ITag } from './Tag';
 import { Dispatch, SetStateAction } from 'react';
 import { AlertColor } from '@mui/material';
+import { ILocation } from './Location';
 
 export interface ITable {
   id: number;
@@ -11,6 +12,7 @@ export interface ITable {
   description: string;
   title: string;
   url: string;
+  location: ILocation;
   tags: ITag[];
   format: string;
   details?: JSX.Element;
@@ -25,6 +27,7 @@ export interface ITableDetails {
   modificationDate: Date;
   shootingDate: Date;
   size: number;
+  location: ILocation;
   tags: ITag[];
   format: string;
   fromFolders?: boolean;

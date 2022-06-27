@@ -2,6 +2,7 @@ package com.viseo.apph.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.viseo.apph.domain.Location;
 import org.springframework.web.multipart.MultipartFile;
 
 public class PhotoRequest {
@@ -15,6 +16,8 @@ public class PhotoRequest {
     @JsonValue
     String shootingDate;
     long folderId;
+    @JsonValue
+    String location;
 
     public long getId() {
         return id;
@@ -76,6 +79,15 @@ public class PhotoRequest {
 
     public PhotoRequest setFolderId(long folderId) {
         this.folderId = folderId;
+        return this;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public PhotoRequest setLocation(String location) {
+        this.location = location;
         return this;
     }
 }
