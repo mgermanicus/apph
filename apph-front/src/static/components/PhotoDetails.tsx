@@ -186,7 +186,7 @@ export const PhotoDetails = ({
                   {t('photoTable.creationDate')}:
                 </Typography>
                 <Typography sx={detailTypoStyle}>
-                  {parseDate(details.creationDate.toLocaleString())}
+                  {parseDate(details.creationDate?.toLocaleString())}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
@@ -194,7 +194,7 @@ export const PhotoDetails = ({
                   {t('photoTable.lastModification')}:
                 </Typography>
                 <Typography sx={detailTypoStyle}>
-                  {parseDate(details.modificationDate.toLocaleString())}
+                  {parseDate(details.modificationDate?.toLocaleString())}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
@@ -202,7 +202,7 @@ export const PhotoDetails = ({
                   {t('photoTable.shootingDate')}:
                 </Typography>
                 <Typography sx={detailTypoStyle}>
-                  {parseDate(details.shootingDate.toLocaleString())}
+                  {parseDate(details.shootingDate?.toLocaleString())}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>

@@ -111,7 +111,8 @@ public class PhotoService {
         if (!photo.getTitle().equals(photoRequest.getTitle()) && photo.getFolder() != null && photoDao.existNameInFolder(photo.getFolder(), photoRequest.getTitle(), photo.getFormat()))
             throw new ConflictException("photo.error.nameExistInFolder");
         Set<Tag> newTags = tagService.createListTags(photoRequest.getTags(), user);
-        LocalDate shootingDate = LocalDate.parse(photoRequest.getShootingDate());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
+        LocalDate shootingDate = LocalDate.parse(photoRequest.getShootingDate(), formatter);
         photo.setTitle(photoRequest.getTitle())
                 .setDescription(photoRequest.getDescription())
                 .setShootingDate(shootingDate)

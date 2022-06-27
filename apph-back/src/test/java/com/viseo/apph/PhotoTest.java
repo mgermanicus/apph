@@ -106,7 +106,7 @@ public class PhotoTest {
         tags.add(tag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate("05/13/2022").setFolderId(-1);
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(robert);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
@@ -137,7 +137,7 @@ public class PhotoTest {
         newTags.add(oneNewTag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("newTitle").setTags(gson.toJson(newTags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setDescription("newDesc").setId(1L);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("newTitle").setTags(gson.toJson(newTags)).setShootingDate("05/13/2022").setDescription("newDesc").setId(1L);
         when(em.find(Photo.class, 1L)).thenReturn(oldPhoto);
         when(utils.getUser()).thenReturn(user);
         //WHEN
@@ -206,7 +206,7 @@ public class PhotoTest {
         //GIVEN
         createPhotoController();
         List<Photo> listPhoto = new ArrayList<>();
-        Date creationDate = new Date();
+        LocalDate creationDate = LocalDate.now();
         LocalDate shootingDate = LocalDate.now();
         LocalDate modificationDate = LocalDate.now();
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
@@ -248,7 +248,7 @@ public class PhotoTest {
         //GIVEN
         createPhotoController();
         List<Photo> listPhoto = new ArrayList<>();
-        Date creationDate = new Date();
+        LocalDate creationDate = LocalDate.now();
         LocalDate shootingDate = LocalDate.now();
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Tag tag = new Tag().setUser(robert).setName("robertTag");
@@ -298,7 +298,7 @@ public class PhotoTest {
         //GIVEN
         createPhotoController();
         List<Photo> listPhoto = new ArrayList<>();
-        Date creationDate = new Date();
+        LocalDate creationDate = LocalDate.now();
         LocalDate shootingDate = LocalDate.now();
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Tag tag = new Tag().setUser(robert).setName("robertTag");
@@ -461,7 +461,7 @@ public class PhotoTest {
         tags.add(tag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate("05/13/2022").setFolderId(-1);
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(robert);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
