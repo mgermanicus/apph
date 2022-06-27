@@ -18,7 +18,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.MultipartConfigElement;
 import javax.transaction.Transactional;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -146,25 +146,25 @@ public class DataBaseConfig {
         em.persist(elieT1);
         em.persist(elieT2);
         //Photo
-        Photo photo1 = new Photo().setFormat(".jpeg").setUser(alexandre).setSize(1200).addTag(elieT1).setTitle("photo").setDescription("photo test").setCreationDate(new Date()).setModificationDate(new Date()).setShootingDate(new Date()).setFolder(alexandreRoot);
+        Photo photo1 = new Photo().setFormat(".jpeg").setUser(alexandre).setSize(1200).addTag(elieT1).setTitle("photo").setDescription("photo test").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(alexandreRoot);
         // NOTE : you need a file named 1.jpeg in your S3 folder with this photo in the database
-        Photo photo2 = new Photo().setFormat(".png").setUser(alexandre).setSize(1300).addTag(elieT1).setTitle("photo2").setDescription("photo test 2").setCreationDate(new Date(129538983)).setModificationDate(new Date(129538983)).setShootingDate(new Date()).setFolder(alexandreRoot);
+        Photo photo2 = new Photo().setFormat(".png").setUser(alexandre).setSize(1300).addTag(elieT1).setTitle("photo2").setDescription("photo test 2").setCreationDate(LocalDate.parse("1970-01-02")).setModificationDate(LocalDate.parse("1970-01-02")).setShootingDate(LocalDate.now()).setFolder(alexandreRoot);
         // NOTE : you need a file named 2.png in your S3 folder with this photo in the database
         em.persist(photo1);
         em.persist(photo2);
         //Elie's Photo
-        Photo eliePhoto1 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo1").setDescription("photo test 1 dans root").setCreationDate(new Date()).setModificationDate(new Date()).setShootingDate(new Date()).setFolder(elieRoot);
-        Photo eliePhoto2 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo2").setDescription("photo test 2 dans root").setCreationDate(new Date()).setModificationDate(new Date()).setShootingDate(new Date()).setFolder(elieRoot);
-        Photo eliePhoto3 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo3").setDescription("photo test 3 dans root").setCreationDate(new Date()).setModificationDate(new Date()).setShootingDate(new Date()).setFolder(elieRoot);
-        Photo eliePhoto4 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo4").setDescription("photo test 4 dans root").setCreationDate(new Date()).setModificationDate(new Date()).setShootingDate(new Date()).setFolder(elieRoot);
-        Photo eliePhoto5 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo5").setDescription("photo test 5 dans root").setCreationDate(new Date()).setModificationDate(new Date()).setShootingDate(new Date()).setFolder(elieRoot);
-        Photo eliePhoto6 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo6").setDescription("photo test 6 dans root").setCreationDate(new Date()).setModificationDate(new Date()).setShootingDate(new Date()).setFolder(elieRoot);
-        Photo eliePhoto7 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo7").setDescription("photo test 7 dans child 1").setCreationDate(new Date()).setModificationDate(new Date()).setShootingDate(new Date()).setFolder(elieChild1);
-        Photo eliePhoto8 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo8").setDescription("photo test 8 dans child 1").setCreationDate(new Date()).setModificationDate(new Date()).setShootingDate(new Date()).setFolder(elieChild1);
-        Photo eliePhoto9 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo9").setDescription("photo test 9 dans child 1").setCreationDate(new Date()).setModificationDate(new Date()).setShootingDate(new Date()).setFolder(elieChild1);
-        Photo eliePhoto10 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo10").setDescription("photo test 10 dans child 1").setCreationDate(new Date()).setModificationDate(new Date()).setShootingDate(new Date()).setFolder(elieChild1);
-        Photo eliePhoto11 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo11").setDescription("photo test 11 dans child 1").setCreationDate(new Date()).setModificationDate(new Date()).setShootingDate(new Date()).setFolder(elieChild1);
-        Photo eliePhoto12 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo12").setDescription("photo test 12 dans child 1").setCreationDate(new Date()).setModificationDate(new Date()).setShootingDate(new Date()).setFolder(elieChild1);
+        Photo eliePhoto1 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo1").setDescription("photo test 1 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
+        Photo eliePhoto2 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo2").setDescription("photo test 2 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
+        Photo eliePhoto3 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo3").setDescription("photo test 3 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
+        Photo eliePhoto4 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo4").setDescription("photo test 4 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
+        Photo eliePhoto5 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo5").setDescription("photo test 5 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
+        Photo eliePhoto6 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo6").setDescription("photo test 6 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
+        Photo eliePhoto7 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo7").setDescription("photo test 7 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
+        Photo eliePhoto8 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo8").setDescription("photo test 8 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
+        Photo eliePhoto9 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo9").setDescription("photo test 9 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
+        Photo eliePhoto10 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo10").setDescription("photo test 10 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
+        Photo eliePhoto11 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo11").setDescription("photo test 11 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
+        Photo eliePhoto12 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo12").setDescription("photo test 12 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
         em.persist(eliePhoto1);
         em.persist(eliePhoto2);
         em.persist(eliePhoto3);

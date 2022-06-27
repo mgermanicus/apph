@@ -1,6 +1,5 @@
 package com.viseo.apph.service;
 
-import com.google.gson.GsonBuilder;
 import com.viseo.apph.dao.*;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
@@ -22,6 +21,8 @@ import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -83,16 +84,16 @@ public class PhotoService {
             throw new ConflictException("folder.error.titleAlreadyUsed");
         }
         Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
-        Date shootingDate = new SimpleDateFormat("dd/MM/yyyy").parse(photoRequest.getShootingDate());
-        System.out.println(shootingDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
+        LocalDate shootingDate = LocalDate.parse(photoRequest.getShootingDate(), formatter);
         Photo photo = new Photo()
                 .setTitle(photoRequest.getTitle())
                 .setFormat(getFormat(photoRequest.getFile()))
                 .setUser(user)
                 .setSize((photoRequest.getFile().getSize() + .0F) / 1024)
                 .setDescription(photoRequest.getDescription())
-                .setCreationDate(new Date())
-                .setModificationDate(new Date())
+                .setCreationDate(LocalDate.now())
+                .setModificationDate(LocalDate.now())
                 .setShootingDate(shootingDate)
                 .setTags(allTags)
                 .setFolder(folder);
@@ -110,7 +111,7 @@ public class PhotoService {
         if (!photo.getTitle().equals(photoRequest.getTitle()) && photo.getFolder() != null && photoDao.existNameInFolder(photo.getFolder(), photoRequest.getTitle(), photo.getFormat()))
             throw new ConflictException("photo.error.nameExistInFolder");
         Set<Tag> newTags = tagService.createListTags(photoRequest.getTags(), user);
-        Date shootingDate = photoRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photoRequest.getShootingDate(), Date.class) : new Date();
+        LocalDate shootingDate = LocalDate.parse(photoRequest.getShootingDate());
         photo.setTitle(photoRequest.getTitle())
                 .setDescription(photoRequest.getDescription())
                 .setShootingDate(shootingDate)
@@ -230,7 +231,7 @@ public class PhotoService {
                 response.addMessage("error: folder.error.oneOf.existingName");
             } else {
                 photo.setFolder(folder);
-                photo.setModificationDate(new Date());
+                photo.setModificationDate(LocalDate.now());
             }
         }
         response.addMessage("success: photo.successMove");

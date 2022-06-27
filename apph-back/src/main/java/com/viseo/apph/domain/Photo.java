@@ -1,7 +1,7 @@
 package com.viseo.apph.domain;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,9 +11,9 @@ public class Photo extends BaseEntity {
 
     String title;
     String description;
-    Date creationDate;
-    Date modificationDate;
-    Date shootingDate;
+    LocalDate creationDate;
+    LocalDate modificationDate;
+    LocalDate shootingDate;
     float size;
     String format;
     String url;
@@ -61,29 +61,29 @@ public class Photo extends BaseEntity {
         return this;
     }
 
-    public Date getCreationDate() {
+    public LocalDate getCreationDate() {
         return creationDate;
     }
 
-    public Photo setCreationDate(Date creationDate) {
+    public Photo setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
         return this;
     }
 
-    public Date getModificationDate() {
+    public LocalDate getModificationDate() {
         return modificationDate;
     }
 
-    public Photo setModificationDate(Date modificationDate) {
+    public Photo setModificationDate(LocalDate modificationDate) {
         this.modificationDate = modificationDate;
         return this;
     }
 
-    public Date getShootingDate() {
+    public LocalDate getShootingDate() {
         return shootingDate;
     }
 
-    public Photo setShootingDate(Date shootingDate) {
+    public Photo setShootingDate(LocalDate shootingDate) {
         this.shootingDate = shootingDate;
         return this;
     }

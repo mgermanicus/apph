@@ -7,7 +7,6 @@ import com.viseo.apph.domain.Tag;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.TagListResponse;
-import com.viseo.apph.dto.TagResponse;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.TagService;
 import org.junit.Assert;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
