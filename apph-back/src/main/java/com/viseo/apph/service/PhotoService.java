@@ -394,11 +394,25 @@ public class PhotoService {
 
     @Transactional
     public void updatePhotoList(User user, PhotosRequest photosRequest) {
-        Date shootingDate = photosRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photosRequest.getShootingDate(), Date.class) : new Date();
-        Set<Tag> newTags = tagService.createListTags(photosRequest.getTags(), user);
-        for(long id : photosRequest.getIds()) {
-            Photo photo = photoDao.getPhoto(id);
-            photo.setShootingDate(shootingDate).setTags(newTags);
+        Date shootingDate = photosRequest.getShootingDate() != null ? new GsonBuilder().setDateFormat("dd/MM/yyyy, hh:mm:ss").create().fromJson(photosRequest.getShootingDate(), Date.class) : null;
+        Set<Tag> newTags = photosRequest.getTags() != null ? tagService.createListTags(photosRequest.getTags(), user) : null;
+        if(shootingDate != null && newTags != null) {
+            for(long id : photosRequest.getIds()) {
+                Photo photo = photoDao.getPhoto(id);
+                photo.setShootingDate(shootingDate).setTags(newTags);
+            }
+        } else if(shootingDate == null && newTags != null) {
+            for(long id : photosRequest.getIds()) {
+                Photo photo = photoDao.getPhoto(id);
+                photo.setTags(newTags);
+            }
+        } else if(shootingDate != null) {
+            for(long id : photosRequest.getIds()) {
+                Photo photo = photoDao.getPhoto(id);
+                photo.setShootingDate(shootingDate);
+            }
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 }

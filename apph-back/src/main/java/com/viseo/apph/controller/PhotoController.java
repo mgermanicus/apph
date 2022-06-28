@@ -200,8 +200,12 @@ public class PhotoController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(value = "/editPhotoList", produces = "application/json")
     public ResponseEntity<IResponseDto> editPhotoList(@RequestBody PhotosRequest photosRequest) {
-        User user = utils.getUser();
-        photoService.updatePhotoList(user, photosRequest);
-        return ResponseEntity.ok(null);
+        try {
+            User user = utils.getUser();
+            photoService.updatePhotoList(user, photosRequest);
+            return ResponseEntity.ok(null);
+        } catch (IllegalArgumentException iae) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(iae.getMessage()));
+        }
     }
 }

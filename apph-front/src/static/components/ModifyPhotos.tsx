@@ -27,10 +27,9 @@ export const ModifyPhotos = ({
   setRefresh
 }: modifyPhotosProps): JSX.Element => {
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
-  const [shootingDate, setShootingDate] = useState<Date>(new Date());
-  const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
+  const [shootingDate, setShootingDate] = useState<Date | undefined>();
+  const [selectedTags, setSelectedTags] = useState<ITag[] | undefined>();
   const [allTags, setAllTags] = useState<ITag[]>([]);
-  const [tagsValidity, setTagsValidity] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const { t } = useTranslation();
 
@@ -47,30 +46,34 @@ export const ModifyPhotos = ({
   }, []);
 
   const handleOpenForm = () => {
-    setIsFormOpen(true);
+    if (ids.length != 0) {
+      setIsFormOpen(true);
+    } else {
+      setErrorMessage('photo.noneSelected');
+    }
   };
 
   const handleCloseForm = () => {
-    setShootingDate(new Date());
-    setSelectedTags([]);
+    setShootingDate(undefined);
+    setSelectedTags(undefined);
     setIsFormOpen(false);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (selectedTags.length < 1) {
-      setTagsValidity(false);
+    if (!shootingDate && !selectedTags) {
+      setErrorMessage('photo.error.requireOneField');
       return;
     }
     PhotoService.editPhotoListInfos(
       ids,
-      shootingDate,
-      selectedTags,
       () => {
         setRefresh((refresh) => !refresh);
         handleCloseForm();
       },
-      (errorMessage: string) => setErrorMessage(errorMessage)
+      (errorMessage: string) => setErrorMessage(errorMessage),
+      shootingDate,
+      selectedTags
     );
   };
 
@@ -126,31 +129,31 @@ export const ModifyPhotos = ({
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DesktopDatePicker
                 label={t('photoTable.shootingDate')}
-                value={shootingDate}
+                value={shootingDate || null}
                 onChange={(date) => {
                   if (date) setShootingDate(date);
-                  else setShootingDate(new Date());
+                  else setShootingDate(undefined);
                 }}
-                renderInput={(params) => <TextField {...params} required />}
+                renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
             <TagInput
               allTags={allTags}
               onChange={(tags) => setSelectedTags(tags)}
-              isValid={tagsValidity}
+              required={false}
             />
             <Button type="submit" fullWidth variant="contained">
               {t('action.confirm')}
             </Button>
           </Stack>
         </Box>
-        <AlertSnackbar
-          open={!!errorMessage}
-          severity={'warning'}
-          message={errorMessage}
-          onClose={() => setErrorMessage('')}
-        />
       </Dialog>
+      <AlertSnackbar
+        open={!!errorMessage}
+        severity={'warning'}
+        message={errorMessage}
+        onClose={() => setErrorMessage('')}
+      />
     </>
   );
 };

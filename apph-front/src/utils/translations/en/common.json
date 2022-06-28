@@ -128,7 +128,8 @@
       "titleOrDescriptionOverChar": "The title or description cannot exceed 255 characters.",
       "tagsOverChar": "Tags cannot exceed 255 characters.",
       "invalidDate": "Invalid date.",
-      "nameExistInFolder": "There is already a file with the same name in this folder."
+      "nameExistInFolder": "There is already a file with the same name in this folder.",
+      "requireOneField": "Please fill at least one field"
     }
   },
   "token": {
