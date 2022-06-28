@@ -78,7 +78,6 @@ describe('Test UploadImage', () => {
     await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
     //THEN
-    screen.debug(undefined, Infinity);
     expect(
       await screen.findByText(/upload.error.overSize/)
     ).toBeInTheDocument();
@@ -187,7 +186,7 @@ describe('Test UploadImage', () => {
     const title = 'Titre';
     const description = 'Description';
     const tags = [{ name: 'tag' }] as ITag[];
-    const query = 'a';
+    const query = 'par';
     const location = {
       address: 'Paris, France',
       position: { lat: 0.0, lng: 0.0 }
@@ -250,7 +249,7 @@ describe('Test UploadImage', () => {
     const title = 'Titre';
     const description = 'Description';
     const tags = [{ name: 'tag' }];
-    const query = 'a';
+    const query = 'par';
     const location = {
       address: 'Paris, France',
       position: { lat: 0.0, lng: 0.0 }
