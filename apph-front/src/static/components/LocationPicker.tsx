@@ -61,7 +61,7 @@ export const LocationPicker = ({
           InputProps={{
             ...params.InputProps,
             type: 'search',
-            onKeyUp: (event) => {
+            onInput: (event) => {
               const value = (event.target as HTMLInputElement).value;
               if (value.length > 2) {
                 getSuggestions(value);

@@ -25,6 +25,9 @@ export class LocationService {
     const errorFunction = (errorMessage: string) => {
       handleError(JSON.parse(errorMessage).message);
     };
+    console.log(
+      encodeURI(`/geocode?q=${query}&apiKey=${HERE_API_KEY}&lang=${lang}`)
+    );
     return Server.request(
       encodeURI(`/geocode?q=${query}&apiKey=${HERE_API_KEY}&lang=${lang}`),
       requestOptions,

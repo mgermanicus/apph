@@ -5,6 +5,8 @@ import AuthService from '../../services/AuthService';
 import { ITag } from '../../utils';
 import userEvent from '@testing-library/user-event';
 import { isValidElement } from 'react';
+import { ILocation } from '../../utils/types/Location';
+import { UserEvent } from '@testing-library/user-event/dist/types/setup';
 
 export function fillText(label: RegExp, value: string) {
   const textInput = screen.getByRole('textbox', { name: label });
@@ -36,10 +38,8 @@ export function fillTags(tags: ITag[]) {
   return;
 }
 
-export async function fillLocation(query: string) {
-  const user = userEvent.setup();
+export async function fillLocation(query: string, user: UserEvent) {
   await user.type(screen.getByTestId('location'), query);
-  //await new Promise((r) => setTimeout(r, 1000));
   await user.keyboard('{arrowdown}{enter}');
 }
 
@@ -116,9 +116,8 @@ export const fakeRequest = (requestResults: FakeRequestResults) => {
       successFunction: (body: string) => void | undefined,
       errorFunction: (error: string) => void
     ) => {
-      const result = Object.entries(requestResults).filter(([key, value]) =>
-          URL.includes(key)
-      )[0][1];
+      const result = requestResults[URL];
+      if (!result) return Promise.resolve();
       if (result?.error) {
         errorFunction(result.error);
       } else if (result?.body) {
@@ -150,4 +149,29 @@ export function spyRequestSuccessBody(body: string) {
   );
   Server.request = spy;
   return spy;
+}
+
+export function geocodeRequestResults(
+  query: string,
+  location: ILocation
+): FakeRequestResults {
+  const results: FakeRequestResults = {};
+  for (let i = 0; i <= query.length; i++) {
+    results[
+      `/geocode?q=${query.slice(0, i)}&apiKey=${
+        process.env['REACT_APP_HERE_API_KEY']
+      }&lang=fr`
+    ] = {
+      body: JSON.stringify({
+        items: [
+          {
+            address: { label: location.address },
+            position: location.position
+          }
+        ]
+      })
+    };
+  }
+  console.log(results);
+  return results;
 }

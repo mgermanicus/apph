@@ -8,11 +8,13 @@ import {
   fillLocation,
   fillTags,
   fillText,
+  geocodeRequestResults,
   inputFile
 } from '../utils';
 import { ITag } from '../../utils';
 import { wrapper } from '../utils/components/CustomWrapper';
 import PhotoService from '../../services/PhotoService';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('react-i18next', () => ({
   // this mock makes sure any components using the translate hook can use it without a warning being shown
@@ -28,6 +30,13 @@ jest.mock('ts-debounce', () => ({
   debounce: (func: (query: string) => Promise<void>, waitMs: number) => func
 }));
 
+function setup(element: JSX.Element) {
+  return {
+    user: userEvent.setup(),
+    ...render(element, { wrapper })
+  };
+}
+
 jest.setTimeout(10000);
 
 describe('Test UploadImage', () => {
@@ -37,33 +46,34 @@ describe('Test UploadImage', () => {
 
   it('tests error when user picks file too large', async () => {
     //GIVEN
-    const query = 'paris';
+    const query = 'par';
     const location = {
       address: 'Paris, France',
       position: { lat: 0.0, lng: 0.0 }
     };
     const spyRequestFunction = fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
-      '/geocode': {
-        body: JSON.stringify({
-          items: [
-            {
-              address: { label: location.address },
-              position: location.position
-            }
-          ]
-        })
-      },
+      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`]:
+        {
+          body: JSON.stringify({
+            items: [
+              {
+                address: { label: location.address },
+                position: location.position
+              }
+            ]
+          })
+        },
       '/admin/getSettings': { body: '{"uploadSize":1,"downloadSize":1}' }
     });
-    render(<UploadImage />, { wrapper });
+    const { user } = setup(<UploadImage />);
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     const files = [fakeFile(100000000, 'image/png')];
     //WHEN
     fillText(/photo.title/, 'Titre');
     fillText(/photoTable.description/, 'Description');
-    await fillLocation(query);
+    await fillLocation(query, user);
     fillTags([{ name: 'tag' }]);
     await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
@@ -82,7 +92,7 @@ describe('Test UploadImage', () => {
 
   it('tests handling of server error', async () => {
     //GIVEN
-    const query = 'paris';
+    const query = 'par';
     const location = {
       address: 'Paris, France',
       position: { lat: 0.0, lng: 0.0 }
@@ -92,25 +102,26 @@ describe('Test UploadImage', () => {
       '/user/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' },
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { error: JSON.stringify(serverError) },
-      '/geocode': {
-        body: JSON.stringify({
-          items: [
-            {
-              address: { label: location.address },
-              position: location.position
-            }
-          ]
-        })
-      }
+      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`]:
+        {
+          body: JSON.stringify({
+            items: [
+              {
+                address: { label: location.address },
+                position: location.position
+              }
+            ]
+          })
+        }
     });
     const files = [fakeFile(1000, 'image/png')];
-    render(<UploadImage />, { wrapper });
+    const { user } = setup(<UploadImage />);
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     //WHEN
     fillText(/photo.title/, 'Titre');
     fillText(/photoTable.description/, 'Description');
-    await fillLocation(query);
+    await fillLocation(query, user);
     fillTags([{ name: 'tag' }]);
     await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
@@ -124,26 +135,27 @@ describe('Test UploadImage', () => {
 
   it('tests tag is required', async () => {
     //GIVEN
-    const query = 'paris';
+    const query = 'par';
     const location = {
       address: 'Paris, France',
       position: { lat: 0.0, lng: 0.0 }
     };
     const spyRequestFunction = fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
-      '/geocode': {
-        body: JSON.stringify({
-          items: [
-            {
-              address: { label: location.address },
-              position: location.position
-            }
-          ]
-        })
-      },
+      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`]:
+        {
+          body: JSON.stringify({
+            items: [
+              {
+                address: { label: location.address },
+                position: location.position
+              }
+            ]
+          })
+        },
       '/admin/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' }
     });
-    render(<UploadImage />, { wrapper });
+    const { user } = setup(<UploadImage />);
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     const files = [fakeFile(1000, 'image/png')];
@@ -153,7 +165,7 @@ describe('Test UploadImage', () => {
     //WHEN
     fillText(/photo.title/, title);
     fillText(/photoTable.description/, description);
-    await fillLocation(query);
+    await fillLocation(query, user);
     await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
     //THEN
@@ -175,7 +187,7 @@ describe('Test UploadImage', () => {
     const title = 'Titre';
     const description = 'Description';
     const tags = [{ name: 'tag' }] as ITag[];
-    const query = 'paris';
+    const query = 'a';
     const location = {
       address: 'Paris, France',
       position: { lat: 0.0, lng: 0.0 }
@@ -183,29 +195,30 @@ describe('Test UploadImage', () => {
     const spyRequestFunction = fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { body: "{ message: 'message' }" },
-      '/geocode': {
-        body: JSON.stringify({
-          items: [
-            {
-              address: { label: location.address },
-              position: location.position
-            }
-          ]
-        })
-      },
+      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`]:
+        {
+          body: JSON.stringify({
+            items: [
+              {
+                address: { label: location.address },
+                position: location.position
+              }
+            ]
+          })
+        },
       '/admin/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' }
     });
     const requestParams = [
       fakeUploadRequestParams(files[0], title, description, new Date(), tags),
       fakeUploadRequestParams(files[1], title, description, new Date(), tags)
     ];
-    render(<UploadImage />, { wrapper });
+    const { user } = setup(<UploadImage />);
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     //WHEN
     fillText(/photo.title/, title);
     fillText(/photoTable.description/, description);
-    await fillLocation(query);
+    await fillLocation(query, user);
     fillTags(tags);
     await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
@@ -237,7 +250,7 @@ describe('Test UploadImage', () => {
     const title = 'Titre';
     const description = 'Description';
     const tags = [{ name: 'tag' }];
-    const query = 'paris';
+    const query = 'a';
     const location = {
       address: 'Paris, France',
       position: { lat: 0.0, lng: 0.0 }
@@ -246,25 +259,26 @@ describe('Test UploadImage', () => {
     fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { body: "{ message: 'message' }" },
-      '/geocode': {
-        body: JSON.stringify({
-          items: [
-            {
-              address: { label: location.address },
-              position: location.position
-            }
-          ]
-        })
-      },
+      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`]:
+        {
+          body: JSON.stringify({
+            items: [
+              {
+                address: { label: location.address },
+                position: location.position
+              }
+            ]
+          })
+        },
       '/admin/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' }
     });
-    render(<UploadImage />, { wrapper });
+    const { user } = setup(<UploadImage />);
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     //WHEN
     fillText(/photo.title/, title);
     fillText(/photoTable.description/, description);
-    await fillLocation(query);
+    await fillLocation(query, user);
     fillTags(tags);
     await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
