@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ import software.amazon.awssdk.services.s3.model.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.io.InvalidObjectException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -175,6 +177,28 @@ public class PhotoTest {
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("photo.error.invalidDate", messageResponse.getMessage());
+    }
+
+
+    @Test
+    public void testEditWithConflict() {
+        //GIVEN
+        PhotoDao mockPhotoDao = Mockito.mock(PhotoDao.class);
+        PhotoService photoService = new PhotoService();
+        inject(photoService, "photoDao", mockPhotoDao);
+        photoController = new PhotoController();
+        inject(photoController, "photoService", photoService);
+        inject(photoController, "utils", utils);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("usedTitle").setShootingDate("stub");
+        when(mockPhotoDao.existNameInFolder(any(),any(),any())).thenReturn(true);
+        when(mockPhotoDao.getPhoto(anyLong())).thenReturn(new Photo().setTitle("stub").setFolder(new Folder()));
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.editInfos(photoRequest);
+        //THEN
+        Assert.assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("photo.error.nameExistInFolder", messageResponse.getMessage());
     }
 
     @Test
@@ -335,6 +359,85 @@ public class PhotoTest {
         Assert.assertTrue(photo.getTags().contains(tag));
         Assert.assertEquals(1, photo.getId());
         Assert.assertEquals("testUrl", photo.getUrl());
+    }
+
+    @Test
+    public void testGetInfosWithFilterFail() {
+        //GIVEN
+        createPhotoController();
+        List<Photo> listPhoto = new ArrayList<>();
+        Date creationDate = new Date();
+        Date shootingDate = new Date();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        Tag tag = new Tag().setUser(robert).setName("robertTag");
+        listPhoto.add((Photo) new Photo().setSize(10).setTitle("photo 1").setCreationDate(creationDate).setShootingDate(shootingDate).setDescription("description").addTag(tag).setId(1L));
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        listPhoto.add(new Photo());
+        FilterDto[] filterDtos1 = new FilterDto[]{
+                new FilterDto().setField("fail").setValue("p1")
+        };
+        FilterDto[] filterDtos2 = new FilterDto[]{
+                new FilterDto().setField("description").setOperator("fail").setValue("cool")
+        };
+        FilterDto[] filterDtos3 = new FilterDto[]{
+                new FilterDto().setField("title").setOperator("fail").setValue("p")
+        };
+        FilterDto[] filterDtos4 = new FilterDto[]{
+                new FilterDto().setField("creationDate").setOperator("fail").setValue("1")
+        };
+        FilterDto[] filterDtos5 = new FilterDto[]{
+                new FilterDto().setField("shootingDate").setOperator("fail").setValue("3")
+        };
+        FilterRequest filterRequest1 = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos1);
+        FilterRequest filterRequest2 = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos2);
+        FilterRequest filterRequest3 = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos3);
+        FilterRequest filterRequest4 = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos4);
+        FilterRequest filterRequest5 = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos5);
+        when(utils.getUser()).thenReturn(robert);
+        when(s3Client.utilities().getUrl((Consumer<GetUrlRequest.Builder>) any()).toExternalForm()).thenReturn("testUrl");
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity1 = photoController.getUserPhotos(filterRequest1);
+        ResponseEntity<IResponseDto> responseEntity2 = photoController.getUserPhotos(filterRequest2);
+        ResponseEntity<IResponseDto> responseEntity3 = photoController.getUserPhotos(filterRequest3);
+        ResponseEntity<IResponseDto> responseEntity4 = photoController.getUserPhotos(filterRequest4);
+        ResponseEntity<IResponseDto> responseEntity5 = photoController.getUserPhotos(filterRequest5);
+        //THEN
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity1.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity2.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity3.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity4.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity5.getStatusCode());
+    }
+
+
+    @Test
+    public void testFilterDtoWrongField() {
+        //GIVEN
+        FilterDto filterDto = new FilterDto().setField("fail");
+        //WHEN
+        try {
+            filterDto.getOperatorToSql();
+        }
+        //THEN
+        catch (InvalidObjectException e) {
+            assert true;
+            return;
+        }
+        assert false;
+    }
+
+
+    @Test
+    public void testFilterDtoCompareToNull() {
+        //GIVEN
+        FilterDto filterDto = new FilterDto();
+        //WHEN
+        int result = filterDto.compareTo(null);
+        //THEN
+        assertEquals(0, result);
     }
 
     @Test
@@ -1132,7 +1235,9 @@ public class PhotoTest {
         when(em.createQuery("SELECT photo FROM Photo photo WHERE photo.id IN :ids AND photo.user = :user", Photo.class)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("ids", ids)).thenReturn(typedQueryPhoto);
         when(typedQueryPhoto.setParameter("user", robert)).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.getResultList()).thenReturn(new ArrayList<>());
+        ArrayList<Photo> arrayList = new ArrayList<>();
+        arrayList.add(new Photo());
+        when(typedQueryPhoto.getResultList()).thenReturn(arrayList);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.getPhotosByIds(ids);
         //THEN

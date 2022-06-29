@@ -21,8 +21,4 @@ public class Role extends BaseEntity {
     public ERole getName() {
         return name;
     }
-
-    public void setName(ERole name) {
-        this.name = name;
-    }
 }

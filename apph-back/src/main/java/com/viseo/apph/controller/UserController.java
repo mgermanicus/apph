@@ -32,13 +32,9 @@ public class UserController {
     @GetMapping("/")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<IResponseDto> getUserInfo() {
-        try {
-            User user = utils.getUser();
-            return ResponseEntity.ok(new UserResponse().setLogin(user.getLogin()).setFirstname(user.getFirstname())
-                    .setLastname(user.getLastname()));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body((new MessageResponse("user.error.notAuthenticated")));
-        }
+        User user = utils.getUser();
+        return ResponseEntity.ok(new UserResponse().setLogin(user.getLogin()).setFirstname(user.getFirstname())
+                .setLastname(user.getLastname()));
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -50,8 +46,6 @@ public class UserController {
             return ResponseEntity.ok(newToken);
         } catch (NullPointerException | NotFoundException | NoResultException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("user.error.sessionBindUserNotExist");
-        } catch (SignatureException | ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user.error.expiredSession");
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (IllegalArgumentException iae) {

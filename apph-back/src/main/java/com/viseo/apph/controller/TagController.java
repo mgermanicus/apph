@@ -31,13 +31,9 @@ public class TagController {
 
     @GetMapping("/")
     public ResponseEntity getTags() {
-        try {
-            User user = utils.getUser();
-            List<Tag> tags = tagService.getTags(user);
-            return ResponseEntity.ok(tags);
-        } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("user.error.notExist"));
-        }
+        User user = utils.getUser();
+        List<Tag> tags = tagService.getTags(user);
+        return ResponseEntity.ok(tags);
     }
 
     @GetMapping("/count")
