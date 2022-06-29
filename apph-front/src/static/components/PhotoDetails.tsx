@@ -12,6 +12,7 @@ import { EditPhotoDetails } from './EditPhotoDetails';
 import PhotoService from '../../services/PhotoService';
 import { ConfirmationDialog } from './ConfirmationDialog';
 import { useTranslation } from 'react-i18next';
+import parseDate from '../../utils/DateUtils';
 
 const modalStyle = {
   position: 'absolute',
@@ -185,7 +186,7 @@ export const PhotoDetails = ({
                   {t('photoTable.creationDate')}:
                 </Typography>
                 <Typography sx={detailTypoStyle}>
-                  {details.creationDate?.toLocaleString()}
+                  {parseDate(details.creationDate?.toLocaleString())}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
@@ -193,7 +194,7 @@ export const PhotoDetails = ({
                   {t('photoTable.lastModification')}:
                 </Typography>
                 <Typography sx={detailTypoStyle}>
-                  {details.modificationDate?.toLocaleString()}
+                  {parseDate(details.modificationDate?.toLocaleString())}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
@@ -201,7 +202,7 @@ export const PhotoDetails = ({
                   {t('photoTable.shootingDate')}:
                 </Typography>
                 <Typography sx={detailTypoStyle}>
-                  {details.shootingDate?.toLocaleString()}
+                  {parseDate(details.shootingDate?.toLocaleString())}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>

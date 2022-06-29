@@ -10,6 +10,7 @@ import { Stack } from '@mui/material';
 import { ITable, ITag } from '../../utils';
 import { DownloadImage } from './DownloadImage';
 import { useTranslation } from 'react-i18next';
+import parseDate from '../../utils/DateUtils';
 
 interface photoTableProps {
   data: ITable[];
@@ -37,6 +38,7 @@ export const PhotoTable = ({
 }: photoTableProps) => {
   const [selectionModel, setSelectionModel] = useState<GridSelectionModel>([]);
   const { t } = useTranslation();
+
   const columns: GridColDef[] = [
     {
       field: 'title',
@@ -59,7 +61,7 @@ export const PhotoTable = ({
       flex: 2.2,
       align: 'center',
       headerAlign: 'center',
-      renderCell: (params) => params.row.creationDate?.toLocaleString()
+      renderCell: (params) => parseDate(params.row.creationDate)
     },
     {
       field: 'shootingDate',
@@ -68,7 +70,7 @@ export const PhotoTable = ({
       flex: 2.2,
       align: 'center',
       headerAlign: 'center',
-      renderCell: (params) => params.row.shootingDate?.toLocaleString()
+      renderCell: (params) => parseDate(params.row.shootingDate)
     },
     {
       field: 'size',

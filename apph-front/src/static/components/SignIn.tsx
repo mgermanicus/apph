@@ -16,7 +16,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AuthService from '../../services/AuthService';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUser } from '../../redux/slices/userSlice';
-import { IUser, flagStyles } from '../../utils';
+import { flagStyles, IUser } from '../../utils';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { setCookieLanguage } from '../../utils/setCookieLanguage';

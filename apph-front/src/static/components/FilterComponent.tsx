@@ -19,6 +19,7 @@ import { ITag } from '../../utils';
 import { IFilter } from '../../utils/types/Filter';
 import { filterActionKind, filterActions } from './FilterSelector';
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 
 const selectFieldStyle = {
   minWidth: '6vw',
@@ -200,6 +201,7 @@ export const FilterComponent = ({
               onChange={(value) => {
                 if (value) handleChangeValue(value);
               }}
+              inputFormat={i18n.language == 'fr' ? 'dd/MM/yyyy' : 'MM/dd/yyyy'}
               renderInput={(params) => (
                 <TextField {...params} id="fill-value-date" size="small" />
               )}

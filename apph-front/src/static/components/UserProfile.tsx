@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IUser, cardStyle } from '../../utils';
+import { cardStyle, IUser } from '../../utils';
 import {
   Button,
   Card,

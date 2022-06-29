@@ -1,6 +1,6 @@
+import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { IUserTable } from '../types';
-import * as React from 'react';
 import { UserTable } from '../../static/components/UserTable';
 import UserService from '../../services/UserService';
 

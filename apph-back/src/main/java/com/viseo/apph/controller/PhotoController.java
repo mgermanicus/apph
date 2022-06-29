@@ -17,6 +17,7 @@ import javax.persistence.NoResultException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -90,8 +91,8 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("upload.error.folderNotExist"));
         } catch (ConflictException ce) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(ce.getMessage()));
-        } catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(iae.getMessage()
+        } catch (IllegalArgumentException | ParseException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(e.getMessage()
             ));
         }
     }

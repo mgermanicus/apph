@@ -31,6 +31,9 @@ import { useTranslation } from 'react-i18next';
 import { AlertSnackbar } from './AlertSnackbar';
 import { TagInput } from './TagInput';
 import { useDropzone } from 'react-dropzone';
+import 'moment/locale/fr';
+import moment from 'moment';
+import i18n from 'i18next';
 import SettingService from '../../services/SettingService';
 
 export const UploadImage = ({
@@ -41,7 +44,9 @@ export const UploadImage = ({
   const dispatch = useDispatch();
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [shootingDate, setShootingDate] = useState<Date>(new Date());
+  const [shootingDate, setShootingDate] = useState<string>(
+    moment().format('MM/DD/YYYY')
+  );
   const [open, setOpen] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>();
   const [globalUploadStatus, setGlobalUploadStatus] = useState<UploadStatus>({
@@ -105,7 +110,7 @@ export const UploadImage = ({
   const handleClose = () => {
     setTitle('');
     setDescription('');
-    setShootingDate(new Date());
+    setShootingDate(moment().format('MM/DD/YYYY'));
     setSelectedTags([]);
     setUploadStatuses([]);
     setFiles(undefined);
@@ -304,9 +309,13 @@ export const UploadImage = ({
                       label={t('photoTable.shootingDate')}
                       value={shootingDate}
                       onChange={(date) => {
-                        if (date) setShootingDate(date);
-                        else setShootingDate(new Date());
+                        if (date) {
+                          setShootingDate(moment(date).format('MM/DD/YYYY'));
+                        } else setShootingDate(moment().format('MM/DD/YYYY'));
                       }}
+                      inputFormat={
+                        i18n.language == 'fr' ? 'dd/MM/yyyy' : 'MM/dd/yyyy'
+                      }
                       renderInput={(params) => <TextField {...params} />}
                     />
                   </LocalizationProvider>

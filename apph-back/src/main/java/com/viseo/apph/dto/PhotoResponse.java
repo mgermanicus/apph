@@ -3,7 +3,7 @@ package com.viseo.apph.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.viseo.apph.domain.Tag;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 public class PhotoResponse implements IResponseDto {
@@ -14,11 +14,11 @@ public class PhotoResponse implements IResponseDto {
     @JsonProperty("description")
     String description;
     @JsonProperty("creationDate")
-    Date creationDate;
+    LocalDate creationDate;
     @JsonProperty("modificationDate")
-    Date modificationDate;
+    LocalDate modificationDate;
     @JsonProperty("shootingDate")
-    Date shootingDate;
+    LocalDate shootingDate;
     @JsonProperty("size")
     float size;
     @JsonProperty("tags")
@@ -60,29 +60,29 @@ public class PhotoResponse implements IResponseDto {
         return this;
     }
 
-    public Date getCreationDate() {
+    public LocalDate getCreationDate() {
         return creationDate;
     }
 
-    public PhotoResponse setCreationDate(Date creationDate) {
+    public PhotoResponse setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
         return this;
     }
 
-    public Date getModificationDate() {
+    public LocalDate getModificationDate() {
         return modificationDate;
     }
 
-    public PhotoResponse setModificationDate(Date modificationDate) {
+    public PhotoResponse setModificationDate(LocalDate modificationDate) {
         this.modificationDate = modificationDate;
         return this;
     }
 
-    public Date getShootingDate() {
+    public LocalDate getShootingDate() {
         return shootingDate;
     }
 
-    public PhotoResponse setShootingDate(Date shootingDate) {
+    public PhotoResponse setShootingDate(LocalDate shootingDate) {
         this.shootingDate = shootingDate;
         return this;
     }
