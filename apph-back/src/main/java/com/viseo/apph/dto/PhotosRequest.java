@@ -36,8 +36,9 @@ public class PhotosRequest {
         return shootingDate;
     }
 
-    public void setShootingDate(String shootingDate) {
+    public PhotosRequest setShootingDate(String shootingDate) {
         this.shootingDate = shootingDate;
+        return this;
     }
 
     public String getTags() {
