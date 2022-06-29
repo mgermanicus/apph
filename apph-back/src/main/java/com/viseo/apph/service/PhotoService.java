@@ -116,7 +116,8 @@ public class PhotoService {
         photo.setTitle(photoRequest.getTitle())
                 .setDescription(photoRequest.getDescription())
                 .setShootingDate(shootingDate)
-                .setTags(newTags);
+                .setTags(newTags)
+                .setModificationDate(LocalDate.now());
         return "photo.edited";
     }
 
@@ -231,8 +232,7 @@ public class PhotoService {
             } else if (photoDao.existNameInFolder(folder, photo.getTitle(), photo.getFormat())) {
                 response.addMessage("error: folder.error.oneOf.existingName");
             } else {
-                photo.setFolder(folder);
-                photo.setModificationDate(LocalDate.now());
+                photo.setFolder(folder).setModificationDate(LocalDate.now());
             }
         }
         response.addMessage("success: photo.successMove");
@@ -372,7 +372,7 @@ public class PhotoService {
             throw new UnauthorizedException("download.error.accessDenied");
         }
         s3Dao.delete(photo);
-        photo.setFormat(getFormat(photoRequest.getFile())).setSize((photoRequest.getFile().getSize() + .0F) / 1024);
+        photo.setFormat(getFormat(photoRequest.getFile())).setSize((photoRequest.getFile().getSize() + .0F) / 1024).setModificationDate(LocalDate.now());
         return s3Dao.upload(photoRequest.getFile(), photo);
     }
 
