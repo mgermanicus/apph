@@ -19,7 +19,7 @@ import PhotoService from '../../services/PhotoService';
 
 interface modifyPhotosProps {
   ids: number[];
-  setRefresh: Dispatch<SetStateAction<boolean>>;
+  setRefresh?: Dispatch<SetStateAction<boolean>>;
 }
 
 export const ModifyPhotos = ({
@@ -68,7 +68,7 @@ export const ModifyPhotos = ({
     PhotoService.editPhotoListInfos(
       ids,
       () => {
-        setRefresh((refresh) => !refresh);
+        if (setRefresh) setRefresh((refresh) => !refresh);
         handleCloseForm();
       },
       (errorMessage: string) => setErrorMessage(errorMessage),
@@ -84,7 +84,7 @@ export const ModifyPhotos = ({
           <Button
             variant="outlined"
             onClick={handleOpenForm}
-            aria-label="upload-photo"
+            aria-label="modify-photos"
           >
             <EditIcon />
           </Button>
