@@ -6,3 +6,4 @@ export * from './Folder';
 export * from './Pagination';
 export * from './Photo';
 export * from './Message';
+export * from './Setting';

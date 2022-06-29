@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import PhotoService from '../../services/PhotoService';
-import { ITag, StatusType, UploadStatus } from '../../utils';
+import { ISetting, ITag, StatusType, UploadStatus } from '../../utils';
 import React, {
   Dispatch,
   FormEvent,
@@ -31,6 +31,7 @@ import { useTranslation } from 'react-i18next';
 import { AlertSnackbar } from './AlertSnackbar';
 import { TagInput } from './TagInput';
 import { useDropzone } from 'react-dropzone';
+import SettingService from '../../services/SettingService';
 
 export const UploadImage = ({
   setRefresh
@@ -54,6 +55,21 @@ export const UploadImage = ({
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
     accept: { 'image/*': [] }
   });
+  const [uploadSize, setUploadSize] = useState<number>(0);
+
+  useEffect(() => {
+    (async () => {
+      await SettingService.getSettings(
+        (data) => {
+          const settings: ISetting = JSON.parse(data);
+          setUploadSize(settings.uploadSize);
+        },
+        () => {
+          return;
+        }
+      );
+    })();
+  }, []);
 
   const createUploadCallbacks = (nbFiles: number) => {
     const handleSuccess = [];
@@ -126,6 +142,7 @@ export const UploadImage = ({
         acceptedFiles[0],
         selectedTags,
         '-1',
+        uploadSize,
         handleSuccess[0],
         handleError[0]
       )?.then(() => {
@@ -149,6 +166,7 @@ export const UploadImage = ({
                 acceptedFiles[i],
                 newSelectedTags,
                 '-1',
+                uploadSize,
                 handleSuccess[i],
                 handleError[i]
               );

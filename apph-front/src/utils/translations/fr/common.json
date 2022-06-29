@@ -63,7 +63,8 @@
     "tags": "Mes Tags",
     "treatments": "Mes Traitements",
     "advancedSearch": "Recherche Avancée",
-    "users": "Liste des Utilisateurs"
+    "users": "Liste des Utilisateurs",
+    "settings": "Paramètres"
   },
   "folder": {
     "create": "Créer",
@@ -205,6 +206,22 @@
       "illegalArgument": "Argument non valide",
       "unauthorizedResource": "Vous n'avez pas accès à cette ressource",
       "notFound": "Ressource non trouvée"
+    }
+  },
+  "admin": {
+    "setting": {
+      "edit": "Modifier les paramètres",
+      "uploadSize": "Taille maximale du fichier à envoyé",
+      "downloadSize": "Taille maximale des fichier à télécharger",
+      "warningUpdate": "Les paramètres seront mis à jour",
+      "error": {
+        "modifyFailed": "Une erreur est survenue lors de la modification",
+        "errorGet": "Impossible d'obtenir les paramètres",
+        "valueNotValid": "Les valeurs saissis sont incorect"
+      },
+      "success": {
+        "modifySuccess": "Les paramètres ont été modifiées"
+      }
     }
   }
 }

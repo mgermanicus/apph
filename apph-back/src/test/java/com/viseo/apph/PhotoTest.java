@@ -4,10 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viseo.apph.controller.PhotoController;
 import com.viseo.apph.dao.*;
-import com.viseo.apph.domain.Folder;
-import com.viseo.apph.domain.Photo;
+import com.viseo.apph.domain.*;
 import com.viseo.apph.domain.Tag;
-import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.*;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.PhotoService;
@@ -53,6 +51,8 @@ public class PhotoTest {
     @Mock
     TypedQuery<Long> typedQueryInvalidLong;
     @Mock
+    TypedQuery<Setting> typedQuerySetting;
+    @Mock
     Utils utils;
     @Mock
     S3Client s3Client;
@@ -65,20 +65,22 @@ public class PhotoTest {
         PhotoDao photoDao = new PhotoDao();
         UserDao userDao = new UserDao();
         TagDao tagDao = new TagDao();
+        SettingDao settingDao = new SettingDao();
         FolderDao folderDao = new FolderDao();
         inject(photoDao, "em", em);
         inject(userDao, "em", em);
         inject(tagDao, "em", em);
         inject(folderDao, "em", em);
+        inject(settingDao, "em", em);
         S3Dao s3Dao = new S3Dao();
         s3Client = mock(S3Client.class, RETURNS_DEEP_STUBS);
         inject(s3Dao, "s3Client", s3Client);
         PhotoService photoService = new PhotoService();
-        photoService.zipMaxSize = zipMaxSize;
         inject(photoService, "photoDao", photoDao);
         inject(photoService, "s3Dao", s3Dao);
         inject(photoService, "userDao", userDao);
         inject(photoService, "folderDao", folderDao);
+        inject(photoService, "settingDao", settingDao);
         UserService userService = new UserService();
         inject(userService, "userDao", userDao);
         inject(userService, "folderDao", folderDao);
@@ -836,6 +838,8 @@ public class PhotoTest {
         when(utils.getUser()).thenReturn(user);
         when(em.find(any(), anyLong())).thenReturn(photo_1);
         when(s3Client.getObject(any(GetObjectRequest.class), eq(ResponseTransformer.toBytes()))).thenReturn(s3Object);
+        when(em.createQuery("SELECT setting from Setting setting", Setting.class)).thenReturn(typedQuerySetting);
+        when(typedQuerySetting.getSingleResult()).thenReturn(new Setting().setDownloadSize(0).setUploadSize(0));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.downloadZip(photosRequest);
         //THEN
@@ -855,6 +859,8 @@ public class PhotoTest {
         when(utils.getUser()).thenReturn(user);
         when(em.find(any(), anyLong())).thenReturn(photo_1);
         when(s3Client.getObject(any(GetObjectRequest.class), eq(ResponseTransformer.toBytes()))).thenReturn(s3Object);
+        when(em.createQuery("SELECT setting from Setting setting", Setting.class)).thenReturn(typedQuerySetting);
+        when(typedQuerySetting.getSingleResult()).thenReturn(new Setting().setDownloadSize(10).setUploadSize(10));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.downloadZip(photosRequest);
         //THEN

@@ -1,17 +1,22 @@
 package com.viseo.apph.config;
 
 import com.viseo.apph.dao.RoleDao;
+import com.viseo.apph.dao.SettingDao;
 import com.viseo.apph.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.unit.DataSize;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.MultipartConfigElement;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.HashSet;
@@ -24,6 +29,9 @@ public class DataBaseConfig {
 
     @Autowired
     RoleDao roleDao;
+
+    @Autowired
+    SettingDao settingDao;
 
     @Value("${init-database}")
     boolean init;
@@ -60,6 +68,8 @@ public class DataBaseConfig {
         em.persist(admin);
         Folder adminRoot = new Folder().setName("Admin VISEO").setParentFolderId(null).setUser(admin);
         em.persist(adminRoot);
+        Setting setting = new Setting().setUploadSize(10).setDownloadSize(15);
+        em.persist(setting);
     }
 
     @Transactional
