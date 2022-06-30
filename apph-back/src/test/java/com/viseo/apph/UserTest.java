@@ -2,13 +2,17 @@ package com.viseo.apph;
 
 import com.viseo.apph.controller.UserController;
 import com.viseo.apph.dao.FolderDao;
+import com.viseo.apph.dao.SettingDao;
 import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Folder;
+import com.viseo.apph.domain.Setting;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.IResponseDto;
+import com.viseo.apph.dto.SettingResponse;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.security.UserDetailsImpl;
+import com.viseo.apph.service.SettingService;
 import com.viseo.apph.service.UserService;
 import net.bytebuddy.utility.RandomString;
 import org.junit.Assert;
@@ -41,26 +45,34 @@ public class UserTest {
     @Mock
     TypedQuery<Folder> typedQueryFolder;
     @Mock
+    TypedQuery<Setting> typedQuerySetting;
+    @Mock
     PasswordEncoder passwordEncoder;
     @Mock
     com.viseo.apph.security.Utils utils;
 
     UserService userService;
+    SettingService settingService;
     UserController userController;
     JwtUtils jwtUtils;
 
     private void createUserController() {
         UserDao userDao = new UserDao();
         FolderDao folderDao = new FolderDao();
+        SettingDao settingDao = new SettingDao();
         inject(userDao, "em", em);
         inject(folderDao, "em", em);
+        inject(settingDao, "em", em);
         userService = new UserService();
         inject(userService, "userDao", userDao);
         inject(userService, "folderDao", folderDao);
+        settingService = new SettingService();
+        inject(settingService, "settingDao", settingDao);
         jwtUtils = new JwtUtils();
         inject(userService, "jwtUtils", jwtUtils);
         userController = new UserController();
         inject(userController, "userService", userService);
+        inject(userController, "settingService", settingService);
         inject(userService, "encoder", passwordEncoder);
         inject(userController, "utils", utils);
     }
@@ -272,5 +284,21 @@ public class UserTest {
         //THEN
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         Assert.assertEquals("signup.error.loginOverChar", response.getBody());
+    }
+
+    @Test
+    public void testGetSetting() {
+        //GIVEN
+        createUserController();
+        when(em.createQuery("SELECT setting from Setting setting", Setting.class)).thenReturn(typedQuerySetting);
+        when(typedQuerySetting.getSingleResult()).thenReturn(new Setting().setDownloadSize(10).setUploadSize(20));
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = userController.getSettings();
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        SettingResponse response = (SettingResponse) responseEntity.getBody();
+        assert response != null;
+        Assert.assertEquals(10, response.getDownloadSize());
+        Assert.assertEquals(20, response.getUploadSize());
     }
 }

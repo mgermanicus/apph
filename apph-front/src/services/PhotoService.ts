@@ -252,10 +252,11 @@ export default class PhotoService {
   static reUploadImage(
     id: number,
     imageFile: File,
+    maxFileSizeMb: number,
     handleSuccess: () => void,
     handleError: (errorMessage: string) => void
   ) {
-    if (!imageFileCheck(imageFile, handleError)) return;
+    if (!imageFileCheck(imageFile, handleError, maxFileSizeMb)) return;
     const userInfos = cookies.get('user');
     const formData = new FormData();
     formData.append('id', id.toString());

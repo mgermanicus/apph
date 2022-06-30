@@ -58,7 +58,7 @@ describe('Test UploadImage', () => {
     //GIVEN
     const serverError = { message: "Une erreur est survenue lors de l'upload" };
     fakeRequest({
-      '/admin/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' },
+      '/user/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' },
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { error: JSON.stringify(serverError) }
     });

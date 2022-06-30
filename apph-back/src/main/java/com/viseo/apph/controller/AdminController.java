@@ -28,11 +28,6 @@ public class AdminController {
         return ResponseEntity.ok(userService.getUserList());
     }
 
-    @GetMapping("/getSettings")
-    public ResponseEntity<IResponseDto> getSettings() {
-        return ResponseEntity.ok(settingService.getSettings());
-    }
-
     @PostMapping("/updateSettings")
     public ResponseEntity<IResponseDto> updateSettings(@RequestBody SettingRequest settingRequest) {
         return ResponseEntity.ok(settingService.updateSettings(settingRequest));

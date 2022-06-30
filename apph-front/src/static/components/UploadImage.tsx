@@ -60,7 +60,7 @@ export const UploadImage = ({
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
     accept: { 'image/*': [] }
   });
-  const [uploadSize, setUploadSize] = useState<number>(0);
+  const [uploadSize, setUploadSize] = useState<number>(10);
 
   useEffect(() => {
     (async () => {
