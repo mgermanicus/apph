@@ -88,7 +88,7 @@ export const Diaporama = ({ ids }: { ids: number[] }) => {
         <Button
           variant="outlined"
           onClick={() => {
-            data.length ? setOpen(true) : setAlertOpen(true);
+            ids.length ? setOpen(true) : setAlertOpen(true);
           }}
         >
           <Slideshow />

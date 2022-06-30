@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dispatch, useState } from 'react';
+import { Dispatch, useEffect, useState } from 'react';
 import {
   DataGrid,
   GridColDef,
@@ -16,18 +16,19 @@ interface photoTableProps {
   data: ITable[];
   loading: boolean;
   totalSize: number;
+  clearData: boolean;
   page: number;
   setPage: Dispatch<React.SetStateAction<number>>;
   pageSize: number;
   setPageSize: Dispatch<React.SetStateAction<number>>;
   setSelectedIds: Dispatch<React.SetStateAction<number[]>>;
-  selected?: number[];
   handleSortModelChange: (model: GridSortModel) => void;
 }
 
 export const PhotoTable = ({
   data,
   loading = false,
+  clearData = false,
   totalSize = 0,
   page = 0,
   setPage,
@@ -117,6 +118,11 @@ export const PhotoTable = ({
       )
     }
   ];
+
+  useEffect(() => {
+    setSelectionModel([]);
+    setSelectedIds([]);
+  }, [clearData]);
 
   return (
     <div style={{ height: 115 + pageSize * 52, width: '100%' }}>

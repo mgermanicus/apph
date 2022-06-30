@@ -56,6 +56,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/getSettings")
     public ResponseEntity<IResponseDto> getSettings() {
         return ResponseEntity.ok(settingService.getSettings());
