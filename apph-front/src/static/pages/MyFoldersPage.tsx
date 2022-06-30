@@ -83,6 +83,7 @@ export const MyFoldersPage = (): JSX.Element => {
           <DisplayPhoto
             selectedFolder={selectedFolder}
             rootFolder={rootFolder?.id}
+            refreshFolder={getFolders}
           />
         </Box>
       </div>

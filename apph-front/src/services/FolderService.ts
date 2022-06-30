@@ -121,4 +121,36 @@ export class FolderService {
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
+
+  static deleteFolder(
+    handleSuccess: (successMessage: string) => void,
+    handleError: (errorMessage: string) => void,
+    id: string,
+    destinationFolderId?: string
+  ) {
+    const user = cookies.get('user');
+    const requestOptions = {
+      method: 'Delete',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + user.token
+      },
+      body: JSON.stringify({
+        id,
+        destinationFolderId
+      })
+    };
+    const successFunction = (message: string) => {
+      handleSuccess(JSON.parse(message).message);
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
+    return Server.request(
+      `/folder/delete`,
+      requestOptions,
+      successFunction,
+      errorFunction
+    );
+  }
 }

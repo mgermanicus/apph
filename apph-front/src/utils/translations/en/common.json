@@ -70,6 +70,11 @@
     "create": "Create",
     "delete": "Delete from folder",
     "createFolder": "Create a folder",
+    "deleteFolder": {
+      "dialogButton": "Delete current folder",
+      "confirmDelete": "Do you really want to delete this folder?",
+      "confirmMoveContent": "Do you want to delete or move the contents of this folder?"
+    },
     "creation": "Creating a file",
     "download": "Download a folder",
     "enterName": "Enter the folder name:",
@@ -80,6 +85,7 @@
     "move": "Move",
     "confirmDeletePhoto": "Are you sure about removing this photo from this folder ?",
     "successMove": "Folder successfully moved.",
+    "successDelete": "Folder successfully deleted.",
     "error": {
       "error": "Error",
       "oneOf": {
@@ -90,6 +96,7 @@
       },
       "nullFolder": "The file could not be retrieved",
       "moveFolder": "Folder cannot be moved",
+      "deleteFolder": "Folder cannot be removed.",
       "emptyFolder": "The folder name cannot be empty.",
       "existingFolder": "The file already exists in the current folder.",
       "notFound": "Parent folder not found.",
@@ -138,6 +145,7 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "delete": "Delete",
+    "move": "Move",
     "confirmDelete": "Are you sure about deleting these photos ?",
     "download": "Download",
     "cancelChange": "Cancel changes",

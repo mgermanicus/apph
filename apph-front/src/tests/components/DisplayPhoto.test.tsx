@@ -34,7 +34,15 @@ describe("Display Folder's Photo Tests", () => {
       cookies.set('user', { ...decodedToken, token: JWS_TOKEN });
     }
     //WHEN
-    render(<DisplayPhoto rootFolder="0" selectedFolder="1" />);
+    render(
+      <DisplayPhoto
+        rootFolder="0"
+        selectedFolder="1"
+        refreshFolder={() => {
+          return;
+        }}
+      />
+    );
     //THEN
     expect(await screen.findByText(/photo.png/)).toBeInTheDocument();
   });
@@ -48,7 +56,15 @@ describe("Display Folder's Photo Tests", () => {
       cookies.set('user', { ...decodedToken, token: JWS_TOKEN });
     }
     //WHEN
-    render(<DisplayPhoto rootFolder={'0'} selectedFolder="1" />);
+    render(
+      <DisplayPhoto
+        rootFolder={'0'}
+        selectedFolder="1"
+        refreshFolder={() => {
+          return;
+        }}
+      />
+    );
     //THEN
     expect(screen.getByText(/folder.error.notExist/)).toBeInTheDocument();
   });

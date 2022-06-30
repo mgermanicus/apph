@@ -19,6 +19,7 @@ import { AlertSnackbar } from './AlertSnackbar';
 import { useTranslation } from 'react-i18next';
 import { MovePhotoOrFolder } from './MovePhotoOrFolder';
 import { DownloadZip } from './DownloadZip';
+import { DeleteFolder } from './DeleteFolder';
 
 const tinySize = {
   gridContainerSpacing: { xs: 1, md: 2 },
@@ -61,10 +62,12 @@ const bigSize = {
 
 export const DisplayPhoto = ({
   selectedFolder,
-  rootFolder
+  rootFolder,
+  refreshFolder
 }: {
   selectedFolder: string;
   rootFolder: string | undefined;
+  refreshFolder: () => void;
 }): JSX.Element => {
   const [photoList, setPhotoList] = useState<ITable[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -156,6 +159,11 @@ export const DisplayPhoto = ({
                 <MovePhotoOrFolder
                   folderToBeMoved={selectedFolder}
                   folderId={rootFolder}
+                />
+                <DeleteFolder
+                  selectedFolderId={selectedFolder}
+                  rootFolderId={rootFolder}
+                  refreshFolder={refreshFolder}
                 />
               </ButtonGroup>
             </Box>
