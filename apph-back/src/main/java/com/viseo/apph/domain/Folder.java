@@ -14,7 +14,7 @@ public class Folder extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     User user;
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "folder", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Photo> photos = new ArrayList<>();
 
     public Folder() {
@@ -50,5 +50,9 @@ public class Folder extends BaseEntity {
             this.user.folders.add(this);
         }
         return this;
+    }
+
+    public List<Photo> getPhotos() {
+        return this.photos;
     }
 }

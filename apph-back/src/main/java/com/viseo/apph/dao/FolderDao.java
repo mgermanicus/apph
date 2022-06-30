@@ -7,7 +7,10 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class FolderDao {
@@ -39,5 +42,13 @@ public class FolderDao {
     public List<Folder> getFoldersByParentId(long parentId) {
         return em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentId", Folder.class)
                 .setParameter("parentId", parentId).getResultList();
+    }
+
+    public Map<Long, Long> getFolderParentChildStructureByUser(User user) {
+        return em.createQuery("SELECT folder.id as childId, folder.parentFolderId as parentId from Folder folder WHERE folder.user = :user", Tuple.class)
+                .setParameter("user", user).getResultStream().collect(Collectors.toMap(
+                        tuple -> (Long) tuple.get("childId"),
+                        tuple -> tuple.get("parentId") != null ? (Long) tuple.get("parentId") : -1
+                ));
     }
 }
