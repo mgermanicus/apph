@@ -68,7 +68,8 @@ export const TagInput = ({
           {...params}
           inputProps={{
             ...params.inputProps,
-            autoComplete: 'new-password'
+            autoComplete: 'new-password',
+            required: required ? selectedTags.length === 0 : false
           }}
           inputRef={tagsInput}
           label="Tags"

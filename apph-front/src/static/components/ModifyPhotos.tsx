@@ -16,6 +16,8 @@ import TagService from '../../services/TagService';
 import { AlertSnackbar } from './AlertSnackbar';
 import Typography from '@mui/material/Typography';
 import PhotoService from '../../services/PhotoService';
+import moment from 'moment';
+import i18n from 'i18next';
 
 interface modifyPhotosProps {
   ids: number[];
@@ -27,7 +29,7 @@ export const ModifyPhotos = ({
   setRefresh
 }: modifyPhotosProps): JSX.Element => {
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
-  const [shootingDate, setShootingDate] = useState<Date | undefined>();
+  const [shootingDate, setShootingDate] = useState<string>();
   const [selectedTags, setSelectedTags] = useState<ITag[] | undefined>();
   const [allTags, setAllTags] = useState<ITag[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -131,9 +133,13 @@ export const ModifyPhotos = ({
                 label={t('photoTable.shootingDate')}
                 value={shootingDate || null}
                 onChange={(date) => {
-                  if (date) setShootingDate(date);
-                  else setShootingDate(undefined);
+                  if (date) {
+                    setShootingDate(moment(date).format('MM/DD/YYYY'));
+                  } else setShootingDate(moment().format('MM/DD/YYYY'));
                 }}
+                inputFormat={
+                  i18n.language == 'fr' ? 'dd/MM/yyyy' : 'MM/dd/yyyy'
+                }
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>

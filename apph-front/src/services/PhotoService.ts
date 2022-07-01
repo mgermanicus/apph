@@ -339,11 +339,9 @@ export default class PhotoService {
     ids: number[],
     handleSuccess: () => void,
     handleError: (errorMessage: string) => void,
-    shootingDate?: Date,
+    shootingDate?: string,
     selectedTags?: ITag[]
   ) {
-    const tmp = shootingDate?.toLocaleString().split(' ');
-    const shootingDateDataTmp = tmp ? tmp[0] + ', ' + tmp[1] : undefined;
     const URL = `/photo/editPhotoList`,
       userInfos = cookies.get('user'),
       requestOptions = {
@@ -354,7 +352,7 @@ export default class PhotoService {
         },
         body: JSON.stringify({
           ids,
-          shootingDate: JSON.stringify(shootingDateDataTmp),
+          shootingDate: shootingDate,
           tags: JSON.stringify(selectedTags)
         })
       };

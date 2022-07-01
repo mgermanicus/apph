@@ -1151,7 +1151,7 @@ public class PhotoTest {
         //GIVE
         createPhotoController();
         long[] ids = {1L};
-        String shootingDate = "\"09/06/2022, 00:00:00\"";
+        String shootingDate = "07/20/2022";
         String tags = "[{\"name\":\"+ test\"}]";
         PhotosRequest photoRequest = new PhotosRequest().setIds(ids).setShootingDate(shootingDate).setTags(tags);
         User Jean_Jacqueline_Bernadette = (User) new User().setLogin("JJB").setId(1);
@@ -1168,7 +1168,7 @@ public class PhotoTest {
         //GIVE
         createPhotoController();
         long[] ids = {1L};
-        String shootingDate = "\"09/06/2022, 00:00:00\"";
+        String shootingDate = "07/20/2022";
         PhotosRequest photoRequest = new PhotosRequest().setIds(ids).setShootingDate(shootingDate);
         User Jean_Jacqueline_Bernadette = (User) new User().setLogin("JJB").setId(1);
         when(utils.getUser()).thenReturn(Jean_Jacqueline_Bernadette);
