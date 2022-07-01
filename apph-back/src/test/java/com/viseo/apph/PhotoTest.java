@@ -4,18 +4,26 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viseo.apph.controller.PhotoController;
 import com.viseo.apph.dao.*;
-import com.viseo.apph.domain.*;
 import com.viseo.apph.domain.Tag;
+import com.viseo.apph.domain.*;
 import com.viseo.apph.dto.*;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.PhotoService;
 import com.viseo.apph.service.TagService;
 import com.viseo.apph.service.UserService;
 import net.bytebuddy.utility.RandomString;
+import org.hibernate.search.engine.search.query.SearchResult;
+import org.hibernate.search.engine.search.query.SearchResultTotal;
+import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
+import org.hibernate.search.engine.search.query.dsl.SearchQuerySelectStep;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
@@ -35,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static com.viseo.apph.utils.Utils.inject;
 import static org.junit.Assert.*;
@@ -1316,5 +1325,34 @@ public class PhotoTest {
         ResponseEntity<IResponseDto> responseEntity = photoController.editPhotoList(photoRequest);
         //THEN
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testSearch() {
+        //GIVEN
+        createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        List<Photo> listPhoto = new ArrayList<>();
+        listPhoto.add(new Photo());
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5);
+        when(utils.getUser()).thenReturn(robert);
+        SearchSession searchSession = mock(SearchSession.class);
+        SearchQuerySelectStep searchQuerySelectStep = mock(SearchQuerySelectStep.class);
+        SearchQueryOptionsStep stepSearchQueryOptionsStep = mock(SearchQueryOptionsStep.class);
+        SearchResult res = mock(SearchResult.class);
+        SearchResultTotal resultTotal = mock(SearchResultTotal.class);
+        //SearchQuerySelectStep<?, EntityReference, Photo, SearchLoadingOptionsStep, ?, ?> searchQuerySelectStep = mock(SearchQuerySelectStep.class);
+        try (MockedStatic<Search> search = Mockito.mockStatic(Search.class)) {
+            search.when(() -> Search.session(em)).thenReturn(searchSession);
+            when(searchSession.search(Photo.class)).thenReturn(searchQuerySelectStep);
+            when(searchQuerySelectStep.where(any(Function.class))).thenReturn(stepSearchQueryOptionsStep);
+            when(stepSearchQueryOptionsStep.sort(any(Function.class))).thenReturn(stepSearchQueryOptionsStep);
+            when(stepSearchQueryOptionsStep.fetch(any(), any())).thenReturn(res);
+            when(res.total()).thenReturn(resultTotal);
+            when(resultTotal.hitCount()).thenReturn(1L);
+            when(res.hits()).thenReturn(listPhoto);
+            //WHEN
+            ResponseEntity<IResponseDto> responseEntity = photoController.search(filterRequest);
+        }
     }
 }
