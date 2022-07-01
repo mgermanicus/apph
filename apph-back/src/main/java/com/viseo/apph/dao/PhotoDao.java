@@ -7,6 +7,7 @@ import com.viseo.apph.dto.FilterRequest;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.engine.search.sort.dsl.SearchSortFactory;
 import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.scope.SearchScope;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.springframework.stereotype.Repository;
 
@@ -66,13 +67,17 @@ public class PhotoDao {
 
     public SearchResult<Photo> searchPhotoByTargetAndUser(FilterRequest filterRequest, User user) {
         SearchSession searchSession = Search.session(em);
+        SearchScope<Photo> scope = searchSession.scope(Photo.class);
         return searchSession.search(Photo.class)
-                .where(f -> f.bool()
-                        .must(f.match().field("user.login")
+                .where(scope
+                        .predicate()
+                        .bool()
+                        .must(scope.predicate().match().field("user.login")
                                 .matching(user.getLogin()))
-                        .must(f.match()
+                        .must(scope.predicate().match()
                                 .fields("title", "description", "tags.name")
                                 .matching(filterRequest.getTarget()))
+                        .toPredicate()
                 )
                 .sort(SearchSortFactory::score)
                 .fetch((filterRequest.getPage() - 1) * filterRequest.getPageSize(), filterRequest.getPageSize());

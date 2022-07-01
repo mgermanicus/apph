@@ -12,17 +12,19 @@ import com.viseo.apph.service.PhotoService;
 import com.viseo.apph.service.TagService;
 import com.viseo.apph.service.UserService;
 import net.bytebuddy.utility.RandomString;
+import org.hibernate.search.engine.search.predicate.SearchPredicate;
+import org.hibernate.search.engine.search.predicate.dsl.*;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.engine.search.query.SearchResultTotal;
 import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
 import org.hibernate.search.engine.search.query.dsl.SearchQuerySelectStep;
 import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.scope.SearchScope;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -1334,25 +1336,46 @@ public class PhotoTest {
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         List<Photo> listPhoto = new ArrayList<>();
         listPhoto.add(new Photo());
-        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5);
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setTarget("photo");
         when(utils.getUser()).thenReturn(robert);
+        ResponseEntity<IResponseDto> responseEntity;
         SearchSession searchSession = mock(SearchSession.class);
         SearchQuerySelectStep searchQuerySelectStep = mock(SearchQuerySelectStep.class);
         SearchQueryOptionsStep stepSearchQueryOptionsStep = mock(SearchQueryOptionsStep.class);
-        SearchResult res = mock(SearchResult.class);
         SearchResultTotal resultTotal = mock(SearchResultTotal.class);
-        //SearchQuerySelectStep<?, EntityReference, Photo, SearchLoadingOptionsStep, ?, ?> searchQuerySelectStep = mock(SearchQuerySelectStep.class);
+        SearchPredicate searchPredicate = mock(SearchPredicate.class);
+        SearchPredicateFactory searchPredicateFactory = mock(SearchPredicateFactory.class);
+        MatchPredicateFieldStep matchPredicateFieldStep = mock(MatchPredicateFieldStep.class);
+        MatchPredicateFieldMoreStep matchPredicateFieldMoreStep = mock(MatchPredicateFieldMoreStep.class);
+        MatchPredicateOptionsStep matchPredicateOptionsStep = mock(MatchPredicateOptionsStep.class);
+        BooleanPredicateClausesStep booleanPredicateClausesStep = mock(BooleanPredicateClausesStep.class);
+        SearchScope scope = mock(SearchScope.class);
+        SearchResult res = mock(SearchResult.class);
         try (MockedStatic<Search> search = Mockito.mockStatic(Search.class)) {
             search.when(() -> Search.session(em)).thenReturn(searchSession);
             when(searchSession.search(Photo.class)).thenReturn(searchQuerySelectStep);
-            when(searchQuerySelectStep.where(any(Function.class))).thenReturn(stepSearchQueryOptionsStep);
+            when(searchSession.scope(Photo.class)).thenReturn(scope);
+            when(scope.predicate()).thenReturn(searchPredicateFactory);
+            when(searchPredicateFactory.bool()).thenReturn(booleanPredicateClausesStep);
+            doReturn(booleanPredicateClausesStep).when(booleanPredicateClausesStep).must(matchPredicateOptionsStep);
+            when(searchPredicateFactory.match()).thenReturn(matchPredicateFieldStep);
+            doReturn(matchPredicateFieldMoreStep).when(matchPredicateFieldStep).field(anyString());
+            doReturn(matchPredicateFieldMoreStep).when(matchPredicateFieldStep).fields(anyString(), anyString(), anyString());
+            doReturn(matchPredicateOptionsStep).when(matchPredicateFieldMoreStep).matching(any());
+            when(booleanPredicateClausesStep.toPredicate()).thenReturn(searchPredicate);
+            when(searchQuerySelectStep.where(searchPredicate)).thenReturn(stepSearchQueryOptionsStep);
             when(stepSearchQueryOptionsStep.sort(any(Function.class))).thenReturn(stepSearchQueryOptionsStep);
             when(stepSearchQueryOptionsStep.fetch(any(), any())).thenReturn(res);
             when(res.total()).thenReturn(resultTotal);
             when(resultTotal.hitCount()).thenReturn(1L);
             when(res.hits()).thenReturn(listPhoto);
             //WHEN
-            ResponseEntity<IResponseDto> responseEntity = photoController.search(filterRequest);
+            responseEntity = photoController.search(filterRequest);
         }
+        //THEN
+        PhotoListResponse photoListResponse = (PhotoListResponse) responseEntity.getBody();
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        assert photoListResponse != null;
+        assertEquals(1L, photoListResponse.getTotal());
     }
 }
