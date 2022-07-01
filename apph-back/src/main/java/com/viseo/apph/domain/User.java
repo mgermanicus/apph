@@ -94,22 +94,4 @@ public class User extends BaseEntity {
         }
         return this;
     }
-
-    public User removeFolder(Folder folder) {
-        assert folder != null;
-        if (this.folders.contains(folder)) {
-            this.folders.remove(folder);
-            folder.user = null;
-        }
-        return this;
-    }
-
-    public User addPhoto(Photo photo) {
-        assert photo != null;
-        if (!this.photos.contains(photo)) {
-            this.photos.add(photo);
-            photo.setUser(this);
-        }
-        return this;
-    }
 }

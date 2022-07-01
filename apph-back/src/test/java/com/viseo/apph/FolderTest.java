@@ -91,7 +91,7 @@ public class FolderTest {
         createFolderController();
         FolderRequest request = new FolderRequest().setName("Robert Child").setParentFolderId(1L);
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
-        Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setUser(robert).setId(1);
+        Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(null).setId(1);
         robert.addFolder(robertRoot);
         when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
         when(utils.getUser()).thenReturn(robert);
@@ -106,6 +106,29 @@ public class FolderTest {
         FolderResponse folderResponse = (FolderResponse) responseEntity.getBody();
         assert folderResponse != null;
         Assert.assertEquals("Robert Root", folderResponse.getName());
+    }
+
+    @Test
+    public void testCreateFolderParentNotExist() {
+        //GIVEN
+        createFolderController();
+        FolderRequest request = new FolderRequest().setName("Robert Child").setParentFolderId(1L);
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        Folder robertRoot = (Folder) new Folder().setName("Robert Root").setParentFolderId(3L).setUser(robert).setId(2);
+        robert.addFolder(robertRoot);
+        when(em.find(Folder.class, 1L)).thenReturn(robertRoot);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user.id = :userId", Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("userId", 1L)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getResultList()).thenReturn(robert.getFolders());
+
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = folderController.createFolder(request);
+        //THEN
+        Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("folder.error.notFound", messageResponse.getMessage());
     }
 
     @Test

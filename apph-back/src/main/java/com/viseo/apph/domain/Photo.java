@@ -138,13 +138,4 @@ public class Photo extends BaseEntity {
         }
         return this;
     }
-
-    public Photo setUrl(String url) {
-        this.url = url;
-        return this;
-    }
-
-    public String getUrl() {
-        return url;
-    }
 }
