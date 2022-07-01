@@ -51,6 +51,8 @@
     "actions": "Actions",
     "error": "Illegal argument.",
     "address": "Address"
+    "error": "Illegal argument.",
+    "kb": "Kb"
   },
   "userTable": {
     "firstname": "First name",
@@ -65,7 +67,8 @@
     "treatments": "My Processing",
     "advancedSearch": "Advanced Search",
     "users": "Users List",
-    "settings": "Settings"
+    "settings": "Settings",
+    "Search": "Search"
   },
   "folder": {
     "create": "Create",

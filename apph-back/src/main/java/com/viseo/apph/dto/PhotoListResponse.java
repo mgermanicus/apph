@@ -9,6 +9,9 @@ public class PhotoListResponse implements IResponseDto {
     @JsonProperty("photoList")
     List<PhotoResponse> photoList;
 
+    @JsonProperty("total")
+    long total;
+
     public PhotoListResponse() {
         this.photoList = new ArrayList<>();
     }
@@ -20,5 +23,14 @@ public class PhotoListResponse implements IResponseDto {
 
     public List<PhotoResponse> getPhotoList() {
         return this.photoList;
+    }
+
+    public long getTotal() {
+        return total;
+    }
+
+    public PhotoListResponse setTotal(long total) {
+        this.total = total;
+        return this;
     }
 }

@@ -36,9 +36,7 @@ public class PhotoController {
     public ResponseEntity<IResponseDto> getUserPhotos(@RequestBody FilterRequest filterRequest) {
         try {
             User user = utils.getUser();
-            PaginationResponse response;
-            response = photoService.getUserPhotos(user, filterRequest);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(photoService.getUserPhotos(user, filterRequest));
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("photoTable.error.illegalArgument"));
         } catch (InvalidObjectException e) {
@@ -207,5 +205,13 @@ public class PhotoController {
         } catch (IllegalArgumentException iae) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(iae.getMessage()));
         }
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping(value = "/search", produces = "application/json")
+    public ResponseEntity<IResponseDto> search(@RequestBody FilterRequest filterRequest) {
+        User user = utils.getUser();
+        PhotoListResponse responseList = photoService.search(filterRequest, user);
+        return ResponseEntity.ok().body(responseList);
     }
 }

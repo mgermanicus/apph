@@ -1,6 +1,7 @@
 package com.viseo.apph.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Set;
 public class User extends BaseEntity {
     private static final long serialVersionUID = 1L;
     @Column(unique = true)
+    @FullTextField
     String login;
     String password;
     String firstname;

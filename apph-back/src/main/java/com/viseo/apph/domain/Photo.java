@@ -1,36 +1,57 @@
 package com.viseo.apph.domain;
 
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+@Indexed
 @Entity
 @Table(name = "photo")
 public class Photo extends BaseEntity {
 
+    @FullTextField(analyzer = "name")
     String title;
+
+    @FullTextField(analyzer = "name")
     String description;
+
     LocalDate creationDate;
+
     LocalDate modificationDate;
+
     LocalDate shootingDate;
     float size;
+
+    @FullTextField
     String format;
+
+    @FullTextField(analyzer = "name")
     String address;
+
     float lat;
+
     float lng;
+
     String url;
 
     @ManyToMany
+    @IndexedEmbedded
     @JoinTable(name = "photo_tag",
             joinColumns = @JoinColumn(name = "photo_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
     Set<Tag> tags = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @IndexedEmbedded
     User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @IndexedEmbedded
     Folder folder;
 
     public Photo() {

@@ -31,6 +31,7 @@ import { useTranslation } from 'react-i18next';
 import { setCookieLanguage } from '../../utils/setCookieLanguage';
 import MuiToggleButton from '@mui/material/ToggleButton';
 import { styled } from '@mui/material/styles';
+import { GlobalSearchBar } from './GlobalSearchBar';
 
 const appBarStyles = {
   iconButton: {
@@ -131,6 +132,7 @@ export const Header = (): JSX.Element => {
               </List>
             </Box>
           </Drawer>
+          <GlobalSearchBar />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             APPH
           </Typography>
