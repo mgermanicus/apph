@@ -1,6 +1,5 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FolderRequest;
 import com.viseo.apph.dto.FolderResponse;
@@ -20,8 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -103,11 +100,5 @@ public class FolderController {
         } catch (NotFoundException nfe) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
         }
-    }
-
-    @GetMapping(value = "/test")
-    public ResponseEntity<Map<Long, Long>> test() {
-        User user = utils.getUser();
-        return ResponseEntity.ok(folderService.test(user));
     }
 }
