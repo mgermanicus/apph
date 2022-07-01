@@ -13,7 +13,7 @@ export default class SettingService {
       headers: getTokenHeader()
     };
     return Server.request(
-      `/admin/getSettings`,
+      `/user/getSettings`,
       requestOptions,
       handleSuccess,
       handleError

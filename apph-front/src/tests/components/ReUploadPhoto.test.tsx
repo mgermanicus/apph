@@ -1,9 +1,9 @@
 import {
   clickButton,
   fakeFile,
+  fakeRequest,
   inputFile,
   JWS_TOKEN,
-  triggerRequestFailure,
   triggerRequestSuccess
 } from '../utils';
 import Cookies from 'universal-cookie';
@@ -34,6 +34,7 @@ describe('Test ReUploadPhoto', () => {
       cookies.set('user', { ...decodedToken, token: JWS_TOKEN });
     }
     const files = [fakeFile(1000, 'image/png', '1.png')];
+    triggerRequestSuccess('{"uploadSize":1,"downloadSize":1}');
     render(
       <ReUploadPhoto
         photoId={0}
@@ -53,7 +54,12 @@ describe('Test ReUploadPhoto', () => {
 
   it('render re-upload photo without file', () => {
     //GIVEN
-    triggerRequestSuccess('success');
+    fakeRequest({
+      '/user/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' },
+      '/photo/reupload': {
+        body: JSON.stringify({ message: 'success' })
+      }
+    });
     const cookies = new Cookies();
     const decodedToken = jwtDecode(JWS_TOKEN);
     if (decodedToken !== null && typeof decodedToken === 'object') {
@@ -76,7 +82,12 @@ describe('Test ReUploadPhoto', () => {
 
   it('render re-upload photo with server erreur', () => {
     //GIVEN
-    triggerRequestFailure('{"message": "Le fichier n\'existe pas"}');
+    fakeRequest({
+      '/user/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' },
+      '/photo/reupload': {
+        error: JSON.stringify({ message: "Le fichier n'existe pas" })
+      }
+    });
     const cookies = new Cookies();
     const decodedToken = jwtDecode(JWS_TOKEN);
     if (decodedToken !== null && typeof decodedToken === 'object') {

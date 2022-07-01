@@ -87,22 +87,6 @@ public class AdminTest {
     }
 
     @Test
-    public void testGetSetting() {
-        //GIVEN
-        createAdminController();
-        when(em.createQuery("SELECT setting from Setting setting", Setting.class)).thenReturn(typedQuerySetting);
-        when(typedQuerySetting.getSingleResult()).thenReturn(new Setting().setDownloadSize(10).setUploadSize(20));
-        //WHEN
-        ResponseEntity<IResponseDto> responseEntity = adminController.getSettings();
-        //THEN
-        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
-        SettingResponse response = (SettingResponse) responseEntity.getBody();
-        assert response != null;
-        Assert.assertEquals(10, response.getDownloadSize());
-        Assert.assertEquals(20, response.getUploadSize());
-    }
-
-    @Test
     public void testUpdateSettings() {
         //GIVEN
         createAdminController();

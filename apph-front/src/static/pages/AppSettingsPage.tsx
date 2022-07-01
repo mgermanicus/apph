@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 
 export const AppSettingsPage = () => {
   const { t } = useTranslation();
-  const [uploadSize, setUploadSize] = useState<number>(0);
+  const [uploadSize, setUploadSize] = useState<number>(10);
   const [downloadSize, setDownloadSize] = useState<number>(0);
   const [message, setMessage] = useState<string>('');
   const [errorOccured, setErrorOccured] = useState(false);

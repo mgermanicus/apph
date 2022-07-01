@@ -11,10 +11,12 @@ import {
   Tooltip
 } from '@mui/material';
 import { Upload } from '@mui/icons-material';
-import React, { createRef, useState } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import { AlertSnackbar } from './AlertSnackbar';
 import PhotoService from '../../services/PhotoService';
 import { useTranslation } from 'react-i18next';
+import SettingService from '../../services/SettingService';
+import { ISetting } from '../../utils';
 
 export const ReUploadPhoto = ({
   photoId,
@@ -29,7 +31,22 @@ export const ReUploadPhoto = ({
   const [snackSeverity, setSnackSeverity] = useState<AlertColor>();
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [uploadSize, setUploadSize] = useState<number>(10);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    (async () => {
+      await SettingService.getSettings(
+        (data) => {
+          const settings: ISetting = JSON.parse(data);
+          setUploadSize(settings.uploadSize);
+        },
+        () => {
+          return;
+        }
+      );
+    })();
+  }, []);
 
   const handleSubmit = () => {
     setLoading(true);
@@ -40,6 +57,7 @@ export const ReUploadPhoto = ({
         PhotoService.reUploadImage(
           photoId,
           file,
+          uploadSize,
           () => {
             updateData();
             setSnackSeverity('success');

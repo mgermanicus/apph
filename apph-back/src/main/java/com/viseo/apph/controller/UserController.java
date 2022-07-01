@@ -7,6 +7,7 @@ import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.dto.UserResponse;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.security.Utils;
+import com.viseo.apph.service.SettingService;
 import com.viseo.apph.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -26,6 +27,8 @@ public class UserController {
 
     @Autowired
     UserService userService;
+    @Autowired
+    SettingService settingService;
     @Autowired
     Utils utils;
 
@@ -51,5 +54,10 @@ public class UserController {
         } catch (IllegalArgumentException iae) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(iae.getMessage());
         }
+    }
+
+    @GetMapping("/getSettings")
+    public ResponseEntity<IResponseDto> getSettings() {
+        return ResponseEntity.ok(settingService.getSettings());
     }
 }
