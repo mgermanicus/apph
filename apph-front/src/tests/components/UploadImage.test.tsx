@@ -287,9 +287,9 @@ describe('Test UploadImage', () => {
       description,
       expect.anything(),
       files[0],
+      location,
       expect.anything(),
       expect.anything(),
-      undefined,
       expect.anything(),
       expect.anything(),
       expect.anything()
@@ -299,7 +299,7 @@ describe('Test UploadImage', () => {
       description,
       expect.anything(),
       files[1],
-      expect.anything(),
+      location,
       expect.anything(),
       expect.anything(),
       expect.anything()
