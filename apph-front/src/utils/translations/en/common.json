@@ -118,6 +118,7 @@
     "details": "Details",
     "modifyDetails": "Modify Details",
     "modifyDetailsTitle": "Edit selected photo's details",
+    "modifyDetailsSuccess": "Modification successful",
     "successDelete": "Photo successfully deleted",
     "failDelete": "An error occurred during deletion",
     "successMove": "Photo successfully moved.",

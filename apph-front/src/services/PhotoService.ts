@@ -337,7 +337,7 @@ export default class PhotoService {
 
   static editPhotoListInfos(
     ids: number[],
-    handleSuccess: () => void,
+    handleSuccess: (successMessage: string) => void,
     handleError: (errorMessage: string) => void,
     shootingDate?: string,
     selectedTags?: ITag[]
@@ -356,8 +356,8 @@ export default class PhotoService {
           tags: JSON.stringify(selectedTags)
         })
       };
-    const successFunction = () => {
-      handleSuccess();
+    const successFunction = (message: string) => {
+      handleSuccess(JSON.parse(message).message);
     };
     const errorFunction = (errorMessage: string) => {
       handleError(JSON.parse(errorMessage).message);

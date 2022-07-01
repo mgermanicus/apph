@@ -1,4 +1,12 @@
-import { Box, Button, Dialog, Stack, TextField, Tooltip } from '@mui/material';
+import {
+  AlertColor,
+  Box,
+  Button,
+  Dialog,
+  Stack,
+  TextField,
+  Tooltip
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import React, {
   Dispatch,
@@ -33,6 +41,8 @@ export const ModifyPhotos = ({
   const [selectedTags, setSelectedTags] = useState<ITag[] | undefined>();
   const [allTags, setAllTags] = useState<ITag[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [snackBarSeverity, setSnackBarSeverity] =
+    useState<AlertColor>('warning');
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -42,16 +52,21 @@ export const ModifyPhotos = ({
         setAllTags(tagsConverted);
       },
       (errorMessage: string) => {
-        setErrorMessage(errorMessage);
+        openSnackBar('error', errorMessage);
       }
     );
   }, []);
+
+  const openSnackBar = (severity: AlertColor, message: string) => {
+    setSnackBarSeverity(severity);
+    setErrorMessage(message);
+  };
 
   const handleOpenForm = () => {
     if (ids.length != 0) {
       setIsFormOpen(true);
     } else {
-      setErrorMessage('photo.noneSelected');
+      openSnackBar('warning', 'photo.noneSelected');
     }
   };
 
@@ -64,16 +79,19 @@ export const ModifyPhotos = ({
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!shootingDate && !selectedTags) {
-      setErrorMessage('photo.error.requireOneField');
+      openSnackBar('error', 'photo.error.requireOneField');
       return;
     }
     PhotoService.editPhotoListInfos(
       ids,
-      () => {
+      (message: string) => {
         if (setRefresh) setRefresh((refresh) => !refresh);
+        openSnackBar('success', message);
         handleCloseForm();
       },
-      (errorMessage: string) => setErrorMessage(errorMessage),
+      (errorMessage: string) => {
+        openSnackBar('error', errorMessage);
+      },
       shootingDate,
       selectedTags
     );
@@ -156,7 +174,7 @@ export const ModifyPhotos = ({
       </Dialog>
       <AlertSnackbar
         open={!!errorMessage}
-        severity={'warning'}
+        severity={snackBarSeverity}
         message={errorMessage}
         onClose={() => setErrorMessage('')}
       />

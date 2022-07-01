@@ -203,7 +203,7 @@ public class PhotoController {
         try {
             User user = utils.getUser();
             photoService.updatePhotoList(user, photosRequest);
-            return ResponseEntity.ok(null);
+            return ResponseEntity.ok().body(new MessageResponse("photo.modifyDetailsSuccess"));
         } catch (IllegalArgumentException iae) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(iae.getMessage()));
         }
