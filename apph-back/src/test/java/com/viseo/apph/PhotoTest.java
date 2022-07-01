@@ -369,8 +369,8 @@ public class PhotoTest {
         //GIVEN
         createPhotoController();
         List<Photo> listPhoto = new ArrayList<>();
-        Date creationDate = new Date();
-        Date shootingDate = new Date();
+        LocalDate creationDate = LocalDate.now();
+        LocalDate shootingDate = LocalDate.now();
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Tag tag = new Tag().setUser(robert).setName("robertTag");
         listPhoto.add((Photo) new Photo().setSize(10).setTitle("photo 1").setCreationDate(creationDate).setShootingDate(shootingDate).setDescription("description").addTag(tag).setId(1L));
