@@ -435,10 +435,9 @@ public class PhotoService {
         PhotoListResponse response = new PhotoListResponse();
         userPhotos.forEach(photo -> {
             response.addPhoto(new PhotoResponse()
-                    .setPhoto(photoDao.getPhoto(photo.getId()))
+                    .setPhoto(photo)
                     .setUrl(s3Dao.getPhotoUrl(photo))
             );
-            System.out.println(" login : " + photo.getUser().getLogin());
         });
         response.setTotal(totalHits);
         return response;

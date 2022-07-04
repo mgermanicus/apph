@@ -161,7 +161,6 @@ public class PhotoResponse implements IResponseDto {
                 .setShootingDate(photo.getShootingDate())
                 .setFormat(photo.getFormat())
                 .setLocation(location);
-        System.out.println(photo.getUser());
         return this;
     }
 }

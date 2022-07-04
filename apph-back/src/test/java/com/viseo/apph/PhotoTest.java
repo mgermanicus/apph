@@ -1360,8 +1360,9 @@ public class PhotoTest {
             doReturn(booleanPredicateClausesStep).when(booleanPredicateClausesStep).must(matchPredicateOptionsStep);
             when(searchPredicateFactory.match()).thenReturn(matchPredicateFieldStep);
             doReturn(matchPredicateFieldMoreStep).when(matchPredicateFieldStep).field(anyString());
-            doReturn(matchPredicateFieldMoreStep).when(matchPredicateFieldStep).fields(anyString(), anyString(), anyString());
-            doReturn(matchPredicateOptionsStep).when(matchPredicateFieldMoreStep).matching(any());
+            doReturn(matchPredicateFieldMoreStep).when(matchPredicateFieldStep).fields(anyString(), anyString(), anyString(), anyString());
+            doReturn(matchPredicateOptionsStep).when(matchPredicateFieldMoreStep).matching(anyString());
+            doReturn(matchPredicateOptionsStep).when(matchPredicateFieldMoreStep).matching(anyLong());
             when(booleanPredicateClausesStep.toPredicate()).thenReturn(searchPredicate);
             when(searchQuerySelectStep.where(searchPredicate)).thenReturn(stepSearchQueryOptionsStep);
             when(stepSearchQueryOptionsStep.sort(any(Function.class))).thenReturn(stepSearchQueryOptionsStep);
