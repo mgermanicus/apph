@@ -94,6 +94,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
       <PhotoTable
         data={data}
         page={page}
+        clearData={refresh}
         pageSize={pageSize}
         setPage={setPage}
         setPageSize={setPageSize}
