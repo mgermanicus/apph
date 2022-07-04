@@ -50,8 +50,7 @@
     "url": "Url",
     "actions": "Actions",
     "error": "Illegal argument.",
-    "address": "Address"
-    "error": "Illegal argument.",
+    "address": "Address",
     "kb": "Kb"
   },
   "userTable": {

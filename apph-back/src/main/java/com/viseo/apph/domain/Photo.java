@@ -47,7 +47,7 @@ public class Photo extends BaseEntity {
     Set<Tag> tags = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @IndexedEmbedded
+    @IndexedEmbedded(includeEmbeddedObjectId = true)
     User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

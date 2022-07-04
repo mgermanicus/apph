@@ -13,7 +13,7 @@ import { MyPhotoPage } from './static/pages/MyPhotoPage';
 import { AdvancedResearchPage } from './static/pages/AdvancedResearchPage';
 import { UserListPage } from './static/pages/UserListPage';
 import { AppSettingsPage } from './static/pages/AppSettingsPage';
-import { GlobalResearchPage } from './static/pages/GlobalResearchPage';
+import { GlobalSearchPage } from './static/pages/GlobalSearchPage';
 
 export const PrivateRoutes = ({
   authenticated
@@ -96,7 +96,7 @@ export const PrivateRoutes = ({
         <Route
           path="/research/global/:target"
           element={needAuthenticationRoute(
-            <PrivatePageContainer element={<GlobalResearchPage />} />
+            <PrivatePageContainer element={<GlobalSearchPage />} />
           )}
         />
         <Route

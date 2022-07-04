@@ -15,8 +15,10 @@ import {
 } from '@mui/material';
 import { PhotoComplexGrid } from '../components/PhotoComplexGrid';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useTranslation } from 'react-i18next';
 
-export const GlobalResearchPage = (): JSX.Element => {
+export const GlobalSearchPage = (): JSX.Element => {
+  const { t } = useTranslation();
   const location = useLocation();
   const params = useParams();
   const [data, setData] = useState<ITable[]>([]);
@@ -47,6 +49,21 @@ export const GlobalResearchPage = (): JSX.Element => {
     window.scrollTo(0, 0);
   };
 
+  if (total == 0) {
+    return (
+      <Grid
+        container
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+        sx={{ height: '95vh' }}
+      >
+        <Typography variant="h6" gutterBottom component="div">
+          {t('photo.error.notFound')}
+        </Typography>
+      </Grid>
+    );
+  }
   return (
     <Box>
       <Grid container spacing={1} justifyContent="flex-start">

@@ -17,7 +17,7 @@ const Img = styled('img')({
   maxHeight: '100%'
 });
 
-const titleTypoStyle = { fontWeight: 'bold' };
+const titleTypoStyle = { fontWeight: 'bold', marginRight: 1 };
 
 const detailBoxStyle = { mt: 1, display: 'flex' };
 
@@ -64,6 +64,14 @@ export const PhotoComplexGrid = ({ photo }: { photo: ITable }): JSX.Element => {
                 </Typography>
                 <Typography sx={detailTypoStyle}>
                   {photo.description}
+                </Typography>
+              </Box>
+              <Box sx={detailBoxStyle}>
+                <Typography sx={titleTypoStyle}>
+                  {t('photoTable.address')}:
+                </Typography>
+                <Typography sx={detailTypoStyle}>
+                  {photo.location.address}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>

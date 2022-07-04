@@ -66,16 +66,18 @@ public class PhotoDao {
     }
 
     public SearchResult<Photo> searchPhotoByTargetAndUser(FilterRequest filterRequest, User user) {
+        System.out.println("==================================");
+        System.out.println(user.getLogin());
         SearchSession searchSession = Search.session(em);
         SearchScope<Photo> scope = searchSession.scope(Photo.class);
         return searchSession.search(Photo.class)
                 .where(scope
                         .predicate()
                         .bool()
-                        .must(scope.predicate().match().field("user.login")
-                                .matching(user.getLogin()))
+                        .must(scope.predicate().match().field("user.id")
+                                .matching(user.getId()))
                         .must(scope.predicate().match()
-                                .fields("title", "description", "tags.name")
+                                .fields("title", "description", "tags.name", "address")
                                 .matching(filterRequest.getTarget()))
                         .toPredicate()
                 )

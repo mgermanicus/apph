@@ -433,10 +433,13 @@ public class PhotoService {
         long totalHits = res.total().hitCount();
         List<Photo> userPhotos = res.hits();
         PhotoListResponse response = new PhotoListResponse();
-        userPhotos.forEach(photo -> response.addPhoto(new PhotoResponse()
-                .setPhoto(photo)
-                .setUrl(s3Dao.getPhotoUrl(photo))
-        ));
+        userPhotos.forEach(photo -> {
+            response.addPhoto(new PhotoResponse()
+                    .setPhoto(photoDao.getPhoto(photo.getId()))
+                    .setUrl(s3Dao.getPhotoUrl(photo))
+            );
+            System.out.println(" login : " + photo.getUser().getLogin());
+        });
         response.setTotal(totalHits);
         return response;
     }

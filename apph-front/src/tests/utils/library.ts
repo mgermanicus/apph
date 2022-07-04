@@ -1,10 +1,8 @@
-import { act, fireEvent, screen, within } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import Server from '../../services/Server';
 import { FakeRequestResults } from './types/FakeRequestResults';
 import AuthService from '../../services/AuthService';
 import { ITag } from '../../utils';
-import userEvent from '@testing-library/user-event';
-import { isValidElement } from 'react';
 import { ILocation } from '../../utils/types/Location';
 import { UserEvent } from '@testing-library/user-event/dist/types/setup';
 
@@ -149,6 +147,11 @@ export function spyRequestSuccessBody(body: string) {
   );
   Server.request = spy;
   return spy;
+}
+
+export function fillSearch(label: RegExp, value: string) {
+  const textInput = screen.getByPlaceholderText(label);
+  fireEvent.change(textInput, { target: { value: value } });
 }
 
 export function geocodeRequestResults(
