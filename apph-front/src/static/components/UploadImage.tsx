@@ -31,6 +31,8 @@ import { useTranslation } from 'react-i18next';
 import { AlertSnackbar } from './AlertSnackbar';
 import { TagInput } from './TagInput';
 import { useDropzone } from 'react-dropzone';
+import { LocationPicker } from './LocationPicker';
+import { ILocation } from '../../utils/types/Location';
 import 'moment/locale/fr';
 import moment from 'moment';
 import i18n from 'i18next';
@@ -47,6 +49,7 @@ export const UploadImage = ({
   const [shootingDate, setShootingDate] = useState<string>(
     moment().format('MM/DD/YYYY')
   );
+  const [location, setLocation] = useState<ILocation>();
   const [open, setOpen] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>();
   const [globalUploadStatus, setGlobalUploadStatus] = useState<UploadStatus>({
@@ -57,6 +60,7 @@ export const UploadImage = ({
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const tagList = useSelector(({ tagList }: { tagList: ITag[] }) => tagList);
   const [tagsValidity, setTagsValidity] = useState<boolean>(true);
+  const [locationValidity, setLocationValidity] = useState<boolean>(true);
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
     accept: { 'image/*': [] }
   });
@@ -112,6 +116,7 @@ export const UploadImage = ({
     setDescription('');
     setShootingDate(moment().format('MM/DD/YYYY'));
     setSelectedTags([]);
+    setLocation(undefined);
     setUploadStatuses([]);
     setFiles(undefined);
     setGlobalUploadStatus({ type: StatusType.None });
@@ -126,6 +131,10 @@ export const UploadImage = ({
     event.preventDefault();
     if (selectedTags.length < 1) {
       setTagsValidity(false);
+      return;
+    }
+    if (!location) {
+      setLocationValidity(false);
       return;
     }
     if (acceptedFiles.length) {
@@ -145,6 +154,7 @@ export const UploadImage = ({
         description,
         shootingDate,
         acceptedFiles[0],
+        location,
         selectedTags,
         '-1',
         uploadSize,
@@ -169,6 +179,7 @@ export const UploadImage = ({
                 description,
                 shootingDate,
                 acceptedFiles[i],
+                location,
                 newSelectedTags,
                 '-1',
                 uploadSize,
@@ -319,6 +330,12 @@ export const UploadImage = ({
                       renderInput={(params) => <TextField {...params} />}
                     />
                   </LocalizationProvider>
+                  <LocationPicker
+                    onChange={(value) => {
+                      setLocation(value);
+                    }}
+                    isValid={locationValidity}
+                  />
                   <TagInput
                     allTags={tagList}
                     onChange={(tags) => setSelectedTags(tags)}

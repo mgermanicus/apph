@@ -212,6 +212,14 @@ export const PhotoDetails = ({
                 <Typography sx={detailTypoStyle}>{details.size} Ko</Typography>
               </Box>
               <Box sx={detailBoxStyle}>
+                <Typography sx={titleTypoStyle}>
+                  {t('photoTable.address')}:
+                </Typography>
+                <Typography sx={detailTypoStyle}>
+                  {details.location.address}
+                </Typography>
+              </Box>
+              <Box sx={detailBoxStyle}>
                 <Stack direction="row" spacing={1}>
                   <Box sx={{ marginTop: 0.5 }}>
                     <Typography sx={titleTypoStyle}>
@@ -235,6 +243,7 @@ export const PhotoDetails = ({
                   title={details.title}
                   description={details.description}
                   shootingDate={details.shootingDate}
+                  location={details.location}
                   tags={details.tags}
                   onEdit={refresh}
                 />

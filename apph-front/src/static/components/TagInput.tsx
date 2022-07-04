@@ -49,7 +49,7 @@ export const TagInput = ({
 
   return (
     <Autocomplete
-      data-testid="#autocomplete"
+      data-testid="tags"
       multiple
       limitTags={2}
       id="tags"

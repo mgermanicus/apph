@@ -9,9 +9,10 @@ export default class Server {
     URL: string,
     requestOptions: RequestInit,
     successFunction: (body: string) => void | undefined,
-    errorFunction: (error: string) => void
+    errorFunction: (error: string) => void,
+    baseUrl = BASE_API_URL
   ) {
-    return fetch(BASE_API_URL + URL, requestOptions)
+    return fetch(baseUrl + URL, requestOptions)
       .then(async (response) => {
         const body = await response.text();
         if (response.ok) {

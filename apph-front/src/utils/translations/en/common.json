@@ -49,7 +49,8 @@
     "tags": "Tags",
     "url": "Url",
     "actions": "Actions",
-    "error": "Illegal argument."
+    "error": "Illegal argument.",
+    "address": "Address"
   },
   "userTable": {
     "firstname": "First name",
@@ -168,7 +169,8 @@
     "successChange": "File successfully changed.",
     "maySelected": "Please select a file.",
     "selectFile": "Drag and drop files here, or click to select files.",
-    "files": "Files"
+    "files": "Files",
+    "address": "Address"
   },
   "download": {
     "error": {

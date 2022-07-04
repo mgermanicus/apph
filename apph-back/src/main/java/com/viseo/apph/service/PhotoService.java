@@ -1,10 +1,8 @@
 package com.viseo.apph.service;
 
+import com.google.gson.GsonBuilder;
 import com.viseo.apph.dao.*;
-import com.viseo.apph.domain.Folder;
-import com.viseo.apph.domain.Photo;
-import com.viseo.apph.domain.Tag;
-import com.viseo.apph.domain.User;
+import com.viseo.apph.domain.*;
 import com.viseo.apph.dto.*;
 import com.viseo.apph.exception.*;
 import org.slf4j.Logger;
@@ -86,6 +84,7 @@ public class PhotoService {
         Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
         LocalDate shootingDate = LocalDate.parse(photoRequest.getShootingDate(), formatter);
+        Location location = new GsonBuilder().create().fromJson(photoRequest.getLocation(), Location.class);
         Photo photo = new Photo()
                 .setTitle(photoRequest.getTitle())
                 .setFormat(getFormat(photoRequest.getFile()))
@@ -96,7 +95,10 @@ public class PhotoService {
                 .setModificationDate(LocalDate.now())
                 .setShootingDate(shootingDate)
                 .setTags(allTags)
-                .setFolder(folder);
+                .setFolder(folder)
+                .setAddress(location.getAddress())
+                .setLat(location.getPosition().getLat())
+                .setLng(location.getPosition().getLng());
         photo = photoDao.addPhoto(photo);
         return s3Dao.upload(photoRequest.getFile(), photo);
     }
@@ -113,10 +115,14 @@ public class PhotoService {
         Set<Tag> newTags = tagService.createListTags(photoRequest.getTags(), user);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
         LocalDate shootingDate = LocalDate.parse(photoRequest.getShootingDate(), formatter);
+        Location location = new GsonBuilder().create().fromJson(photoRequest.getLocation(), Location.class);
         photo.setTitle(photoRequest.getTitle())
                 .setDescription(photoRequest.getDescription())
                 .setShootingDate(shootingDate)
                 .setTags(newTags)
+                .setAddress(location.getAddress())
+                .setLat(location.getPosition().getLat())
+                .setLng(location.getPosition().getLng())
                 .setModificationDate(LocalDate.now());
         return "photo.edited";
     }
@@ -314,6 +320,7 @@ public class PhotoService {
                         .setCreationDate(photo.getCreationDate())
                         .setModificationDate(photo.getModificationDate())
                         .setSize(photo.getSize())
+                        .setLocation(new Location().setAddress(photo.getAddress()).setPosition(new Position().setLat(photo.getLat()).setLng(photo.getLng())))
                         .setTags(photo.getTags())
                         .setDescription(photo.getDescription())
                         .setShootingDate(photo.getShootingDate())
