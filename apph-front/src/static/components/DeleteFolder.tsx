@@ -46,6 +46,7 @@ export const DeleteFolder = ({
       },
       (error: string) => {
         setSnackbarMessage(error);
+        setSnackSeverity('error');
         setSnackbarOpen(true);
       },
       rootFolderId || '-1'
