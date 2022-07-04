@@ -1253,4 +1253,68 @@ public class PhotoTest {
         //THEN
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
+
+    @Test
+    public void testEditPhotoListWithShootingDateAndTags() {
+        //GIVE
+        createPhotoController();
+        long[] ids = {1L};
+        String shootingDate = "07/20/2022";
+        String tags = "[{\"name\":\"+ test\"}]";
+        PhotosRequest photoRequest = new PhotosRequest().setIds(ids).setShootingDate(shootingDate).setTags(tags);
+        User Jean_Jacqueline_Bernadette = (User) new User().setLogin("JJB").setId(1);
+        when(utils.getUser()).thenReturn(Jean_Jacqueline_Bernadette);
+        when(em.find(Photo.class, 1L)).thenReturn(new Photo());
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.editPhotoList(photoRequest);
+        //THEN
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testEditPhotoListWithShootingDate() {
+        //GIVE
+        createPhotoController();
+        long[] ids = {1L};
+        String shootingDate = "07/20/2022";
+        PhotosRequest photoRequest = new PhotosRequest().setIds(ids).setShootingDate(shootingDate);
+        User Jean_Jacqueline_Bernadette = (User) new User().setLogin("JJB").setId(1);
+        when(utils.getUser()).thenReturn(Jean_Jacqueline_Bernadette);
+        when(em.find(Photo.class, 1L)).thenReturn(new Photo());
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.editPhotoList(photoRequest);
+        //THEN
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testEditPhotoListWithTags() {
+        //GIVE
+        createPhotoController();
+        long[] ids = {1L};
+        String tags = "[{\"name\":\"+ test\"}]";
+        PhotosRequest photoRequest = new PhotosRequest().setIds(ids).setTags(tags);
+        User Jean_Jacqueline_Bernadette = (User) new User().setLogin("JJB").setId(1);
+        when(utils.getUser()).thenReturn(Jean_Jacqueline_Bernadette);
+        when(em.find(Photo.class, 1L)).thenReturn(new Photo());
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.editPhotoList(photoRequest);
+        //THEN
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testEditPhotoListWithoutShootingDateAndTags() {
+        //GIVE
+        createPhotoController();
+        long[] ids = {1L};
+        PhotosRequest photoRequest = new PhotosRequest().setIds(ids);
+        User Jean_Jacqueline_Bernadette = (User) new User().setLogin("JJB").setId(1);
+        when(utils.getUser()).thenReturn(Jean_Jacqueline_Bernadette);
+        when(em.find(Photo.class, 1L)).thenReturn(new Photo());
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = photoController.editPhotoList(photoRequest);
+        //THEN
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
 }

@@ -117,6 +117,9 @@
     "title": "Photo title",
     "displayFormat": "Display format",
     "details": "Details",
+    "modifyDetails": "Modify Details",
+    "modifyDetailsTitle": "Edit selected photo's details",
+    "modifyDetailsSuccess": "Modification successful",
     "successDelete": "Photo successfully deleted",
     "failDelete": "An error occurred during deletion",
     "successMove": "Photo successfully moved.",
@@ -127,7 +130,8 @@
       "titleOrDescriptionOverChar": "The title or description cannot exceed 255 characters.",
       "tagsOverChar": "Tags cannot exceed 255 characters.",
       "invalidDate": "Invalid date.",
-      "nameExistInFolder": "There is already a file with the same name in this folder."
+      "nameExistInFolder": "There is already a file with the same name in this folder.",
+      "requireOneField": "Please fill at least one field"
     }
   },
   "token": {

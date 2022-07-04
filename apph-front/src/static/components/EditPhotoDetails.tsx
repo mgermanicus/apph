@@ -168,6 +168,7 @@ export const EditPhotoDetails = (props: {
                   <TagInput
                     allTags={allTags}
                     onChange={(tags) => setSelectedTags(tags)}
+                    required={true}
                     isValid={tagsValidity}
                     defaultValue={props.tags}
                   />

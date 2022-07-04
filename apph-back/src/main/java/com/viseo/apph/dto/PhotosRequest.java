@@ -1,14 +1,18 @@
 package com.viseo.apph.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public class PhotosRequest {
     @JsonProperty("ids")
     long[] ids;
     @JsonProperty("folderId")
     long folderId;
-    @JsonProperty("titleZip")
-    String titleZip;
+    @JsonValue
+    String shootingDate;
+    @JsonValue
+    String tags;
+
 
     public long[] getIds() {
         return ids;
@@ -25,6 +29,24 @@ public class PhotosRequest {
 
     public PhotosRequest setFolderId(long folderId) {
         this.folderId = folderId;
+        return this;
+    }
+
+    public String getShootingDate() {
+        return shootingDate;
+    }
+
+    public PhotosRequest setShootingDate(String shootingDate) {
+        this.shootingDate = shootingDate;
+        return this;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public PhotosRequest setTags(String tags) {
+        this.tags = tags;
         return this;
     }
 }

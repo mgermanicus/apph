@@ -339,6 +339,7 @@ export const UploadImage = ({
                   <TagInput
                     allTags={tagList}
                     onChange={(tags) => setSelectedTags(tags)}
+                    required={true}
                     isValid={tagsValidity}
                   />
                   <Box

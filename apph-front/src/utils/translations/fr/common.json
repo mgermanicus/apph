@@ -117,6 +117,9 @@
     "title": "Titre de la photo",
     "displayFormat": "Format d'affichage",
     "details": "Détails",
+    "modifyDetails": "Modifier les détails",
+    "modifyDetailsTitle": "Modifier les détails des photos sélectionnées",
+    "modifyDetailsSuccess": "Les détails des photos ont bien été modifiés",
     "successDelete": "Suppression effectuée avec succès",
     "failDelete": "Une erreur est survenue lors de la suppression",
     "successMove": "Le déplacement des photos est terminé.",
@@ -127,7 +130,8 @@
       "titleOrDescriptionOverChar": "Le titre ou la description ne peuvent pas dépasser les 255 caractères.",
       "tagsOverChar": "Les tags ne peuvent pas dépasser 255 caractères.",
       "invalidDate": "Date invalide.",
-      "nameExistInFolder": "Un fichier du même nom existe déjà dans ce dossier."
+      "nameExistInFolder": "Un fichier du même nom existe déjà dans ce dossier.",
+      "requireOneField": "Veuillez remplir au moins un champ"
     }
   },
   "token": {

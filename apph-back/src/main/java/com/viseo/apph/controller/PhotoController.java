@@ -196,4 +196,16 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
         }
     }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping(value = "/editPhotoList", produces = "application/json")
+    public ResponseEntity<IResponseDto> editPhotoList(@RequestBody PhotosRequest photosRequest) {
+        try {
+            User user = utils.getUser();
+            photoService.updatePhotoList(user, photosRequest);
+            return ResponseEntity.ok().body(new MessageResponse("photo.modifyDetailsSuccess"));
+        } catch (IllegalArgumentException iae) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(iae.getMessage()));
+        }
+    }
 }

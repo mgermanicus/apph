@@ -10,13 +10,15 @@ import { ITag } from '../../utils';
 type Props = {
   allTags: ITag[];
   onChange: (selectedTags: ITag[]) => void;
-  isValid: boolean;
+  required: boolean;
+  isValid?: boolean;
   defaultValue?: ITag[];
 };
 
 export const TagInput = ({
   allTags,
   onChange,
+  required,
   isValid,
   defaultValue
 }: Props) => {
@@ -62,12 +64,12 @@ export const TagInput = ({
       getOptionLabel={(tag) => tag.name}
       renderInput={(params) => (
         <TextField
-          required
+          required={required}
           {...params}
           inputProps={{
             ...params.inputProps,
             autoComplete: 'new-password',
-            required: selectedTags.length === 0
+            required: required ? selectedTags.length === 0 : false
           }}
           inputRef={tagsInput}
           label="Tags"

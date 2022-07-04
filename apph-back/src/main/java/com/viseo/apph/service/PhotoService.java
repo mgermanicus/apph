@@ -398,4 +398,32 @@ public class PhotoService {
         photo.setFolder(folder);
         return new MessageResponse("photo.successDelete");
     }
+
+    @Transactional
+    public void updatePhotoList(User user, PhotosRequest photosRequest) {
+        if(photosRequest.getShootingDate() != null && photosRequest.getTags() != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
+            LocalDate shootingDate = LocalDate.parse(photosRequest.getShootingDate(), formatter);
+            Set<Tag> newTags = photosRequest.getTags() != null ? tagService.createListTags(photosRequest.getTags(), user) : null;
+            for(long id : photosRequest.getIds()) {
+                Photo photo = photoDao.getPhoto(id);
+                photo.setShootingDate(shootingDate).setTags(newTags);
+            }
+        } else if(photosRequest.getShootingDate() == null && photosRequest.getTags() != null) {
+            Set<Tag> newTags = photosRequest.getTags() != null ? tagService.createListTags(photosRequest.getTags(), user) : null;
+            for(long id : photosRequest.getIds()) {
+                Photo photo = photoDao.getPhoto(id);
+                photo.setTags(newTags);
+            }
+        } else if(photosRequest.getShootingDate() != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
+            LocalDate shootingDate = LocalDate.parse(photosRequest.getShootingDate(), formatter);
+            for(long id : photosRequest.getIds()) {
+                Photo photo = photoDao.getPhoto(id);
+                photo.setShootingDate(shootingDate);
+            }
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
 }
