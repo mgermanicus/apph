@@ -49,16 +49,6 @@ public class PhotoService {
 
     Logger logger = LoggerFactory.getLogger(PhotoService.class);
 
-    private class FilterQuery {
-        public String query;
-        public Queue<String> argQueue;
-
-        public FilterQuery(String query, Queue<String> argQueue) {
-            this.query = query;
-            this.argQueue = argQueue;
-        }
-    }
-
     @Transactional
     public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException, ConflictException, ParseException {
         Folder folder = null;
@@ -401,24 +391,24 @@ public class PhotoService {
 
     @Transactional
     public void updatePhotoList(User user, PhotosRequest photosRequest) {
-        if(photosRequest.getShootingDate() != null && photosRequest.getTags() != null) {
+        if (photosRequest.getShootingDate() != null && photosRequest.getTags() != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
             LocalDate shootingDate = LocalDate.parse(photosRequest.getShootingDate(), formatter);
             Set<Tag> newTags = photosRequest.getTags() != null ? tagService.createListTags(photosRequest.getTags(), user) : null;
-            for(long id : photosRequest.getIds()) {
+            for (long id : photosRequest.getIds()) {
                 Photo photo = photoDao.getPhoto(id);
                 photo.setShootingDate(shootingDate).setTags(newTags);
             }
-        } else if(photosRequest.getShootingDate() == null && photosRequest.getTags() != null) {
+        } else if (photosRequest.getShootingDate() == null && photosRequest.getTags() != null) {
             Set<Tag> newTags = photosRequest.getTags() != null ? tagService.createListTags(photosRequest.getTags(), user) : null;
-            for(long id : photosRequest.getIds()) {
+            for (long id : photosRequest.getIds()) {
                 Photo photo = photoDao.getPhoto(id);
                 photo.setTags(newTags);
             }
-        } else if(photosRequest.getShootingDate() != null) {
+        } else if (photosRequest.getShootingDate() != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
             LocalDate shootingDate = LocalDate.parse(photosRequest.getShootingDate(), formatter);
-            for(long id : photosRequest.getIds()) {
+            for (long id : photosRequest.getIds()) {
                 Photo photo = photoDao.getPhoto(id);
                 photo.setShootingDate(shootingDate);
             }
@@ -440,5 +430,15 @@ public class PhotoService {
         );
         response.setTotal(totalHits);
         return response;
+    }
+
+    private class FilterQuery {
+        public String query;
+        public Queue<String> argQueue;
+
+        public FilterQuery(String query, Queue<String> argQueue) {
+            this.query = query;
+            this.argQueue = argQueue;
+        }
     }
 }

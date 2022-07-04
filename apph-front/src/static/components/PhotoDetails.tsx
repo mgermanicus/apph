@@ -218,7 +218,7 @@ export const PhotoDetails = ({
                   {t('photoTable.address')}:
                 </Typography>
                 <Typography sx={detailTypoStyle}>
-                  {details.location.address}
+                  {details.location?.address}
                 </Typography>
               </Box>
               <Box sx={detailBoxStyle}>

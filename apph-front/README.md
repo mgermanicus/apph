@@ -4,17 +4,22 @@
 
 In your apph-front folder, run the `npm install` command.
 
+## Update .env.local
+
+Add `REACT_APP_GEOCODING_API_KEY`
+
+- API key : https://digital-dev-stagiaire-viseo.atlassian.net/wiki/spaces/DO/pages/8880129/Geocoding
+
 ## Run `npm run husky-prepare`
 
-In the same folder, run this to install pre-commit hooks. You can
-test them by editing the 'pre-commit' file in the '.husky' folder
-and adding 'exit 1' at the end of the file.
+In the same folder, run this to install pre-commit hooks. You can test them by editing the 'pre-commit' file in the '
+.husky' folder and adding 'exit 1' at the end of the file.
 
 ## (recommended) Add prettier plugin
 
-Add the prettier plugin, then go to `file > settings > Languages and Frameworks > Javascript > Prettier`.
-Add the prettier package (it should be automatically detected), and
-tick the `On 'Reformat Code' action` and the `On save` options.
+Add the prettier plugin, then go to `file > settings > Languages and Frameworks > Javascript > Prettier`. Add the
+prettier package (it should be automatically detected), and tick the `On 'Reformat Code' action` and the `On save`
+options.
 
 ## Available Scripts
 

@@ -85,7 +85,7 @@ public class UserService {
         }
         return jwtUtils.setClaimOnToken(newToken, newClaims);
     }
-    
+
     @Transactional
     public List<UserResponse> getUserList() {
         return userDao.getUserList().stream().map((user) -> new UserResponse()

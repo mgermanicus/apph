@@ -106,13 +106,13 @@ public class UserTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(utils.getUser()).thenReturn(user);
-        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);
+        String jws = "Bearer " + jwtUtils.generateJwtToken(authentication);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(user);
         when(typedQueryUser.setParameter("login", "toto")).thenReturn(typedQueryUser);
         when(em.find(User.class, user.getId())).thenReturn(user);
         when(passwordEncoder.encode("newPassword")).thenReturn("newPassword");
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         //WHEN
@@ -136,14 +136,15 @@ public class UserTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(utils.getUser()).thenReturn(user);
-        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        String jws = "Bearer " + jwtUtils.generateJwtToken(authentication);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(user);
         when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
         when(em.find(User.class, user.getId())).thenReturn(user);
         when(em.createQuery("SELECT count(user) FROM User user WHERE user.login = :login", Long.class)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("login", request.getLogin())).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(0L);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         //WHEN
@@ -164,14 +165,15 @@ public class UserTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(utils.getUser()).thenReturn(user);
-        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        String jws = "Bearer " + jwtUtils.generateJwtToken(authentication);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(user);
         when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
         when(em.find(User.class, user.getId())).thenReturn(user);
         when(em.createQuery("SELECT count(user) FROM User user WHERE user.login = :login", Long.class)).thenReturn(typedQueryLong);
         when(typedQueryLong.setParameter("login", request.getLogin())).thenReturn(typedQueryLong);
         when(typedQueryLong.getSingleResult()).thenReturn(1L);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         //WHEN
@@ -192,7 +194,8 @@ public class UserTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(utils.getUser()).thenReturn(user);
-        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        String jws = "Bearer " + jwtUtils.generateJwtToken(authentication);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenThrow(new NoResultException());
         when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
         //WHEN
@@ -215,12 +218,12 @@ public class UserTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(utils.getUser()).thenReturn(user);
-        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);
+        String jws = "Bearer " + jwtUtils.generateJwtToken(authentication);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(user);
         when(typedQueryUser.setParameter("login", "toto")).thenReturn(typedQueryUser);
         when(em.find(User.class, user.getId())).thenReturn(user);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         //WHEN
@@ -243,12 +246,12 @@ public class UserTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(utils.getUser()).thenReturn(user);
-        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);
+        String jws = "Bearer " + jwtUtils.generateJwtToken(authentication);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(user);
         when(typedQueryUser.setParameter("login", "toto")).thenReturn(typedQueryUser);
         when(em.find(User.class, user.getId())).thenReturn(user);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         //WHEN
@@ -271,12 +274,12 @@ public class UserTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(utils.getUser()).thenReturn(user);
-        String jws = "Bearer "+jwtUtils.generateJwtToken(authentication);
+        String jws = "Bearer " + jwtUtils.generateJwtToken(authentication);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(user);
         when(typedQueryUser.setParameter("login", "toto")).thenReturn(typedQueryUser);
         when(em.find(User.class, user.getId())).thenReturn(user);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null",Folder.class)).thenReturn(typedQueryFolder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
         //WHEN

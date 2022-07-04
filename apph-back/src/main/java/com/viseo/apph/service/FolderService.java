@@ -13,7 +13,6 @@ import com.viseo.apph.exception.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -66,7 +65,7 @@ public class FolderService {
         } else {
             parentFolder = folderDao.getParentFolderByUser(user);
         }
-        if(folderList!= null && parentFolder != null) {
+        if (folderList != null && parentFolder != null) {
             FolderResponse parentFolderResponse = new FolderResponse()
                     .setId(parentFolder.getId())
                     .setVersion(parentFolder.getVersion())

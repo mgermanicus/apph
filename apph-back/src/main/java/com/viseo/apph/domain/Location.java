@@ -1,7 +1,5 @@
 package com.viseo.apph.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Location {
     String address;
     Position position;

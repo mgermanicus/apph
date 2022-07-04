@@ -17,13 +17,13 @@ public class Setting extends BaseEntity {
         return uploadSize;
     }
 
-    public long getDownloadSize() {
-        return downloadSize;
-    }
-
     public Setting setUploadSize(long uploadSize) {
         this.uploadSize = uploadSize;
         return this;
+    }
+
+    public long getDownloadSize() {
+        return downloadSize;
     }
 
     public Setting setDownloadSize(long downloadSize) {
