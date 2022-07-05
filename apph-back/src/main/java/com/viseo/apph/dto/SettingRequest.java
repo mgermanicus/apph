@@ -12,17 +12,17 @@ public class SettingRequest {
         return uploadSize;
     }
 
+    public SettingRequest setUploadSize(long uploadSize) {
+        this.uploadSize = uploadSize;
+        return this;
+    }
+
     public long getDownloadSize() {
         return downloadSize;
     }
 
     public SettingRequest setDownloadSize(long downloadSize) {
         this.downloadSize = downloadSize;
-        return this;
-    }
-
-    public SettingRequest setUploadSize(long uploadSize) {
-        this.uploadSize = uploadSize;
         return this;
     }
 }

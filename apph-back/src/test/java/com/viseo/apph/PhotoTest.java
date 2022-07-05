@@ -206,7 +206,7 @@ public class PhotoTest {
         inject(photoController, "photoService", photoService);
         inject(photoController, "utils", utils);
         PhotoRequest photoRequest = new PhotoRequest().setTitle("usedTitle").setShootingDate("stub");
-        when(mockPhotoDao.existNameInFolder(any(),any(),any())).thenReturn(true);
+        when(mockPhotoDao.existNameInFolder(any(), any(), any())).thenReturn(true);
         when(mockPhotoDao.getPhoto(anyLong())).thenReturn(new Photo().setTitle("stub").setFolder(new Folder()));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.editInfos(photoRequest);

@@ -2,15 +2,12 @@ package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.IResponseDto;
-import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.dto.UserResponse;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.SettingService;
 import com.viseo.apph.service.UserService;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

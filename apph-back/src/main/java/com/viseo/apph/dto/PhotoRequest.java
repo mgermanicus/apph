@@ -2,7 +2,6 @@ package com.viseo.apph.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.viseo.apph.domain.Location;
 import org.springframework.web.multipart.MultipartFile;
 
 public class PhotoRequest {
