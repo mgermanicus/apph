@@ -33,9 +33,9 @@ public class Photo extends BaseEntity {
     @FullTextField(analyzer = "name")
     String address;
 
-    float lat;
+    Float lat;
 
-    float lng;
+    Float lng;
 
     String url;
 
@@ -172,23 +172,29 @@ public class Photo extends BaseEntity {
         return url;
     }
 
-    public String getAddress() { return this.address; }
+    public String getAddress() {
+        return this.address;
+    }
 
     public Photo setAddress(String address) {
         this.address = address;
         return this;
     }
 
-    public float getLat() { return this.lat; }
+    public Float getLat() {
+        return this.lat;
+    }
 
-    public Photo setLat(float lat) {
+    public Photo setLat(Float lat) {
         this.lat = lat;
         return this;
     }
 
-    public float getLng() { return this.lng; }
+    public Float getLng() {
+        return this.lng;
+    }
 
-    public Photo setLng(float lng) {
+    public Photo setLng(Float lng) {
         this.lng = lng;
         return this;
     }

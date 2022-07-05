@@ -1,23 +1,23 @@
 package com.viseo.apph.domain;
 
 public class Position {
-    float lat;
-    float lng;
+    Float lat;
+    Float lng;
 
-    public float getLat() {
+    public Float getLat() {
         return lat;
     }
 
-    public Position setLat(float lat) {
+    public Position setLat(Float lat) {
         this.lat = lat;
         return this;
     }
 
-    public float getLng() {
+    public Float getLng() {
         return lng;
     }
 
-    public Position setLng(float lng) {
+    public Position setLng(Float lng) {
         this.lng = lng;
         return this;
     }

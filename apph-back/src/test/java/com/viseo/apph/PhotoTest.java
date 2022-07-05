@@ -117,7 +117,7 @@ public class PhotoTest {
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Set<Tag> tags = new HashSet<>();
         tags.add(tag);
-        Location location = new Location().setAddress("Paris, France").setPosition(new Position().setLng(0).setLat(0));
+        Location location = new Location().setAddress("Paris, France").setPosition(new Position().setLng(0f).setLat(0f));
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate("05/13/2022").setLocation(gson.toJson(location)).setFolderId(-1);
@@ -149,7 +149,7 @@ public class PhotoTest {
         Set<Tag> newTags = new HashSet<>();
         Tag oneNewTag = new Tag().setName("+ Add New Tag new tag");
         newTags.add(oneNewTag);
-        Location location = new Location().setAddress("Paris, France").setPosition(new Position().setLng(0).setLat(0));
+        Location location = new Location().setAddress("Paris, France").setPosition(new Position().setLng(0f).setLat(0f));
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         PhotoRequest photoRequest = new PhotoRequest().setTitle("newTitle").setTags(gson.toJson(newTags)).setShootingDate("05/13/2022").setDescription("newDesc").setLocation(gson.toJson(location)).setId(1L);
@@ -575,7 +575,7 @@ public class PhotoTest {
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Set<Tag> tags = new HashSet<>();
         tags.add(tag);
-        Location location = new Location().setAddress("Paris, France").setPosition(new Position().setLng(0).setLat(0));
+        Location location = new Location().setAddress("Paris, France").setPosition(new Position().setLng(0f).setLat(0f));
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate("05/13/2022").setLocation(gson.toJson(location)).setFolderId(-1);
