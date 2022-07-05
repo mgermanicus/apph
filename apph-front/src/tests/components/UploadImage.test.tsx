@@ -8,7 +8,6 @@ import {
   fillLocation,
   fillTags,
   fillText,
-  geocodeRequestResults,
   inputFile
 } from '../utils';
 import { ITag } from '../../utils';
@@ -53,7 +52,7 @@ describe('Test UploadImage', () => {
     };
     const spyRequestFunction = fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
-      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`]:
+      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_GEOCODING_API_KEY']}&lang=fr`]:
         {
           body: JSON.stringify({
             items: [
@@ -101,7 +100,7 @@ describe('Test UploadImage', () => {
       '/user/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' },
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { error: JSON.stringify(serverError) },
-      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`]:
+      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_GEOCODING_API_KEY']}&lang=fr`]:
         {
           body: JSON.stringify({
             items: [
@@ -141,7 +140,7 @@ describe('Test UploadImage', () => {
     };
     const spyRequestFunction = fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
-      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`]:
+      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_GEOCODING_API_KEY']}&lang=fr`]:
         {
           body: JSON.stringify({
             items: [
@@ -194,7 +193,7 @@ describe('Test UploadImage', () => {
     const spyRequestFunction = fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { body: "{ message: 'message' }" },
-      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`]:
+      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_GEOCODING_API_KEY']}&lang=fr`]:
         {
           body: JSON.stringify({
             items: [
@@ -258,7 +257,7 @@ describe('Test UploadImage', () => {
     fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { body: "{ message: 'message' }" },
-      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_HERE_API_KEY']}&lang=fr`]:
+      [`/geocode?q=${query}&apiKey=${process.env['REACT_APP_GEOCODING_API_KEY']}&lang=fr`]:
         {
           body: JSON.stringify({
             items: [
