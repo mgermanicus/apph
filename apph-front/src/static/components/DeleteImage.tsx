@@ -8,10 +8,12 @@ import { useTranslation } from 'react-i18next';
 
 export const DeleteImage = ({
   ids,
-  setRefresh
+  setRefresh,
+  setPage
 }: {
   ids: number[];
   setRefresh?: Dispatch<SetStateAction<boolean>>;
+  setPage?: Dispatch<SetStateAction<number>>;
 }): JSX.Element => {
   const [message, setMessage] = useState('');
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -46,8 +48,9 @@ export const DeleteImage = ({
   const handleConfirm = async () => {
     setDialogOpen(false);
     await deleteImage();
-    if (setRefresh) {
+    if (setRefresh && setPage) {
       setTimeout(async () => {
+        await setPage(0);
         setRefresh((refresh) => !refresh);
       }, 500);
     }
