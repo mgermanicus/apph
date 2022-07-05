@@ -69,7 +69,7 @@ export const GlobalSearchPage = ({
         direction="row"
         justifyContent="center"
         alignItems="center"
-        sx={{ height: '95vh' }}
+        sx={{ height: '90vh' }}
       >
         <Typography variant="h6" gutterBottom component="div">
           {t('photo.error.notFound')}
