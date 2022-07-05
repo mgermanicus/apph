@@ -2,6 +2,8 @@ package com.viseo.apph.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.viseo.apph.domain.Location;
+import com.viseo.apph.domain.Photo;
+import com.viseo.apph.domain.Position;
 import com.viseo.apph.domain.Tag;
 
 import java.time.LocalDate;
@@ -34,6 +36,20 @@ public class PhotoResponse implements IResponseDto {
     Location location;
 
     public PhotoResponse() {
+    }
+
+    public PhotoResponse(Photo photo) {
+        this.id = photo.getId();
+        this.title = photo.getTitle();
+        this.creationDate = photo.getCreationDate();
+        this.modificationDate = photo.getModificationDate();
+        this.size = photo.getSize();
+        this.tags = photo.getTags();
+        this.description = photo.getDescription();
+        this.shootingDate = photo.getShootingDate();
+        this.format = photo.getFormat();
+        Position position = new Position().setLat(photo.getLat()).setLng(photo.getLng());
+        this.location = new Location().setAddress(photo.getAddress()).setPosition(position);
     }
 
     public long getId() {

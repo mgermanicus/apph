@@ -4,18 +4,28 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viseo.apph.controller.PhotoController;
 import com.viseo.apph.dao.*;
-import com.viseo.apph.domain.*;
 import com.viseo.apph.domain.Tag;
+import com.viseo.apph.domain.*;
 import com.viseo.apph.dto.*;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.PhotoService;
 import com.viseo.apph.service.TagService;
 import com.viseo.apph.service.UserService;
 import net.bytebuddy.utility.RandomString;
+import org.hibernate.search.engine.search.predicate.SearchPredicate;
+import org.hibernate.search.engine.search.predicate.dsl.*;
+import org.hibernate.search.engine.search.query.SearchResult;
+import org.hibernate.search.engine.search.query.SearchResultTotal;
+import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
+import org.hibernate.search.engine.search.query.dsl.SearchQuerySelectStep;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.scope.SearchScope;
+import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
@@ -35,6 +45,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static com.viseo.apph.utils.Utils.inject;
 import static org.junit.Assert.*;
@@ -1316,5 +1327,56 @@ public class PhotoTest {
         ResponseEntity<IResponseDto> responseEntity = photoController.editPhotoList(photoRequest);
         //THEN
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testSearch() {
+        //GIVEN
+        createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        List<Photo> listPhoto = new ArrayList<>();
+        listPhoto.add(new Photo());
+        FilterRequest filterRequest = new FilterRequest().setPage(1).setPageSize(5).setTarget("photo");
+        when(utils.getUser()).thenReturn(robert);
+        ResponseEntity<IResponseDto> responseEntity;
+        SearchSession searchSession = mock(SearchSession.class);
+        SearchQuerySelectStep searchQuerySelectStep = mock(SearchQuerySelectStep.class);
+        SearchQueryOptionsStep stepSearchQueryOptionsStep = mock(SearchQueryOptionsStep.class);
+        SearchResultTotal resultTotal = mock(SearchResultTotal.class);
+        SearchPredicate searchPredicate = mock(SearchPredicate.class);
+        SearchPredicateFactory searchPredicateFactory = mock(SearchPredicateFactory.class);
+        MatchPredicateFieldStep matchPredicateFieldStep = mock(MatchPredicateFieldStep.class);
+        MatchPredicateFieldMoreStep matchPredicateFieldMoreStep = mock(MatchPredicateFieldMoreStep.class);
+        MatchPredicateOptionsStep matchPredicateOptionsStep = mock(MatchPredicateOptionsStep.class);
+        BooleanPredicateClausesStep booleanPredicateClausesStep = mock(BooleanPredicateClausesStep.class);
+        SearchScope scope = mock(SearchScope.class);
+        SearchResult res = mock(SearchResult.class);
+        try (MockedStatic<Search> search = Mockito.mockStatic(Search.class)) {
+            search.when(() -> Search.session(em)).thenReturn(searchSession);
+            when(searchSession.search(Photo.class)).thenReturn(searchQuerySelectStep);
+            when(searchSession.scope(Photo.class)).thenReturn(scope);
+            when(scope.predicate()).thenReturn(searchPredicateFactory);
+            when(searchPredicateFactory.bool()).thenReturn(booleanPredicateClausesStep);
+            doReturn(booleanPredicateClausesStep).when(booleanPredicateClausesStep).must(matchPredicateOptionsStep);
+            when(searchPredicateFactory.match()).thenReturn(matchPredicateFieldStep);
+            doReturn(matchPredicateFieldMoreStep).when(matchPredicateFieldStep).field(anyString());
+            doReturn(matchPredicateFieldMoreStep).when(matchPredicateFieldStep).fields(anyString(), anyString(), anyString(), anyString());
+            doReturn(matchPredicateOptionsStep).when(matchPredicateFieldMoreStep).matching(anyString());
+            doReturn(matchPredicateOptionsStep).when(matchPredicateFieldMoreStep).matching(anyLong());
+            when(booleanPredicateClausesStep.toPredicate()).thenReturn(searchPredicate);
+            when(searchQuerySelectStep.where(searchPredicate)).thenReturn(stepSearchQueryOptionsStep);
+            when(stepSearchQueryOptionsStep.sort(any(Function.class))).thenReturn(stepSearchQueryOptionsStep);
+            when(stepSearchQueryOptionsStep.fetch(any(), any())).thenReturn(res);
+            when(res.total()).thenReturn(resultTotal);
+            when(resultTotal.hitCount()).thenReturn(1L);
+            when(res.hits()).thenReturn(listPhoto);
+            //WHEN
+            responseEntity = photoController.search(filterRequest);
+        }
+        //THEN
+        PhotoListResponse photoListResponse = (PhotoListResponse) responseEntity.getBody();
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        assert photoListResponse != null;
+        assertEquals(1L, photoListResponse.getTotal());
     }
 }

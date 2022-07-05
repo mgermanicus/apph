@@ -370,4 +370,38 @@ export default class PhotoService {
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
+
+  static search(
+    target: string | undefined,
+    page: number,
+    pageSize: number,
+    handleSuccess: (photoList: ITable[], total: number) => void,
+    handleError: (errorMessage: IMessage) => void
+  ) {
+    const userInfos = cookies.get('user');
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + userInfos?.token
+      },
+      body: JSON.stringify({
+        target,
+        page,
+        pageSize
+      })
+    };
+    const successFunction = (results: string) => {
+      handleSuccess(JSON.parse(results).photoList, JSON.parse(results).total);
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage));
+    };
+    return Server.request(
+      `/photo/search`,
+      requestOptions,
+      successFunction,
+      errorFunction
+    );
+  }
 }

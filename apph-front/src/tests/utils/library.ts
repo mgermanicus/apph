@@ -1,10 +1,8 @@
-import { act, fireEvent, screen, within } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import Server from '../../services/Server';
 import { FakeRequestResults } from './types/FakeRequestResults';
 import AuthService from '../../services/AuthService';
 import { ITag } from '../../utils';
-import userEvent from '@testing-library/user-event';
-import { isValidElement } from 'react';
 import { ILocation } from '../../utils/types/Location';
 import { UserEvent } from '@testing-library/user-event/dist/types/setup';
 
@@ -151,6 +149,11 @@ export function spyRequestSuccessBody(body: string) {
   return spy;
 }
 
+export function fillSearch(label: RegExp, value: string) {
+  const textInput = screen.getByPlaceholderText(label);
+  fireEvent.change(textInput, { target: { value: value } });
+}
+
 export function geocodeRequestResults(
   query: string,
   location: ILocation
@@ -174,4 +177,20 @@ export function geocodeRequestResults(
   }
   console.log(results);
   return results;
+}
+
+export function fakeSearchRequestParams(
+  target: string,
+  page: number,
+  pageSize: number
+) {
+  const requestOptions = {
+    method: 'POST',
+    body: JSON.stringify({
+      target,
+      page,
+      pageSize
+    })
+  };
+  return { URL: `/photo/search`, requestOptions };
 }

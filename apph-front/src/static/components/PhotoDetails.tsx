@@ -209,7 +209,9 @@ export const PhotoDetails = ({
                 <Typography sx={titleTypoStyle}>
                   {t('photoTable.size')}:
                 </Typography>
-                <Typography sx={detailTypoStyle}>{details.size} Ko</Typography>
+                <Typography sx={detailTypoStyle}>
+                  {details.size} {t('photoTable.kb')}
+                </Typography>
               </Box>
               <Box sx={detailBoxStyle}>
                 <Typography sx={titleTypoStyle}>

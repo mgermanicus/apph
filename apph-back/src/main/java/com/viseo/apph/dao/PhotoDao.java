@@ -3,6 +3,12 @@ package com.viseo.apph.dao;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.FilterRequest;
+import org.hibernate.search.engine.search.query.SearchResult;
+import org.hibernate.search.engine.search.sort.dsl.SearchSortFactory;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.scope.SearchScope;
+import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -57,5 +63,23 @@ public class PhotoDao {
                 .setParameter("ids", ids)
                 .setParameter("user", user)
                 .getResultList();
+    }
+
+    public SearchResult<Photo> searchPhotoByTargetAndUser(FilterRequest filterRequest, User user) {
+        SearchSession searchSession = Search.session(em);
+        SearchScope<Photo> scope = searchSession.scope(Photo.class);
+        return searchSession.search(Photo.class)
+                .where(scope
+                        .predicate()
+                        .bool()
+                        .must(scope.predicate().match().field("user.id")
+                                .matching(user.getId()))
+                        .must(scope.predicate().match()
+                                .fields("title", "description", "tags.name", "address")
+                                .matching(filterRequest.getTarget()))
+                        .toPredicate()
+                )
+                .sort(SearchSortFactory::score)
+                .fetch((filterRequest.getPage() - 1) * filterRequest.getPageSize(), filterRequest.getPageSize());
     }
 }

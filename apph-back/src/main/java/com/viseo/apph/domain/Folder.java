@@ -1,5 +1,7 @@
 package com.viseo.apph.domain;
 
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +9,8 @@ import java.util.List;
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "parentFolderId"})})
 public class Folder extends BaseEntity {
+
+    @FullTextField(analyzer = "name")
     String name;
 
     Long parentFolderId;
@@ -14,7 +18,7 @@ public class Folder extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     User user;
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "folder", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Photo> photos = new ArrayList<>();
 
     public Folder() {

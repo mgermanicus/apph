@@ -50,7 +50,8 @@
     "url": "Url",
     "actions": "Actions",
     "error": "Argument illégal.",
-    "address": "Adresse"
+    "address": "Adresse",
+    "kb": "Ko"
   },
   "userTable": {
     "firstname": "Prénom",
@@ -65,7 +66,8 @@
     "treatments": "Mes Traitements",
     "advancedSearch": "Recherche Avancée",
     "users": "Liste des Utilisateurs",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "Search": "Recherche"
   },
   "folder": {
     "create": "Créer",

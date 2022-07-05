@@ -3,20 +3,19 @@ package com.viseo.apph.config;
 import com.viseo.apph.dao.RoleDao;
 import com.viseo.apph.dao.SettingDao;
 import com.viseo.apph.domain.*;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
+import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.MultipartConfigFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.unit.DataSize;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.servlet.MultipartConfigElement;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -39,11 +38,13 @@ public class DataBaseConfig {
     PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @EventListener(ContextRefreshedEvent.class)
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        event.getApplicationContext().getBean(DataBaseConfig.class).initializeRole();
+    public void onApplicationEvent(ContextRefreshedEvent event) throws InterruptedException {
+        DataBaseConfig bean = event.getApplicationContext().getBean(DataBaseConfig.class);
+        bean.initializeRole();
+        bean.initializeIndexing();
         if (this.init) {
-            event.getApplicationContext().getBean(DataBaseConfig.class).initializeAdmin();
-            event.getApplicationContext().getBean(DataBaseConfig.class).initialize();
+            bean.initializeAdmin();
+            bean.initialize();
         }
     }
 
@@ -70,6 +71,14 @@ public class DataBaseConfig {
         em.persist(adminRoot);
         Setting setting = new Setting().setUploadSize(10).setDownloadSize(15);
         em.persist(setting);
+    }
+
+    @Transactional
+    public void initializeIndexing() throws InterruptedException {
+        SearchSession searchSession = Search.session(em);
+        MassIndexer indexer = searchSession.massIndexer(Photo.class)
+                .threadsToLoadObjects(7);
+        indexer.startAndWait();
     }
 
     @Transactional

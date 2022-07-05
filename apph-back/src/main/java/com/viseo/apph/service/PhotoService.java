@@ -5,10 +5,10 @@ import com.viseo.apph.dao.*;
 import com.viseo.apph.domain.*;
 import com.viseo.apph.dto.*;
 import com.viseo.apph.exception.*;
+import org.hibernate.search.engine.search.query.SearchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -425,5 +425,20 @@ public class PhotoService {
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    @Transactional
+    public PhotoListResponse search(FilterRequest filterRequest, User user) {
+        SearchResult<Photo> res = photoDao.searchPhotoByTargetAndUser(filterRequest, user);
+        long totalHits = res.total().hitCount();
+        List<Photo> userPhotos = res.hits();
+        PhotoListResponse response = new PhotoListResponse();
+        userPhotos.forEach(photo ->
+                response.addPhoto(new PhotoResponse(photo)
+                        .setUrl(s3Dao.getPhotoUrl(photo))
+                )
+        );
+        response.setTotal(totalHits);
+        return response;
     }
 }

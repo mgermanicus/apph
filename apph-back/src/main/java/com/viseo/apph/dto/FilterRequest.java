@@ -1,10 +1,13 @@
 package com.viseo.apph.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public class FilterRequest {
     @JsonValue
     FilterDto[] filterList;
+    @JsonProperty("target")
+    String target;
     @JsonValue
     SortDto sortModel;
     @JsonValue
@@ -41,6 +44,15 @@ public class FilterRequest {
 
     public SortDto getSortModel() {
         return sortModel;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public FilterRequest setTarget(String target) {
+        this.target = target;
+        return this;
     }
 
     public FilterRequest setSortModel(SortDto sortModel) {

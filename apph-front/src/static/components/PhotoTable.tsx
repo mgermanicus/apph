@@ -75,7 +75,7 @@ export const PhotoTable = ({
     },
     {
       field: 'size',
-      headerName: t('photoTable.size') + '(Ko)',
+      headerName: t('photoTable.size') + t('photoTable.kb'),
       type: 'number',
       flex: 1,
       align: 'center',

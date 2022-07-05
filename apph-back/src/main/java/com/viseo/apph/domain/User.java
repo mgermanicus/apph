@@ -1,6 +1,7 @@
 package com.viseo.apph.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@Indexed
 @Table(name = "users")
 public class User extends BaseEntity {
     private static final long serialVersionUID = 1L;
