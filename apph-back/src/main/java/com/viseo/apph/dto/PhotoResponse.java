@@ -38,6 +38,20 @@ public class PhotoResponse implements IResponseDto {
     public PhotoResponse() {
     }
 
+    public PhotoResponse(Photo photo) {
+        this.id = photo.getId();
+        this.title = photo.getTitle();
+        this.creationDate = photo.getCreationDate();
+        this.modificationDate = photo.getModificationDate();
+        this.size = photo.getSize();
+        this.tags = photo.getTags();
+        this.description = photo.getDescription();
+        this.shootingDate = photo.getShootingDate();
+        this.format = photo.getFormat();
+        Position position = new Position().setLat(photo.getLat()).setLng(photo.getLng());
+        this.location = new Location().setAddress(photo.getAddress()).setPosition(position);
+    }
+
     public long getId() {
         return id;
     }
@@ -143,24 +157,6 @@ public class PhotoResponse implements IResponseDto {
 
     public PhotoResponse setLocation(Location location) {
         this.location = location;
-        return this;
-    }
-
-    public PhotoResponse setPhoto(Photo photo) {
-        Position position = new Position().setLat(photo.getLat())
-                .setLng(photo.getLng());
-        Location location = new Location().setAddress(photo.getAddress())
-                .setPosition(position);
-        this.setId(photo.getId())
-                .setTitle(photo.getTitle())
-                .setCreationDate(photo.getCreationDate())
-                .setModificationDate(photo.getModificationDate())
-                .setSize(photo.getSize())
-                .setTags(photo.getTags())
-                .setDescription(photo.getDescription())
-                .setShootingDate(photo.getShootingDate())
-                .setFormat(photo.getFormat())
-                .setLocation(location);
         return this;
     }
 }
