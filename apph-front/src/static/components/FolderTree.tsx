@@ -36,7 +36,7 @@ export const FolderTree = ({
     );
   };
   const renderLabel = (folder: IFolder) => (
-    <span onClick={() => handleGetChildrenFolders(folder)}>{folder.name}</span>
+    <div onClick={() => handleGetChildrenFolders(folder)}>{folder.name}</div>
   );
 
   if (data) {
