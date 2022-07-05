@@ -94,7 +94,7 @@ export const PrivateRoutes = ({
           )}
         />
         <Route
-          path="/research/global/:target"
+          path="/search/global/:target"
           element={needAuthenticationRoute(
             <PrivatePageContainer element={<GlobalSearchPage />} />
           )}

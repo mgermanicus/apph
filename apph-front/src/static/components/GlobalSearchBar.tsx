@@ -55,7 +55,7 @@ export const GlobalSearchBar = (): JSX.Element => {
   const [content, setContent] = useState<string>('');
 
   const handleSubmit = () => {
-    navigate('/research/global/' + content, { replace: true });
+    navigate('/search/global/' + content, { replace: true });
   };
 
   return (
