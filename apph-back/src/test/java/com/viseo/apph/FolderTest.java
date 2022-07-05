@@ -28,12 +28,11 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static com.viseo.apph.utils.Utils.inject;
 import static org.mockito.ArgumentMatchers.*;
@@ -52,6 +51,15 @@ public class FolderTest {
 
     @Mock
     TypedQuery<Setting> typedQuerySetting;
+
+    @Mock
+    TypedQuery<Long> typedQueryLong, typedQuerySubLong;
+
+    @Mock
+    TypedQuery<Tuple> typedQueryTuple;
+
+    @Mock
+    Stream<Tuple> streamTuple;
 
     @Mock
     Utils utils;
@@ -289,11 +297,18 @@ public class FolderTest {
         Folder parent = new Folder().setUser(robert).setParentFolderId(5L);
         Folder child = new Folder().setUser(robert).setParentFolderId(parent.getId());
         FolderRequest request = new FolderRequest().setDestinationFolderId(child.getId()).setFolderIdToBeMoved(parent.getId());
+        Map<Long, Long> map = new HashMap<>();
+        map.put(9L, 4L);
+        map.put(4L, -1L);
         when(utils.getUser()).thenReturn(robert);
         when(em.find(Folder.class, 0L)).thenReturn(child);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn((Folder) new Folder().setParentFolderId(4L).setId(9L));
+        when(em.createQuery("SELECT folder.id as childId, folder.parentFolderId as parentId from Folder folder WHERE folder.user = :user", Tuple.class)).thenReturn(typedQueryTuple);
+        when(typedQueryTuple.setParameter("user", robert)).thenReturn(typedQueryTuple);
+        when(typedQueryTuple.getResultStream()).thenReturn(streamTuple);
+        when(streamTuple.collect(any())).thenReturn(map);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = folderController.moveFolder(request);
         //THEN
@@ -310,13 +325,14 @@ public class FolderTest {
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         Folder toBeMoved = (Folder) new Folder().setUser(robert).setName("Same Name").setParentFolderId(5L).setId(0L);
         Folder moveTo = (Folder) new Folder().setParentFolderId(42L).setId(2L);
+        Folder moveToChild = (Folder) new Folder().setParentFolderId(2L).setName("Same Name").setId(9L);
         FolderRequest request = new FolderRequest().setDestinationFolderId(moveTo.getId()).setFolderIdToBeMoved(toBeMoved.getId());
         List<Folder> folders = new ArrayList<>();
-        folders.add((Folder) new Folder().setParentFolderId(2L).setName("Same Name").setId(9L));
-        List<Folder> foldersToBeMoved = new ArrayList<>();
-        foldersToBeMoved.add((Folder) new Folder().setParentFolderId(0L).setId(9L));
-        List<Photo> photos = new ArrayList<>();
-        photos.add(new Photo());
+        folders.add(moveToChild);
+        Photo photo = new Photo().setTitle("Photo").setFormat(".png").setFolder(toBeMoved);
+        Map<Long, Long> map = new HashMap<>();
+        map.put(2L, 42L);
+        map.put(42L, -1L);
         when(utils.getUser()).thenReturn(robert);
         when(em.find(Folder.class, 0L)).thenReturn(toBeMoved);
         when(em.find(Folder.class, 2L)).thenReturn(moveTo);
@@ -325,13 +341,22 @@ public class FolderTest {
         when(typedQueryFolder.getSingleResult()).thenReturn((Folder) new Folder().setId(99L));
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentId", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("parentId", moveTo.getId())).thenReturn(typedQueryFolder);
-        when(typedQueryFolder.getResultList()).thenReturn(folders);
-        when(em.createQuery("SELECT p FROM Photo p WHERE p.folder =: folder", Photo.class)).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.setParameter("folder", toBeMoved)).thenReturn(typedQueryPhoto);
-        when(typedQueryPhoto.getResultList()).thenReturn(photos);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentId", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("parentId", toBeMoved.getId())).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getResultList()).thenReturn(folders);
+        when(typedQueryFolder.setParameter("parentId", 9L)).thenReturn(typedQuerySubFolder);
+        when(typedQuerySubFolder.getResultList()).thenReturn(new ArrayList<>());
+        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("folder", moveToChild)).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("title", "Photo")).thenReturn(typedQueryLong);
+        when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
+        when(typedQueryLong.getSingleResult()).thenReturn(1L);
+        when(typedQueryLong.setParameter("title", "Photo_1")).thenReturn(typedQuerySubLong);
+        when(typedQuerySubLong.setParameter("format", ".png")).thenReturn(typedQuerySubLong);
+        when(typedQuerySubLong.getSingleResult()).thenReturn(0L);
+        when(em.createQuery("SELECT folder.id as childId, folder.parentFolderId as parentId from Folder folder WHERE folder.user = :user", Tuple.class)).thenReturn(typedQueryTuple);
+        when(typedQueryTuple.setParameter("user", robert)).thenReturn(typedQueryTuple);
+        when(typedQueryTuple.getResultStream()).thenReturn(streamTuple);
+        when(streamTuple.collect(any())).thenReturn(map);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = folderController.moveFolder(request);
         //THEN
@@ -352,6 +377,10 @@ public class FolderTest {
         folders.add((Folder) new Folder().setParentFolderId(4L).setName("Name").setId(9L));
         FolderRequest request = new FolderRequest().setDestinationFolderId(moveTo.getId()).setFolderIdToBeMoved(toBeMoved.getId());
         Folder parentFolder = (Folder) new Folder().setParentFolderId(null).setId(6L);
+        Map<Long, Long> map = new HashMap<>();
+        map.put(2L, 42L);
+        map.put(42L, 6L);
+        map.put(6L, -1L);
         when(utils.getUser()).thenReturn(robert);
         when(em.find(Folder.class, 0L)).thenReturn(toBeMoved);
         when(em.find(Folder.class, 2L)).thenReturn(moveTo);
@@ -361,6 +390,10 @@ public class FolderTest {
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
+        when(em.createQuery("SELECT folder.id as childId, folder.parentFolderId as parentId from Folder folder WHERE folder.user = :user", Tuple.class)).thenReturn(typedQueryTuple);
+        when(typedQueryTuple.setParameter("user", robert)).thenReturn(typedQueryTuple);
+        when(typedQueryTuple.getResultStream()).thenReturn(streamTuple);
+        when(streamTuple.collect(any())).thenReturn(map);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = folderController.moveFolder(request);
         //THEN
@@ -368,6 +401,155 @@ public class FolderTest {
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("success: folder.successMove", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testDeleteFolderDeleteContent() {
+        //GIVEN
+        createFolderController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        Folder folder = (Folder) new Folder().setUser(robert).setParentFolderId(2L).setId(1);
+        FolderRequest request = new FolderRequest().setId(1L);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 1L)).thenReturn(folder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentId", Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("parentId", 1L)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.getResultList()).thenReturn(new ArrayList<>());
+        //WHEN
+        ResponseEntity<IResponseDto> response = folderController.deleteFolder(request);
+        //THEN
+        Assert.assertTrue(response.getStatusCode().is2xxSuccessful());
+        MessageResponse messageResponse = (MessageResponse) response.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("folder.successDelete", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testDeleteFolderMoveContent() {
+        //GIVEN
+        createFolderController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        Folder rootFolder = (Folder) new Folder().setUser(robert).setParentFolderId(null).setId(0);
+        Folder folder = (Folder) new Folder().setUser(robert).setParentFolderId(0L).setId(1);
+        Folder folderChild = (Folder) new Folder().setUser(robert).setParentFolderId(1L).setId(2);
+        List<Folder> folders = new ArrayList<>();
+        folders.add(folderChild);
+        FolderRequest request = new FolderRequest().setId(1L).setDestinationFolderId(0L);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 0L)).thenReturn(rootFolder);
+        when(em.find(Folder.class, 1L)).thenReturn(folder);
+        when(em.createQuery("SELECT folder from Folder folder WHERE folder.parentFolderId = :parentId", Folder.class)).thenReturn(typedQueryFolder);
+        when(typedQueryFolder.setParameter("parentId", 1L)).thenReturn(typedQueryFolder).thenReturn(typedQuerySubFolder);
+        when(typedQueryFolder.getResultList()).thenReturn(folders);
+        when(typedQueryFolder.setParameter("parentId", 0L)).thenReturn(typedQuerySubFolder);
+        when(typedQuerySubFolder.getResultList()).thenReturn(new ArrayList<>());
+        //WHEN
+        ResponseEntity<IResponseDto> response = folderController.deleteFolder(request);
+        //THEN
+        Assert.assertTrue(response.getStatusCode().is2xxSuccessful());
+        MessageResponse messageResponse = (MessageResponse) response.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("folder.successDelete", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testDeleteFolderNoSrcFolder() {
+        //GIVEN
+        createFolderController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        FolderRequest request = new FolderRequest().setId(1L);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 1L)).thenReturn(null);
+        //WHEN
+        ResponseEntity<IResponseDto> response = folderController.deleteFolder(request);
+        //THEN
+        Assert.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) response.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("folder.error.notExist", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testDeleteFolderUnauthorizedFolder() {
+        //GIVEN
+        createFolderController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        User other = (User) new User().setLogin("Other").setId(2);
+        Folder folder = (Folder) new Folder().setUser(other).setParentFolderId(2L).setId(1);
+        FolderRequest request = new FolderRequest().setId(1L);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 1L)).thenReturn(folder);
+        //WHEN
+        ResponseEntity<IResponseDto> response = folderController.deleteFolder(request);
+        //THEN
+        Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) response.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("folder.error.unauthorized", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testDeleteFolderDeleteRootFolder() {
+        //GIVEN
+        createFolderController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        Folder folder = (Folder) new Folder().setUser(robert).setParentFolderId(null).setId(1);
+        FolderRequest request = new FolderRequest().setId(1L);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 1L)).thenReturn(folder);
+        //WHEN
+        ResponseEntity<IResponseDto> response = folderController.deleteFolder(request);
+        //THEN
+        Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) response.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("folder.error.deleteFolder", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testDeleteFolderMoveWithOutDstFolder() {
+        //GIVEN
+        createFolderController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        Folder folder = (Folder) new Folder().setUser(robert).setParentFolderId(0L).setId(1);
+        FolderRequest request = new FolderRequest().setId(1L).setDestinationFolderId(0L);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 0L)).thenReturn(null);
+        when(em.find(Folder.class, 1L)).thenReturn(folder);
+        //WHEN
+        ResponseEntity<IResponseDto> response = folderController.deleteFolder(request);
+        //THEN
+        Assert.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) response.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("folder.error.notExist", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testDeleteFolderNotMovableFolder() {
+        //GIVEN
+        createFolderController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        Folder srcfolder = (Folder) new Folder().setUser(robert).setParentFolderId(0L).setId(1);
+        Folder dstolder = (Folder) new Folder().setUser(robert).setParentFolderId(1L).setId(2);
+        FolderRequest request = new FolderRequest().setId(1L).setDestinationFolderId(2L);
+        Map<Long, Long> map = new HashMap<>();
+        map.put(1L, 2L);
+        map.put(2L, 1L);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.find(Folder.class, 1L)).thenReturn(srcfolder);
+        when(em.find(Folder.class, 2L)).thenReturn(dstolder);
+        when(em.createQuery("SELECT folder.id as childId, folder.parentFolderId as parentId from Folder folder WHERE folder.user = :user", Tuple.class)).thenReturn(typedQueryTuple);
+        when(typedQueryTuple.setParameter("user", robert)).thenReturn(typedQueryTuple);
+        when(typedQueryTuple.getResultStream()).thenReturn(streamTuple);
+        when(streamTuple.collect(any())).thenReturn(map);
+        //WHEN
+        ResponseEntity<IResponseDto> response = folderController.deleteFolder(request);
+        //THEN
+        Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) response.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("folder.error.moveFolder", messageResponse.getMessage());
     }
 
     @Test
@@ -422,7 +604,6 @@ public class FolderTest {
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
         Assert.assertEquals("request.error.illegalArgument", messageResponse.getMessage());
-
     }
 
     @Test

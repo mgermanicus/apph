@@ -55,4 +55,8 @@ public class Folder extends BaseEntity {
         }
         return this;
     }
+
+    public List<Photo> getPhotos() {
+        return this.photos;
+    }
 }

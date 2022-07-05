@@ -73,6 +73,11 @@
     "create": "Créer",
     "delete": "Supprimer du dossier",
     "createFolder": "Créer un dossier",
+    "deleteFolder": {
+      "dialogButton": "Supprimer le dossier actuel",
+      "confirmDelete": "Souhaitez vous vraiment supprimer ce dossier?",
+      "confirmMoveContent": "Voulez vous supprimer ou déplacer le contenu de ce dossier?"
+    },
     "creation": "Création d'un dossier",
     "download": "Télécharger le dossier",
     "enterName": "Entrez le nom de dossier:",
@@ -83,6 +88,7 @@
     "move": "Déplacer",
     "confirmDeletePhoto": "Si vous confirmez, la photo sera supprimée du dossier",
     "successMove": "Le déplacement des dossiers est terminé.",
+    "successDelete": "La suppression du dossier est terminé.",
     "error": {
       "error": "Erreur",
       "oneOf": {
@@ -92,6 +98,7 @@
         "existingName": "L'une des photos comporte un nom existant déjà dans le dossier destinataire."
       },
       "moveFolder": "Impossible de déplacer le dossier",
+      "deleteFolder": "Le dossier ne peut pas être supprimé.",
       "nullFolder": "Le dossier n'a pas pu être récuperé",
       "emptyFolder": "Le nom du dossier ne peux pas être vide",
       "existingFolder": "Le dossier existe déjà dans le dossier actuel.",
@@ -145,6 +152,7 @@
     "confirm": "Confirmer",
     "cancel": "Annuler",
     "delete": "Supprimer",
+    "move": "Déplacer",
     "confirmDelete": "Êtes vous sur de vouloir supprimer ?",
     "download": "Télécharger",
     "cancelChange": "Annuler les modifications",

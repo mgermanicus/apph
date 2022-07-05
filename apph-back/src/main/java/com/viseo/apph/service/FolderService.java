@@ -114,33 +114,100 @@ public class FolderService {
             } else if (folderDao.getParentFolderByUser(user).getId() == request.getFolderIdToBeMoved()) {
                 logger.error("Root folder can not be moved");
                 throw new UnauthorizedException("folder.error.moveFolder");
-            } else if (moveToFolder.getParentFolderId() != null && moveToFolder.getParentFolderId().equals(request.getFolderIdToBeMoved())) {
+            } else if (!isMovableFolder(user, toBeMoved, moveToFolder)) {
                 logger.error("Folder parent can not be moved to it's child folder");
                 throw new UnauthorizedException("folder.error.moveFolder");
             } else {
-                return moveFolder(toBeMoved, request.getDestinationFolderId());
+                moveFolder(toBeMoved, request.getDestinationFolderId());
+                return new MessageResponse("success: folder.successMove");
             }
         }
     }
 
-    MessageResponse moveFolder(Folder folderToBeMoved, Long toMoveToFolder) {
+    @Transactional
+    public MessageResponse deleteFolder(User user, FolderRequest request) throws UnauthorizedException, NotFoundException {
+        Folder srcFolder = folderDao.getFolderById(request.getId());
+        if (srcFolder == null) {
+            logger.error("Folder not found.");
+            throw new NotFoundException("folder.error.notExist");
+        }
+        if(srcFolder.getUser().getId() != user.getId()) {
+            logger.error("The user doesn't have access to this folder.");
+            throw new UnauthorizedException("folder.error.unauthorized");
+        }
+        if (srcFolder.getParentFolderId() == null) {
+            logger.error("Root Folder cannot be remove.");
+            throw new UnauthorizedException("folder.error.deleteFolder");
+        }
+        if (request.getDestinationFolderId() != null) {
+            Folder dstFolder = folderDao.getFolderById(request.getDestinationFolderId());
+            if (dstFolder == null) {
+                logger.error("Folder not found.");
+                throw new NotFoundException("folder.error.notExist");
+            }
+            if (!isMovableFolder(user, srcFolder, dstFolder)) {
+                logger.error("The folder cannot be moved to the designated folder.");
+                throw new UnauthorizedException("folder.error.moveFolder");
+            }
+            List<Folder> srcFolders = folderDao.getFoldersByParentId(request.getId());
+            moveFolderPhotos(srcFolder, dstFolder);
+            for (Folder folder : srcFolders) {
+                moveFolder(folder, dstFolder.getId());
+            }
+        }
+        recursiveDeleteFolder(srcFolder);
+        return new MessageResponse("folder.successDelete");
+    }
+
+    void moveFolder(Folder folderToBeMoved, Long toMoveToFolder) {
         List<Folder> folders = folderDao.getFoldersByParentId(toMoveToFolder);
         for (Folder folder : folders) {
             if (folder.getName().equals(folderToBeMoved.getName())) {
-                List<Photo> photosToBeMoved = photoDao.getPhotosByFolder(folderToBeMoved);
+                moveFolderPhotos(folderToBeMoved, folder);
                 List<Folder> foldersToBeMoved = folderDao.getFoldersByParentId(folderToBeMoved.getId());
-                for (Photo p : photosToBeMoved) {
-                    p.setFolder(folder);
-                }
                 for (Folder f : foldersToBeMoved) {
-                    f.setParentFolderId(folder.getId());
+                    moveFolder(f, folder.getId());
                 }
                 folderDao.delete(folderToBeMoved);
-                return new MessageResponse("success: folder.successMove");
+                return;
             }
         }
         folderToBeMoved.setParentFolderId(toMoveToFolder);
-        return new MessageResponse("success: folder.successMove");
+    }
+
+    void moveFolderPhotos(Folder srcFolder, Folder dstFolder) {
+        List<Photo> srcPhotos = new ArrayList<>(srcFolder.getPhotos());
+        for (Photo photo : srcPhotos) {
+            int count = 0;
+            while (photoDao.existNameInFolder(dstFolder, count == 0 ? photo.getTitle() : photo.getTitle() + "_" + count, photo.getFormat())) {
+                count++;
+            }
+            if (count != 0) {
+                photo.setTitle(photo.getTitle() + "_" + count);
+            }
+            photo.setFolder(dstFolder);
+        }
+    }
+
+    void recursiveDeleteFolder(Folder folder) {
+        List<Photo> folderPhotos = new ArrayList<>(folder.getPhotos());
+        for (Photo photo : folderPhotos) {
+            s3Dao.delete(photo);
+        }
+        List<Folder> childFolders = folderDao.getFoldersByParentId(folder.getId());
+        childFolders.forEach(this::recursiveDeleteFolder);
+        folderDao.delete(folder);
+    }
+
+    boolean isMovableFolder(User user, Folder srcFolder, Folder dstFolder) {
+        if (dstFolder.getParentFolderId() == null)
+            return true;
+        Map<Long, Long> folderStructure = folderDao.getFolderParentChildStructureByUser(user);
+        Long dstId = dstFolder.getId();
+        while (dstId != -1 && dstId != srcFolder.getId()) {
+            dstId = folderStructure.get(dstId);
+        }
+        return dstId != srcFolder.getId();
     }
 
     Folder getParentFolder(List<Folder> folders) throws NotFoundException {

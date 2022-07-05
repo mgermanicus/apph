@@ -88,4 +88,17 @@ public class FolderController {
             return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(new MessageResponse(e.getMessage()));
         }
     }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @DeleteMapping(value = "/delete")
+    public ResponseEntity<IResponseDto> deleteFolder(@RequestBody FolderRequest request) {
+        try {
+            User user = utils.getUser();
+            return ResponseEntity.ok(folderService.deleteFolder(user, request));
+        } catch (UnauthorizedException ue) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
+        } catch (NotFoundException nfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
+        }
+    }
 }
