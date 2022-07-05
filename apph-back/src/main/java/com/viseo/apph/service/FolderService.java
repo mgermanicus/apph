@@ -155,7 +155,7 @@ public class FolderService {
                 moveFolder(folder, dstFolder.getId());
             }
         }
-        deleteFolder(srcFolder);
+        recursiveDeleteFolder(srcFolder);
         return new MessageResponse("folder.successDelete");
     }
 
@@ -189,9 +189,13 @@ public class FolderService {
         }
     }
 
-    void deleteFolder(Folder folder) {
+    void recursiveDeleteFolder(Folder folder) {
+        List<Photo> folderPhotos = new ArrayList<>(folder.getPhotos());
+        for (Photo photo : folderPhotos) {
+            s3Dao.delete(photo);
+        }
         List<Folder> childFolders = folderDao.getFoldersByParentId(folder.getId());
-        childFolders.forEach(this::deleteFolder);
+        childFolders.forEach(this::recursiveDeleteFolder);
         folderDao.delete(folder);
     }
 
