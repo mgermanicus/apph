@@ -162,7 +162,7 @@ export function geocodeRequestResults(
   for (let i = 0; i <= query.length; i++) {
     results[
       `/geocode?q=${query.slice(0, i)}&apiKey=${
-        process.env['REACT_APP_HERE_API_KEY']
+        process.env['REACT_APP_GEOCODING_API_KEY']
       }&lang=fr`
     ] = {
       body: JSON.stringify({
