@@ -178,3 +178,19 @@ export function geocodeRequestResults(
   console.log(results);
   return results;
 }
+
+export function fakeSearchRequestParams(
+  target: string,
+  page: number,
+  pageSize: number
+) {
+  const requestOptions = {
+    method: 'POST',
+    body: JSON.stringify({
+      target,
+      page,
+      pageSize
+    })
+  };
+  return { URL: `/photo/search`, requestOptions };
+}

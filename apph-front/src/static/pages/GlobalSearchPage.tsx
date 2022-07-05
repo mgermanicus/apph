@@ -4,6 +4,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import PhotoService from '../../services/PhotoService';
 import { IMessage, ITable } from '../../utils';
 import {
+  AlertColor,
   Backdrop,
   Box,
   Button,
@@ -16,16 +17,29 @@ import {
 import { PhotoComplexGrid } from '../components/PhotoComplexGrid';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useTranslation } from 'react-i18next';
+import { AlertSnackbar } from '../components/AlertSnackbar';
 
-export const GlobalSearchPage = (): JSX.Element => {
+export const GlobalSearchPage = ({
+  pageSize = 5
+}: {
+  pageSize?: number;
+}): JSX.Element => {
   const { t } = useTranslation();
   const location = useLocation();
   const params = useParams();
   const [data, setData] = useState<ITable[]>([]);
-  const pageSize = 5;
   const [total, setTotal] = React.useState<number>(0);
   const [page, setPage] = React.useState<number>(1);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [message, setMessage] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [severity, setSeverity] = useState<AlertColor>();
+
+  const traitError = (error: IMessage) => {
+    setMessage(error.message);
+    setSnackbarOpen(true);
+    setSeverity('error');
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -36,9 +50,8 @@ export const GlobalSearchPage = (): JSX.Element => {
       (photoList, totalHits) => {
         setData(photoList);
         setTotal(totalHits);
-        console.log(photoList);
       },
-      (error: IMessage) => console.log(error)
+      (error: IMessage) => traitError(error)
     ).finally(() => {
       setLoading(false);
     });
@@ -61,6 +74,12 @@ export const GlobalSearchPage = (): JSX.Element => {
         <Typography variant="h6" gutterBottom component="div">
           {t('photo.error.notFound')}
         </Typography>
+        <AlertSnackbar
+          open={snackbarOpen}
+          severity={severity}
+          message={t(message)}
+          onClose={setSnackbarOpen}
+        />
       </Grid>
     );
   }
@@ -91,7 +110,9 @@ export const GlobalSearchPage = (): JSX.Element => {
         <Grid item xs>
           <Stack spacing={2}>
             {data.map((photo) => (
-              <PhotoComplexGrid photo={photo} />
+              <React.Fragment key={photo.id}>
+                <PhotoComplexGrid photo={photo} />
+              </React.Fragment>
             ))}
           </Stack>
           <Stack spacing={2}>
