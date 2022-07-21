@@ -17,9 +17,11 @@ export const MyFoldersPage = (): JSX.Element => {
   const [selectedFolder, setSelectedFolder] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState<boolean>(true);
+
   const { t } = useTranslation();
+
   useEffect(() => {
-    getFolders().catch(console.error);
+    getFolders();
   }, []);
 
   const getFolders = async () => {
