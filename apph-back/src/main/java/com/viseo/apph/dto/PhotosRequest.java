@@ -2,6 +2,7 @@ package com.viseo.apph.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.viseo.apph.domain.Location;
 
 public class PhotosRequest {
     @JsonProperty("ids")
@@ -12,6 +13,8 @@ public class PhotosRequest {
     String shootingDate;
     @JsonValue
     String tags;
+    @JsonValue
+    String location;
 
 
     public long[] getIds() {
@@ -47,6 +50,15 @@ public class PhotosRequest {
 
     public PhotosRequest setTags(String tags) {
         this.tags = tags;
+        return this;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public PhotosRequest setLocation(String location) {
+        this.location = location;
         return this;
     }
 }

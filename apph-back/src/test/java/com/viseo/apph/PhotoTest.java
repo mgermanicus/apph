@@ -43,6 +43,7 @@ import java.io.InvalidObjectException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -1266,56 +1267,50 @@ public class PhotoTest {
     }
 
     @Test
-    public void testEditPhotoListWithShootingDateAndTags() {
+    public void testEditPhotoListWithAllArguments() {
         //GIVE
         createPhotoController();
         long[] ids = {1L};
         String shootingDate = "07/20/2022";
         String tags = "[{\"name\":\"+ test\"}]";
-        PhotosRequest photoRequest = new PhotosRequest().setIds(ids).setShootingDate(shootingDate).setTags(tags);
+        String location = "{\"address\":\"Paris, Ile-de-France, France\",\"position\":{\"lat\":48.85717,\"lng\":2.3414}}";
+        PhotosRequest photoRequest = new PhotosRequest().setIds(ids).setShootingDate(shootingDate).setTags(tags).setLocation(location);
         User Jean_Jacqueline_Bernadette = (User) new User().setLogin("JJB").setId(1);
+        Photo photo = (Photo) new Photo().setUser(Jean_Jacqueline_Bernadette).setId(1L);
         when(utils.getUser()).thenReturn(Jean_Jacqueline_Bernadette);
-        when(em.find(Photo.class, 1L)).thenReturn(new Photo());
+        when(em.find(Photo.class, 1L)).thenReturn(photo);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.editPhotoList(photoRequest);
         //THEN
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
+        LocalDate expectShootingDate = LocalDate.parse(shootingDate, formatter);
+        assertEquals(expectShootingDate, photo.getShootingDate());
+        assertEquals(1, photo.getTags().size());
+        assertEquals("test", ((Tag) photo.getTags().toArray()[0]).getName());
+        assertEquals("Paris, Ile-de-France, France", photo.getAddress());
+        assertEquals(48.85717, photo.getLat(), 0.000001);
+        assertEquals(2.3414, photo.getLng(), 0.00001);
     }
 
     @Test
-    public void testEditPhotoListWithShootingDate() {
+    public void testEditPhotoListWithUnauthorizedAccess() {
         //GIVE
         createPhotoController();
         long[] ids = {1L};
-        String shootingDate = "07/20/2022";
-        PhotosRequest photoRequest = new PhotosRequest().setIds(ids).setShootingDate(shootingDate);
+        PhotosRequest photoRequest = new PhotosRequest().setIds(ids).setShootingDate("07/20/2022");
         User Jean_Jacqueline_Bernadette = (User) new User().setLogin("JJB").setId(1);
-        when(utils.getUser()).thenReturn(Jean_Jacqueline_Bernadette);
-        when(em.find(Photo.class, 1L)).thenReturn(new Photo());
+        User fakeUser = (User) new User().setId(2);
+        when(utils.getUser()).thenReturn(fakeUser);
+        when(em.find(Photo.class, 1L)).thenReturn(new Photo().setUser(Jean_Jacqueline_Bernadette));
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.editPhotoList(photoRequest);
         //THEN
-        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
     }
 
     @Test
-    public void testEditPhotoListWithTags() {
-        //GIVE
-        createPhotoController();
-        long[] ids = {1L};
-        String tags = "[{\"name\":\"+ test\"}]";
-        PhotosRequest photoRequest = new PhotosRequest().setIds(ids).setTags(tags);
-        User Jean_Jacqueline_Bernadette = (User) new User().setLogin("JJB").setId(1);
-        when(utils.getUser()).thenReturn(Jean_Jacqueline_Bernadette);
-        when(em.find(Photo.class, 1L)).thenReturn(new Photo());
-        //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.editPhotoList(photoRequest);
-        //THEN
-        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
-    }
-
-    @Test
-    public void testEditPhotoListWithoutShootingDateAndTags() {
+    public void testEditPhotoListWithoutArguments() {
         //GIVE
         createPhotoController();
         long[] ids = {1L};

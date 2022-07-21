@@ -390,30 +390,32 @@ public class PhotoService {
     }
 
     @Transactional
-    public void updatePhotoList(User user, PhotosRequest photosRequest) {
-        if (photosRequest.getShootingDate() != null && photosRequest.getTags() != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
-            LocalDate shootingDate = LocalDate.parse(photosRequest.getShootingDate(), formatter);
-            Set<Tag> newTags = photosRequest.getTags() != null ? tagService.createListTags(photosRequest.getTags(), user) : null;
-            for (long id : photosRequest.getIds()) {
-                Photo photo = photoDao.getPhoto(id);
-                photo.setShootingDate(shootingDate).setTags(newTags);
+    public void updatePhotoList(User user, PhotosRequest photosRequest) throws UnauthorizedException {
+        if (photosRequest.getShootingDate() == null && photosRequest.getTags() == null && photosRequest.getLocation() == null) {
+            logger.error("Empty request.");
+            throw new IllegalArgumentException("Empty request.");
+        }
+        for (long id : photosRequest.getIds()) {
+            Photo photo = photoDao.getPhoto(id);
+            if (photo.getUser().getId() != user.getId()) {
+                logger.error("Unauthorized access to this photo.");
+                throw new UnauthorizedException("Unauthorized access.");
             }
-        } else if (photosRequest.getShootingDate() == null && photosRequest.getTags() != null) {
-            Set<Tag> newTags = photosRequest.getTags() != null ? tagService.createListTags(photosRequest.getTags(), user) : null;
-            for (long id : photosRequest.getIds()) {
-                Photo photo = photoDao.getPhoto(id);
-                photo.setTags(newTags);
-            }
-        } else if (photosRequest.getShootingDate() != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
-            LocalDate shootingDate = LocalDate.parse(photosRequest.getShootingDate(), formatter);
-            for (long id : photosRequest.getIds()) {
-                Photo photo = photoDao.getPhoto(id);
+            if (photosRequest.getShootingDate() != null) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
+                LocalDate shootingDate = LocalDate.parse(photosRequest.getShootingDate(), formatter);
                 photo.setShootingDate(shootingDate);
             }
-        } else {
-            throw new IllegalArgumentException();
+            if (photosRequest.getTags() != null) {
+                Set<Tag> newTags = photosRequest.getTags() != null ? tagService.createListTags(photosRequest.getTags(), user) : null;
+                photo.setTags(newTags);
+            }
+            if (photosRequest.getLocation() != null) {
+                Location location = new GsonBuilder().create().fromJson(photosRequest.getLocation(), Location.class);
+                photo.setAddress(location.getAddress())
+                        .setLat(location.getPosition().getLat())
+                        .setLng(location.getPosition().getLng());
+            }
         }
     }
 
