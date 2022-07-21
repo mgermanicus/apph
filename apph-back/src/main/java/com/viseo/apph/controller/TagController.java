@@ -8,6 +8,7 @@ import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/")
     public ResponseEntity getTags() {
         User user = utils.getUser();
@@ -31,6 +33,7 @@ public class TagController {
         return ResponseEntity.ok(tags);
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/count")
     public ResponseEntity<IResponseDto> getTagsWithCount() {
         User user = utils.getUser();

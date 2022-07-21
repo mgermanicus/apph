@@ -97,7 +97,7 @@ public class DataBaseConfig {
                 .setFirstname("Wassim").setLastname("BOUHTOUT").setRoles(set);
         User min = new User().setLogin("min@viseo.com").setPassword(encoder.encode("dea79332147ffe1fb2a81cf9a5bdf0066ddcc625699996ede0ce140e5cb004b1"))
                 .setFirstname("Min").setLastname("SUN").setRoles(set);
-        User elie = new User().setLogin("elie@viseo.com").setPassword(encoder.encode("281dc093e8ea1bd931774d7a28dccb50e3a307756b7ff07bad897f10a56bfde0"))
+        User elie = new User().setLogin("elie.ravasse@viseo.com").setPassword(encoder.encode("281dc093e8ea1bd931774d7a28dccb50e3a307756b7ff07bad897f10a56bfde0"))
                 .setFirstname("Elie").setLastname("RAVASSE").setRoles(set);
         User larbi = new User().setLogin("larbi@viseo.com").setPassword(encoder.encode("d1261e513fd80525a4fd227bfa52718ba27beb58fc1e52f49283a349a146b5c5"))
                 .setFirstname("Larbi").setLastname("AIT MOHAMED").setRoles(set);
