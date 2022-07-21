@@ -3,8 +3,8 @@ import { alpha, styled } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import { useTranslation } from 'react-i18next';
 import * as React from 'react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const SearchBar = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -53,10 +53,15 @@ export const GlobalSearchBar = (): JSX.Element => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [content, setContent] = useState<string>('');
+  const location = useLocation();
 
   const handleSubmit = () => {
     navigate('/search/global/' + content, { replace: true });
   };
+
+  useEffect(() => {
+    setContent('');
+  }, [location]);
 
   return (
     <SearchBar>
