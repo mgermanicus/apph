@@ -26,6 +26,8 @@ import Typography from '@mui/material/Typography';
 import PhotoService from '../../services/PhotoService';
 import moment from 'moment';
 import i18n from 'i18next';
+import { LocationPicker } from './LocationPicker';
+import { ILocation } from '../../utils/types/Location';
 
 interface modifyPhotosProps {
   ids: number[];
@@ -39,6 +41,7 @@ export const ModifyPhotos = ({
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [shootingDate, setShootingDate] = useState<string>();
   const [selectedTags, setSelectedTags] = useState<ITag[] | undefined>();
+  const [location, setLocation] = useState<ILocation>();
   const [allTags, setAllTags] = useState<ITag[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [snackBarSeverity, setSnackBarSeverity] =
@@ -73,12 +76,13 @@ export const ModifyPhotos = ({
   const handleCloseForm = () => {
     setShootingDate(undefined);
     setSelectedTags(undefined);
+    setLocation(undefined);
     setIsFormOpen(false);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!shootingDate && !selectedTags) {
+    if (!shootingDate && !selectedTags && !location) {
       openSnackBar('error', 'photo.error.requireOneField');
       return;
     }
@@ -93,7 +97,8 @@ export const ModifyPhotos = ({
         openSnackBar('error', errorMessage);
       },
       shootingDate,
-      selectedTags
+      selectedTags,
+      location
     );
   };
 
@@ -165,6 +170,12 @@ export const ModifyPhotos = ({
               allTags={allTags}
               onChange={(tags) => setSelectedTags(tags)}
               required={false}
+            />
+            <LocationPicker
+              onChange={(value) => {
+                setLocation(value);
+              }}
+              isValid={true}
             />
             <Button type="submit" fullWidth variant="contained">
               {t('action.confirm')}

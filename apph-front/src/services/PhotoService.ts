@@ -346,7 +346,8 @@ export default class PhotoService {
     handleSuccess: (successMessage: string) => void,
     handleError: (errorMessage: string) => void,
     shootingDate?: string,
-    selectedTags?: ITag[]
+    selectedTags?: ITag[],
+    location?: ILocation
   ) {
     const URL = `/photo/editPhotoList`,
       userInfos = cookies.get('user'),
@@ -359,7 +360,8 @@ export default class PhotoService {
         body: JSON.stringify({
           ids,
           shootingDate: shootingDate,
-          tags: JSON.stringify(selectedTags)
+          tags: JSON.stringify(selectedTags),
+          location: JSON.stringify(location)
         })
       };
     const successFunction = (message: string) => {

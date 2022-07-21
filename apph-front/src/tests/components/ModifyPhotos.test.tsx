@@ -40,6 +40,7 @@ describe('ModifyPhotos component tests', () => {
       expect.anything(),
       expect.anything(),
       expect.anything(),
+      undefined,
       undefined
     );
   });
