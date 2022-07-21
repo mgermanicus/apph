@@ -39,11 +39,13 @@ const stringToAlertColor = (status: string): AlertColor => {
 export const MovePhotoOrFolder = ({
   photoIds,
   folderToBeMoved,
-  folderId
+  folderId,
+  refreshFolder
 }: {
   photoIds?: number[];
   folderToBeMoved?: string;
   folderId?: string;
+  refreshFolder?: () => void;
 }): JSX.Element => {
   const [rootFolder, setRootFolder] = useState<IFolder | null>(null);
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
@@ -97,6 +99,7 @@ export const MovePhotoOrFolder = ({
           const messages = [];
           messages.push(message.message);
           setResultMessage(messages);
+          if (refreshFolder) refreshFolder();
         },
         (errorMessage) => {
           setSnackSeverity('error');

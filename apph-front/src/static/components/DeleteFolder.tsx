@@ -60,7 +60,6 @@ export const DeleteFolder = ({
         setSnackSeverity('success');
         setSnackbarMessage(successMessage);
         setSnackbarOpen(true);
-        //TODO this refresh method is not working very well... Look for how to refresh a TreeView
         refreshFolder();
         setTimeout(() => setSnackbarOpen(false), 2000);
       },
