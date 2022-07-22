@@ -4,7 +4,7 @@ import InputBase from '@mui/material/InputBase';
 import { useTranslation } from 'react-i18next';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { createSearchParams, useLocation, useNavigate } from 'react-router-dom';
 
 const SearchBar = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -56,7 +56,11 @@ export const GlobalSearchBar = (): JSX.Element => {
   const location = useLocation();
 
   const handleSubmit = () => {
-    navigate('/search/global/' + content, { replace: true });
+    const params = { '': content.trim().replace(/\s+/g, '') };
+    navigate({
+      pathname: '/search/global/',
+      search: createSearchParams(params).toString()
+    });
   };
 
   useEffect(() => {
