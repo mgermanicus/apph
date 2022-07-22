@@ -2,7 +2,6 @@ import {
   Button,
   Dialog,
   DialogActions,
-  DialogContent,
   DialogContentText,
   DialogTitle
 } from '@mui/material';
@@ -26,8 +25,9 @@ export const ConfirmationDialog = ({
   return (
     <Dialog open={open} sx={{ py: '20vh' }}>
       <DialogTitle>{t(title || '')}</DialogTitle>
-      <DialogContent></DialogContent>
-      <DialogContentText>{t(message || '')}</DialogContentText>
+      <DialogContentText sx={{ m: '10px' }}>
+        {t(message || '')}
+      </DialogContentText>
       <DialogActions>
         <Button color="error" onClick={onCancel}>
           {t('action.cancel')}

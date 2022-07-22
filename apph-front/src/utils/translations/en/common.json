@@ -162,7 +162,8 @@
     "add": "Add",
     "modify": "Modify",
     "search": "Search",
-    "forbidden": "This action is forbidden"
+    "forbidden": "This action is forbidden",
+    "warning": "Warning"
   },
   "profile": {
     "edit": "Edit profile"

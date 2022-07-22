@@ -180,6 +180,7 @@ export const EditProfile = () => {
           onCancel={() => {
             setDialogOpen(false);
           }}
+          title={t('action.warning')}
           message={t('action.willDisconnected')}
         />
       </CardContent>

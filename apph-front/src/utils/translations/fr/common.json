@@ -162,7 +162,8 @@
     "add": "Ajouter",
     "modify": "Modifier",
     "search": "Rechercher",
-    "forbidden": "L'utilisateur n'a pas le droit d'effectuer cette action."
+    "forbidden": "L'utilisateur n'a pas le droit d'effectuer cette action.",
+    "warning": "Attention"
   },
   "profile": {
     "edit": "Modifier le profil"
