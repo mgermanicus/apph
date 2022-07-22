@@ -21,7 +21,7 @@ export const MyFoldersPage = (): JSX.Element => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    getFolders();
+    getFolders().catch(console.error);
   }, []);
 
   const getFolders = async () => {

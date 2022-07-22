@@ -17,7 +17,7 @@ export const FolderTree = ({
   const [data, setData] = useState(folder);
 
   useEffect(() => {
-    if (folder) handleGetChildrenFolders(folder);
+    if (folder) handleGetChildrenFolders(folder).catch(console.error);
   }, [folder]);
 
   const handleGetChildrenFolders = async (parent: IFolder) => {
