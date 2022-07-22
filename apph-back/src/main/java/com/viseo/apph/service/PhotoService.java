@@ -395,6 +395,7 @@ public class PhotoService {
             logger.error("Empty request.");
             throw new IllegalArgumentException("Empty request.");
         }
+        Set<Tag> newTags = photosRequest.getTags() != null ? tagService.createListTags(photosRequest.getTags(), user) : null;
         for (long id : photosRequest.getIds()) {
             Photo photo = photoDao.getPhoto(id);
             if (photo.getUser().getId() != user.getId()) {
@@ -406,8 +407,7 @@ public class PhotoService {
                 LocalDate shootingDate = LocalDate.parse(photosRequest.getShootingDate(), formatter);
                 photo.setShootingDate(shootingDate);
             }
-            if (photosRequest.getTags() != null) {
-                Set<Tag> newTags = photosRequest.getTags() != null ? tagService.createListTags(photosRequest.getTags(), user) : null;
+            if (newTags != null) {
                 photo.setTags(newTags);
             }
             if (photosRequest.getLocation() != null) {

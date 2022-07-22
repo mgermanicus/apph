@@ -28,6 +28,8 @@ import moment from 'moment';
 import i18n from 'i18next';
 import { LocationPicker } from './LocationPicker';
 import { ILocation } from '../../utils/types/Location';
+import { useDispatch } from 'react-redux';
+import { setTagList } from '../../redux/slices/tagSlice';
 
 interface modifyPhotosProps {
   ids: number[];
@@ -38,6 +40,7 @@ export const ModifyPhotos = ({
   ids,
   setRefresh
 }: modifyPhotosProps): JSX.Element => {
+  const dispatch = useDispatch();
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [shootingDate, setShootingDate] = useState<string>();
   const [selectedTags, setSelectedTags] = useState<ITag[] | undefined>();
@@ -99,7 +102,18 @@ export const ModifyPhotos = ({
       shootingDate,
       selectedTags,
       location
-    );
+    ).then(() => {
+      TagService.getAllTags(
+        (tags: string) => {
+          const tagsConverted: ITag[] = JSON.parse(tags);
+          dispatch(setTagList(tagsConverted));
+          setAllTags(tagsConverted);
+        },
+        (errorMessage: string) => {
+          openSnackBar('error', errorMessage);
+        }
+      );
+    });
   };
 
   return (
