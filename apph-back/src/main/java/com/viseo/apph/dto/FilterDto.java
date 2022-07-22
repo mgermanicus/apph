@@ -47,13 +47,15 @@ public class FilterDto implements Comparable<FilterDto> {
             case "tags":
                 argQueue.add(value);
                 return "?" + argQueue.size();
+            case "address":
+                return "p.address";
             default:
                 throw new InvalidObjectException("champ non reconnu : " + field);
         }
     }
 
     public String getOperatorToSql() throws InvalidObjectException {
-        if (field.equals("title") || field.equals("description")) {
+        if (field.equals("title") || field.equals("description") || field.equals("address")) {
             if (operator.equals("is") || operator.equals("contain")) {
                 return "LIKE";
             }

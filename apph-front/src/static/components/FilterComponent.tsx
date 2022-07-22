@@ -92,6 +92,7 @@ export const FilterComponent = ({
       <MenuItem value="creationDate">{t('photoTable.creationDate')}</MenuItem>
       <MenuItem value="shootingDate">{t('photoTable.shootingDate')}</MenuItem>
       <MenuItem value="tags">{t('photoTable.tags')}</MenuItem>
+      <MenuItem value="address">{t('photoTable.address')}</MenuItem>
     </Select>
   );
 
@@ -99,6 +100,7 @@ export const FilterComponent = ({
     switch (state.field) {
       case 'title':
       case 'description':
+      case 'address':
         return (
           <Select
             labelId="select-operator-label"
