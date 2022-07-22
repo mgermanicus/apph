@@ -20,6 +20,7 @@ import { IFilter } from '../../utils/types/Filter';
 import { filterActionKind, filterActions } from './FilterSelector';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
+import moment from 'moment/moment';
 
 const selectFieldStyle = {
   minWidth: '6vw',
@@ -197,9 +198,18 @@ export const FilterComponent = ({
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label={t('filter.value')}
-              value={state.value || handleChangeValue(new Date())}
+              value={
+                state.value
+                  ? moment(new Date(state.value.toString())).format(
+                      'MM/DD/YYYY'
+                    )
+                  : handleChangeValue(moment().format('MM/DD/YYYY'))
+              }
               onChange={(value) => {
-                if (value) handleChangeValue(value);
+                if (value)
+                  handleChangeValue(
+                    moment(new Date(value)).format('MM/DD/YYYY')
+                  );
               }}
               inputFormat={i18n.language == 'fr' ? 'dd/MM/yyyy' : 'MM/dd/yyyy'}
               renderInput={(params) => (

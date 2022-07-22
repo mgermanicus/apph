@@ -103,7 +103,7 @@ public class PhotoService {
         if (!photo.getTitle().equals(photoRequest.getTitle()) && photo.getFolder() != null && photoDao.existNameInFolder(photo.getFolder(), photoRequest.getTitle(), photo.getFormat()))
             throw new ConflictException("photo.error.nameExistInFolder");
         Set<Tag> newTags = tagService.createListTags(photoRequest.getTags(), user);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         LocalDate shootingDate = LocalDate.parse(photoRequest.getShootingDate(), formatter);
         Location location = new GsonBuilder().create().fromJson(photoRequest.getLocation(), Location.class);
         photo.setTitle(photoRequest.getTitle())
@@ -238,7 +238,7 @@ public class PhotoService {
     private FilterQuery createFilterQuery(FilterDto[] filters) throws InvalidObjectException {
         if (filters == null)
             return new FilterQuery("SELECT p FROM Photo p WHERE p.user = :user", new LinkedList<>());
-        Queue<String> argQueue = new LinkedList<>();
+        Queue<Object> argQueue = new LinkedList<>();
         StringBuilder query = new StringBuilder("SELECT p FROM Photo p JOIN p.tags t WHERE p.user = :user");
         List<FilterDto> filterDtoList = Arrays.asList(filters);
         filterDtoList.sort(FilterDto::compareTo);
@@ -434,9 +434,9 @@ public class PhotoService {
 
     private class FilterQuery {
         public String query;
-        public Queue<String> argQueue;
+        public Queue<Object> argQueue;
 
-        public FilterQuery(String query, Queue<String> argQueue) {
+        public FilterQuery(String query, Queue<Object> argQueue) {
             this.query = query;
             this.argQueue = argQueue;
         }

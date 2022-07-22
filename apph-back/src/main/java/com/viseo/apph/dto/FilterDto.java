@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.NotNull;
 
 import java.io.InvalidObjectException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Queue;
 
 public class FilterDto implements Comparable<FilterDto> {
@@ -34,15 +36,17 @@ public class FilterDto implements Comparable<FilterDto> {
         return this;
     }
 
-    public String getFieldToSql(Queue<String> argQueue) throws InvalidObjectException {
+    public String getFieldToSql(Queue<Object> argQueue) throws InvalidObjectException {
         switch (field) {
             case "title":
                 return "p.title";
             case "description":
                 return "p.description";
             case "creationDate":
+                argQueue.add(LocalDate.parse(value, DateTimeFormatter.ofPattern("MM/d/yyyy")));
                 return "p.creationDate";
             case "shootingDate":
+                argQueue.add(LocalDate.parse(value, DateTimeFormatter.ofPattern("MM/d/yyyy")));
                 return "p.shootingDate";
             case "tags":
                 argQueue.add(value);
@@ -79,14 +83,15 @@ public class FilterDto implements Comparable<FilterDto> {
         throw new InvalidObjectException("champ non reconnu");
     }
 
-    public String getValueToSql(Queue<String> argQueue) {
+    public String getValueToSql(Queue<Object> argQueue) {
         if (field.equals("tags")) {
             return "(select t.name from p.tags t)";
         } else if (operator.equals("contain")) {
             argQueue.add(value);
             return "'%' || ?" + argQueue.size() + " || '%'";
         }
-        argQueue.add(value);
+        if (field.equals("title") || field.equals("description"))
+            argQueue.add(value);
         return "?" + argQueue.size();
 
     }

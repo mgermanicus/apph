@@ -297,11 +297,11 @@ public class PhotoTest {
         listPhoto.add(new Photo());
         FilterDto[] filterDtos = new FilterDto[]{
                 new FilterDto().setField("title").setOperator("contain").setValue("p"),
-                new FilterDto().setField("creationDate").setOperator("strictlyInferior").setValue("1"),
-                new FilterDto().setField("shootingDate").setOperator("strictlySuperior").setValue("2"),
-                new FilterDto().setField("shootingDate").setOperator("superiorEqual").setValue("3"),
-                new FilterDto().setField("creationDate").setOperator("inferiorEqual").setValue("4"),
-                new FilterDto().setField("creationDate").setOperator("equal").setValue("5"),
+                new FilterDto().setField("creationDate").setOperator("strictlyInferior").setValue("07/22/2022"),
+                new FilterDto().setField("shootingDate").setOperator("strictlySuperior").setValue("07/22/2022"),
+                new FilterDto().setField("shootingDate").setOperator("superiorEqual").setValue("07/22/2022"),
+                new FilterDto().setField("creationDate").setOperator("inferiorEqual").setValue("07/22/2022"),
+                new FilterDto().setField("creationDate").setOperator("equal").setValue("07/22/2022"),
                 new FilterDto().setField("description").setOperator("is").setValue("cool"),
                 new FilterDto().setField("title").setOperator("is").setValue("photo")
         };
@@ -402,10 +402,10 @@ public class PhotoTest {
                 new FilterDto().setField("title").setOperator("fail").setValue("p")
         };
         FilterDto[] filterDtos4 = new FilterDto[]{
-                new FilterDto().setField("creationDate").setOperator("fail").setValue("1")
+                new FilterDto().setField("creationDate").setOperator("fail").setValue("07/22/2022")
         };
         FilterDto[] filterDtos5 = new FilterDto[]{
-                new FilterDto().setField("shootingDate").setOperator("fail").setValue("3")
+                new FilterDto().setField("shootingDate").setOperator("fail").setValue("07/22/2022")
         };
         FilterRequest filterRequest1 = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos1);
         FilterRequest filterRequest2 = new FilterRequest().setPage(1).setPageSize(5).setFilterList(filterDtos2);

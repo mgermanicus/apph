@@ -4,11 +4,14 @@ import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FilterRequest;
+import com.viseo.apph.security.AuthTokenFilter;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.engine.search.sort.dsl.SearchSortFactory;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.scope.SearchScope;
 import org.hibernate.search.mapper.orm.session.SearchSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -19,6 +22,8 @@ import java.util.Queue;
 
 @Repository
 public class PhotoDao {
+    private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
+
     @PersistenceContext
     EntityManager em;
 
@@ -27,10 +32,14 @@ public class PhotoDao {
         return photo;
     }
 
-    public List<Photo> getUserPhotos(User user, String filterQuery, Queue<String> argQueue) {
+    public List<Photo> getUserPhotos(User user, String filterQuery, Queue<Object> argQueue) {
         Query spSQLQuery = em.createQuery(filterQuery, Photo.class).setParameter("user", user);
-        for (int i = 1; !argQueue.isEmpty(); i++) {
-            spSQLQuery.setParameter(i, argQueue.poll());
+        try {
+            for (int i = 1; !argQueue.isEmpty(); i++) {
+                spSQLQuery.setParameter(i, argQueue.poll());
+            }
+        } catch (IllegalArgumentException iae) {
+            logger.error(iae.getMessage());
         }
         return spSQLQuery.getResultList();
     }
