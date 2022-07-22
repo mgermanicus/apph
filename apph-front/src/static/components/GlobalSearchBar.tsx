@@ -56,10 +56,11 @@ export const GlobalSearchBar = (): JSX.Element => {
   const location = useLocation();
 
   const handleSubmit = () => {
-    const params = { '': content.trim().replace(/\s+/g, '') };
     navigate({
       pathname: '/search/global/',
-      search: createSearchParams(params).toString()
+      search: `?${createSearchParams({
+        params: content
+      })}`
     });
   };
 

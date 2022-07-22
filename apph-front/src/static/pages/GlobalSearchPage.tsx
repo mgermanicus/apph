@@ -43,7 +43,7 @@ export const GlobalSearchPage = ({
   useEffect(() => {
     setLoading(true);
     PhotoService.search(
-      location.search.replace('%2', '/'),
+      location?.search.replace('%2', '/'),
       page,
       pageSize,
       (photoList, totalHits) => {
