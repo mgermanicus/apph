@@ -190,6 +190,7 @@ export const ModifyPhotos = ({
                 setLocation(value);
               }}
               isValid={true}
+              required={false}
             />
             <Button type="submit" fullWidth variant="contained">
               {t('action.confirm')}

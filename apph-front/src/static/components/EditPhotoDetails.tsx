@@ -163,6 +163,7 @@ export const EditPhotoDetails = (props: {
                       setLocation(value);
                     }}
                     isValid={locationValidity}
+                    required={true}
                     defaultValue={props.location}
                   />
                   <TagInput
