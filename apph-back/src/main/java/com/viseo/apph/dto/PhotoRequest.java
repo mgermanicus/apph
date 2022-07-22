@@ -17,6 +17,11 @@ public class PhotoRequest {
     long folderId;
     @JsonValue
     String location;
+    Processes process;
+
+    enum Processes {
+        BLACK_AND_WHITE
+    }
 
     public long getId() {
         return id;

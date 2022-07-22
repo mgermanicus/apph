@@ -214,4 +214,18 @@ public class PhotoController {
         PhotoListResponse responseList = photoService.search(filterRequest, user);
         return ResponseEntity.ok().body(responseList);
     }
+
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping(value = "/process", produces = "application/json")
+    public ResponseEntity<IResponseDto> processPhoto(@RequestBody PhotoRequest photoRequest) {
+        User user = utils.getUser();
+        try {
+            return ResponseEntity.ok(new MessageResponse(photoService.processPhoto(user, photoRequest)));
+        } catch (NotFoundException nfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
+        } catch (IOException ioe) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("upload.error.upload"));
+        }
+    }
 }
