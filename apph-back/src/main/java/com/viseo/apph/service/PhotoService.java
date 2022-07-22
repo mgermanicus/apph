@@ -414,11 +414,11 @@ public class PhotoService {
     }
 
     @Transactional
-    public PhotoListResponse search(FilterRequest filterRequest, User user) {
+    public GlobalSearchResponse search(FilterRequest filterRequest, User user) {
         SearchResult<Photo> res = photoDao.searchPhotoByTargetAndUser(filterRequest, user);
         long totalHits = res.total().hitCount();
         List<Photo> userPhotos = res.hits();
-        PhotoListResponse response = new PhotoListResponse();
+        GlobalSearchResponse response = new GlobalSearchResponse();
         userPhotos.forEach(photo ->
                 response.addPhoto(new PhotoResponse(photo)
                         .setUrl(s3Dao.getPhotoUrl(photo))

@@ -213,7 +213,7 @@ public class PhotoController {
     @PostMapping(value = "/search", produces = "application/json")
     public ResponseEntity<IResponseDto> search(@RequestBody FilterRequest filterRequest) {
         User user = utils.getUser();
-        PhotoListResponse responseList = photoService.search(filterRequest, user);
+        GlobalSearchResponse responseList = photoService.search(filterRequest, user);
         return ResponseEntity.ok().body(responseList);
     }
 
