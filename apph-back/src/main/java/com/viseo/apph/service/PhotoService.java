@@ -424,6 +424,7 @@ public class PhotoService {
         SearchResult<Photo> res = photoDao.searchPhotoByTargetAndUser(filterRequest, user);
         long totalHits = res.total().hitCount();
         List<Photo> userPhotos = res.hits();
+        Map<String, Long> tagFacets = photoDao.searchTagFacets(filterRequest, user);
         GlobalSearchResponse response = new GlobalSearchResponse();
         userPhotos.forEach(photo ->
                 response.addPhoto(new PhotoResponse(photo)
@@ -431,6 +432,7 @@ public class PhotoService {
                 )
         );
         response.setTotal(totalHits);
+        response.setTagFacets(tagFacets);
         return response;
     }
 

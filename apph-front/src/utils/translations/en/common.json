@@ -132,6 +132,8 @@
     "successDelete": "Photo successfully deleted",
     "failDelete": "An error occurred during deletion",
     "successMove": "Photo successfully moved.",
+    "enhanceSearch": "Enhance your search :",
+    "tagSuggestions": "Tags suggestions",
     "error": {
       "failChangeFormat": "Error when changing the format",
       "notFound": "Photo not found",

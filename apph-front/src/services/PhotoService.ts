@@ -377,7 +377,11 @@ export default class PhotoService {
     target: string | undefined,
     page: number,
     pageSize: number,
-    handleSuccess: (photoList: ITable[], total: number) => void,
+    handleSuccess: (
+      photoList: ITable[],
+      total: number,
+      tagFacets: Record<string, number>
+    ) => void,
     handleError: (errorMessage: IMessage) => void
   ) {
     const userInfos = cookies.get('user');
@@ -394,7 +398,11 @@ export default class PhotoService {
       })
     };
     const successFunction = (results: string) => {
-      handleSuccess(JSON.parse(results).photoList, JSON.parse(results).total);
+      handleSuccess(
+        JSON.parse(results).photoList,
+        JSON.parse(results).total,
+        JSON.parse(results).tagFacets
+      );
     };
     const errorFunction = (errorMessage: string) => {
       handleError(JSON.parse(errorMessage));

@@ -1,7 +1,10 @@
 package com.viseo.apph.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -12,6 +15,7 @@ import java.util.Set;
 public class Tag extends BaseEntity {
 
     @FullTextField(analyzer = "name")
+    @KeywordField(name = "name_keyword", searchable = Searchable.NO, aggregable = Aggregable.YES)
     String name;
 
     @ManyToOne(fetch = FetchType.LAZY)

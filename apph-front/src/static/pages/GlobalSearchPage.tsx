@@ -33,6 +33,7 @@ export const GlobalSearchPage = ({
   const [message, setMessage] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [severity, setSeverity] = useState<AlertColor>();
+  const [tagFacets, setTagFacets] = useState<Record<string, number>>({});
 
   const traitError = (error: IMessage) => {
     setMessage(error.message);
@@ -46,9 +47,10 @@ export const GlobalSearchPage = ({
       location?.search.replace('%2', '/'),
       page,
       pageSize,
-      (photoList, totalHits) => {
+      (photoList, totalHits, tagFacets) => {
         setData(photoList);
         setTotal(totalHits);
+        setTagFacets(tagFacets);
       },
       (error: IMessage) => traitError(error)
     ).finally(() => {
@@ -60,6 +62,30 @@ export const GlobalSearchPage = ({
     setPage(value);
     window.scrollTo(0, 0);
   };
+
+  const getButtonsFromFacets = (facets: Record<string, number>) => (
+    <ButtonGroup
+      variant="text"
+      aria-label="text button group"
+      orientation="vertical"
+      sx={{ alignItems: 'baseline' }}
+    >
+      {Object.entries(facets).map(([key, value]) => (
+        <Button
+          key={key}
+          sx={{
+            justifyContent: 'left',
+            textAlign: 'left',
+            maxWidth: 'calc(.25 * (100vw - 28px))',
+            overflow: 'hidden'
+          }}
+          onClick={() => console.log(key)}
+        >
+          {key} ({value})
+        </Button>
+      ))}
+    </ButtonGroup>
+  );
 
   if (total == 0) {
     return (
@@ -94,17 +120,13 @@ export const GlobalSearchPage = ({
             float: 'left'
           }}
         >
-          <Typography variant="h6" gutterBottom component="div">
-            TODO facets
+          <Typography variant="h5" gutterBottom component="div">
+            {t('photo.enhanceSearch')}
           </Typography>
-          <ButtonGroup
-            variant="text"
-            aria-label="text button group"
-            orientation="vertical"
-          >
-            <Button>Paris</Button>
-            <Button>Toulouse</Button>
-          </ButtonGroup>
+          <Typography variant="h6" gutterBottom component="div" align="left">
+            {t('photo.tagSuggestions')}
+          </Typography>
+          {getButtonsFromFacets(tagFacets)}
         </Grid>
         <Grid item xs>
           <Stack spacing={2}>
