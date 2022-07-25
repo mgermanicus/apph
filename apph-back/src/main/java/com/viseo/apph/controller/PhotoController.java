@@ -204,6 +204,8 @@ public class PhotoController {
             return ResponseEntity.ok().body(new MessageResponse("photo.modifyDetailsSuccess"));
         } catch (IllegalArgumentException iae) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(iae.getMessage()));
+        } catch (UnauthorizedException ue) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
         }
     }
 

@@ -8,11 +8,13 @@ import { useTranslation } from 'react-i18next';
 type Props = {
   onChange: (value: ILocation) => void;
   isValid: boolean;
+  required: boolean;
   defaultValue?: ILocation;
 };
 export const LocationPicker = ({
   onChange,
   isValid,
+  required,
   defaultValue
 }: Props): JSX.Element => {
   const { t, i18n } = useTranslation();
@@ -55,7 +57,7 @@ export const LocationPicker = ({
       defaultValue={defaultValue}
       renderInput={(params) => (
         <TextField
-          required
+          required={required}
           {...params}
           label={t('upload.address')}
           InputProps={{

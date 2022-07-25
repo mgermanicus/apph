@@ -26,6 +26,10 @@ import Typography from '@mui/material/Typography';
 import PhotoService from '../../services/PhotoService';
 import moment from 'moment';
 import i18n from 'i18next';
+import { LocationPicker } from './LocationPicker';
+import { ILocation } from '../../utils/types/Location';
+import { useDispatch } from 'react-redux';
+import { setTagList } from '../../redux/slices/tagSlice';
 
 interface modifyPhotosProps {
   ids: number[];
@@ -36,9 +40,11 @@ export const ModifyPhotos = ({
   ids,
   setRefresh
 }: modifyPhotosProps): JSX.Element => {
+  const dispatch = useDispatch();
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [shootingDate, setShootingDate] = useState<string>();
   const [selectedTags, setSelectedTags] = useState<ITag[] | undefined>();
+  const [location, setLocation] = useState<ILocation>();
   const [allTags, setAllTags] = useState<ITag[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [snackBarSeverity, setSnackBarSeverity] =
@@ -73,12 +79,13 @@ export const ModifyPhotos = ({
   const handleCloseForm = () => {
     setShootingDate(undefined);
     setSelectedTags(undefined);
+    setLocation(undefined);
     setIsFormOpen(false);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!shootingDate && !selectedTags) {
+    if (!shootingDate && !selectedTags && !location) {
       openSnackBar('error', 'photo.error.requireOneField');
       return;
     }
@@ -93,8 +100,20 @@ export const ModifyPhotos = ({
         openSnackBar('error', errorMessage);
       },
       shootingDate,
-      selectedTags
-    );
+      selectedTags,
+      location
+    ).then(() => {
+      TagService.getAllTags(
+        (tags: string) => {
+          const tagsConverted: ITag[] = JSON.parse(tags);
+          dispatch(setTagList(tagsConverted));
+          setAllTags(tagsConverted);
+        },
+        (errorMessage: string) => {
+          openSnackBar('error', errorMessage);
+        }
+      );
+    });
   };
 
   return (
@@ -164,6 +183,13 @@ export const ModifyPhotos = ({
             <TagInput
               allTags={allTags}
               onChange={(tags) => setSelectedTags(tags)}
+              required={false}
+            />
+            <LocationPicker
+              onChange={(value) => {
+                setLocation(value);
+              }}
+              isValid={true}
               required={false}
             />
             <Button type="submit" fullWidth variant="contained">

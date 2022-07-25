@@ -335,6 +335,7 @@ export const UploadImage = ({
                       setLocation(value);
                     }}
                     isValid={locationValidity}
+                    required={true}
                   />
                   <TagInput
                     allTags={tagList}
