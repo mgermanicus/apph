@@ -159,6 +159,7 @@ export const DisplayPhoto = ({
                 <MovePhotoOrFolder
                   folderToBeMoved={selectedFolder}
                   folderId={rootFolder}
+                  refreshFolder={refreshFolder}
                 />
                 <DeleteFolder
                   selectedFolderId={selectedFolder}
