@@ -404,4 +404,34 @@ export default class PhotoService {
       errorFunction
     );
   }
+
+  static searchFuzzy(
+    target: string,
+    handleSuccess: (photoList: ITable[]) => void,
+    handleError: (errorMessage: IMessage) => void
+  ) {
+    const userInfos = cookies.get('user');
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + userInfos?.token
+      },
+      body: JSON.stringify({
+        target
+      })
+    };
+    const successFunction = (results: string) => {
+      handleSuccess(JSON.parse(results).photoList);
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage));
+    };
+    return Server.request(
+      `/photo/search/fuzzy`,
+      requestOptions,
+      successFunction,
+      errorFunction
+    );
+  }
 }
