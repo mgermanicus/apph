@@ -14,7 +14,7 @@ public class PhotoRequest {
     String tags;
     @JsonValue
     String shootingDate;
-    long folderId;
+    Long folderId;
     @JsonValue
     String location;
 
@@ -72,11 +72,11 @@ public class PhotoRequest {
         return this;
     }
 
-    public long getFolderId() {
+    public Long getFolderId() {
         return folderId;
     }
 
-    public PhotoRequest setFolderId(long folderId) {
+    public PhotoRequest setFolderId(Long folderId) {
         this.folderId = folderId;
         return this;
     }

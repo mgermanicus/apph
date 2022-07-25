@@ -156,7 +156,6 @@ export const UploadImage = ({
         acceptedFiles[0],
         location,
         selectedTags,
-        '-1',
         uploadSize,
         handleSuccess[0],
         handleError[0]
@@ -181,7 +180,6 @@ export const UploadImage = ({
                 acceptedFiles[i],
                 location,
                 newSelectedTags,
-                '-1',
                 uploadSize,
                 handleSuccess[i],
                 handleError[i]

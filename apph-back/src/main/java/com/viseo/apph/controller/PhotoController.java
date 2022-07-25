@@ -172,10 +172,10 @@ public class PhotoController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(value = "/update", produces = "application/json")
-    public ResponseEntity<IResponseDto> updatePhotoInfo(@RequestBody PhotoRequest photoRequest) {
+    public ResponseEntity<IResponseDto> deletePhotoFolder(@RequestBody PhotoRequest photoRequest) {
         User user = utils.getUser();
         try {
-            return ResponseEntity.ok(photoService.updatePhotoFolder(user, photoRequest));
+            return ResponseEntity.ok(photoService.deletePhotoFolder(user, photoRequest));
         } catch (NotFoundException nfe) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(nfe.getMessage()));
         } catch (UnauthorizedException ue) {

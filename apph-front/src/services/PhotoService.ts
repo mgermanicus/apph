@@ -21,7 +21,6 @@ export default class PhotoService {
     imageFile: File,
     location: ILocation,
     selectedTags: ITag[],
-    folderId: string,
     maxFileSizeMb: number,
     handleSuccess: () => void,
     handleError: (errorMessage: string) => void
@@ -35,7 +34,6 @@ export default class PhotoService {
     formData.append('title', title);
     formData.append('description', description);
     formData.append('shootingDate', shootingDate);
-    formData.append('folderId', folderId);
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -288,7 +286,7 @@ export default class PhotoService {
     id: number,
     title: string,
     description: string,
-    folderId: number,
+    folderId: number | null,
     handleSuccess: (message: { statusCode: number; message: string }) => void,
     handleError: (errorMessage: IMessage) => void
   ) {

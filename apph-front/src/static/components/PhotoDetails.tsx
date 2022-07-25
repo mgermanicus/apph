@@ -66,7 +66,7 @@ export const PhotoDetails = ({
       details.photoId,
       details.title,
       details.description,
-      -1,
+      null,
       (message: { message: string }) => {
         if (details.setSnackMessage && details.setSnackSeverity) {
           details.setSnackMessage(message.message);
