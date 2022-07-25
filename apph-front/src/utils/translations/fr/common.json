@@ -140,6 +140,8 @@
     "successDelete": "Suppression effectuée avec succès",
     "failDelete": "Une erreur est survenue lors de la suppression",
     "successMove": "Le déplacement des photos est terminé.",
+    "enhanceSearch": "Affinez votre recherche :",
+    "tagSuggestions": "Suggestions de tags",
     "sendPhotos": "Envoyer les photos sélectionnées",
     "error": {
       "failChangeFormat": "Erreur lors de la modification du format",

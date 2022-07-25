@@ -2,13 +2,11 @@ package com.viseo.apph.dao;
 
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
-import com.viseo.apph.domain.Position;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FilterRequest;
-import com.viseo.apph.dto.MapMarker;
 import com.viseo.apph.security.AuthTokenFilter;
+import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.query.SearchResult;
-import org.hibernate.search.engine.search.sort.dsl.SearchSortFactory;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.scope.SearchScope;
 import org.hibernate.search.mapper.orm.session.SearchSession;
@@ -19,8 +17,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 @Repository
@@ -91,14 +89,14 @@ public class PhotoDao {
                                 .matching(filterRequest.getTarget()))
                         .toPredicate()
                 )
-                .sort(SearchSortFactory::score)
                 .fetch((filterRequest.getPage() - 1) * filterRequest.getPageSize(), filterRequest.getPageSize());
     }
 
-    public SearchResult<Photo> searchPhotoByFuzzyTargetAndUser(FilterRequest filterRequest, User user) {
+    public Map<String, Long> searchTagFacets(FilterRequest filterRequest, User user) {
         SearchSession searchSession = Search.session(em);
         SearchScope<Photo> scope = searchSession.scope(Photo.class);
-        return searchSession.search(Photo.class)
+        AggregationKey<Map<String, Long>> countsByTagKey = AggregationKey.of("countsByTag");
+        SearchResult<Photo> result = searchSession.search(scope)
                 .where(scope
                         .predicate()
                         .bool()
@@ -106,11 +104,16 @@ public class PhotoDao {
                                 .matching(user.getId()))
                         .must(scope.predicate().match()
                                 .fields("title", "description", "tags.name", "address")
-                                .matching(filterRequest.getTarget())
-                                .fuzzy())
+                                .matching(filterRequest.getTarget()))
                         .toPredicate()
                 )
+                .aggregation(countsByTagKey, scope.aggregation().terms()
+                        .field("tags.name_keyword", String.class)
+                        .maxTermCount(5)
+                        .toAggregation()
+                )
                 .fetchAll();
+        return result.aggregation(countsByTagKey);
     }
 
     public List<Photo> getAllPhotos(User user) {

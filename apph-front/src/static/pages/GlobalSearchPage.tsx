@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import PhotoService from '../../services/PhotoService';
 import { IMessage, ITable } from '../../utils';
 import {
@@ -29,12 +29,11 @@ export const GlobalSearchPage = ({
   const [data, setData] = useState<ITable[]>([]);
   const [total, setTotal] = React.useState<number>(0);
   const [page, setPage] = React.useState<number>(1);
-  const [size, setSize] = React.useState<number>(pageSize);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [message, setMessage] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [severity, setSeverity] = useState<AlertColor>();
-  const [searchParams] = useSearchParams();
+  const [tagFacets, setTagFacets] = useState<Record<string, number>>({});
 
   const traitError = (error: IMessage) => {
     setMessage(error.message);
@@ -42,37 +41,51 @@ export const GlobalSearchPage = ({
     setSeverity('error');
   };
 
-  const search = () => {
+  useEffect(() => {
+    setLoading(true);
     PhotoService.search(
-      searchParams.get('params'),
+      location?.search.replace('%2', '/'),
       page,
-      size,
-      (photoList, totalHits) => {
+      pageSize,
+      (photoList, totalHits, tagFacets) => {
         setData(photoList);
         setTotal(totalHits);
+        setTagFacets(tagFacets);
       },
       (error: IMessage) => traitError(error)
     ).finally(() => {
       setLoading(false);
     });
-  };
+  }, [location, page]);
 
-  useEffect(() => {
-    setSize(
-      searchParams.get('size') === null
-        ? pageSize
-        : Number(searchParams.get('size'))
-    );
-  }, [location]);
-
-  useEffect(() => {
-    search();
-  }, [size, location, page]);
-
-  const handleChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
     window.scrollTo(0, 0);
   };
+
+  const getButtonsFromFacets = (facets: Record<string, number>) => (
+    <ButtonGroup
+      variant="text"
+      aria-label="text button group"
+      orientation="vertical"
+      sx={{ alignItems: 'baseline' }}
+    >
+      {Object.entries(facets).map(([key, value]) => (
+        <Button
+          key={key}
+          sx={{
+            justifyContent: 'left',
+            textAlign: 'left',
+            maxWidth: 'calc(.25 * (100vw - 28px))',
+            overflow: 'hidden'
+          }}
+          onClick={() => console.log(key)}
+        >
+          {key} ({value})
+        </Button>
+      ))}
+    </ButtonGroup>
+  );
 
   if (total == 0) {
     return (
@@ -107,17 +120,13 @@ export const GlobalSearchPage = ({
             float: 'left'
           }}
         >
-          <Typography variant="h6" gutterBottom component="div">
-            TODO facets
+          <Typography variant="h5" gutterBottom component="div">
+            {t('photo.enhanceSearch')}
           </Typography>
-          <ButtonGroup
-            variant="text"
-            aria-label="text button group"
-            orientation="vertical"
-          >
-            <Button>Paris</Button>
-            <Button>Toulouse</Button>
-          </ButtonGroup>
+          <Typography variant="h6" gutterBottom component="div" align="left">
+            {t('photo.tagSuggestions')}
+          </Typography>
+          {getButtonsFromFacets(tagFacets)}
         </Grid>
         <Grid item xs>
           <Stack spacing={2}>
@@ -129,7 +138,7 @@ export const GlobalSearchPage = ({
           </Stack>
           <Stack spacing={2}>
             <Pagination
-              count={Math.ceil(total / size)}
+              count={Math.ceil(total / pageSize)}
               showFirstButton
               showLastButton
               size="large"

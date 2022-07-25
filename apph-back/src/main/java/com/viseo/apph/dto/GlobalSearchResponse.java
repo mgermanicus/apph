@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class GlobalSearchResponse implements IResponseDto {
     @JsonProperty("photoList")
@@ -11,6 +12,9 @@ public class GlobalSearchResponse implements IResponseDto {
 
     @JsonProperty("total")
     long total;
+
+    @JsonProperty("tagFacets")
+    Map<String, Long> tagFacets;
 
     public GlobalSearchResponse() {
         this.photoList = new ArrayList<>();
@@ -21,16 +25,12 @@ public class GlobalSearchResponse implements IResponseDto {
         return this;
     }
 
-    public List<PhotoResponse> getPhotoList() {
-        return this.photoList;
-    }
-
-    public long getTotal() {
-        return total;
-    }
-
     public GlobalSearchResponse setTotal(long total) {
         this.total = total;
         return this;
+    }
+
+    public void setTagFacets(Map<String, Long> tagFacets) {
+        this.tagFacets = tagFacets;
     }
 }
