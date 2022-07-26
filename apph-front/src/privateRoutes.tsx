@@ -14,6 +14,7 @@ import { AdvancedResearchPage } from './static/pages/AdvancedResearchPage';
 import { UserListPage } from './static/pages/UserListPage';
 import { AppSettingsPage } from './static/pages/AppSettingsPage';
 import { GlobalSearchPage } from './static/pages/GlobalSearchPage';
+import { MapPage } from './static/pages/MapPage';
 
 export const PrivateRoutes = ({
   authenticated
@@ -68,9 +69,7 @@ export const PrivateRoutes = ({
         <Route
           path="/trips"
           element={needAuthenticationRoute(
-            <PrivatePageContainer
-              element={<TODOPage todo="Page: Mes Voyages" />}
-            />
+            <PrivatePageContainer element={<MapPage />} />
           )}
         />
         <Route
