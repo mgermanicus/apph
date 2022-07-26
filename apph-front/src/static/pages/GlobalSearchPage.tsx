@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import PhotoService from '../../services/PhotoService';
 import { IMessage, ITable } from '../../utils';
 import {
@@ -26,7 +26,6 @@ export const GlobalSearchPage = ({
 }): JSX.Element => {
   const { t } = useTranslation();
   const location = useLocation();
-  const params = useParams();
   const [data, setData] = useState<ITable[]>([]);
   const [total, setTotal] = React.useState<number>(0);
   const [page, setPage] = React.useState<number>(1);
@@ -44,7 +43,7 @@ export const GlobalSearchPage = ({
   useEffect(() => {
     setLoading(true);
     PhotoService.search(
-      params.target,
+      location?.search.replace('%2', '/'),
       page,
       pageSize,
       (photoList, totalHits) => {
