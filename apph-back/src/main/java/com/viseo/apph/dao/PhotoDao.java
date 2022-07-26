@@ -18,10 +18,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 @Repository
 public class PhotoDao {
@@ -94,7 +91,7 @@ public class PhotoDao {
                 .fetch((filterRequest.getPage() - 1) * filterRequest.getPageSize(), filterRequest.getPageSize());
     }
 
-    public Map<String, Map<?, Long>> getSearchFacets(FilterRequest filterRequest, User user) {
+    public Map<String, Map<?, Long>> getSearchFacets(FilterRequest filterRequest, User user, Collection<Range<Float>> ranges) {
         SearchSession searchSession = Search.session(em);
         SearchScope<Photo> scope = searchSession.scope(Photo.class);
         AggregationKey<Map<String, Long>> countsByTagKey = AggregationKey.of("countsByTag");
@@ -117,9 +114,7 @@ public class PhotoDao {
                 )
                 .aggregation(countsBySize, f -> f.range()
                         .field("size", Float.class)
-                        .range(0f, 1000f)
-                        .range(1000f, 5000f)
-                        .range(5000f, null))
+                        .ranges(ranges))
                 .fetchAll();
         Map<String, Map<?, Long>> facets = new HashMap<>();
         facets.put("tagFacet", result.aggregation(countsByTagKey));

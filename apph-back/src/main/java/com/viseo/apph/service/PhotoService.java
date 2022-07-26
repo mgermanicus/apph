@@ -6,6 +6,7 @@ import com.viseo.apph.domain.*;
 import com.viseo.apph.dto.*;
 import com.viseo.apph.exception.*;
 import org.hibernate.search.engine.search.query.SearchResult;
+import org.hibernate.search.util.common.data.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -418,7 +419,12 @@ public class PhotoService {
         SearchResult<Photo> res = photoDao.searchPhotoByTargetAndUser(filterRequest, user);
         long totalHits = res.total().hitCount();
         List<Photo> userPhotos = res.hits();
-        Map<String, Map<?, Long>> facets = photoDao.getSearchFacets(filterRequest, user);
+        float maxFileSize = settingDao.getSetting().getUploadSize() * 1024f;
+        Collection<Range<Float>> ranges = new ArrayList<>();
+        for(float i = 0; i < maxFileSize ; i += maxFileSize/3) {
+            ranges.add(Range.between(i, i + maxFileSize/3));
+        }
+        Map<String, Map<?, Long>> facets = photoDao.getSearchFacets(filterRequest, user, ranges);
         GlobalSearchResponse response = new GlobalSearchResponse();
         userPhotos.forEach(photo ->
                 response.addPhoto(new PhotoResponse(photo)
