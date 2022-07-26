@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { createSearchParams, useLocation, useNavigate } from 'react-router-dom';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { AlertColor, Autocomplete, Link, TextField } from '@mui/material';
 import PhotoService from '../../services/PhotoService';
 import { IMessage } from '../../utils';
@@ -53,12 +52,14 @@ export const GlobalSearchBar = (): JSX.Element => {
   };
 
   const handleSubmit = () => {
-    navigate({
-      pathname: '/search/global/',
-      search: `?${createSearchParams({
-        params: inputValue
-      })}`
-    });
+    if (inputValue.length > 0) {
+      navigate({
+        pathname: '/search/global/',
+        search: `?${createSearchParams({
+          params: inputValue
+        })}`
+      });
+    }
   };
 
   const fuzzyWord = () => {
@@ -128,6 +129,7 @@ export const GlobalSearchBar = (): JSX.Element => {
       <SearchBar>
         <Autocomplete
           freeSolo
+          filterOptions={(x) => x}
           onKeyPress={(event) => {
             if (event.key === 'Enter') {
               handleSubmit();
@@ -175,7 +177,12 @@ export const GlobalSearchBar = (): JSX.Element => {
                 component="button"
                 variant="body2"
                 onClick={() => {
-                  window.location.href = `/search/global/${option.title}`;
+                  navigate({
+                    pathname: '/search/global/',
+                    search: `?${createSearchParams({
+                      params: option.title
+                    })}`
+                  });
                 }}
               >
                 {option.title}
