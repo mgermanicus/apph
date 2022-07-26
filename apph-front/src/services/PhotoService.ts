@@ -380,7 +380,7 @@ export default class PhotoService {
     handleSuccess: (
       photoList: ITable[],
       total: number,
-      tagFacets: Record<string, number>
+      tagFacets: Record<string, Record<any, number>>
     ) => void,
     handleError: (errorMessage: IMessage) => void
   ) {
@@ -401,7 +401,7 @@ export default class PhotoService {
       handleSuccess(
         JSON.parse(results).photoList,
         JSON.parse(results).total,
-        JSON.parse(results).tagFacets
+        JSON.parse(results).facets
       );
     };
     const errorFunction = (errorMessage: string) => {

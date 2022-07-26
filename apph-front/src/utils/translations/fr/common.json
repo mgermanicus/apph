@@ -134,6 +134,7 @@
     "successMove": "Le déplacement des photos est terminé.",
     "enhanceSearch": "Affinez votre recherche :",
     "tagSuggestions": "Suggestions de tags",
+    "sizeSuggestions": "Suggestions de tailles",
     "error": {
       "failChangeFormat": "Erreur lors de la modification du format",
       "notFound": "Photo introuvable",
