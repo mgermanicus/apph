@@ -143,6 +143,7 @@
     "enhanceSearch": "Enhance your search :",
     "tagSuggestions": "Tags suggestions",
     "sendPhotos": "Send Selected Photos",
+    "sizeSuggestions": "Size suggestions",
     "error": {
       "failChangeFormat": "Error when changing the format",
       "notFound": "Photo not found",

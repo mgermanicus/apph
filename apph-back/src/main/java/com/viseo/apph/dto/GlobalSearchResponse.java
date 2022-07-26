@@ -13,8 +13,8 @@ public class GlobalSearchResponse implements IResponseDto {
     @JsonProperty("total")
     long total;
 
-    @JsonProperty("tagFacets")
-    Map<String, Long> tagFacets;
+    @JsonProperty("facets")
+    Map<String, Map<?, Long>> facets;
 
     public GlobalSearchResponse() {
         this.photoList = new ArrayList<>();
@@ -30,7 +30,7 @@ public class GlobalSearchResponse implements IResponseDto {
         return this;
     }
 
-    public void setTagFacets(Map<String, Long> tagFacets) {
-        this.tagFacets = tagFacets;
+    public void setTagFacets(Map<String, Map<?, Long>> facets) {
+        this.facets = facets;
     }
 }

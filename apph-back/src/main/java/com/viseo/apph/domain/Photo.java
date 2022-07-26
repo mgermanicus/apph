@@ -1,6 +1,9 @@
 package com.viseo.apph.domain;
 
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 
@@ -25,6 +28,8 @@ public class Photo extends BaseEntity {
     LocalDate modificationDate;
 
     LocalDate shootingDate;
+
+    @GenericField(searchable = Searchable.NO, aggregable = Aggregable.YES)
     float size;
 
     @FullTextField

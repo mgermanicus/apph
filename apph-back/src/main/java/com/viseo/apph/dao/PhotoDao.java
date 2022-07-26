@@ -10,6 +10,7 @@ import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.scope.SearchScope;
 import org.hibernate.search.mapper.orm.session.SearchSession;
+import org.hibernate.search.util.common.data.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -92,10 +94,11 @@ public class PhotoDao {
                 .fetch((filterRequest.getPage() - 1) * filterRequest.getPageSize(), filterRequest.getPageSize());
     }
 
-    public Map<String, Long> searchTagFacets(FilterRequest filterRequest, User user) {
+    public Map<String, Map<?, Long>> getSearchFacets(FilterRequest filterRequest, User user) {
         SearchSession searchSession = Search.session(em);
         SearchScope<Photo> scope = searchSession.scope(Photo.class);
         AggregationKey<Map<String, Long>> countsByTagKey = AggregationKey.of("countsByTag");
+        AggregationKey<Map<Range<Float>, Long>> countsBySize = AggregationKey.of("countsBySize");
         SearchResult<Photo> result = searchSession.search(scope)
                 .where(scope
                         .predicate()
@@ -112,8 +115,16 @@ public class PhotoDao {
                         .maxTermCount(5)
                         .toAggregation()
                 )
+                .aggregation(countsBySize, f -> f.range()
+                        .field("size", Float.class)
+                        .range(0f, 1000f)
+                        .range(1000f, 5000f)
+                        .range(5000f, null))
                 .fetchAll();
-        return result.aggregation(countsByTagKey);
+        Map<String, Map<?, Long>> facets = new HashMap<>();
+        facets.put("tagFacet", result.aggregation(countsByTagKey));
+        facets.put("sizeFacet", result.aggregation(countsBySize));
+        return facets;
     }
 
     public List<Photo> getAllPhotos(User user) {

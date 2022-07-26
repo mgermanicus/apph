@@ -418,15 +418,14 @@ public class PhotoService {
         SearchResult<Photo> res = photoDao.searchPhotoByTargetAndUser(filterRequest, user);
         long totalHits = res.total().hitCount();
         List<Photo> userPhotos = res.hits();
-        Map<String, Long> tagFacets = photoDao.searchTagFacets(filterRequest, user);
+        Map<String, Map<?, Long>> facets = photoDao.getSearchFacets(filterRequest, user);
         GlobalSearchResponse response = new GlobalSearchResponse();
         userPhotos.forEach(photo ->
                 response.addPhoto(new PhotoResponse(photo)
                         .setUrl(s3Dao.getPhotoUrl(photo))
                 )
         );
-        response.setTotal(totalHits);
-        response.setTagFacets(tagFacets);
+        response.setTotal(totalHits).setTagFacets(facets);
         return response;
     }
 

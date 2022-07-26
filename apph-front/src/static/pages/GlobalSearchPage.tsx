@@ -33,7 +33,8 @@ export const GlobalSearchPage = ({
   const [message, setMessage] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [severity, setSeverity] = useState<AlertColor>();
-  const [tagFacets, setTagFacets] = useState<Record<string, number>>({});
+  const [tagFacet, setTagFacet] = useState<Record<string, number>>({});
+  const [sizeFacet, setSizeFacet] = useState<Record<any, number>>({});
 
   const traitError = (error: IMessage) => {
     setMessage(error.message);
@@ -47,10 +48,11 @@ export const GlobalSearchPage = ({
       location?.search.replace('%2', '/'),
       page,
       pageSize,
-      (photoList, totalHits, tagFacets) => {
+      (photoList, totalHits, facets) => {
         setData(photoList);
         setTotal(totalHits);
-        setTagFacets(tagFacets);
+        setTagFacet(facets.tagFacet);
+        setSizeFacet(facets.sizeFacet);
       },
       (error: IMessage) => traitError(error)
     ).finally(() => {
@@ -62,30 +64,6 @@ export const GlobalSearchPage = ({
     setPage(value);
     window.scrollTo(0, 0);
   };
-
-  const getButtonsFromFacets = (facets: Record<string, number>) => (
-    <ButtonGroup
-      variant="text"
-      aria-label="text button group"
-      orientation="vertical"
-      sx={{ alignItems: 'baseline' }}
-    >
-      {Object.entries(facets).map(([key, value]) => (
-        <Button
-          key={key}
-          sx={{
-            justifyContent: 'left',
-            textAlign: 'left',
-            maxWidth: 'calc(.25 * (100vw - 28px))',
-            overflow: 'hidden'
-          }}
-          onClick={() => console.log(key)}
-        >
-          {key} ({value})
-        </Button>
-      ))}
-    </ButtonGroup>
-  );
 
   if (total == 0) {
     return (
@@ -126,7 +104,59 @@ export const GlobalSearchPage = ({
           <Typography variant="h6" gutterBottom component="div" align="left">
             {t('photo.tagSuggestions')}
           </Typography>
-          {getButtonsFromFacets(tagFacets)}
+          <ButtonGroup
+            variant="text"
+            aria-label="text button group"
+            orientation="vertical"
+            sx={{ alignItems: 'baseline', width: 1 }}
+          >
+            {Object.entries(tagFacet).map(([key, value]) => (
+              <Button
+                key={key}
+                sx={{
+                  justifyContent: 'left',
+                  textAlign: 'left !important',
+                  maxWidth: 'calc(.25 * (100vw - 28px))',
+                  overflow: 'hidden'
+                }}
+                onClick={() => console.log(key)}
+              >
+                {key} ({value})
+              </Button>
+            ))}
+          </ButtonGroup>
+          <Typography variant="h6" gutterBottom component="div" align="left">
+            {t('photo.sizeSuggestions')}
+          </Typography>
+          <ButtonGroup
+            variant="text"
+            aria-label="text button group"
+            orientation="vertical"
+            sx={{ alignItems: 'baseline', width: 1 }}
+          >
+            {Object.entries(sizeFacet).map(([key, value], index) => {
+              const ranges: Array<string> = key.slice(1, -1).split(',');
+              const keyString =
+                index !== 2
+                  ? `${parseInt(ranges[0])} ko - ${parseInt(ranges[1])} ko
+              (${value})`
+                  : `> ${parseInt(ranges[0])} ko (${value})`;
+              return (
+                <Button
+                  key={key}
+                  sx={{
+                    justifyContent: 'left',
+                    textAlign: 'left',
+                    maxWidth: 'calc(.25 * (100vw - 28px))',
+                    overflow: 'hidden'
+                  }}
+                  onClick={() => console.log(ranges)}
+                >
+                  {keyString}
+                </Button>
+              );
+            })}
+          </ButtonGroup>
         </Grid>
         <Grid item xs>
           <Stack spacing={2}>
