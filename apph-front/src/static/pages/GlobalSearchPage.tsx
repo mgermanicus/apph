@@ -108,7 +108,7 @@ export const GlobalSearchPage = ({
             variant="text"
             aria-label="text button group"
             orientation="vertical"
-            sx={{ alignItems: 'baseline', width: 1 }}
+            sx={{ alignItems: 'baseline', width: 1, mb: '8px' }}
           >
             {Object.entries(tagFacet).map(([key, value]) => (
               <Button
@@ -132,7 +132,7 @@ export const GlobalSearchPage = ({
             variant="text"
             aria-label="text button group"
             orientation="vertical"
-            sx={{ alignItems: 'baseline', width: 1 }}
+            sx={{ alignItems: 'baseline', width: 1, mb: '8px' }}
           >
             {Object.entries(sizeFacet).map(([key, value], index) => {
               const ranges: Array<string> = key.slice(1, -1).split(',');
