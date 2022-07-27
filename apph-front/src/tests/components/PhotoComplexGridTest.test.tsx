@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { PhotoComplexGrid } from '../../static/components/PhotoComplexGrid';
 import { screen } from '@testing-library/dom';
 import { ITable, ITag } from '../../utils';
-import { renderWithWrapper } from '../../setupTests';
+import { renderWithWrapper } from '../utils';
 
 describe('Photo complex grid test', () => {
   const mockPhoto: ITable = {

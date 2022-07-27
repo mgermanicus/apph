@@ -10,7 +10,13 @@ import {
 import { screen } from '@testing-library/dom';
 import AuthService from '../../services/AuthService';
 import Server from '../../services/Server';
-import { mockedUseNavigate, renderWithWrapper } from '../../setupTests';
+import { renderWithWrapper } from '../utils';
+
+const mockedUseNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockedUseNavigate
+}));
 
 describe('Test EditProfile', () => {
   beforeEach(() => {

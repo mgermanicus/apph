@@ -10,7 +10,12 @@ import {
 import Cookies from 'universal-cookie';
 import jwtDecode from 'jwt-decode';
 import { UserProfile } from '../../static/components/UserProfile';
-import { mockedUseNavigate } from '../../setupTests';
+
+const mockedUseNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockedUseNavigate
+}));
 
 describe('UserAvatar Component Tests', () => {
   it('render when user is connected', () => {

@@ -10,7 +10,7 @@ import {
 } from '../utils';
 import cryptoJS from 'crypto-js';
 import Cookies from 'universal-cookie';
-import { renderWithWrapper } from '../../setupTests';
+import { renderWithWrapper } from '../utils';
 
 describe('Tests du composant SignIn.tsx', () => {
   const cookies = new Cookies();

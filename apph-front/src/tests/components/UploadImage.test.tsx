@@ -13,7 +13,7 @@ import {
 } from '../utils';
 import { ITag } from '../../utils';
 import PhotoService from '../../services/PhotoService';
-import { renderWithWrapper } from '../../setupTests';
+import { renderWithWrapper } from '../utils';
 
 jest.setTimeout(10000);
 

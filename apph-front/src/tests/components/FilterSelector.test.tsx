@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 import { clickButton, fillText, selectOptionInListBox } from '../utils';
 import { FilterSelector } from '../../static/components/FilterSelector';
-import { renderWithWrapper } from '../../setupTests';
+import { renderWithWrapper } from '../utils';
 
 describe('Test du fonctionnement des filtres', () => {
   beforeEach(() => {

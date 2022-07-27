@@ -8,7 +8,7 @@ import { screen } from '@testing-library/dom';
 import Cookies from 'universal-cookie';
 import jwtDecode from 'jwt-decode';
 import { DeleteFolder } from '../../static/components/DeleteFolder';
-import { renderWithWrapper } from '../../setupTests';
+import { renderWithWrapper } from '../utils';
 
 describe('Delete Folder tests', () => {
   beforeEach(() => {

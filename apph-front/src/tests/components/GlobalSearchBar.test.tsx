@@ -6,13 +6,17 @@ import {
   triggerRequestFailure,
   triggerRequestSuccess
 } from '../utils';
-import { mockedUseLocation, mockedUseNavigate } from '../../setupTests';
 import { ITable, ITag } from '../../utils';
 import userEvent from '@testing-library/user-event';
 
-mockedUseLocation.mockImplementation(() => {
-  return { pathname: '/search/global/test' };
-});
+const mockedUseNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockedUseNavigate,
+  useLocation: jest.fn().mockImplementation(() => {
+    return { pathname: '/search/global/' };
+  })
+}));
 
 describe('Global search bar test', () => {
   const mockPhoto: ITable = {

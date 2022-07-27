@@ -1,7 +1,13 @@
-import { fireEvent, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import AuthService from '../../services/AuthService';
 import { ITag } from '../../utils';
 import userEvent from '@testing-library/user-event';
+import { ReactElement } from 'react';
+import { wrapper } from './components/CustomWrapper';
+
+export function renderWithWrapper(component: ReactElement) {
+  return render(component, { wrapper });
+}
 
 export function fillText(label: RegExp, value: string) {
   const textInput = screen.getByRole('textbox', { name: label });

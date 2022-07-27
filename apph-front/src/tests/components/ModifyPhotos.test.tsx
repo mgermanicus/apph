@@ -1,7 +1,7 @@
 import { ModifyPhotos } from '../../static/components/ModifyPhotos';
 import { clickButton, fillDate, fillTags } from '../utils';
 import PhotoService from '../../services/PhotoService';
-import { renderWithWrapper } from '../../setupTests';
+import { renderWithWrapper } from '../utils';
 import { screen } from '@testing-library/dom';
 
 describe('ModifyPhotos component tests', () => {
