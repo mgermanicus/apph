@@ -4,6 +4,7 @@ import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FilterRequest;
+import com.viseo.apph.dto.PhotoRequest;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.engine.search.sort.dsl.SearchSortFactory;
 import org.hibernate.search.mapper.orm.Search;
@@ -81,5 +82,11 @@ public class PhotoDao {
                 )
                 .sort(SearchSortFactory::score)
                 .fetch((filterRequest.getPage() - 1) * filterRequest.getPageSize(), filterRequest.getPageSize());
+    }
+
+    public static Photo processPhoto(Photo photo) {
+        //TODO call Lambda
+        String newUrl = "TODO";
+        return new Photo().setUrl(newUrl);
     }
 }

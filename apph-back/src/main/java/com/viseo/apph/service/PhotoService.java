@@ -434,6 +434,30 @@ public class PhotoService {
         return response;
     }
 
+
+    @Transactional
+    public String processPhoto(User user, PhotoRequest photoRequest) throws NotFoundException, IOException {
+        Photo photo = photoDao.getPhoto(photoRequest.getId());
+        if (photo == null)
+            throw new NotFoundException("photo.error.notFound");
+        Photo ProcessedPhoto = PhotoDao.processPhoto(photo)
+                .setTitle(photo.getTitle())
+                .setFormat(photo.getFormat())
+                .setUser(photo.getUser())
+                //TODO  .setSize((photoRequest.getFile().getSize() + .0F) / 1024)
+                .setDescription(photo.getDescription())
+                .setCreationDate(photo.getCreationDate())
+                .setModificationDate(LocalDate.now())
+                .setShootingDate(photo.getShootingDate())
+                .setTags(photo.getTags())
+                .setFolder(photo.getFolder())
+                .setAddress(photo.getAddress())
+                .setLat(photo.getLat())
+                .setLng(photo.getLng());
+        ProcessedPhoto = photoDao.addPhoto(ProcessedPhoto);
+        return s3Dao.upload(photoRequest.getFile(), ProcessedPhoto);
+    }
+
     private class FilterQuery {
         public String query;
         public Queue<String> argQueue;
