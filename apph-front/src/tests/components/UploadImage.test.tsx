@@ -290,7 +290,6 @@ describe('Test UploadImage', () => {
       expect.anything(),
       expect.anything(),
       expect.anything(),
-      expect.anything(),
       expect.anything()
     );
     expect(PhotoService.uploadImage).not.toBeCalledWith(

@@ -121,7 +121,7 @@ public class PhotoTest {
         Location location = new Location().setAddress("Paris, France").setPosition(new Position().setLng(0f).setLat(0f));
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate("05/13/2022").setLocation(gson.toJson(location)).setFolderId(-1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate("05/13/2022").setLocation(gson.toJson(location));
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(robert);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
@@ -550,16 +550,8 @@ public class PhotoTest {
         MockMultipartFile failFile = new MockMultipartFile("file", "orig", null, "bar".getBytes());
         Set<Tag> tags = new HashSet<>();
         Gson gson = new GsonBuilder().create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setDescription("Description").setFile(failFile).setTags(gson.toJson(tags)).setFolderId(-1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setDescription("Description").setFile(failFile).setTags(gson.toJson(tags)).setShootingDate("01/01/2022");
         User user = new User().setLogin("toto").setPassword("password");
-        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
-        when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
-        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
-        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title", Long.class)).thenReturn(typedQueryLong);
-        when(typedQueryLong.setParameter("folder", parentFolder)).thenReturn(typedQueryLong);
-        when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
-        when(typedQueryLong.getSingleResult()).thenReturn(0L);
         when(utils.getUser()).thenReturn(user);
         //WHEN
         ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
@@ -579,7 +571,7 @@ public class PhotoTest {
         Location location = new Location().setAddress("Paris, France").setPosition(new Position().setLng(0f).setLat(0f));
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate("05/13/2022").setLocation(gson.toJson(location)).setFolderId(-1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de robert").setTags(gson.toJson(tags)).setShootingDate("05/13/2022").setLocation(gson.toJson(location));
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(robert);
         when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
         when(typedQueryFolder.setParameter("user", robert)).thenReturn(typedQueryFolder);
@@ -654,85 +646,6 @@ public class PhotoTest {
     }
 
     @Test
-    public void testUploadWithNotExistingFolder() {
-        //GIVEN
-        createPhotoController();
-        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
-        Tag tag = new Tag().setName("+ Add New Tag totoTestTag");
-        Set<Tag> tags = new HashSet<>();
-        tags.add(tag);
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setDescription("Description").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(1);
-        User user = new User().setLogin("toto").setPassword("password");
-        when(utils.getUser()).thenReturn(user);
-        when(em.find(Folder.class, 1L)).thenReturn(null);
-        //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
-        //THEN
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
-        assert messageResponse != null;
-        Assert.assertEquals("upload.error.folderNotExist", messageResponse.getMessage());
-    }
-
-    @Test
-    public void testUploadWithUnauthorizedFolder() {
-        //GIVEN
-        createPhotoController();
-        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
-        Tag tag = new Tag().setName("+ Add New Tag totoTestTag");
-        Set<Tag> tags = new HashSet<>();
-        tags.add(tag);
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setDescription("Description").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(2);
-        User user = new User().setLogin("toto").setPassword("password");
-        User other = (User) new User().setLogin("other").setPassword("Passw0rd").setId(2L);
-        Folder otherFolder = (Folder) new Folder().setParentFolderId(1L).setName("otherFolder").setUser(other).setId(2L);
-        when(utils.getUser()).thenReturn(user);
-        when(em.find(Folder.class, 2L)).thenReturn(otherFolder);
-        //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
-        //THEN
-        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
-        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
-        assert messageResponse != null;
-        Assert.assertEquals("folder.error.accessDenied", messageResponse.getMessage());
-    }
-
-    @Test
-    public void testUploadWithExistingPhotoTitle() {
-        //GIVEN
-        createPhotoController();
-        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
-        Tag tag = new Tag().setName("+ Add New Tag totoTestTag");
-        Set<Tag> tags = new HashSet<>();
-        tags.add(tag);
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setFile(file).setDescription("Photo de toto").setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
-        User user = new User().setLogin("toto").setPassword("password");
-        Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
-        when(utils.getUser()).thenReturn(user);
-        when(em.createQuery("SELECT folder from Folder folder WHERE folder.user = :user AND folder.parentFolderId is null", Folder.class)).thenReturn(typedQueryFolder);
-        when(typedQueryFolder.setParameter("user", user)).thenReturn(typedQueryFolder);
-        when(typedQueryFolder.getSingleResult()).thenReturn(parentFolder);
-        when(em.createQuery("SELECT count(photo) FROM Photo photo WHERE photo.folder = :folder AND photo.title = :title AND photo.format = :format", Long.class)).thenReturn(typedQueryLong);
-        when(typedQueryLong.setParameter("folder", null)).thenReturn(typedQueryLong);
-        when(typedQueryLong.setParameter("title", "totoPhoto")).thenReturn(typedQueryLong);
-        when(typedQueryLong.setParameter("format", ".png")).thenReturn(typedQueryLong);
-        when(typedQueryLong.getSingleResult()).thenReturn(1L);
-        //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.upload(photoRequest);
-        //THEN
-        assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
-        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
-        assert messageResponse != null;
-        Assert.assertEquals("folder.error.titleAlreadyUsed", messageResponse.getMessage());
-    }
-
-    @Test
     public void testUploadWithInvalidTitleLength() {
         //GIVEN
         createPhotoController();
@@ -743,7 +656,7 @@ public class PhotoTest {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         String title = RandomString.make(256);
-        PhotoRequest photoRequest = new PhotoRequest().setTitle(title).setDescription("Description").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle(title).setDescription("Description").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(1L);
         User user = new User().setLogin("toto").setPassword("password");
         when(utils.getUser()).thenReturn(user);
         //WHEN
@@ -766,7 +679,7 @@ public class PhotoTest {
         tags.add(tag);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setDescription("Description").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57")).setFolderId(-1);
+        PhotoRequest photoRequest = new PhotoRequest().setTitle("totoPhoto").setDescription("Description").setFile(file).setTags(gson.toJson(tags)).setShootingDate(gson.toJson("13/05/2022, 12:07:57"));
         User user = new User().setLogin("toto").setPassword("password");
         when(utils.getUser()).thenReturn(user);
         Folder parentFolder = new Folder().setParentFolderId(null).setName("totoRoot").setUser(user);
@@ -1124,11 +1037,11 @@ public class PhotoTest {
         //GIVEN
         createPhotoController();
         User robert = (User) new User().setLogin("Robert").setId(1);
-        PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setFolderId(-1).setId(1);
+        PhotoRequest request = new PhotoRequest().setId(1);
         when(utils.getUser()).thenReturn(robert);
         when(em.find(Photo.class, 1L)).thenReturn(new Photo().setUser(robert));
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.updatePhotoInfo(request);
+        ResponseEntity<IResponseDto> responseEntity = photoController.deletePhotoFolder(request);
         //THEN
         Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
@@ -1139,13 +1052,13 @@ public class PhotoTest {
         createPhotoController();
         User robert = (User) new User().setLogin("Robert").setId(1);
         Folder folder = (Folder) new Folder().setId(1);
-        PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setFolderId(1).setId(42);
+        PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setFolderId(1L).setId(42);
 
         when(utils.getUser()).thenReturn(robert);
         when(em.find(Photo.class, 42L)).thenReturn((Photo) new Photo().setUser(robert).setId(42));
         when(em.find(Folder.class, 1L)).thenReturn(folder);
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.updatePhotoInfo(request);
+        ResponseEntity<IResponseDto> responseEntity = photoController.deletePhotoFolder(request);
         //THEN
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
         assert messageResponse != null;
@@ -1156,9 +1069,9 @@ public class PhotoTest {
     @Test
     public void testUpdatePhotoFolderWithNotExistingPhoto() {
         createPhotoController();
-        PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setFolderId(-1).setId(1);
+        PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setId(1);
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.updatePhotoInfo(request);
+        ResponseEntity<IResponseDto> responseEntity = photoController.deletePhotoFolder(request);
         //THEN
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
@@ -1169,11 +1082,11 @@ public class PhotoTest {
     @Test
     public void testUpdatePhotoFolderWithUnauthorized() {
         createPhotoController();
-        PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setFolderId(-1).setId(1);
+        PhotoRequest request = new PhotoRequest().setDescription("description").setTitle("title").setId(1);
         when(utils.getUser()).thenReturn(new User());
         when(em.find(Photo.class, 1L)).thenReturn(new Photo().setUser((User) new User().setId(42)));
         //WHEN
-        ResponseEntity<IResponseDto> responseEntity = photoController.updatePhotoInfo(request);
+        ResponseEntity<IResponseDto> responseEntity = photoController.deletePhotoFolder(request);
         //THEN
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();

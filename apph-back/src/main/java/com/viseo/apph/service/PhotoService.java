@@ -51,25 +51,9 @@ public class PhotoService {
 
     @Transactional
     public String addPhoto(User user, PhotoRequest photoRequest) throws InvalidFileException, IOException, NotFoundException, UnauthorizedException, ConflictException, ParseException {
-        Folder folder = null;
         if (photoRequest.getTitle().length() > 255 || photoRequest.getDescription().length() > 255) {
             logger.error("title or description over than 255");
             throw new IllegalArgumentException("photo.error.titleOrDescriptionOverChar");
-        }
-        if (photoRequest.getFolderId() >= 0) {
-            folder = folderDao.getFolderById(photoRequest.getFolderId());
-            if (folder == null) {
-                logger.error("Folder with id: " + photoRequest.getFolderId() + " do not exist");
-                throw new NotFoundException("folder.error.notExist");
-            }
-            if (folder.getUser().getId() != user.getId()) {
-                logger.error("User cannot access to the folder");
-                throw new UnauthorizedException("folder.error.accessDenied");
-            }
-        }
-        if (photoDao.existNameInFolder(folder, photoRequest.getTitle(), getFormat(photoRequest.getFile()))) {
-            logger.error("Folder with name: " + photoRequest.getTitle() + " already exist");
-            throw new ConflictException("folder.error.titleAlreadyUsed");
         }
         Set<Tag> allTags = tagService.createListTags(photoRequest.getTags(), user);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
@@ -85,7 +69,7 @@ public class PhotoService {
                 .setModificationDate(LocalDate.now())
                 .setShootingDate(shootingDate)
                 .setTags(allTags)
-                .setFolder(folder)
+                .setFolder(null)
                 .setAddress(location.getAddress())
                 .setLat(location.getPosition().getLat())
                 .setLng(location.getPosition().getLng());
@@ -374,7 +358,7 @@ public class PhotoService {
     }
 
     @Transactional
-    public MessageResponse updatePhotoFolder(User user, PhotoRequest photoRequest) throws UnauthorizedException, NotFoundException {
+    public MessageResponse deletePhotoFolder(User user, PhotoRequest photoRequest) throws UnauthorizedException, NotFoundException {
         Photo photo = photoDao.getPhoto(photoRequest.getId());
         if (photo == null) {
             logger.error("Photo with id: " + photoRequest.getId() + " do not exist");
@@ -384,8 +368,7 @@ public class PhotoService {
             logger.error(user.getFirstname() + " " + user.getLastname() + " cannot access to the photo");
             throw new UnauthorizedException("action.forbidden");
         }
-        Folder folder = folderDao.getFolderById(photoRequest.getFolderId());
-        photo.setFolder(folder);
+        photo.setFolder(null);
         return new MessageResponse("photo.successDelete");
     }
 
