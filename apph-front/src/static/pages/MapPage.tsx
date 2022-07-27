@@ -3,7 +3,7 @@ import { PhotosMap } from '../components/PhotosMap';
 
 export const MapPage = () => {
   return (
-    <Box>
+    <Box component="div" sx={{ height: '91vh', overflow: 'hidden' }}>
       <PhotosMap locations={[]} />
     </Box>
   );

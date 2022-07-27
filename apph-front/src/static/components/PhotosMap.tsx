@@ -5,9 +5,8 @@ import { IPosition } from '../../utils/types/Location';
 
 // https://pigeon-maps.js.org/docs/marker
 export const PhotosMap = ({ locations }: { locations: IPosition[] }) => (
-  <Box component="div">
+  <Box component="div" sx={{ height: '100%' }}>
     <Map
-      height={723}
       defaultCenter={
         locations.length
           ? [locations[0].lat, locations[0].lng]
