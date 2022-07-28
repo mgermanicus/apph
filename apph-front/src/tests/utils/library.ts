@@ -57,6 +57,11 @@ export const spyCookies = () => {
   return spyUpdateUserCookie;
 };
 
+export function deleteTags() {
+  const deleteButtons = screen.getAllByTestId('CancelIcon');
+  deleteButtons.forEach((button) => fireEvent.click(button));
+}
+
 export function fakeSearchRequestParams(
   target: string,
   page: number,

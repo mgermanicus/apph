@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 
 import {
   clickButton,
@@ -14,10 +14,12 @@ describe('Create delete button tests', () => {
     jest.clearAllMocks();
   });
 
-  it('test successful file deleted', () => {
+  it('test successful file deleted', async () => {
     //GIVEN
     const ids = [1];
-    render(<DeleteImage ids={ids} />);
+    const setPage = jest.fn();
+    const setRefresh = jest.fn();
+    render(<DeleteImage ids={ids} setPage={setPage} setRefresh={setRefresh} />);
     clickButton(/delete-photo/i);
     triggerRequestSuccess('{ "message": "Suppression effectuée avec succès" }');
     const spyRequestFunction = triggerRequestSuccess(
@@ -33,6 +35,8 @@ describe('Create delete button tests', () => {
       expect.anything(),
       expect.anything()
     );
+    await waitFor(() => expect(setPage).toBeCalledWith(0));
+    await waitFor(() => expect(setRefresh).toBeCalled());
   });
 
   it('test error handling', () => {

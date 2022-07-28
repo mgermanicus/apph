@@ -60,7 +60,6 @@ export const fakeRequest = (
       errorFunction: (error: string) => void
     ) => {
       if (requestResults) {
-        console.log(URL);
         const result = requestResults[URL];
         if (result.error) {
           errorFunction(result.error);
