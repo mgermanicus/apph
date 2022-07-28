@@ -13,6 +13,7 @@ import { PhotoTable } from '../../static/components/PhotoTable';
 import { DownloadZip } from '../../static/components/DownloadZip';
 import { GridSortModel } from '@mui/x-data-grid';
 import { ModifyPhotos } from '../../static/components/ModifyPhotos';
+import { SendPhotosButton } from '../../static/components/SendPhotosButton';
 
 export const usePhotoTable = (filterList?: IFilterPayload[]) => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -97,6 +98,7 @@ export const usePhotoTable = (filterList?: IFilterPayload[]) => {
         />
         <Diaporama ids={selectedIds} />
         <ModifyPhotos ids={selectedIds} setRefresh={setRefresh} />
+        <SendPhotosButton ids={selectedIds} />
       </ButtonGroup>
       <PhotoTable
         data={data}
