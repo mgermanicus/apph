@@ -4,3 +4,4 @@ export * from './types';
 export * from './theme';
 export * from './token';
 export * from './documentTools';
+export * from './setCookieLanguage';

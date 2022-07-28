@@ -132,6 +132,7 @@
     "successDelete": "Suppression effectuée avec succès",
     "failDelete": "Une erreur est survenue lors de la suppression",
     "successMove": "Le déplacement des photos est terminé.",
+    "sendPhotos": "Envoyer les photos sélectionnées",
     "error": {
       "failChangeFormat": "Erreur lors de la modification du format",
       "notFound": "Photo introuvable",
@@ -163,7 +164,8 @@
     "modify": "Modifier",
     "search": "Rechercher",
     "forbidden": "L'utilisateur n'a pas le droit d'effectuer cette action.",
-    "warning": "Attention"
+    "warning": "Attention",
+    "send": "Envoyer"
   },
   "profile": {
     "edit": "Modifier le profil"
@@ -240,5 +242,10 @@
         "modifySuccess": "Les paramètres ont été modifiées"
       }
     }
+  },
+  "email": {
+    "to": "À",
+    "subject": "Objet",
+    "content": "Contenu"
   }
 }
