@@ -372,7 +372,7 @@ export default class PhotoService {
   }
 
   static search(
-    target: string | undefined,
+    target: string | null,
     page: number,
     pageSize: number,
     handleSuccess: (photoList: ITable[], total: number) => void,

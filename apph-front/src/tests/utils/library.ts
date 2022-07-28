@@ -149,11 +149,6 @@ export function spyRequestSuccessBody(body: string) {
   return spy;
 }
 
-export function fillSearch(label: RegExp, value: string) {
-  const textInput = screen.getByPlaceholderText(label);
-  fireEvent.change(textInput, { target: { value: value } });
-}
-
 export function geocodeRequestResults(
   query: string,
   location: ILocation
@@ -193,4 +188,14 @@ export function fakeSearchRequestParams(
     })
   };
   return { URL: `/photo/search`, requestOptions };
+}
+
+export function fakeFuzzySearchRequestParams(target: string) {
+  const requestOptions = {
+    method: 'POST',
+    body: JSON.stringify({
+      target
+    })
+  };
+  return { URL: `/photo/search/fuzzy`, requestOptions };
 }

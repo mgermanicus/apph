@@ -40,7 +40,6 @@ export const GlobalSearchBar = (): JSX.Element => {
   const location = useLocation();
   const [options, setOptions] = useState<{ title: string }[]>([]);
   const [inputValue, setInputValue] = useState('');
-  const [loading, setLoading] = React.useState<boolean>(false);
   const [message, setMessage] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [severity, setSeverity] = useState<AlertColor>();
@@ -62,48 +61,34 @@ export const GlobalSearchBar = (): JSX.Element => {
     }
   };
 
+  const traitText = (text: string, matches: Set<string>) => {
+    const regex = new RegExp(`${inputValue}`, 'gi');
+    text
+      .toLowerCase()
+      .replace(/[^a-z\s\-_]/gi, '')
+      .split(' ')
+      .filter((s) => s.match(regex))
+      .forEach((s) => matches.add(s));
+  };
+
   const fuzzyWord = () => {
     if (inputValue && inputValue?.length >= 2) {
-      setLoading(true);
       PhotoService.searchFuzzy(
         inputValue,
         (photoList) => {
           const matches: Set<string> = new Set();
-          const regex = new RegExp(`${inputValue}`, 'gi');
           photoList.forEach((photo) => {
-            photo.title
-              .toLowerCase()
-              .replace(/[^a-z\s\-_]/gi, '')
-              .split(' ')
-              .filter((s) => s.match(regex))
-              .forEach((s) => matches.add(s));
-            photo.location.address
-              .toLowerCase()
-              .replace(/[^a-z\s\-_]/gi, '')
-              .split(' ')
-              .filter((s) => s.match(regex))
-              .forEach((s) => matches.add(s));
-            photo.description
-              .toLowerCase()
-              .replace(/[^a-z\s\-_]/gi, '')
-              .split(' ')
-              .filter((s) => s.match(regex))
-              .forEach((s) => matches.add(s));
-            photo.tags.forEach((tag) =>
-              tag.name
-                .toLowerCase()
-                .replace(/[^a-z\s\-_]/gi, '')
-                .split(' ')
-                .filter((s) => s.match(regex))
-                .forEach((s) => matches.add(s))
-            );
+            traitText(photo.title, matches);
+            traitText(photo.location.address, matches);
+            traitText(photo.description, matches);
+            photo.tags.forEach((tag) => traitText(tag.name, matches));
           });
           const titleMatches: { title: string }[] = [];
           matches.forEach((s) => titleMatches.push({ title: s }));
           setOptions(titleMatches);
         },
         (error: IMessage) => traitError(error)
-      ).finally(() => setLoading(false));
+      );
     } else {
       setOptions([]);
     }
@@ -141,7 +126,6 @@ export const GlobalSearchBar = (): JSX.Element => {
           }}
           id="controllable-states-demo"
           options={options}
-          loading={loading}
           sx={(theme) => ({
             minWidth: '15ch',
             '.MuiInputLabel-root': {
@@ -180,7 +164,8 @@ export const GlobalSearchBar = (): JSX.Element => {
                   navigate({
                     pathname: '/search/global/',
                     search: `?${createSearchParams({
-                      params: option.title
+                      params: option.title,
+                      size: '10'
                     })}`
                   });
                 }}
