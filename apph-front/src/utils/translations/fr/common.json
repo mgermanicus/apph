@@ -246,6 +246,12 @@
   "email": {
     "to": "À",
     "subject": "Objet",
-    "content": "Contenu"
+    "content": "Contenu",
+    "success": {
+      "sentWithAttachment": "Email avec pièce jointe envoyé"
+    },
+    "error": {
+      "sentWithAttachment": "Email avec pièce jointe n'a pas pu être envoyé"
+    }
   }
 }

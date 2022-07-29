@@ -246,6 +246,12 @@
   "email": {
     "to": "To",
     "subject": "Subject",
-    "content": "Content"
+    "content": "Content",
+    "success": {
+      "sentWithAttachment": "Email with attachment sent"
+    },
+    "error": {
+      "sentWithAttachment": "Email with attachment could not be sent"
+    }
   }
 }

@@ -62,9 +62,6 @@ export const SendPhotosButton = ({ ids }: { ids: number[] }) => {
         (error) => openSnackBar('error', error)
       );
     }
-    console.log(recipient);
-    console.log(subject);
-    console.log(emailContent);
   };
 
   return (
