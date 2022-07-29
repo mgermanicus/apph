@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import PhotoService from '../../services/PhotoService';
 import { IMessage, ITable } from '../../utils';
 import {
@@ -26,6 +26,7 @@ export const GlobalSearchPage = ({
 }): JSX.Element => {
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
   const [data, setData] = useState<ITable[]>([]);
   const [total, setTotal] = React.useState<number>(0);
   const [page, setPage] = React.useState<number>(1);
@@ -34,7 +35,7 @@ export const GlobalSearchPage = ({
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [severity, setSeverity] = useState<AlertColor>();
   const [tagFacet, setTagFacet] = useState<Record<string, number>>({});
-  const [sizeFacet, setSizeFacet] = useState<Record<any, number>>({});
+  const [sizeFacet, setSizeFacet] = useState<Record<never, number>>({});
 
   const traitError = (error: IMessage) => {
     setMessage(error.message);
@@ -51,18 +52,27 @@ export const GlobalSearchPage = ({
       (photoList, totalHits, facets) => {
         setData(photoList);
         setTotal(totalHits);
-        setTagFacet(facets.tagFacet);
-        setSizeFacet(facets.sizeFacet);
+        if (facets) {
+          setTagFacet(facets.tagFacet);
+          setSizeFacet(facets.sizeFacet);
+        }
       },
       (error: IMessage) => traitError(error)
     ).finally(() => {
       setLoading(false);
     });
-  }, [location, page]);
+  }, [location, page, location?.search]);
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
     window.scrollTo(0, 0);
+  };
+
+  const addSearchParameter = (key: string, facet: string) => {
+    navigate({
+      pathname: '/search/global/',
+      search: location.search + `&${key}=${facet}`
+    });
   };
 
   if (total == 0) {
@@ -110,18 +120,18 @@ export const GlobalSearchPage = ({
             orientation="vertical"
             sx={{ alignItems: 'baseline', width: 1, mb: '8px' }}
           >
-            {Object.entries(tagFacet).map(([key, value]) => (
+            {Object.entries(tagFacet)?.map(([tag, nbrOfEntries]) => (
               <Button
-                key={key}
+                key={tag}
                 sx={{
                   justifyContent: 'left',
                   textAlign: 'left !important',
                   maxWidth: 'calc(.25 * (100vw - 28px))',
                   overflow: 'hidden'
                 }}
-                onClick={() => console.log(key)}
+                onClick={() => addSearchParameter('tag', tag)}
               >
-                {key} ({value})
+                {tag} ({nbrOfEntries})
               </Button>
             ))}
           </ButtonGroup>
@@ -134,23 +144,28 @@ export const GlobalSearchPage = ({
             orientation="vertical"
             sx={{ alignItems: 'baseline', width: 1, mb: '8px' }}
           >
-            {Object.entries(sizeFacet).map(([key, value], index) => {
-              const ranges: Array<string> = key.slice(1, -1).split(',');
+            {Object.entries(sizeFacet).map(([size, nbrOfEntries], index) => {
+              const range: Array<string> = size
+                .slice(1, -1)
+                .split(',')
+                .map((value) => `${parseInt(value)}`);
               const keyString =
                 index !== 2
-                  ? `${parseInt(ranges[0])} ko - ${parseInt(ranges[1])} ko
-              (${value})`
-                  : `> ${parseInt(ranges[0])} ko (${value})`;
+                  ? `${range[0]} ko - ${range[1]} ko
+              (${nbrOfEntries})`
+                  : `> ${range[0]} ko (${nbrOfEntries})`;
               return (
                 <Button
-                  key={key}
+                  key={size}
                   sx={{
                     justifyContent: 'left',
                     textAlign: 'left',
                     maxWidth: 'calc(.25 * (100vw - 28px))',
                     overflow: 'hidden'
                   }}
-                  onClick={() => console.log(ranges)}
+                  onClick={() => {
+                    addSearchParameter('size', `${range[0]}-${range[1]}`);
+                  }}
                 >
                   {keyString}
                 </Button>

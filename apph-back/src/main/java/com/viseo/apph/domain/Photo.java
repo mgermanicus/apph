@@ -29,7 +29,7 @@ public class Photo extends BaseEntity {
 
     LocalDate shootingDate;
 
-    @GenericField(searchable = Searchable.NO, aggregable = Aggregable.YES)
+    @GenericField(aggregable = Aggregable.YES)
     float size;
 
     @FullTextField

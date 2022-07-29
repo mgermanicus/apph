@@ -74,20 +74,27 @@ public class PhotoDao {
                 .getResultList();
     }
 
-    public SearchResult<Photo> searchPhotoByTargetAndUser(FilterRequest filterRequest, User user) {
+    public SearchResult<Photo> searchPhotoByTargetAndUser(FilterRequest filterRequest, User user, String defaultParams, List<String> tagsParams, Collection<Range<Float>> rangesParams) {
         SearchSession searchSession = Search.session(em);
         SearchScope<Photo> scope = searchSession.scope(Photo.class);
         return searchSession.search(Photo.class)
-                .where(scope
-                        .predicate()
-                        .bool()
-                        .must(scope.predicate().match().field("user.id")
-                                .matching(user.getId()))
-                        .must(scope.predicate().match()
-                                .fields("title", "description", "tags.name", "address")
-                                .matching(filterRequest.getTarget()))
-                        .toPredicate()
-                )
+                .where(f -> f.bool(b -> {
+                    b.must(f.match().field("user.id")
+                            .matching(user.getId()));
+                    b.must(scope.predicate().match()
+                            .fields("title", "description", "tags.name", "address")
+                            .matching(defaultParams));
+                    for (String tag : tagsParams) {
+                        b.should(f.match()
+                                .field("tags.name")
+                                .matching(tag));
+                    }
+                    for (Range<Float> range : rangesParams) {
+                        b.should(f.range()
+                                .field("size")
+                                .range(range));
+                    }
+                }))
                 .fetch((filterRequest.getPage() - 1) * filterRequest.getPageSize(), filterRequest.getPageSize());
     }
 

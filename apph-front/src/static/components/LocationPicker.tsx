@@ -34,7 +34,7 @@ export const LocationPicker = ({
         (locations) => {
           setSuggestions(locations);
         },
-        (errorMessage) => console.log(errorMessage)
+        (errorMessage) => console.error(errorMessage)
       ),
     500
   );

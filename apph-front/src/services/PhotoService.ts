@@ -378,7 +378,7 @@ export default class PhotoService {
     handleSuccess: (
       photoList: ITable[],
       total: number,
-      tagFacets: Record<string, Record<any, number>>
+      tagFacets: Record<string, Record<never, number>>
     ) => void,
     handleError: (errorMessage: IMessage) => void
   ) {
@@ -407,36 +407,6 @@ export default class PhotoService {
     };
     return Server.request(
       `/photo/search`,
-      requestOptions,
-      successFunction,
-      errorFunction
-    );
-  }
-
-  static searchFuzzy(
-    target: string,
-    handleSuccess: (photoList: ITable[]) => void,
-    handleError: (errorMessage: IMessage) => void
-  ) {
-    const userInfos = cookies.get('user');
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + userInfos?.token
-      },
-      body: JSON.stringify({
-        target
-      })
-    };
-    const successFunction = (results: string) => {
-      handleSuccess(JSON.parse(results).photoList);
-    };
-    const errorFunction = (errorMessage: string) => {
-      handleError(JSON.parse(errorMessage));
-    };
-    return Server.request(
-      `/photo/search/fuzzy`,
       requestOptions,
       successFunction,
       errorFunction

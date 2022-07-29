@@ -416,13 +416,34 @@ public class PhotoService {
 
     @Transactional
     public GlobalSearchResponse search(FilterRequest filterRequest, User user) {
-        SearchResult<Photo> res = photoDao.searchPhotoByTargetAndUser(filterRequest, user);
+        String[] params = filterRequest.getTarget().substring(1).split("&");
+        StringBuilder defaultParams = new StringBuilder();
+        ArrayList<String> tagsParams = new ArrayList<>();
+        Collection<Range<Float>> rangesParams = new ArrayList<>();
+        for (String param : params) {
+            String name = param.split("=")[0];
+            String value = param.split("=")[1];
+            switch (name) {
+                case "params":
+                    defaultParams.append(value);
+                    break;
+                case "tag":
+                    tagsParams.add(value);
+                    break;
+                case "size":
+                    rangesParams.add(Range.between(Float.parseFloat(value.split("-")[0]), Float.parseFloat(value.split("-")[1])));
+                    break;
+                default:
+                    break;
+            }
+        }
+        SearchResult<Photo> res = photoDao.searchPhotoByTargetAndUser(filterRequest, user, defaultParams.toString(), tagsParams, rangesParams);
         long totalHits = res.total().hitCount();
         List<Photo> userPhotos = res.hits();
         float maxFileSize = settingDao.getSetting().getUploadSize() * 1024f;
         Collection<Range<Float>> ranges = new ArrayList<>();
-        for(float i = 0; i < maxFileSize ; i += maxFileSize/3) {
-            ranges.add(Range.between(i, i + maxFileSize/3));
+        for (float i = 0; i < maxFileSize; i += maxFileSize / 3) {
+            ranges.add(Range.between(i, i + maxFileSize / 3));
         }
         Map<String, Map<?, Long>> facets = photoDao.getSearchFacets(filterRequest, user, ranges);
         GlobalSearchResponse response = new GlobalSearchResponse();
@@ -432,16 +453,6 @@ public class PhotoService {
                 )
         );
         response.setTotal(totalHits).setTagFacets(facets);
-        return response;
-    }
-
-    @Transactional
-    public PhotoListResponse searchFuzzy(FilterRequest filterRequest, User user) {
-        List<Photo> userPhotos = photoDao.searchPhotoByFuzzyTargetAndUser(filterRequest, user).hits();
-        PhotoListResponse response = new PhotoListResponse();
-        userPhotos.forEach(photo ->
-                response.addPhoto(new PhotoResponse(photo))
-        );
         return response;
     }
 
