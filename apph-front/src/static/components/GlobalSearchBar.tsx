@@ -57,7 +57,7 @@ export const GlobalSearchBar = (): JSX.Element => {
 
   const handleSubmit = () => {
     navigate({
-      pathname: '/search/global/',
+      pathname: '/search/global',
       search: `?${createSearchParams({
         params: content
       })}`

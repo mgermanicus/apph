@@ -134,7 +134,7 @@ export const Header = (): JSX.Element => {
           </Drawer>
           <GlobalSearchBar />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            APPH
+            Mouahaha vous ne trouverez jamais ce message caché
           </Typography>
           <ToggleButtonGroup
             color="standard"

@@ -422,7 +422,31 @@ public class PhotoService {
 
     @Transactional
     public GlobalSearchResponse search(FilterRequest filterRequest, User user) {
-        SearchResult<Photo> res = photoDao.searchPhotoByTargetAndUser(filterRequest, user);
+        String[] params = filterRequest.getTarget().substring(1).split("&");
+        StringBuilder defaultParams = new StringBuilder();
+        ArrayList<String> tagsParams = new ArrayList<>();
+        Collection<Range<Float>> rangesParams = new ArrayList<>();
+        for (String param: params) {
+            String name = param.split("=")[0];
+            String value = param.split("=")[1];
+            switch(name) {
+                case "params":
+                    defaultParams.append(value);
+                    break;
+                case "tag":
+                    tagsParams.add(value);
+                    break;
+                case "size":
+                    rangesParams.add(Range.between(Float.parseFloat(value.split("-")[0]), Float.parseFloat(value.split("-")[1])));
+                    break;
+                default:
+                    break;
+            }
+        }
+        System.out.println("default params : " + defaultParams);
+        System.out.println("tags params : " + tagsParams);
+        System.out.println("sizes params : " + rangesParams);
+        SearchResult<Photo> res = photoDao.searchPhotoByTargetAndUser(filterRequest, user, defaultParams.toString(), tagsParams, rangesParams);
         long totalHits = res.total().hitCount();
         List<Photo> userPhotos = res.hits();
         float maxFileSize = settingDao.getSetting().getUploadSize() * 1024f;
