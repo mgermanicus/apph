@@ -15,8 +15,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../../services/AuthService';
 import { useTranslation } from 'react-i18next';
-import { setCookieLanguage } from '../../utils/setCookieLanguage';
-import { flagStyles } from '../../utils';
+import { emailValidator, flagStyles, setCookieLanguage } from '../../utils';
 
 function Copyright(props: { sx: SxProps }) {
   return (
@@ -48,8 +47,6 @@ export const SignUp = () => {
     const confirmPassword = data.get('confirmPassword')?.toString();
     const firstName = data.get('firstName')?.toString();
     const lastName = data.get('lastName')?.toString();
-    const emailValidator =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!emailValidator.test(email ? email : '')) {
       setErrorMessage('signup.error.email');
     } else if (password && confirmPassword && password != confirmPassword) {

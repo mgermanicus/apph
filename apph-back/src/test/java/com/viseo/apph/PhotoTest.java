@@ -72,8 +72,6 @@ public class PhotoTest {
     @Mock
     S3Client s3Client;
 
-    long zipMaxSize = 50;
-
     PhotoController photoController;
 
     private void createPhotoController() {
@@ -859,7 +857,6 @@ public class PhotoTest {
     @Test
     public void testDownloadZipLarge() {
         //GIVEN
-        zipMaxSize = 0;
         createPhotoController();
         long[] ids = {1L, 1L};
         User user = (User) new User().setLogin("test@test").setId(2);
