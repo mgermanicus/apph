@@ -27,13 +27,6 @@ public class EmailController {
     SesService sesService;
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    @PostMapping("/send")
-    public ResponseEntity<String> sendExample() {
-        User user = utils.getUser();
-        return ResponseEntity.ok(sesService.sendVerifyRegister(user));
-    }
-
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/sendAttachment")
     public ResponseEntity<IResponseDto> sendAttachment(@RequestBody EmailRequest emailRequest) {
         User user = utils.getUser();

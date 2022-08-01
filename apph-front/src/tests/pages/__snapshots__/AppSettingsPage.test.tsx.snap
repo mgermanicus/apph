@@ -185,11 +185,8 @@ Object {
             class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-bdhsul-MuiTypography-root-MuiDialogTitle-root"
             id=":r2:"
           />
-          <div
-            class="MuiDialogContent-root css-ypiqx9-MuiDialogContent-root"
-          />
           <p
-            class="MuiDialogContentText-root MuiTypography-root MuiTypography-body1 css-qfso29-MuiTypography-root-MuiDialogContentText-root"
+            class="MuiDialogContentText-root MuiTypography-root MuiTypography-body1 css-pjbfgn-MuiTypography-root-MuiDialogContentText-root"
           >
             admin.setting.warningUpdate
           </p>

@@ -20,16 +20,6 @@ public class SesService {
     @Autowired
     PhotoService photoService;
 
-    public String sendVerifyRegister(User user) {
-        String bodyHTML = "<html>" + "<head></head>" + "<body>" + "<h1>Hello please !</h1>"
-                + "<p> Dear APPH Customer.</p><br>"
-                + "<p>Please click on the button to complete the verification process</p><br>"
-                + "<a href=\"http://stackoverflow.com\"><button>VERIFY YOUR EMAIL ADDRESS</button></a>"
-                + "</body>" + "</html>";
-        sesDao.sendEmail("min.sun@viseo.com", user.getLogin(), "VERIFY EMAIL ADDRESS", bodyHTML);
-        return "ok send";
-    }
-
     public IResponseDto SendMessageAttachment(User user, String recipient, String subject, String content, long[] ids) throws MaxSizeExceededException, UnauthorizedException, IOException {
         String bodyHTML = "<html>" + "<head></head>" + "<body>"
                 + "<h1>" + subject + "</h1>"
