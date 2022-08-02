@@ -1287,4 +1287,53 @@ public class PhotoTest {
         assert photoListResponse != null;
         assertEquals(1L, photoListResponse.getTotal());
     }
+
+    @Test
+    public void testSearchFuzzy() {
+        //GIVEN
+        createPhotoController();
+        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        List<Photo> listPhoto = new ArrayList<>();
+        listPhoto.add(new Photo());
+        FilterRequest filterRequest = new FilterRequest().setTarget("photo");
+        when(utils.getUser()).thenReturn(robert);
+        ResponseEntity<IResponseDto> responseEntity;
+        SearchSession searchSession = mock(SearchSession.class);
+        SearchQuerySelectStep searchQuerySelectStep = mock(SearchQuerySelectStep.class);
+        SearchQueryOptionsStep stepSearchQueryOptionsStep = mock(SearchQueryOptionsStep.class);
+        SearchPredicate searchPredicate = mock(SearchPredicate.class);
+        SearchPredicateFactory searchPredicateFactory = mock(SearchPredicateFactory.class);
+        MatchPredicateFieldStep matchPredicateFieldStep = mock(MatchPredicateFieldStep.class);
+        MatchPredicateFieldMoreStep matchPredicateFieldMoreStep = mock(MatchPredicateFieldMoreStep.class);
+        MatchPredicateOptionsStep matchPredicateOptionsStep = mock(MatchPredicateOptionsStep.class);
+        BooleanPredicateClausesStep booleanPredicateClausesStep = mock(BooleanPredicateClausesStep.class);
+        SearchScope scope = mock(SearchScope.class);
+        SearchResult res = mock(SearchResult.class);
+        try (MockedStatic<Search> search = Mockito.mockStatic(Search.class)) {
+            search.when(() -> Search.session(em)).thenReturn(searchSession);
+            when(searchSession.search(Photo.class)).thenReturn(searchQuerySelectStep);
+            when(searchSession.scope(Photo.class)).thenReturn(scope);
+            when(scope.predicate()).thenReturn(searchPredicateFactory);
+            when(searchPredicateFactory.bool()).thenReturn(booleanPredicateClausesStep);
+            when(matchPredicateOptionsStep.fuzzy()).thenReturn(matchPredicateOptionsStep);
+            doReturn(booleanPredicateClausesStep).when(booleanPredicateClausesStep).must(matchPredicateOptionsStep);
+            when(searchPredicateFactory.match()).thenReturn(matchPredicateFieldStep);
+            doReturn(matchPredicateFieldMoreStep).when(matchPredicateFieldStep).field(anyString());
+            doReturn(matchPredicateFieldMoreStep).when(matchPredicateFieldStep).fields(anyString(), anyString(), anyString(), anyString());
+            doReturn(matchPredicateOptionsStep).when(matchPredicateFieldMoreStep).matching(anyString());
+            doReturn(matchPredicateOptionsStep).when(matchPredicateFieldMoreStep).matching(anyLong());
+            when(booleanPredicateClausesStep.toPredicate()).thenReturn(searchPredicate);
+            when(searchQuerySelectStep.where(searchPredicate)).thenReturn(stepSearchQueryOptionsStep);
+            when(stepSearchQueryOptionsStep.sort(any(Function.class))).thenReturn(stepSearchQueryOptionsStep);
+            when(stepSearchQueryOptionsStep.fetchAll()).thenReturn(res);
+            when(res.hits()).thenReturn(listPhoto);
+            //WHEN
+            responseEntity = photoController.searchFuzzy(filterRequest);
+        }
+        //THEN
+        PhotoListResponse photoListResponse = (PhotoListResponse) responseEntity.getBody();
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        assert photoListResponse != null;
+        assertEquals(1, photoListResponse.getPhotoList().size());
+    }
 }

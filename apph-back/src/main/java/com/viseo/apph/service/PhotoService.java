@@ -417,6 +417,16 @@ public class PhotoService {
         return response;
     }
 
+    @Transactional
+    public PhotoListResponse searchFuzzy(FilterRequest filterRequest, User user) {
+        List<Photo> userPhotos = photoDao.searchPhotoByFuzzyTargetAndUser(filterRequest, user).hits();
+        PhotoListResponse response = new PhotoListResponse();
+        userPhotos.forEach(photo ->
+                response.addPhoto(new PhotoResponse(photo))
+        );
+        return response;
+    }
+
     private class FilterQuery {
         public String query;
         public Queue<Object> argQueue;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import PhotoService from '../../services/PhotoService';
 import { IMessage, ITable } from '../../utils';
 import {
@@ -29,10 +29,12 @@ export const GlobalSearchPage = ({
   const [data, setData] = useState<ITable[]>([]);
   const [total, setTotal] = React.useState<number>(0);
   const [page, setPage] = React.useState<number>(1);
+  const [size, setSize] = React.useState<number>(pageSize);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [message, setMessage] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [severity, setSeverity] = useState<AlertColor>();
+  const [searchParams] = useSearchParams();
 
   const traitError = (error: IMessage) => {
     setMessage(error.message);
@@ -40,12 +42,11 @@ export const GlobalSearchPage = ({
     setSeverity('error');
   };
 
-  useEffect(() => {
-    setLoading(true);
+  const search = () => {
     PhotoService.search(
-      location?.search.replace('%2', '/'),
+      searchParams.get('params'),
       page,
-      pageSize,
+      size,
       (photoList, totalHits) => {
         setData(photoList);
         setTotal(totalHits);
@@ -54,9 +55,21 @@ export const GlobalSearchPage = ({
     ).finally(() => {
       setLoading(false);
     });
-  }, [location, page]);
+  };
 
-  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  useEffect(() => {
+    setSize(
+      searchParams.get('size') === null
+        ? pageSize
+        : Number(searchParams.get('size'))
+    );
+  }, [location]);
+
+  useEffect(() => {
+    search();
+  }, [size, location, page]);
+
+  const handleChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
     window.scrollTo(0, 0);
   };
@@ -116,7 +129,7 @@ export const GlobalSearchPage = ({
           </Stack>
           <Stack spacing={2}>
             <Pagination
-              count={Math.ceil(total / pageSize)}
+              count={Math.ceil(total / size)}
               showFirstButton
               showLastButton
               size="large"
