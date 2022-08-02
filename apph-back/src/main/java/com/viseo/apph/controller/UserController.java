@@ -2,12 +2,14 @@ package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.IResponseDto;
+import com.viseo.apph.dto.MessageResponse;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.dto.UserResponse;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.SettingService;
 import com.viseo.apph.service.UserService;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -57,5 +59,27 @@ public class UserController {
     @GetMapping("/getSettings")
     public ResponseEntity<IResponseDto> getSettings() {
         return ResponseEntity.ok(settingService.getSettings());
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping("/contact/add")
+    public ResponseEntity<IResponseDto> addContact(@RequestBody UserRequest request) {
+        try {
+            User user = utils.getUser();
+            return ResponseEntity.ok(userService.addContact(user, request));
+        } catch (NoResultException nre) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("user.error.notExist"));
+        }
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping("/contact/get")
+    public ResponseEntity<IResponseDto> getContacts(){
+        try {
+            User user = utils.getUser();
+            return ResponseEntity.ok(userService.getContacts(user));
+        } catch (NoResultException nre) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("user.error.notExist"));
+        }
     }
 }

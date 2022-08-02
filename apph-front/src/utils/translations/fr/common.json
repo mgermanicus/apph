@@ -30,6 +30,14 @@
     "lastName": "Nom",
     "password": "Mot de passe",
     "passwordConfirmation": "Confirmation du mot de passe",
+    "contact": {
+      "new": "Nouveau Contact",
+      "add": "Ajouter",
+      "error": {
+        "fillInput": "Veuillez saisir un e-mail.",
+        "email": "E-mail invalide."
+      }
+    },
     "error": {
       "passwordNotMatch": "Les mots de passe de correspondent pas",
       "notAuthenticated": "L'utilisateur n'est pas connecté",

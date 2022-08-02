@@ -7,6 +7,7 @@ import com.viseo.apph.domain.ERole;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Role;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.UserListResponse;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.dto.UserResponse;
 import com.viseo.apph.exception.NotFoundException;
@@ -92,5 +93,29 @@ public class UserService {
                 .setLogin(user.getLogin())
                 .setFirstname(user.getFirstname())
                 .setLastname(user.getLastname())).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public UserListResponse addContact(User user, UserRequest request) {
+        User contact = userDao.getUserByLogin(request.getLogin());
+        User userEntity = userDao.getUserByLogin(user.getLogin());
+        userEntity.addContact(contact);
+        UserListResponse response = new UserListResponse();
+        response.setUserList(userEntity.getContacts().stream().map((userContact) -> new UserResponse()
+                .setLogin(userContact.getLogin())
+                .setFirstname(userContact.getFirstname())
+                .setLastname(userContact.getLastname())).collect(Collectors.toList()));
+        return response;
+    }
+
+    @Transactional
+    public UserListResponse getContacts(User user) {
+        User userEntity = userDao.getUserByLogin(user.getLogin());
+        UserListResponse response = new UserListResponse();
+        response.setUserList(userEntity.getContacts().stream().map((userContact) -> new UserResponse()
+                .setLogin(userContact.getLogin())
+                .setFirstname(userContact.getFirstname())
+                .setLastname(userContact.getLastname())).collect(Collectors.toList()));
+        return response;
     }
 }

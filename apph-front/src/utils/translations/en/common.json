@@ -30,6 +30,14 @@
     "lastName": "Last name",
     "password": "Password",
     "passwordConfirmation": "Confirm your password",
+    "contact": {
+      "new": "New Contact",
+      "add": "Add",
+      "error": {
+        "fillInput": "Please enter an email.",
+        "email": "Invalid email."
+      }
+    },
     "error": {
       "passwordNotMatch": "The passwords do not match",
       "notAuthenticated": "The user is not authenticated",

@@ -69,4 +69,52 @@ export default class UserService {
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
+
+  static getContact(
+    handleSuccess: (list: IUser[]) => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = '/user/contact/get';
+    const userInfos = cookies.get('user');
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + userInfos?.token
+      }
+    };
+    const successFunction = (val: string) => {
+      handleSuccess(JSON.parse(val).userList);
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
+
+  static addContact(
+    email: string,
+    handleSuccess: (list: IUser[]) => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = '/user/contact/add';
+    const userInfos = cookies.get('user');
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + userInfos?.token
+      },
+      body: JSON.stringify({
+        email
+      })
+    };
+    const successFunction = (val: string) => {
+      handleSuccess(JSON.parse(val).userList);
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
 }
