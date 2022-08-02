@@ -1,16 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { clickButton, fillText, selectOptionInListBox } from '../utils';
-import { wrapper } from '../utils/components/CustomWrapper';
 import { FilterSelector } from '../../static/components/FilterSelector';
-
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    };
-  }
-}));
+import { renderWithWrapper } from '../../setupTests';
 
 describe('Test du fonctionnement des filtres', () => {
   beforeEach(() => {
@@ -21,9 +12,9 @@ describe('Test du fonctionnement des filtres', () => {
     //GIVEN
     const onError = () => null;
     const onFilterPhoto = () => null;
-    render(<FilterSelector onError={onError} onFilterPhoto={onFilterPhoto} />, {
-      wrapper
-    });
+    renderWithWrapper(
+      <FilterSelector onError={onError} onFilterPhoto={onFilterPhoto} />
+    );
     //WHEN
     clickButton(/filter.add/);
     //THEN
@@ -34,9 +25,9 @@ describe('Test du fonctionnement des filtres', () => {
     //GIVEN
     const onError = () => null;
     const onFilterPhoto = () => null;
-    render(<FilterSelector onError={onError} onFilterPhoto={onFilterPhoto} />, {
-      wrapper
-    });
+    renderWithWrapper(
+      <FilterSelector onError={onError} onFilterPhoto={onFilterPhoto} />
+    );
     //WHEN
     clickButton(/filter.delete/);
     //THEN
@@ -47,9 +38,8 @@ describe('Test du fonctionnement des filtres', () => {
     //GIVEN
     const spyFilterPhoto = jest.fn();
     const spyOpenAlert = jest.fn();
-    render(
-      <FilterSelector onFilterPhoto={spyFilterPhoto} onError={spyOpenAlert} />,
-      { wrapper }
+    renderWithWrapper(
+      <FilterSelector onFilterPhoto={spyFilterPhoto} onError={spyOpenAlert} />
     );
     const fieldInput = screen.getByLabelText(/filter.field/);
     const operatorInput = screen.getByLabelText(/filter.operator/);
@@ -73,13 +63,12 @@ describe('Test du fonctionnement des filtres', () => {
     const spyFilterPhoto = jest.fn();
     const spyOpenAlert = jest.fn();
 
-    const tree = render(
+    const tree = renderWithWrapper(
       <FilterSelector
         tagName={'Tag_1'}
         onFilterPhoto={spyFilterPhoto}
         onError={spyOpenAlert}
-      />,
-      { wrapper }
+      />
     );
     expect(tree).toMatchSnapshot();
   });

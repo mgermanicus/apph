@@ -13,20 +13,6 @@ import cryptoJS from 'crypto-js';
 import { useNavigate } from 'react-router-dom';
 import { screen } from '@testing-library/dom';
 
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    };
-  }
-}));
-const mockedUsedNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockedUsedNavigate
-}));
-
 describe('Tests du composant SignUp.tsx', () => {
   beforeEach(() => {
     jest.clearAllMocks();

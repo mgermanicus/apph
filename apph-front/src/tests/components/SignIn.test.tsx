@@ -1,6 +1,5 @@
 import { SignIn } from '../../static/components/SignIn';
 import * as React from 'react';
-import { render } from '@testing-library/react';
 import {
   clickButton,
   fillPassword,
@@ -11,16 +10,7 @@ import {
 } from '../utils';
 import cryptoJS from 'crypto-js';
 import Cookies from 'universal-cookie';
-import { wrapper } from '../utils/components/CustomWrapper';
-
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    };
-  }
-}));
+import { renderWithWrapper } from '../../setupTests';
 
 describe('Tests du composant SignIn.tsx', () => {
   const cookies = new Cookies();
@@ -37,7 +27,7 @@ describe('Tests du composant SignIn.tsx', () => {
     //GIVEN
     cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
     triggerRequestSuccess(JWS_TOKEN);
-    render(<SignIn />, { wrapper });
+    renderWithWrapper(<SignIn />);
     //WHEN
     fillText(/user.email/, 'test@viseo.com');
     fillPassword(/user.password/, 'P@ssW0rd');
@@ -52,7 +42,7 @@ describe('Tests du composant SignIn.tsx', () => {
     //GIVEN
     cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
     triggerRequestFailure('Test error');
-    render(<SignIn />, { wrapper });
+    renderWithWrapper(<SignIn />);
     //WHEN
     fillText(/user.email/, 'test@viseo.com');
     fillPassword(/user.password/, 'P@ssW0rd');
@@ -65,7 +55,7 @@ describe('Tests du composant SignIn.tsx', () => {
     //GIVEN
     cryptoJS.SHA256('P@ssW0rd').toString = jest.fn(() => 'P@ssW0rd');
     triggerRequestSuccess(JWS_TOKEN);
-    render(<SignIn />, { wrapper });
+    renderWithWrapper(<SignIn />);
     //WHEN
     fillText(/user.email/, 'bad@email');
     fillPassword(/user.password/, 'P@ssW0rd');

@@ -4,20 +4,10 @@ import { DownloadImage } from '../../static/components/DownloadImage';
 import {
   clickButton,
   fakeDownloadRequestParams,
-  spyRequestSuccessBody,
   triggerRequestFailure,
   triggerRequestSuccess
 } from '../utils';
 import { screen } from '@testing-library/dom';
-
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    };
-  }
-}));
 
 describe('Create download button tests', () => {
   beforeEach(() => {
@@ -31,7 +21,7 @@ describe('Create download button tests', () => {
     triggerRequestSuccess(
       '{"id":1,"title":"test","extension":"jpg","data":"test"}'
     );
-    const spyRequestFunction = spyRequestSuccessBody(
+    const spyRequestFunction = triggerRequestSuccess(
       '{"id":1,"title":"test","extension":"jpg","data":"test"}'
     );
     const requestParams = fakeDownloadRequestParams(id);

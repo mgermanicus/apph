@@ -3,21 +3,11 @@ import { render } from '@testing-library/react';
 import {
   clickButton,
   fakeDeleteRequestParams,
-  spyRequestSuccessBody,
   triggerRequestFailure,
   triggerRequestSuccess
 } from '../utils';
 import { screen } from '@testing-library/dom';
 import { DeleteImage } from '../../static/components/DeleteImage';
-
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    };
-  }
-}));
 
 describe('Create delete button tests', () => {
   beforeEach(() => {
@@ -30,7 +20,7 @@ describe('Create delete button tests', () => {
     render(<DeleteImage ids={ids} />);
     clickButton(/delete-photo/i);
     triggerRequestSuccess('{ "message": "Suppression effectuée avec succès" }');
-    const spyRequestFunction = spyRequestSuccessBody(
+    const spyRequestFunction = triggerRequestSuccess(
       '{ "message": "Suppression effectuée avec succès" }'
     );
     const requestParams = fakeDeleteRequestParams(ids);

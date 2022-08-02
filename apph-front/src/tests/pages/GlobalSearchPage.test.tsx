@@ -1,11 +1,11 @@
 import { render } from '@testing-library/react';
 import { ITable, ITag } from '../../utils';
 import { GlobalSearchPage } from '../../static/pages/GlobalSearchPage';
+import { MemoryRouter } from 'react-router-dom';
 import { screen } from '@testing-library/dom';
 import {
   clickButton,
   fakeSearchRequestParams,
-  spyRequestSuccessBody,
   triggerRequestFailure,
   triggerRequestSuccess
 } from '../utils';
@@ -47,7 +47,11 @@ describe('global search page test', () => {
 
   it('test text shown correctly when nothing found', async () => {
     //WHEN
-    render(<GlobalSearchPage />);
+    render(
+      <MemoryRouter initialEntries={['?params=test&size=10']}>
+        <GlobalSearchPage />
+      </MemoryRouter>
+    );
     //THEN
     expect(screen.getByText(/photo.error.notFound/)).toBeInTheDocument();
   });
@@ -57,7 +61,11 @@ describe('global search page test', () => {
     const serverError = '{ "message": "Une erreur" }';
     triggerRequestFailure(serverError);
     //WHEN
-    render(<GlobalSearchPage />);
+    render(
+      <MemoryRouter initialEntries={['?params=test&size=10']}>
+        <GlobalSearchPage />
+      </MemoryRouter>
+    );
     //THEN
     expect(screen.getByText('Une erreur')).toBeInTheDocument();
   });
@@ -66,12 +74,16 @@ describe('global search page test', () => {
     //GiVEN
     const photoList = JSON.stringify([mockPhoto, mockPhoto]);
     triggerRequestSuccess(`{"photoList":[${photoList}],"total":2}`);
-    const spyRequestFunction = spyRequestSuccessBody(
+    const spyRequestFunction = triggerRequestSuccess(
       `{"photoList":[${JSON.stringify(mockPhoto)}],"total":2}`
     );
     const requestParams = fakeSearchRequestParams('test', 1, 1);
     //WHEN
-    render(<GlobalSearchPage pageSize={1} />);
+    render(
+      <MemoryRouter initialEntries={['?params=test']}>
+        <GlobalSearchPage pageSize={1} />
+      </MemoryRouter>
+    );
     clickButton(/Go to page 2/);
     //THEN
     expect(spyRequestFunction).toBeCalledWith(

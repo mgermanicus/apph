@@ -2,21 +2,7 @@ import { render } from '@testing-library/react';
 import { PhotoComplexGrid } from '../../static/components/PhotoComplexGrid';
 import { screen } from '@testing-library/dom';
 import { ITable, ITag } from '../../utils';
-
-const mockedUsedNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockedUsedNavigate
-}));
-
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    };
-  }
-}));
+import { renderWithWrapper } from '../../setupTests';
 
 describe('Photo complex grid test', () => {
   const mockPhoto: ITable = {
@@ -39,7 +25,7 @@ describe('Photo complex grid test', () => {
 
   it('test text shown correctly', async () => {
     //WHEN
-    render(<PhotoComplexGrid photo={mockPhoto} />);
+    renderWithWrapper(<PhotoComplexGrid photo={mockPhoto} />);
     //THEN
     expect(screen.getByText(/testTitle/)).toBeInTheDocument();
   });
