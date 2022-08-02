@@ -1,10 +1,13 @@
-import { fireEvent, screen, within } from '@testing-library/react';
-import Server from '../../services/Server';
-import { FakeRequestResults } from './types/FakeRequestResults';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import AuthService from '../../services/AuthService';
 import { ITag } from '../../utils';
-import { ILocation } from '../../utils/types/Location';
-import { UserEvent } from '@testing-library/user-event/dist/types/setup';
+import userEvent from '@testing-library/user-event';
+import { ReactElement } from 'react';
+import { wrapper } from './components/CustomWrapper';
+
+export function renderWithWrapper(component: ReactElement) {
+  return render(component, { wrapper });
+}
 
 export function fillText(label: RegExp, value: string) {
   const textInput = screen.getByRole('textbox', { name: label });
@@ -20,10 +23,6 @@ export function clickButton(label: RegExp) {
   fireEvent.click(screen.getByRole('button', { name: label }));
 }
 
-export function clickLoadingButton(label: RegExp) {
-  fireEvent.click(screen.getByRole('LoadingButton', { name: label }));
-}
-
 export function fillTags(tags: ITag[]) {
   const autocomplete = within(screen.getByTestId('tags')).getByRole('combobox');
   tags.forEach((tag) => {
@@ -36,9 +35,9 @@ export function fillTags(tags: ITag[]) {
   return;
 }
 
-export async function fillLocation(query: string, user: UserEvent) {
-  await user.type(screen.getByTestId('location'), query);
-  await user.keyboard('{arrowdown}{enter}');
+export async function fillLocation(query: string) {
+  await userEvent.type(screen.getByTestId('location'), query);
+  await userEvent.keyboard('{arrowdown}{enter}');
 }
 
 export function fillDate(date: Date) {
@@ -52,126 +51,15 @@ export function selectOptionInListBox(input: HTMLElement, optionName: RegExp) {
   fireEvent.click(fieldListBox.getByRole('option', { name: optionName }));
 }
 
-export function triggerRequestSuccess(response: string) {
-  Server.request = function (
-    URL: string,
-    requestOptions: RequestInit,
-    successFunction: (body: string) => void | undefined
-  ) {
-    successFunction(response);
-    return Promise.resolve();
-  };
-}
-
-export function triggerRequestFailure(response: string) {
-  Server.request = function (
-    URL: string,
-    requestOptions: RequestInit,
-    successFunction: (body: string) => void | undefined,
-    errorFunction: (error: string) => void
-  ) {
-    errorFunction(response);
-    return Promise.resolve();
-  };
-}
-
-export function spyRequestFailure(error: string) {
-  const spy = jest.fn(
-    (
-      URL: string,
-      requestOptions: RequestInit,
-      successFunction: (body: string) => void | undefined,
-      errorFunction: (error: string) => void
-    ) => {
-      errorFunction(error);
-      return Promise.resolve();
-    }
-  );
-  Server.request = spy;
-  return spy;
-}
-
-export function spyRequestSuccess() {
-  const spy = jest.fn(
-    (
-      URL: string,
-      requestOptions: RequestInit,
-      successFunction: (body: string) => void | undefined
-    ) => {
-      successFunction('');
-      return Promise.resolve();
-    }
-  );
-  Server.request = spy;
-  return spy;
-}
-
-export const fakeRequest = (requestResults: FakeRequestResults) => {
-  const spy = jest.fn(
-    (
-      URL: string,
-      requestOptions: RequestInit,
-      successFunction: (body: string) => void | undefined,
-      errorFunction: (error: string) => void
-    ) => {
-      const result = requestResults[URL];
-      if (!result) return Promise.resolve();
-      if (result?.error) {
-        errorFunction(result.error);
-      } else if (result?.body) {
-        successFunction(result.body);
-      }
-      return Promise.resolve();
-    }
-  );
-  Server.request = spy;
-  return spy;
-};
-
 export const spyCookies = () => {
   const spyUpdateUserCookie = jest.fn();
   AuthService.updateUserCookie = spyUpdateUserCookie;
   return spyUpdateUserCookie;
 };
 
-export function spyRequestSuccessBody(body: string) {
-  const spy = jest.fn(
-    (
-      URL: string,
-      requestOptions: RequestInit,
-      successFunction: (body: string) => void | undefined
-    ) => {
-      successFunction(body);
-      return Promise.resolve();
-    }
-  );
-  Server.request = spy;
-  return spy;
-}
-
-export function geocodeRequestResults(
-  query: string,
-  location: ILocation
-): FakeRequestResults {
-  const results: FakeRequestResults = {};
-  for (let i = 0; i <= query.length; i++) {
-    results[
-      `/geocode?q=${query.slice(0, i)}&apiKey=${
-        process.env['REACT_APP_GEOCODING_API_KEY']
-      }&lang=fr`
-    ] = {
-      body: JSON.stringify({
-        items: [
-          {
-            address: { label: location.address },
-            position: location.position
-          }
-        ]
-      })
-    };
-  }
-  console.log(results);
-  return results;
+export function deleteTags() {
+  const deleteButtons = screen.getAllByTestId('CancelIcon');
+  deleteButtons.forEach((button) => fireEvent.click(button));
 }
 
 export function fakeSearchRequestParams(

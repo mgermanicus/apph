@@ -11,19 +11,10 @@ import Cookies from 'universal-cookie';
 import jwtDecode from 'jwt-decode';
 import { UserProfile } from '../../static/components/UserProfile';
 
-const mockedUsedNavigate = jest.fn();
+const mockedUseNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockedUsedNavigate
-}));
-
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    };
-  }
+  useNavigate: () => mockedUseNavigate
 }));
 
 describe('UserAvatar Component Tests', () => {
@@ -67,6 +58,6 @@ describe('UserProfile test', () => {
     //WHEN
     clickButton(/action.modify/);
     //THEN
-    expect(mockedUsedNavigate).toBeCalledWith('/me/edit');
+    expect(mockedUseNavigate).toBeCalledWith('/me/edit');
   });
 });

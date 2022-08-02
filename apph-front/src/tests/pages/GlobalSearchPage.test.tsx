@@ -1,4 +1,3 @@
-import { render } from '@testing-library/react';
 import { ITable, ITag } from '../../utils';
 import { GlobalSearchPage } from '../../static/pages/GlobalSearchPage';
 import { MemoryRouter } from 'react-router-dom';
@@ -6,25 +5,16 @@ import { screen } from '@testing-library/dom';
 import {
   clickButton,
   fakeSearchRequestParams,
-  spyRequestSuccessBody,
   triggerRequestFailure,
   triggerRequestSuccess
 } from '../utils';
+import { render } from '@testing-library/react';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useLocation: jest.fn().mockImplementation(() => {
     return { pathname: '/search/global/' };
   })
-}));
-
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    };
-  }
 }));
 
 describe('global search page test', () => {
@@ -75,7 +65,7 @@ describe('global search page test', () => {
     //GiVEN
     const photoList = JSON.stringify([mockPhoto, mockPhoto]);
     triggerRequestSuccess(`{"photoList":[${photoList}],"total":2}`);
-    const spyRequestFunction = spyRequestSuccessBody(
+    const spyRequestFunction = triggerRequestSuccess(
       `{"photoList":[${JSON.stringify(mockPhoto)}],"total":2}`
     );
     const requestParams = fakeSearchRequestParams('test', 1, 1);

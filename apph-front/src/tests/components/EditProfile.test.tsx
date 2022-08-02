@@ -1,5 +1,5 @@
 import { EditProfile } from '../../static/components/EditProfile';
-import { render, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import {
   clickButton,
   fakeRequest,
@@ -8,24 +8,14 @@ import {
   spyCookies
 } from '../utils';
 import { screen } from '@testing-library/dom';
-import { useNavigate } from 'react-router-dom';
 import AuthService from '../../services/AuthService';
 import Server from '../../services/Server';
-import { wrapper } from '../utils/components/CustomWrapper';
+import { renderWithWrapper } from '../utils';
 
-const mockedUsedNavigate = jest.fn();
+const mockedUseNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockedUsedNavigate
-}));
-
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    };
-  }
+  useNavigate: () => mockedUseNavigate
 }));
 
 describe('Test EditProfile', () => {
@@ -51,7 +41,7 @@ describe('Test EditProfile', () => {
       '/user/': { body: JSON.stringify(user) },
       '/user/edit/': { body: editedUserToken }
     });
-    render(<EditProfile />, { wrapper });
+    renderWithWrapper(<EditProfile />);
     //WHEN
     fillText(/user.lastName/, editedUser.lastname);
     fillText(/user.firstName/, editedUser.firstname);
@@ -78,7 +68,7 @@ describe('Test EditProfile', () => {
       '/user/': { body: JSON.stringify(user) },
       '/user/edit': { body: 'edited user token' }
     });
-    render(<EditProfile />, { wrapper });
+    renderWithWrapper(<EditProfile />);
     //WHEN
     fillText(/user.login/, editedUser.login);
     clickButton(/action.confirm/);
@@ -103,7 +93,7 @@ describe('Test EditProfile', () => {
     fakeRequest({
       '/user/': { body: JSON.stringify(user) }
     });
-    render(<EditProfile />, { wrapper });
+    renderWithWrapper(<EditProfile />);
     //WHEN
     fillText(/user.login/, editedUser.login);
     clickButton(/action.confirm/);
@@ -133,14 +123,14 @@ describe('Test EditProfile', () => {
       '/user/': { body: JSON.stringify(user) },
       '/user/edit/': { body: 'edited user token' }
     });
-    render(<EditProfile />, { wrapper });
+    renderWithWrapper(<EditProfile />);
     //WHEN
     fillText(/user.login/, editedUser.login);
     clickButton(/action.confirm/);
     clickButton(/action.continue/);
     //THEN
     expect(AuthService.logout).toBeCalled();
-    expect(useNavigate()).toBeCalled();
+    expect(mockedUseNavigate).toBeCalled();
   });
 
   it('tests when a user enters a wrong confirmation password', () => {
@@ -153,7 +143,7 @@ describe('Test EditProfile', () => {
     fakeRequest({
       '/user/': { body: JSON.stringify(user) }
     });
-    render(<EditProfile />, { wrapper });
+    renderWithWrapper(<EditProfile />);
     //WHEN
     fillPassword(/user.password$/, 'P@ssw0rd');
     fillPassword(/user.passwordConfirmation/, 'WrongP@ssw0rd');
@@ -183,7 +173,7 @@ describe('Test EditProfile', () => {
     fakeRequest({
       '/user/': { body: JSON.stringify(user) }
     });
-    render(<EditProfile />, { wrapper });
+    renderWithWrapper(<EditProfile />);
     //WHEN
     fillText(/user.lastName/, editedUser.lastname);
     fillText(/user.firstName/, editedUser.firstname);
@@ -201,7 +191,7 @@ describe('Test EditProfile', () => {
     fakeRequest({
       '/user/': { error: 'Cannot get user data' }
     });
-    render(<EditProfile />, { wrapper });
+    renderWithWrapper(<EditProfile />);
     //WHEN
     //THEN
     expect(screen.getByText(/Cannot get user data/)).toBeInTheDocument();
@@ -218,7 +208,7 @@ describe('Test EditProfile', () => {
       '/user/': { body: JSON.stringify(user) },
       '/user/edit/': { error: 'Cannot edit user' }
     });
-    render(<EditProfile />, { wrapper });
+    renderWithWrapper(<EditProfile />);
     //WHEN
     fillText(/user.firstName/, 'Jean');
     clickButton(/action.confirm/);

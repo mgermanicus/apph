@@ -16,7 +16,8 @@ describe('AppSettingsPage', () => {
   it('should render', async () => {
     //GIVEN
     const spyRequestFunction = fakeRequest({
-      '/admin/getSettings': { body: '{"uploadSize":1,"downloadSize":2}' }
+      '/user/getSettings': { body: '{"uploadSize":1,"downloadSize":2}' },
+      '/admin/updateSettings': { body: 'success' }
     });
     //WHEN
     const tree = render(<AppSettingsPage />, { wrapper });

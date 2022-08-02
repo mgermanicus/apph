@@ -10,21 +10,12 @@ import {
   triggerRequestSuccess
 } from '../utils';
 import cryptoJS from 'crypto-js';
-import { useNavigate } from 'react-router-dom';
 import { screen } from '@testing-library/dom';
 
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    };
-  }
-}));
-const mockedUsedNavigate = jest.fn();
+const mockedUseNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockedUsedNavigate
+  useNavigate: () => mockedUseNavigate
 }));
 
 describe('Tests du composant SignUp.tsx', () => {
@@ -45,7 +36,7 @@ describe('Tests du composant SignUp.tsx', () => {
     fillText(/user.lastName/, 'Dupont');
     clickButton(/signup.create/);
     //THEN
-    expect(useNavigate()).toBeCalled();
+    expect(mockedUseNavigate).toBeCalled();
   });
 
   it('checks when the server sends an error if invalid email', () => {
@@ -62,7 +53,7 @@ describe('Tests du composant SignUp.tsx', () => {
     clickButton(/signup.create/);
     //THEN
     expect(screen.getByText(/signup.error.email/)).toBeInTheDocument();
-    expect(useNavigate()).not.toBeCalled();
+    expect(mockedUseNavigate).not.toBeCalled();
   });
 
   it('checks when the server sends an error if invalid confirm password', () => {
@@ -79,7 +70,7 @@ describe('Tests du composant SignUp.tsx', () => {
     clickButton(/signup.create/);
     //THEN
     expect(screen.getByText(/signup.error.password/)).toBeInTheDocument();
-    expect(useNavigate()).not.toBeCalled();
+    expect(mockedUseNavigate).not.toBeCalled();
   });
 
   it('checks when the server sends an error request fail', () => {
@@ -96,6 +87,6 @@ describe('Tests du composant SignUp.tsx', () => {
     clickButton(/signup.create/);
     //THEN
     expect(screen.getByText(/Test error/)).toBeInTheDocument();
-    expect(useNavigate()).not.toBeCalled();
+    expect(mockedUseNavigate).not.toBeCalled();
   });
 });

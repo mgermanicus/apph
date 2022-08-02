@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import { UploadImage } from '../../static/components/UploadImage';
 import {
   clickButton,
@@ -8,33 +8,12 @@ import {
   fillLocation,
   fillTags,
   fillText,
-  inputFile
+  inputFile,
+  triggerRequestSuccess
 } from '../utils';
 import { ITag } from '../../utils';
-import { wrapper } from '../utils/components/CustomWrapper';
 import PhotoService from '../../services/PhotoService';
-import userEvent from '@testing-library/user-event';
-
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str,
-      i18n: { language: 'fr' }
-    };
-  }
-}));
-
-jest.mock('ts-debounce', () => ({
-  debounce: (func: (query: string) => Promise<void>, waitMs: number) => func
-}));
-
-function setup(element: JSX.Element) {
-  return {
-    user: userEvent.setup(),
-    ...render(element, { wrapper })
-  };
-}
+import { renderWithWrapper } from '../utils';
 
 jest.setTimeout(10000);
 
@@ -63,16 +42,16 @@ describe('Test UploadImage', () => {
             ]
           })
         },
-      '/admin/getSettings': { body: '{"uploadSize":1,"downloadSize":1}' }
+      '/user/getSettings': { body: '{"uploadSize":1,"downloadSize":1}' }
     });
-    const { user } = setup(<UploadImage />);
+    renderWithWrapper(<UploadImage />);
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     const files = [fakeFile(100000000, 'image/png')];
     //WHEN
     fillText(/photo.title/, 'Titre');
     fillText(/photoTable.description/, 'Description');
-    await fillLocation(query, user);
+    await fillLocation(query);
     fillTags([{ name: 'tag' }]);
     await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
@@ -113,13 +92,13 @@ describe('Test UploadImage', () => {
         }
     });
     const files = [fakeFile(1000, 'image/png')];
-    const { user } = setup(<UploadImage />);
+    renderWithWrapper(<UploadImage />);
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     //WHEN
     fillText(/photo.title/, 'Titre');
     fillText(/photoTable.description/, 'Description');
-    await fillLocation(query, user);
+    await fillLocation(query);
     fillTags([{ name: 'tag' }]);
     await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
@@ -151,9 +130,9 @@ describe('Test UploadImage', () => {
             ]
           })
         },
-      '/admin/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' }
+      '/user/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' }
     });
-    const { user } = setup(<UploadImage />);
+    renderWithWrapper(<UploadImage />);
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     const files = [fakeFile(1000, 'image/png')];
@@ -163,7 +142,7 @@ describe('Test UploadImage', () => {
     //WHEN
     fillText(/photo.title/, title);
     fillText(/photoTable.description/, description);
-    await fillLocation(query, user);
+    await fillLocation(query);
     await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
     //THEN
@@ -204,19 +183,19 @@ describe('Test UploadImage', () => {
             ]
           })
         },
-      '/admin/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' }
+      '/user/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' }
     });
     const requestParams = [
       fakeUploadRequestParams(files[0], title, description, new Date(), tags),
       fakeUploadRequestParams(files[1], title, description, new Date(), tags)
     ];
-    const { user } = setup(<UploadImage />);
+    renderWithWrapper(<UploadImage />);
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     //WHEN
     fillText(/photo.title/, title);
     fillText(/photoTable.description/, description);
-    await fillLocation(query, user);
+    await fillLocation(query);
     fillTags(tags);
     await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);
@@ -253,7 +232,6 @@ describe('Test UploadImage', () => {
       address: 'Paris, France',
       position: { lat: 0.0, lng: 0.0 }
     };
-
     fakeRequest({
       '/tag/': { body: '[{"id":"0","name":"tag","version":0}]' },
       '/photo/upload': { body: "{ message: 'message' }" },
@@ -268,15 +246,15 @@ describe('Test UploadImage', () => {
             ]
           })
         },
-      '/admin/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' }
+      '/user/getSettings': { body: '{"uploadSize":10,"downloadSize":20}' }
     });
-    const { user } = setup(<UploadImage />);
+    renderWithWrapper(<UploadImage />);
     clickButton(/upload-photo/i);
     const fileInput = screen.getByTestId<HTMLInputElement>('drop-input');
     //WHEN
     fillText(/photo.title/, title);
     fillText(/photoTable.description/, description);
-    await fillLocation(query, user);
+    await fillLocation(query);
     fillTags(tags);
     await act(async () => inputFile(files, fileInput));
     clickButton(/action.add/);

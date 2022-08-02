@@ -4,21 +4,11 @@ import {
   clickButton,
   fakeDownloadZipFolderRequestParams,
   fakeDownloadZipRequestParams,
-  spyRequestSuccessBody,
   triggerRequestFailure,
   triggerRequestSuccess
 } from '../utils';
 import { screen } from '@testing-library/dom';
 import { DownloadZip } from '../../static/components/DownloadZip';
-
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    };
-  }
-}));
 
 describe('Create download zip button tests', () => {
   beforeEach(() => {
@@ -32,7 +22,7 @@ describe('Create download zip button tests', () => {
     triggerRequestSuccess(
       '{"title":"photos","extension":".zip","data":"test"}'
     );
-    const spyRequestFunction = spyRequestSuccessBody(
+    const spyRequestFunction = triggerRequestSuccess(
       '{"title":"photos","extension":".zip","data":"test"}'
     );
     const requestParams = fakeDownloadZipRequestParams(ids);
@@ -80,7 +70,7 @@ describe('Create download zip button tests', () => {
     const ids = [1];
     render(<DownloadZip ids={ids} isFolder={true} />);
     triggerRequestSuccess('{"title":"folder","data":"test"}');
-    const spyRequestFunction = spyRequestSuccessBody(
+    const spyRequestFunction = triggerRequestSuccess(
       '{"title":"folder","data":"test"}'
     );
     const requestParams = fakeDownloadZipFolderRequestParams(ids[0]);

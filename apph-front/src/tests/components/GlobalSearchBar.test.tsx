@@ -3,37 +3,19 @@ import { GlobalSearchBar } from '../../static/components/GlobalSearchBar';
 import { screen } from '@testing-library/dom';
 import {
   fakeFuzzySearchRequestParams,
-  spyRequestSuccessBody,
   triggerRequestFailure,
   triggerRequestSuccess
 } from '../utils';
 import { ITable, ITag } from '../../utils';
 import userEvent from '@testing-library/user-event';
-import { wrapper } from '../utils/components/CustomWrapper';
 
-const mockedUsedNavigate = jest.fn();
+const mockedUseNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockedUsedNavigate,
+  useNavigate: () => mockedUseNavigate,
   useLocation: jest.fn().mockImplementation(() => {
     return { pathname: '/search/global/' };
   })
-}));
-
-function setup(element: JSX.Element) {
-  return {
-    user: userEvent.setup(),
-    ...render(element, { wrapper })
-  };
-}
-
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    };
-  }
 }));
 
 describe('Global search bar test', () => {
@@ -66,14 +48,14 @@ describe('Global search bar test', () => {
     //GIVEN
     const photoList = JSON.stringify([mockPhoto]);
     triggerRequestSuccess(`{"photoList":[${photoList}]}`);
-    const spyRequestFunction = spyRequestSuccessBody(
+    const spyRequestFunction = triggerRequestSuccess(
       `{"photoList":[${JSON.stringify(mockPhoto)}]}`
     );
     const requestParams = fakeFuzzySearchRequestParams('test');
-    const { user } = setup(<GlobalSearchBar />);
+    render(<GlobalSearchBar />);
     //WHEN
     const input = screen.getByRole('combobox');
-    await user.type(input, 'tes');
+    await userEvent.type(input, 'tes');
     await waitFor(() => expect(input).toHaveValue('tes'));
     fireEvent.click(screen.getByRole('button', { name: /testtitle/ }));
     //THEN
@@ -84,17 +66,17 @@ describe('Global search bar test', () => {
       expect.anything(),
       expect.anything()
     );
-    expect(mockedUsedNavigate).toBeCalled();
+    expect(mockedUseNavigate).toBeCalled();
   });
 
   it('test error handling', async () => {
     //GIVEN
     const serverError = '{ "message": "Une erreur" }';
     triggerRequestFailure(serverError);
-    const { user } = setup(<GlobalSearchBar />);
+    render(<GlobalSearchBar />);
     //WHEN
     const input = screen.getByRole('combobox');
-    await user.type(input, 'tes');
+    await userEvent.type(input, 'tes');
     await waitFor(() => expect(input).toHaveValue('tes'));
     //THEN
     expect(screen.getByText('Une erreur')).toBeInTheDocument();

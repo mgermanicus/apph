@@ -1,5 +1,3 @@
-import { render } from '@testing-library/react';
-
 import {
   clickButton,
   JWS_TOKEN,
@@ -10,15 +8,7 @@ import { screen } from '@testing-library/dom';
 import Cookies from 'universal-cookie';
 import jwtDecode from 'jwt-decode';
 import { DeleteFolder } from '../../static/components/DeleteFolder';
-
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    };
-  }
-}));
+import { renderWithWrapper } from '../utils';
 
 describe('Delete Folder tests', () => {
   beforeEach(() => {
@@ -33,7 +23,7 @@ describe('Delete Folder tests', () => {
       cookies.set('user', { ...decodedToken, token: JWS_TOKEN });
     }
     triggerRequestSuccess('{ "message": "Success" }');
-    render(
+    renderWithWrapper(
       <DeleteFolder
         selectedFolderId={'0'}
         refreshFolder={() => {
@@ -69,7 +59,7 @@ describe('Delete Folder tests', () => {
     triggerRequestSuccess(
       '{"id":1,"version":0,"name":"Elie_root","parentFolderId":null,"childrenFolders":[]}'
     );
-    render(
+    renderWithWrapper(
       <DeleteFolder
         selectedFolderId={'0'}
         refreshFolder={() => {
@@ -96,7 +86,7 @@ describe('Delete Folder tests', () => {
     }
     triggerRequestFailure('{ "message": "Error" }');
     //WHEN
-    render(
+    renderWithWrapper(
       <DeleteFolder
         selectedFolderId={'0'}
         refreshFolder={() => {
@@ -124,7 +114,7 @@ describe('Delete Folder tests', () => {
     triggerRequestSuccess(
       '{"id":1,"version":0,"name":"Elie_root","parentFolderId":null,"childrenFolders":[]}'
     );
-    render(
+    renderWithWrapper(
       <DeleteFolder
         selectedFolderId={'1'}
         refreshFolder={() => {
@@ -148,7 +138,7 @@ describe('Delete Folder tests', () => {
       cookies.set('user', { ...decodedToken, token: JWS_TOKEN });
     }
     triggerRequestFailure('{ "message": "Error" }');
-    render(
+    renderWithWrapper(
       <DeleteFolder
         selectedFolderId={'0'}
         refreshFolder={() => {
