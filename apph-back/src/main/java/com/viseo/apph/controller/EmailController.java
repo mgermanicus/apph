@@ -1,15 +1,21 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.EmailRequest;
+import com.viseo.apph.dto.IResponseDto;
+import com.viseo.apph.dto.MessageResponse;
+import com.viseo.apph.exception.MaxSizeExceededException;
+import com.viseo.apph.exception.UnauthorizedException;
 import com.viseo.apph.security.Utils;
+import com.viseo.apph.service.PhotoService;
 import com.viseo.apph.service.SesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -21,9 +27,15 @@ public class EmailController {
     SesService sesService;
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    @PostMapping("/send")
-    public ResponseEntity<String> sendExample() {
+    @PostMapping("/sendAttachment")
+    public ResponseEntity<IResponseDto> sendAttachment(@RequestBody EmailRequest emailRequest) {
         User user = utils.getUser();
-        return ResponseEntity.ok(sesService.sendVerifyRegister(user));
+        try {
+            return ResponseEntity.ok(sesService.SendMessageAttachment(user, emailRequest.getRecipient(), emailRequest.getSubject(), emailRequest.getContent(), emailRequest.getIds()));
+        } catch (MaxSizeExceededException msee) {
+            return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(new MessageResponse(msee.getMessage()));
+        } catch (UnauthorizedException | IOException ue) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
+        }
     }
 }

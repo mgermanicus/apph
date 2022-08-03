@@ -434,4 +434,36 @@ export default class PhotoService {
       errorFunction
     );
   }
+
+  static sendPhotos(
+    recipient: string,
+    subject: string,
+    content: string,
+    ids: number[],
+    handleSuccess: (successMessage: string) => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = `/email/sendAttachment`,
+      userInfos = cookies.get('user'),
+      requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + userInfos?.token
+        },
+        body: JSON.stringify({
+          recipient,
+          subject,
+          content,
+          ids
+        })
+      };
+    const successFunction = (message: string) => {
+      handleSuccess(JSON.parse(message).message);
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
 }
