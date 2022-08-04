@@ -7,9 +7,7 @@ import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Setting;
 import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.IResponseDto;
-import com.viseo.apph.dto.SettingResponse;
-import com.viseo.apph.dto.UserRequest;
+import com.viseo.apph.dto.*;
 import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.security.UserDetailsImpl;
 import com.viseo.apph.service.SettingService;
@@ -40,6 +38,8 @@ public class UserTest {
     EntityManager em;
     @Mock
     TypedQuery<User> typedQueryUser;
+    @Mock
+    TypedQuery<User> typedQueryUser2;
     @Mock
     TypedQuery<Long> typedQueryLong;
     @Mock
@@ -303,5 +303,88 @@ public class UserTest {
         assert response != null;
         Assert.assertEquals(10, response.getDownloadSize());
         Assert.assertEquals(20, response.getUploadSize());
+    }
+
+    @Test
+    public void testGetContact() {
+        //GIVEN
+        createUserController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        User contact = (User) new User().setLogin("Contact").setId(2);
+        robert.addContact(contact);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(robert);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = userController.getContacts();
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        UserListResponse userListResponse = (UserListResponse) responseEntity.getBody();
+        assert userListResponse != null;
+        Assert.assertEquals(1, userListResponse.getUserList().size());
+        Assert.assertEquals("Contact", userListResponse.getUserList().get(0).getLogin());
+    }
+
+    @Test
+    public void testGetContactWithNotExistingUser() {
+        //GIVEN
+        createUserController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        when(utils.getUser()).thenReturn(robert);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenThrow(new NoResultException());
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = userController.getContacts();
+        //THEN
+        Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("user.error.notExist", messageResponse.getMessage());
+    }
+
+    @Test
+    public void testAddContact() {
+        //GIVEN
+        createUserController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        User contact = (User) new User().setLogin("Contact").setId(2);
+        UserRequest request = new UserRequest().setLogin("Contact");
+        when(utils.getUser()).thenReturn(robert);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(robert);
+        when(typedQueryUser.setParameter("login","Contact")).thenReturn(typedQueryUser2);
+        when(typedQueryUser2.getSingleResult()).thenReturn(contact);
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = userController.addContact(request);
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        UserListResponse userListResponse = (UserListResponse) responseEntity.getBody();
+        assert userListResponse != null;
+        Assert.assertEquals(1, userListResponse.getUserList().size());
+        Assert.assertEquals("Contact", userListResponse.getUserList().get(0).getLogin());
+    }
+
+    @Test
+    public void testAddContactUserNotFound() {
+        //GIVEN
+        createUserController();
+        User robert = (User) new User().setLogin("Robert").setId(1);
+        UserRequest request = new UserRequest().setLogin("Contact");
+        when(utils.getUser()).thenReturn(robert);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", "Robert")).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(robert);
+        when(typedQueryUser.setParameter("login","Contact")).thenReturn(typedQueryUser2);
+        when(typedQueryUser2.getSingleResult()).thenThrow(new NoResultException());
+        //WHEN
+        ResponseEntity<IResponseDto> responseEntity = userController.addContact(request);
+        //THEN
+        Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        MessageResponse messageResponse = (MessageResponse) responseEntity.getBody();
+        assert messageResponse != null;
+        Assert.assertEquals("user.error.notExist", messageResponse.getMessage());
     }
 }

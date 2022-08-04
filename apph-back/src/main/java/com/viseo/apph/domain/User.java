@@ -35,6 +35,10 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Photo> photos = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_contacts")
+    List<User> contacts = new ArrayList<>();
+
     public User() {
         super();
     }
@@ -93,6 +97,18 @@ public class User extends BaseEntity {
         if (!this.folders.contains(folder)) {
             this.folders.add(folder);
             folder.user = this;
+        }
+        return this;
+    }
+
+    public List<User> getContacts() {
+        return contacts;
+    }
+
+    public User addContact(User user) {
+        assert user != null;
+        if (!this.contacts.contains(user)) {
+            this.contacts.add(user);
         }
         return this;
     }
