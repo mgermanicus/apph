@@ -169,7 +169,8 @@
     "signatureNotValid": "Your link is not valid, you will be redirected to the login page",
     "notValid": "Token not valid",
     "expired": "Token expired",
-    "isExpired": "Your link has expired, you will be redirected to the login page"
+    "isExpired": "Your link has expired, you will be redirected to the login page",
+    "expiredLink": "The link has already been used, you will be redirected to the login page"
   },
   "action": {
     "continue": "Continue",

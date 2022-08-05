@@ -169,7 +169,8 @@
     "notValid": "Token non valide",
     "expired": "Token expiré",
     "signatureNotValid": "Votre lien n'est pas valide, vous allez être redirigé vers la page de connexion",
-    "isExpired": "Votre lien est expiré, vous allez être redirigé vers la page de connexion"
+    "isExpired": "Votre lien est expiré, vous allez être redirigé vers la page de connexion",
+    "expiredLink": "Le lien a déjà été utilisé, vous allez être redirigé vers la page de connexion"
   },
   "action": {
     "continue": "Continuer",

@@ -1,6 +1,7 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.dto.*;
+import com.viseo.apph.exception.ExpiredLinkException;
 import com.viseo.apph.exception.InvalidTokenException;
 import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.service.UserService;
@@ -68,6 +69,9 @@ public class AuthController {
             return ResponseEntity.ok().body("");
         }
         catch(InvalidTokenException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+        catch(ExpiredLinkException e){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }

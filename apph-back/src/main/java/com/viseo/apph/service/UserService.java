@@ -11,11 +11,11 @@ import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.UserListResponse;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.dto.UserResponse;
+import com.viseo.apph.exception.ExpiredLinkException;
 import com.viseo.apph.exception.InvalidTokenException;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.utils.FrontServer;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -67,6 +67,8 @@ public class UserService {
     public void forgotPassword(String login, String language) throws NoResultException {
         User user = userDao.getUserByLogin(login);
        String token = jwtUtils.generateJwtToken(login,1_800_000);
+       user.setResetting(true);
+       user.setTokenForResetting(token);
        String bodyHTMLEn = "<html>" + "<head></head>" + "<body>" + "<h1>Password Forgotten APPH</h1>"
                 + "<p> Dear APPH Customer.</p><br>"
                 + "<p>Please click on the button to reset your password</p><br>"
@@ -85,11 +87,15 @@ public class UserService {
         sesDao.sendEmail("wassim.bouhtout@viseo.com", user.getLogin(), "Reset your password", bodyHTML);
     }
 
-    public void checkToken(String token) throws InvalidTokenException {
+    public void checkToken(String token) throws InvalidTokenException, ExpiredLinkException {
         if(!jwtUtils.isSignatureValid(token))
             throw new InvalidTokenException("token.signatureNotValid");
         if(!jwtUtils.isTokenNotExpired(token))
             throw new InvalidTokenException("token.isExpired");
+        String login = jwtUtils.getUserNameFromJwtToken(token);
+        User user = userDao.getUserByLogin(login);
+        if(!user.isResetting() || !token.equals(user.getTokenForResetting()))
+            throw new ExpiredLinkException();
     }
 
     @Transactional
@@ -137,6 +143,7 @@ public class UserService {
     @Transactional
     public void resetPassword(String token, String newPassword) throws NoResultException {
         String login = jwtUtils.getUserNameFromJwtToken(token);
+        User user = userDao.getUserByLogin(login);
         userDao.resetPassword(login,encoder.encode(newPassword));
     }
 

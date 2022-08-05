@@ -19,6 +19,8 @@ public class User extends BaseEntity {
     String password;
     String firstname;
     String lastname;
+    String tokenForResetting;
+    boolean isResetting;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "users_id"),
@@ -45,6 +47,22 @@ public class User extends BaseEntity {
 
     public String getLogin() {
         return login;
+    }
+
+    public String getTokenForResetting() {
+        return tokenForResetting;
+    }
+
+    public void setTokenForResetting(String tokenForResetting) {
+        this.tokenForResetting = tokenForResetting;
+    }
+
+    public boolean isResetting() {
+        return isResetting;
+    }
+
+    public void setResetting(boolean resetting) {
+        isResetting = resetting;
     }
 
     public User setLogin(String login) {

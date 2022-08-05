@@ -36,6 +36,8 @@ public class UserDao {
     public void resetPassword(String login, String newPassword){
         User user = getUserByLogin(login);
         user.setPassword(newPassword);
+        user.setResetting(false);
+        user.setTokenForResetting(null);
         em.flush();
     }
 }
