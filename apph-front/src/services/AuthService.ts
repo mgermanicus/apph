@@ -54,6 +54,64 @@ export default class AuthService {
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
 
+  static forgetPassword(
+    login: string,
+    language: string,
+    handleSuccess: () => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = `/auth/forgotPassword`;
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        login,
+        language
+      })
+    };
+    return Server.request(URL, requestOptions, handleSuccess, handleError);
+  }
+
+  static sendToken(
+    token: string,
+    handleSuccess: () => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = `/auth/checkToken`;
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        token
+      })
+    };
+    return Server.request(URL, requestOptions, handleSuccess, handleError);
+  }
+
+  static resetPassword(
+    token: string,
+    newPassword: string,
+    handleSuccess: () => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = `/auth/resetPassword`;
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        token,
+        password: cryptoJS.SHA256(newPassword).toString()
+      })
+    };
+    return Server.request(URL, requestOptions, handleSuccess, handleError);
+  }
+
   static async signUp(
     email: string,
     password: string,

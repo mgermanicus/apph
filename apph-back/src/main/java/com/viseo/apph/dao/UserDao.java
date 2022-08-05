@@ -33,4 +33,9 @@ public class UserDao {
                 .getSingleResult();
         return !count.equals(0L);
     }
+    public void resetPassword(String login, String newPassword){
+        User user = getUserByLogin(login);
+        user.setPassword(newPassword);
+        em.flush();
+    }
 }

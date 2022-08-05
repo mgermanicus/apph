@@ -2,6 +2,7 @@ package com.viseo.apph.service;
 
 import com.viseo.apph.dao.FolderDao;
 import com.viseo.apph.dao.RoleDao;
+import com.viseo.apph.dao.SesDao;
 import com.viseo.apph.dao.UserDao;
 import com.viseo.apph.domain.ERole;
 import com.viseo.apph.domain.Folder;
@@ -10,14 +11,17 @@ import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.UserListResponse;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.dto.UserResponse;
+import com.viseo.apph.exception.InvalidTokenException;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.security.JwtUtils;
+import com.viseo.apph.utils.FrontServer;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,6 +40,12 @@ public class UserService {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    SesDao sesDao;
+
+    @Autowired
+    FrontServer frontServer;
+
     PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Transactional
@@ -51,6 +61,35 @@ public class UserService {
         userDao.createUser(newUser);
         Folder rootFolder = new Folder().setName(newUser.getFirstname() + " " + newUser.getLastname()).setParentFolderId(null).setUser(newUser);
         folderDao.createFolder(rootFolder);
+    }
+
+    @Transactional
+    public void forgotPassword(String login, String language) throws NoResultException {
+        User user = userDao.getUserByLogin(login);
+       String token = jwtUtils.generateJwtToken(login,1_800_000);
+       String bodyHTMLEn = "<html>" + "<head></head>" + "<body>" + "<h1>Password Forgotten APPH</h1>"
+                + "<p> Dear APPH Customer.</p><br>"
+                + "<p>Please click on the button to reset your password</p><br>"
+                + "<a href=\""+frontServer.getFrontServer()+"/resetPassword?token="+token+"\"><button>Reset your password</button></a>"
+                + "<p>This link will be valid for 30 minutes</p><br>"
+                + "<p>If you did not make this request, please ignore the email</p><br>"
+                + "</body>" + "</html>";
+        String bodyHTMLFr = "<html>" + "<head></head>" + "<body>" + "<h1>Mot de passe oublié APPH !</h1>"
+                + "<p>Chère client APPH</p><br>"
+                + "<p>Veuillez cliquer sur le bouton ci-dessous afin de réinitialiser votre mot de passe</p><br>"
+                + "<a href=\""+frontServer.getFrontServer()+"/resetPassword?token="+token+"\"><button>Reset your password</button></a><br>"
+                + "<p>Ce lien sera valide 30 min</p><br>"
+                + "<p>Si vous n'êtes pas à l'origine de cette requête, veuillez ignorer l'email</p><br>"
+                + "</body>" + "</html>";
+        String bodyHTML = language.equals("fr")?bodyHTMLFr:bodyHTMLEn;
+        sesDao.sendEmail("wassim.bouhtout@viseo.com", user.getLogin(), "Reset your password", bodyHTML);
+    }
+
+    public void checkToken(String token) throws InvalidTokenException {
+        if(!jwtUtils.isSignatureValid(token))
+            throw new InvalidTokenException("token.signatureNotValid");
+        if(!jwtUtils.isTokenNotExpired(token))
+            throw new InvalidTokenException("token.isExpired");
     }
 
     @Transactional
@@ -93,6 +132,12 @@ public class UserService {
                 .setLogin(user.getLogin())
                 .setFirstname(user.getFirstname())
                 .setLastname(user.getLastname())).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void resetPassword(String token, String newPassword) throws NoResultException {
+        String login = jwtUtils.getUserNameFromJwtToken(token);
+        userDao.resetPassword(login,encoder.encode(newPassword));
     }
 
     @Transactional

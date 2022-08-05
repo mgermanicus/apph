@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,7 +11,15 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { Alert, Collapse, IconButton, SxProps } from '@mui/material';
+import {
+  Alert,
+  AlertColor,
+  Collapse,
+  IconButton,
+  Input,
+  Modal,
+  SxProps
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AuthService from '../../services/AuthService';
 import { useDispatch } from 'react-redux';
@@ -20,6 +28,7 @@ import { flagStyles, IUser } from '../../utils';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { setCookieLanguage } from '../../utils/setCookieLanguage';
+import { AlertSnackbar } from './AlertSnackbar';
 
 const Copyright = (props: { sx: SxProps }) => {
   return (
@@ -38,19 +47,39 @@ const Copyright = (props: { sx: SxProps }) => {
     </Typography>
   );
 };
-
+const style = {
+  position: 'absolute' as const,
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4
+};
 export const SignIn = () => {
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [open, setOpen] = React.useState<boolean>(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setOpen(false);
+    setResetEmail('');
+  };
+  const [resetEmail, setResetEmail] = useState<string>('');
+  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
+  const [snackSeverity, setSnackSeverity] = useState<AlertColor>('error');
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const emailValidator =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get('email')?.toString();
     const password = data.get('password')?.toString();
-    const emailValidator =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!emailValidator.test(email ? email : '')) {
       setErrorMessage('signin.error.email');
     } else if (email && password) {
@@ -66,6 +95,31 @@ export const SignIn = () => {
         }
       );
     }
+  };
+  const handleReset = () => {
+    if (emailValidator.test(resetEmail)) {
+      AuthService.forgetPassword(
+        resetEmail,
+        i18n.language,
+        () => {
+          setSnackbarMessage(`${t('user.emailSend')} ${resetEmail}`);
+          setSnackSeverity('success');
+          setSnackbarOpen(true);
+        },
+        (errorMessage: string) => {
+          setSnackbarMessage(errorMessage);
+          setSnackSeverity('error');
+          setSnackbarOpen(true);
+        }
+      );
+    } else {
+      setSnackbarMessage('user.error.email');
+      setSnackSeverity('warning');
+      setSnackbarOpen(true);
+    }
+  };
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setResetEmail(event.target.value);
   };
 
   return (
@@ -119,10 +173,38 @@ export const SignIn = () => {
           >
             {t('signin.login')}
           </Button>
-          <Link href="#" variant="body2">
-            {t('signin.forgottenPassword')}
-          </Link>
-          <br />
+          <div>
+            <Link href="#" variant="body2" onClick={handleOpen}>
+              {t('signin.forgottenPassword')}
+            </Link>
+            <AlertSnackbar
+              open={snackbarOpen}
+              severity={snackSeverity}
+              message={t(snackbarMessage)}
+              onClose={setSnackbarOpen}
+            />
+            <Modal
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={style}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                  {t('user.forgottenPassword')}
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                  {t('user.setEmailToReset')}
+                </Typography>
+                <Input
+                  type="text"
+                  placeholder="Email"
+                  onChange={handleChange}
+                />
+                <Button onClick={handleReset}>{t('user.resetPassword')}</Button>
+              </Box>
+            </Modal>
+          </div>
           <br />
           <Link href="signUp" variant="body2">
             {t('signin.noAccount')}

@@ -1,4 +1,4 @@
-import { AlertColor, Snackbar } from '@mui/material';
+import { AlertColor, Snackbar, SxProps } from '@mui/material';
 import React from 'react';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { useTranslation } from 'react-i18next';
@@ -15,9 +15,18 @@ type Props = {
   severity?: AlertColor;
   message: string;
   onClose: (b: boolean) => void;
+  position?: 'bottom' | 'top';
+  sx?: SxProps;
 };
 
-export const AlertSnackbar = ({ open, severity, message, onClose }: Props) => {
+export const AlertSnackbar = ({
+  open,
+  severity,
+  message,
+  onClose,
+  position = 'bottom',
+  sx = {}
+}: Props) => {
   const handleSnackbarClose = (
     event?: React.SyntheticEvent | Event,
     reason?: string
@@ -31,8 +40,9 @@ export const AlertSnackbar = ({ open, severity, message, onClose }: Props) => {
     <Snackbar
       open={open}
       autoHideDuration={6000}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      anchorOrigin={{ vertical: position, horizontal: 'center' }}
       onClose={handleSnackbarClose}
+      sx={sx}
     >
       <Alert onClose={handleSnackbarClose} severity={severity}>
         {t(message)}

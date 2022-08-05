@@ -1,10 +1,10 @@
 package com.viseo.apph.controller;
 
-
-import com.viseo.apph.dto.LoginRequest;
-import com.viseo.apph.dto.UserRequest;
+import com.viseo.apph.dto.*;
+import com.viseo.apph.exception.InvalidTokenException;
 import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.service.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.NoResultException;
 
 @RestController
 @CrossOrigin(origins = "${front-server}")
@@ -47,6 +49,35 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("signup.error.emailUsed");
         } catch (IllegalArgumentException iae) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(iae.getMessage());
+        }
+    }
+    @PostMapping("/forgotPassword")
+    public ResponseEntity<String> forgotPassword(@RequestBody EmailRequest emailRequest){
+        try{
+            userService.forgotPassword(emailRequest.getLogin(), emailRequest.getLanguage());
+            return ResponseEntity.ok().body("");
+        }
+        catch(NoResultException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user.error.emailNotFound");
+        }
+    }
+    @PostMapping("/checkToken")
+    public ResponseEntity<String> checkToken(@RequestBody TokenRequest tokenRequest){
+        try{
+            userService.checkToken(tokenRequest.getToken());
+            return ResponseEntity.ok().body("");
+        }
+        catch(InvalidTokenException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+    }
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+        try {
+            userService.resetPassword(resetPasswordRequest.getToken(), resetPasswordRequest.getPassword());
+            return ResponseEntity.ok().body("");
+        } catch(NoResultException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user.error.emailNotFound");
         }
     }
 }
