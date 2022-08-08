@@ -5,17 +5,35 @@ import { useEffect, useState } from 'react';
 import PhotoService from '../../services/PhotoService';
 
 export const MapPage = () => {
-  const [markers, setMarkers] = useState<IMarker[]>();
+  const [groupedMarkers, setGroupedMarkers] = useState<IMarker[][]>();
+  const groupDuplicates = (markers: IMarker[]) => {
+    const groupedMarkers: IMarker[][] = [];
+    markers?.forEach((marker) => {
+      if (groupedMarkers.some((group) => group.includes(marker))) {
+        return;
+      }
+      const duplicates = markers.filter(
+        (otherMarker) =>
+          otherMarker.lat === marker.lat && otherMarker.lng === marker.lng
+      );
+      groupedMarkers.push(duplicates);
+    });
+    console.log(groupedMarkers);
+    return groupedMarkers;
+  };
 
   useEffect(() => {
-    PhotoService.getMarkers(setMarkers, (error) => {
-      console.log(error);
-    });
+    PhotoService.getMarkers(
+      (markers) => setGroupedMarkers(groupDuplicates(markers)),
+      (error) => {
+        console.log(error);
+      }
+    );
   }, []);
 
   return (
     <Box component="div" sx={{ height: '91vh', overflow: 'hidden' }}>
-      <PhotosMap markers={markers ?? []} />
+      <PhotosMap markers={groupedMarkers ?? []} />
     </Box>
   );
 };
