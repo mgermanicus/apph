@@ -17,7 +17,8 @@
       "emailUsed": "Email déjà utilisé",
       "nameOverChar": "Le nom ou le prénom ne peuvent pas dépasser les 127 caractères.",
       "emailOverChar": "L'email ne peut pas dépasser les 255 caractères.",
-      "loginOverChar": "Le login ne peut pas dépasser les 255 caractères."
+      "loginOverChar": "Le login ne peut pas dépasser les 255 caractères.",
+      "emailNotVerified": "L'email n'est pas vérifié, un nouveau email de vérification viens vous être envoyé."
     },
     "create": "Créer un compte",
     "exist": "Vous avez déjà un compte ? Se connecter",
@@ -30,6 +31,7 @@
     "lastName": "Nom",
     "password": "Mot de passe",
     "passwordConfirmation": "Confirmation du mot de passe",
+    "redirectionToLogin3s": "La page sera rediriger vers login dans 3s.",
     "emailSend": "Un email a été envoyé à l'adresse",
     "newPassword": "Nouveau mot de passe",
     "confirmPassword": "Confirmation du mot de passe",

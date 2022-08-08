@@ -16,6 +16,7 @@ import { AppSettingsPage } from './static/pages/AppSettingsPage';
 import { GlobalSearchPage } from './static/pages/GlobalSearchPage';
 import { MapPage } from './static/pages/MapPage';
 import { PasswordReset } from './static/components/PasswordReset';
+import { ActiveUser } from './static/components/ActiveUser';
 
 export const PrivateRoutes = ({
   authenticated
@@ -42,6 +43,10 @@ export const PrivateRoutes = ({
     <>
       <Routes>
         <Route path="/" element={needNoAuthenticationRoute(<SignIn />)} />
+        <Route
+          path="/auth/activateUser"
+          element={needNoAuthenticationRoute(<ActiveUser />)}
+        />
         <Route path="/signUp" element={needNoAuthenticationRoute(<SignUp />)} />
         <Route
           path="/resetPassword"

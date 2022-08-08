@@ -65,7 +65,7 @@ public class DataBaseConfig {
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(roleAdmin);
         User admin = new User().setLogin("admin@viseo.com").setPassword(encoder.encode("c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f"))
-                .setFirstname("Admin").setLastname("VISEO").setRoles(roleSet);
+                .setFirstname("Admin").setLastname("VISEO").setRoles(roleSet).setIsActive(true);
         em.persist(admin);
         Folder adminRoot = new Folder().setName("Admin VISEO").setParentFolderId(null).setUser(admin);
         em.persist(adminRoot);
@@ -90,23 +90,23 @@ public class DataBaseConfig {
         Set<Role> set = new HashSet<>();
         set.add(roleUser);
         User alexandre = new User().setLogin("alexandre@viseo.com").setPassword(encoder.encode("13e15721c9d4ad58d34983344dfba265a90d80f63db77c2eb3804379d9608889"))
-                .setFirstname("Alexandre").setLastname("HU").setRoles(set);
+                .setFirstname("Alexandre").setLastname("HU").setRoles(set).setIsActive(true);
         User baptiste = new User().setLogin("baptiste@viseo.com").setPassword(encoder.encode("15cc3b2994423d897d1e1ba43a670870fda7c4d62548416603a8ddddf7b9e06e"))
-                .setFirstname("Baptiste").setLastname("MONFRAY").setRoles(set);
-        User wassim = new User().setLogin("wassim.bouhtout@viseo.com").setPassword(encoder.encode("789e40562e8ad7d8e789a970cf432f52ab355fb45267f1116f597d08b1f7455f"))
-                .setFirstname("Wassim").setLastname("BOUHTOUT").setRoles(set);
+                .setFirstname("Baptiste").setLastname("MONFRAY").setRoles(set).setIsActive(true);
+        User wassim = new User().setLogin("wassim@viseo.com").setPassword(encoder.encode("789e40562e8ad7d8e789a970cf432f52ab355fb45267f1116f597d08b1f7455f"))
+                .setFirstname("Wassim").setLastname("BOUHTOUT").setRoles(set).setIsActive(true);
         User min = new User().setLogin("min@viseo.com").setPassword(encoder.encode("dea79332147ffe1fb2a81cf9a5bdf0066ddcc625699996ede0ce140e5cb004b1"))
-                .setFirstname("Min").setLastname("SUN").setRoles(set);
+                .setFirstname("Min").setLastname("SUN").setRoles(set).setIsActive(true);
         User elie = new User().setLogin("elie.ravasse@viseo.com").setPassword(encoder.encode("281dc093e8ea1bd931774d7a28dccb50e3a307756b7ff07bad897f10a56bfde0"))
-                .setFirstname("Elie").setLastname("RAVASSE").setRoles(set);
+                .setFirstname("Elie").setLastname("RAVASSE").setRoles(set).setIsActive(true);
         User larbi = new User().setLogin("larbi@viseo.com").setPassword(encoder.encode("d1261e513fd80525a4fd227bfa52718ba27beb58fc1e52f49283a349a146b5c5"))
-                .setFirstname("Larbi").setLastname("AIT MOHAMED").setRoles(set);
+                .setFirstname("Larbi").setLastname("AIT MOHAMED").setRoles(set).setIsActive(true);
         User doryan = new User().setLogin("doryan@viseo.com").setPassword(encoder.encode("f44f6a73eb463fbddf089f93385b3b743cfc6397e3aa30a73e89d29dbef1ef1c"))
-                .setFirstname("Doryan").setLastname("DAHON").setRoles(set);
+                .setFirstname("Doryan").setLastname("DAHON").setRoles(set).setIsActive(true);
         User yunan = new User().setLogin("yunan@viseo.com").setPassword(encoder.encode("04eefe3817d9a64aa70efbd3144ff239f26729fc0bfc98c4f669f14fed0786a7"))
-                .setFirstname("Yunan").setLastname("HOU").setRoles(set);
+                .setFirstname("Yunan").setLastname("HOU").setRoles(set).setIsActive(true);
         User manon = new User().setLogin("manon@viseo.com").setPassword(encoder.encode("190987e7c02f48b91221bc4914ee26eaec486dab371296a53a5e7e583cdfc663"))
-                .setFirstname("Manon").setLastname("GERMANICUS").setRoles(set);
+                .setFirstname("Manon").setLastname("GERMANICUS").setRoles(set).setIsActive(true);
         em.persist(alexandre);
         em.persist(baptiste);
         em.persist(wassim);

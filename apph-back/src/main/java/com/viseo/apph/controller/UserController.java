@@ -1,15 +1,13 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.domain.User;
-import com.viseo.apph.dto.IResponseDto;
-import com.viseo.apph.dto.MessageResponse;
-import com.viseo.apph.dto.UserRequest;
-import com.viseo.apph.dto.UserResponse;
+import com.viseo.apph.dto.*;
+import com.viseo.apph.exception.ExpiredLinkException;
+import com.viseo.apph.exception.InvalidTokenException;
 import com.viseo.apph.exception.NotFoundException;
 import com.viseo.apph.security.Utils;
 import com.viseo.apph.service.SettingService;
 import com.viseo.apph.service.UserService;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -23,7 +21,6 @@ import javax.persistence.NoResultException;
 @CrossOrigin(origins = "${front-server}")
 @RequestMapping("/user")
 public class UserController {
-
     @Autowired
     UserService userService;
     @Autowired
@@ -74,7 +71,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/contact/get")
-    public ResponseEntity<IResponseDto> getContacts(){
+    public ResponseEntity<IResponseDto> getContacts() {
         try {
             User user = utils.getUser();
             return ResponseEntity.ok(userService.getContacts(user));

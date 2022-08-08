@@ -17,7 +17,8 @@
       "emailUsed": "Email already used",
       "nameOverChar": "The first or last name cannot exceed 127 characters.",
       "emailOverChar": "The email cannot exceed 255 characters.",
-      "loginOverChar": "The login cannot exceed 255 characters."
+      "loginOverChar": "The login cannot exceed 255 characters.",
+      "emailNotVerified": "The email is not verified, a new verification email will be sent to you."
     },
     "create": "Create an account",
     "exist": "Already have an account? Sign in",
@@ -37,6 +38,7 @@
     "setEmailToReset": "To reset your password, enter the email address with which you registered.",
     "passwordChanged": "Your password has been changed, you will be redirected to the login page",
     "forgottenPassword": "Forgotten password",
+    "redirectionToLogin3s": "You will be send to login form in 3s",
     "contact": {
       "new": "New Contact",
       "add": "Add",
