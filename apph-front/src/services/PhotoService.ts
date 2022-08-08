@@ -10,7 +10,7 @@ import {
 import Cookies from 'universal-cookie';
 import { IFilterPayload } from '../utils/types/Filter';
 import { GridSortItem } from '@mui/x-data-grid';
-import { ILocation } from '../utils/types/Location';
+import { ILocation, IMarker } from '../utils/types/Location';
 
 const cookies = new Cookies();
 export default class PhotoService {
@@ -465,5 +465,31 @@ export default class PhotoService {
       handleError(JSON.parse(errorMessage).message);
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
+
+  static getMarkers(
+    handleSuccess: (markers: IMarker[]) => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const userInfos = cookies.get('user');
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + userInfos?.token
+      }
+    };
+    const successFunction = (results: string) => {
+      handleSuccess(JSON.parse(results).markerList);
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage));
+    };
+    return Server.request(
+      `/photo/markers`,
+      requestOptions,
+      successFunction,
+      errorFunction
+    );
   }
 }

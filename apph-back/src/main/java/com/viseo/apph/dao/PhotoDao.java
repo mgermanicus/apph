@@ -2,8 +2,10 @@ package com.viseo.apph.dao;
 
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Photo;
+import com.viseo.apph.domain.Position;
 import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.FilterRequest;
+import com.viseo.apph.dto.MapMarker;
 import com.viseo.apph.security.AuthTokenFilter;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.engine.search.sort.dsl.SearchSortFactory;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
@@ -108,5 +111,11 @@ public class PhotoDao {
                         .toPredicate()
                 )
                 .fetchAll();
+    }
+
+    public List<Photo> getAllPhotos(User user) {
+        return em.createQuery("SELECT photo FROM Photo photo WHERE photo.user = :user", Photo.class)
+                .setParameter("user", user)
+                .getResultList();
     }
 }

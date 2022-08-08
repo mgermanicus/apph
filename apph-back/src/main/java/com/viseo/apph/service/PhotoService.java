@@ -190,6 +190,17 @@ public class PhotoService {
     }
 
     @Transactional
+    public MapMarkerListResponse getMapMarkers(User user) {
+        List<Photo> allPhotos = photoDao.getAllPhotos(user);
+        MapMarkerListResponse response = new MapMarkerListResponse();
+        allPhotos.forEach(photo -> response.addMarker(new MapMarker()
+                .setId(photo.getId())
+                .setLat(photo.getLat())
+                .setLng(photo.getLng())));
+        return response;
+    }
+
+    @Transactional
     public MessageListResponse movePhotosToFolder(User user, PhotosRequest request) throws NotFoundException, UnauthorizedException {
         Folder folder = folderDao.getFolderById(request.getFolderId());
         if (folder == null) {
