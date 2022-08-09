@@ -224,4 +224,12 @@ public class PhotoController {
         PhotoListResponse responseList = photoService.searchFuzzy(filterRequest, user);
         return ResponseEntity.ok().body(responseList);
     }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping(value = "/markers")
+    public ResponseEntity<IResponseDto> getMapMarkers() {
+        User user = utils.getUser();
+        MapMarkerListResponse response = photoService.getMapMarkers(user);
+        return ResponseEntity.ok().body(response);
+    }
 }

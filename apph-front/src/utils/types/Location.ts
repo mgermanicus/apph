@@ -12,6 +12,12 @@ export interface IGeocodeResponse {
   items: IGeocodeResult[];
 }
 
+export interface IMarker {
+  id: number;
+  lat: number;
+  lng: number;
+}
+
 interface IGeocodeResult {
   address: { label: string };
   position: IPosition;
