@@ -13,7 +13,6 @@ export const DownloadZip = ({
   isFolder = false
 }: {
   ids: number[];
-  titleZip?: string;
   isFolder?: boolean;
 }): JSX.Element => {
   const [message, setMessage] = useState('');

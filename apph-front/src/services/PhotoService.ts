@@ -440,6 +440,7 @@ export default class PhotoService {
     subject: string,
     content: string,
     ids: number[],
+    type: string,
     handleSuccess: (successMessage: string) => void,
     handleError: (errorMessage: string) => void
   ) {
@@ -455,7 +456,8 @@ export default class PhotoService {
           recipient,
           subject,
           content,
-          ids
+          ids,
+          type
         })
       };
     const successFunction = (message: string) => {

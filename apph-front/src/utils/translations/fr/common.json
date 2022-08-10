@@ -81,6 +81,7 @@
     "create": "Créer",
     "delete": "Supprimer du dossier",
     "createFolder": "Créer un dossier",
+    "sendFolder": "Envoyer le dossier par mail",
     "deleteFolder": {
       "dialogButton": "Supprimer le dossier actuel",
       "confirmDelete": "Souhaitez vous vraiment supprimer ce dossier?",

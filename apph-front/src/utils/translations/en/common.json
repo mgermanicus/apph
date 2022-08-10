@@ -81,6 +81,7 @@
     "create": "Create",
     "delete": "Delete from folder",
     "createFolder": "Create a folder",
+    "sendFolder": "Send the folder by email",
     "deleteFolder": {
       "dialogButton": "Delete current folder",
       "confirmDelete": "Do you really want to delete this folder?",

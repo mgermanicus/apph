@@ -49,4 +49,18 @@ describe('Send Photo Button', () => {
     //THEN
     expect(screen.getByText('signup.error.email')).toBeInTheDocument();
   });
+
+  it('should send folder', () => {
+    //GIVEN
+    render(<SendPhotosButton ids={[1]} isFolder={true} />);
+    triggerRequestSuccess('{ "message": "Success" }');
+    clickButton(/send-photos/);
+    fillText(/email.to/, 'test@viseo.com');
+    fillText(/email.content/, 'content');
+    fillText(/email.subject/, 'subject');
+    //WHEN
+    clickButton(/action.send/);
+    //THEN
+    expect(screen.getByText('Success')).toBeInTheDocument();
+  });
 });

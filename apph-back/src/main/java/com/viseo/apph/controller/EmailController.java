@@ -31,7 +31,7 @@ public class EmailController {
     public ResponseEntity<IResponseDto> sendAttachment(@RequestBody EmailRequest emailRequest) {
         User user = utils.getUser();
         try {
-            return ResponseEntity.ok(sesService.SendMessageAttachment(user, emailRequest.getRecipient(), emailRequest.getSubject(), emailRequest.getContent(), emailRequest.getIds()));
+            return ResponseEntity.ok(sesService.SendMessageAttachment(user, emailRequest));
         } catch (MaxSizeExceededException msee) {
             return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(new MessageResponse(msee.getMessage()));
         } catch (UnauthorizedException | IOException ue) {
