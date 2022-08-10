@@ -117,4 +117,30 @@ export default class UserService {
     };
     return Server.request(URL, requestOptions, successFunction, errorFunction);
   }
+
+  static deleteUser(
+    id: string,
+    handleSuccess: () => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const URL = '/user/delete';
+    const userInfos = cookies.get('user');
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + userInfos?.token
+      },
+      body: JSON.stringify({
+        id
+      })
+    };
+    const successFunction = (val: string) => {
+      handleSuccess();
+    };
+    const errorFunction = (errorMessage: string) => {
+      handleError(JSON.parse(errorMessage).message);
+    };
+    return Server.request(URL, requestOptions, successFunction, errorFunction);
+  }
 }

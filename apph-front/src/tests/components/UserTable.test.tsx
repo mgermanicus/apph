@@ -33,7 +33,7 @@ describe('UserTable Tests', () => {
       }
     ];
     //WHEN
-    render(<UserTable data={data} loading={false} />);
+    render(<UserTable data={data} loading={false} setRefresh={jest.fn()} />);
     //THEN
     expect(screen.getByText(/Freeman/)).toBeInTheDocument();
     expect(screen.getByText(/Isaac/)).toBeInTheDocument();
