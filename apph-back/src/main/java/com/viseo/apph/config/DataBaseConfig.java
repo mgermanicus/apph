@@ -152,6 +152,10 @@ public class DataBaseConfig {
         //Elie's tags
         Tag elieT1 = new Tag().setName("Elie_T1").setUser(elie);
         Tag elieT2 = new Tag().setName("Elie_T2").setUser(elie);
+        Tag elieT3 = new Tag().setName("Elie_T3").setUser(elie);
+        Tag elieT4 = new Tag().setName("Elie_T4").setUser(elie);
+        Tag elieT5 = new Tag().setName("Elie_T5").setUser(elie);
+        Tag elieT6 = new Tag().setName("Elie_T6").setUser(elie);
         em.persist(elieT1);
         em.persist(elieT2);
         //Photo
@@ -165,15 +169,15 @@ public class DataBaseConfig {
         Photo eliePhoto1 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo1").setDescription("photo test 1 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
         Photo eliePhoto2 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo2").setDescription("photo test 2 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
         Photo eliePhoto3 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo3").setDescription("photo test 3 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
-        Photo eliePhoto4 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo4").setDescription("photo test 4 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
-        Photo eliePhoto5 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo5").setDescription("photo test 5 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
-        Photo eliePhoto6 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo6").setDescription("photo test 6 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
-        Photo eliePhoto7 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo7").setDescription("photo test 7 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
-        Photo eliePhoto8 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo8").setDescription("photo test 8 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
-        Photo eliePhoto9 = new Photo().setUser(elie).setSize(1300).addTag(elieT1).setTitle("photo9").setDescription("photo test 9 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
-        Photo eliePhoto10 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo10").setDescription("photo test 10 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
-        Photo eliePhoto11 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo11").setDescription("photo test 11 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
-        Photo eliePhoto12 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo12").setDescription("photo test 12 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
+        Photo eliePhoto4 = new Photo().setUser(elie).setSize(6000).addTag(elieT1).setTitle("photo4").setDescription("photo test 4 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
+        Photo eliePhoto5 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo5").setDescription("photo test 5 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
+        Photo eliePhoto6 = new Photo().setUser(elie).setSize(8000).addTag(elieT2).setTitle("photo6").setDescription("photo test 6 dans root").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieRoot);
+        Photo eliePhoto7 = new Photo().setUser(elie).setSize(1300).addTag(elieT2).setTitle("photo7").setDescription("photo test 7 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
+        Photo eliePhoto8 = new Photo().setUser(elie).setSize(1300).addTag(elieT3).setTitle("photo8").setDescription("photo test 8 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
+        Photo eliePhoto9 = new Photo().setUser(elie).setSize(1300).addTag(elieT3).setTitle("photo9").setDescription("photo test 9 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
+        Photo eliePhoto10 = new Photo().setUser(elie).setSize(1300).addTag(elieT4).setTitle("photo10").setDescription("photo test 10 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
+        Photo eliePhoto11 = new Photo().setUser(elie).setSize(100000).addTag(elieT5).setTitle("photo11").setDescription("photo test 11 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
+        Photo eliePhoto12 = new Photo().setUser(elie).setSize(506273).addTag(elieT6).setTitle("photo12").setDescription("photo test 12 dans child 1").setCreationDate(LocalDate.now()).setModificationDate(LocalDate.now()).setShootingDate(LocalDate.now()).setFolder(elieChild1);
         em.persist(eliePhoto1);
         em.persist(eliePhoto2);
         em.persist(eliePhoto3);

@@ -62,9 +62,9 @@ describe('global search page test', () => {
   });
 
   it('test photo display', async () => {
-    //GiVEN
+    //GIVEN
     const photoList = JSON.stringify([mockPhoto, mockPhoto]);
-    triggerRequestSuccess(`{"photoList":[${photoList}],"total":2}`);
+    triggerRequestSuccess(`{"photoList":[${photoList}],"total":2}}`);
     const spyRequestFunction = triggerRequestSuccess(
       `{"photoList":[${JSON.stringify(mockPhoto)}],"total":2}`
     );

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import PhotoService from '../../services/PhotoService';
 import { IMessage, ITable } from '../../utils';
 import {
@@ -26,15 +26,16 @@ export const GlobalSearchPage = ({
 }): JSX.Element => {
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
   const [data, setData] = useState<ITable[]>([]);
   const [total, setTotal] = React.useState<number>(0);
   const [page, setPage] = React.useState<number>(1);
-  const [size, setSize] = React.useState<number>(pageSize);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [message, setMessage] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [severity, setSeverity] = useState<AlertColor>();
-  const [searchParams] = useSearchParams();
+  const [tagFacet, setTagFacet] = useState<Record<string, number>>({});
+  const [sizeFacet, setSizeFacet] = useState<Record<never, number>>({});
 
   const traitError = (error: IMessage) => {
     setMessage(error.message);
@@ -42,36 +43,36 @@ export const GlobalSearchPage = ({
     setSeverity('error');
   };
 
-  const search = () => {
+  useEffect(() => {
+    setLoading(true);
     PhotoService.search(
-      searchParams.get('params'),
+      location?.search.replace('%2', '/'),
       page,
-      size,
-      (photoList, totalHits) => {
+      pageSize,
+      (photoList, totalHits, facets) => {
         setData(photoList);
         setTotal(totalHits);
+        if (facets) {
+          setTagFacet(facets.tagFacet);
+          setSizeFacet(facets.sizeFacet);
+        }
       },
       (error: IMessage) => traitError(error)
     ).finally(() => {
       setLoading(false);
     });
-  };
+  }, [location, page, location?.search]);
 
-  useEffect(() => {
-    setSize(
-      searchParams.get('size') === null
-        ? pageSize
-        : Number(searchParams.get('size'))
-    );
-  }, [location]);
-
-  useEffect(() => {
-    search();
-  }, [size, location, page]);
-
-  const handleChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
     window.scrollTo(0, 0);
+  };
+
+  const addSearchParameter = (key: string, facet: string) => {
+    navigate({
+      pathname: '/search/global/',
+      search: location.search + `&${key}=${facet}`
+    });
   };
 
   if (total == 0) {
@@ -107,16 +108,69 @@ export const GlobalSearchPage = ({
             float: 'left'
           }}
         >
-          <Typography variant="h6" gutterBottom component="div">
-            TODO facets
+          <Typography variant="h5" gutterBottom component="div">
+            {t('photo.enhanceSearch')}
+          </Typography>
+          <Typography variant="h6" gutterBottom component="div" align="left">
+            {t('photo.tagSuggestions')}
           </Typography>
           <ButtonGroup
             variant="text"
             aria-label="text button group"
             orientation="vertical"
+            sx={{ alignItems: 'baseline', width: 1, mb: '8px' }}
           >
-            <Button>Paris</Button>
-            <Button>Toulouse</Button>
+            {Object.entries(tagFacet)?.map(([tag, nbrOfEntries]) => (
+              <Button
+                key={tag}
+                sx={{
+                  justifyContent: 'left',
+                  textAlign: 'left !important',
+                  maxWidth: 'calc(.25 * (100vw - 28px))',
+                  overflow: 'hidden'
+                }}
+                onClick={() => addSearchParameter('tag', tag)}
+              >
+                {tag} ({nbrOfEntries})
+              </Button>
+            ))}
+          </ButtonGroup>
+          <Typography variant="h6" gutterBottom component="div" align="left">
+            {t('photo.sizeSuggestions')}
+          </Typography>
+          <ButtonGroup
+            variant="text"
+            aria-label="text button group"
+            orientation="vertical"
+            sx={{ alignItems: 'baseline', width: 1, mb: '8px' }}
+          >
+            {Object.entries(sizeFacet).map(([size, nbrOfEntries], index) => {
+              const range: Array<string> = size
+                .slice(1, -1)
+                .split(',')
+                .map((value) => `${parseInt(value)}`);
+              const keyString =
+                index !== 2
+                  ? `${range[0]} ko - ${range[1]} ko
+              (${nbrOfEntries})`
+                  : `> ${range[0]} ko (${nbrOfEntries})`;
+              return (
+                <Button
+                  key={size}
+                  sx={{
+                    justifyContent: 'left',
+                    textAlign: 'left',
+                    maxWidth: 'calc(.25 * (100vw - 28px))',
+                    overflow: 'hidden'
+                  }}
+                  onClick={() => {
+                    addSearchParameter('size', `${range[0]}-${range[1]}`);
+                  }}
+                >
+                  {keyString}
+                </Button>
+              );
+            })}
           </ButtonGroup>
         </Grid>
         <Grid item xs>
@@ -129,7 +183,7 @@ export const GlobalSearchPage = ({
           </Stack>
           <Stack spacing={2}>
             <Pagination
-              count={Math.ceil(total / size)}
+              count={Math.ceil(total / pageSize)}
               showFirstButton
               showLastButton
               size="large"

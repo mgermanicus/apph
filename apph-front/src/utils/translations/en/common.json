@@ -75,7 +75,7 @@
     "advancedSearch": "Advanced Search",
     "users": "Users List",
     "settings": "Settings",
-    "Search": "Search"
+    "search": "Search"
   },
   "folder": {
     "create": "Create",
@@ -140,7 +140,10 @@
     "successDelete": "Photo successfully deleted",
     "failDelete": "An error occurred during deletion",
     "successMove": "Photo successfully moved.",
+    "enhanceSearch": "Enhance your search :",
+    "tagSuggestions": "Tags suggestions",
     "sendPhotos": "Send Selected Photos",
+    "sizeSuggestions": "Size suggestions",
     "error": {
       "failChangeFormat": "Error when changing the format",
       "notFound": "Photo not found",

@@ -375,7 +375,11 @@ export default class PhotoService {
     target: string | null,
     page: number,
     pageSize: number,
-    handleSuccess: (photoList: ITable[], total: number) => void,
+    handleSuccess: (
+      photoList: ITable[],
+      total: number,
+      tagFacets: Record<string, Record<never, number>>
+    ) => void,
     handleError: (errorMessage: IMessage) => void
   ) {
     const userInfos = cookies.get('user');
@@ -392,43 +396,17 @@ export default class PhotoService {
       })
     };
     const successFunction = (results: string) => {
-      handleSuccess(JSON.parse(results).photoList, JSON.parse(results).total);
+      handleSuccess(
+        JSON.parse(results).photoList,
+        JSON.parse(results).total,
+        JSON.parse(results).facets
+      );
     };
     const errorFunction = (errorMessage: string) => {
       handleError(JSON.parse(errorMessage));
     };
     return Server.request(
       `/photo/search`,
-      requestOptions,
-      successFunction,
-      errorFunction
-    );
-  }
-
-  static searchFuzzy(
-    target: string,
-    handleSuccess: (photoList: ITable[]) => void,
-    handleError: (errorMessage: IMessage) => void
-  ) {
-    const userInfos = cookies.get('user');
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + userInfos?.token
-      },
-      body: JSON.stringify({
-        target
-      })
-    };
-    const successFunction = (results: string) => {
-      handleSuccess(JSON.parse(results).photoList);
-    };
-    const errorFunction = (errorMessage: string) => {
-      handleError(JSON.parse(errorMessage));
-    };
-    return Server.request(
-      `/photo/search/fuzzy`,
       requestOptions,
       successFunction,
       errorFunction

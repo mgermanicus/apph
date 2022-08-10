@@ -213,15 +213,7 @@ public class PhotoController {
     @PostMapping(value = "/search", produces = "application/json")
     public ResponseEntity<IResponseDto> search(@RequestBody FilterRequest filterRequest) {
         User user = utils.getUser();
-        PhotoListResponse responseList = photoService.search(filterRequest, user);
-        return ResponseEntity.ok().body(responseList);
-    }
-
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    @PostMapping(value = "/search/fuzzy", produces = "application/json")
-    public ResponseEntity<IResponseDto> searchFuzzy(@RequestBody FilterRequest filterRequest) {
-        User user = utils.getUser();
-        PhotoListResponse responseList = photoService.searchFuzzy(filterRequest, user);
+        GlobalSearchResponse responseList = photoService.search(filterRequest, user);
         return ResponseEntity.ok().body(responseList);
     }
 
