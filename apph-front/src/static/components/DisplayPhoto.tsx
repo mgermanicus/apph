@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { MovePhotoOrFolder } from './MovePhotoOrFolder';
 import { DownloadZip } from './DownloadZip';
 import { DeleteFolder } from './DeleteFolder';
+import { SendPhotosButton } from './SendPhotosButton';
 
 const tinySize = {
   gridContainerSpacing: { xs: 1, md: 2 },
@@ -160,6 +161,10 @@ export const DisplayPhoto = ({
                   folderToBeMoved={selectedFolder}
                   folderId={rootFolder}
                   refreshFolder={refreshFolder}
+                />
+                <SendPhotosButton
+                  ids={[parseInt(selectedFolder)]}
+                  isFolder={true}
                 />
                 <DeleteFolder
                   selectedFolderId={selectedFolder}

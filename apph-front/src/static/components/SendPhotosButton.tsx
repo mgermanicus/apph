@@ -15,7 +15,13 @@ import Typography from '@mui/material/Typography';
 import { emailValidator } from '../../utils';
 import PhotoService from '../../services/PhotoService';
 
-export const SendPhotosButton = ({ ids }: { ids: number[] }) => {
+export const SendPhotosButton = ({
+  ids,
+  isFolder = false
+}: {
+  ids: number[];
+  isFolder?: boolean;
+}) => {
   const [recipient, setRecipient] = useState<string>('');
   const [subject, setSubject] = useState<string>('');
   const [emailContent, setEmailContent] = useState<string>('');
@@ -55,6 +61,7 @@ export const SendPhotosButton = ({ ids }: { ids: number[] }) => {
         subject,
         emailContent,
         ids,
+        isFolder ? 'folder' : 'photos',
         (success) => {
           openSnackBar('success', success);
           handleCloseForm();

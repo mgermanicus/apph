@@ -11,6 +11,8 @@ public class EmailRequest {
     String content;
     @JsonProperty("ids")
     long[] ids;
+    @JsonProperty("type")
+    String type;
 
     public String getRecipient() {
         return recipient;
@@ -45,6 +47,15 @@ public class EmailRequest {
 
     public EmailRequest setIds(long[] ids) {
         this.ids = ids;
+        return this;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public EmailRequest setType(String type) {
+        this.type = type;
         return this;
     }
 }
