@@ -67,7 +67,7 @@ export const PasswordReset = () => {
   }, []);
   const form = (
     <>
-      <Typography variant="h4" component="h1">
+      <Typography variant="h5" component="h1" sx={{ mb: 4, mt: 2 }}>
         {t('user.resetPassword')}
       </Typography>
       <InputLabel htmlFor="newPassword">{t('user.newPassword')}</InputLabel>
@@ -79,7 +79,7 @@ export const PasswordReset = () => {
       />
       <br />
       <br />
-      <InputLabel htmlFor="confirmPassword">
+      <InputLabel htmlFor="confirmPassword" sx={{ mt: 2 }}>
         {t('user.confirmPassword')}
       </InputLabel>
       <Input
@@ -89,7 +89,9 @@ export const PasswordReset = () => {
         onChange={(e) => setConfirmPassword(e.currentTarget.value)}
       />
       <br />
-      <Button onClick={handleReset}>{t('action.confirm')}</Button>
+      <Button onClick={handleReset} sx={{ mt: 3 }}>
+        {t('action.confirm')}
+      </Button>
     </>
   );
   return (
