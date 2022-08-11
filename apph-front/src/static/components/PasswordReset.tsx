@@ -65,6 +65,7 @@ export const PasswordReset = () => {
       <InputLabel htmlFor="newPassword">{t('user.newPassword')}</InputLabel>
       <Input
         id="newPassword"
+        data-testid="newPassword"
         value={newPassword}
         onChange={(e) => setNewPassword(e.currentTarget.value)}
       />
@@ -75,6 +76,7 @@ export const PasswordReset = () => {
       </InputLabel>
       <Input
         id="confirmPassword"
+        data-testid="confirmPassword"
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.currentTarget.value)}
       />

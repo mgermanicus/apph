@@ -15,4 +15,14 @@ public class ResetPasswordRequest {
     public String getToken() {
         return token;
     }
+
+    public ResetPasswordRequest setPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public ResetPasswordRequest setToken(String token) {
+        this.token = token;
+        return this;
+    }
 }

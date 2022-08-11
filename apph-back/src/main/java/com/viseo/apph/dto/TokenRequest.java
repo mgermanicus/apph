@@ -8,4 +8,9 @@ public class TokenRequest {
     public String getToken(){
         return token;
     }
+
+    public TokenRequest setToken(String token) {
+        this.token = token;
+        return this;
+    }
 }

@@ -53,16 +53,18 @@ public class User extends BaseEntity {
         return tokenForResetting;
     }
 
-    public void setTokenForResetting(String tokenForResetting) {
+    public User setTokenForResetting(String tokenForResetting) {
         this.tokenForResetting = tokenForResetting;
+        return this;
     }
 
     public boolean isResetting() {
         return isResetting;
     }
 
-    public void setResetting(boolean resetting) {
+    public User setResetting(boolean resetting) {
         isResetting = resetting;
+        return this;
     }
 
     public User setLogin(String login) {

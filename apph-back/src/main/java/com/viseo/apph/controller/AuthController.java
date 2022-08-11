@@ -5,7 +5,6 @@ import com.viseo.apph.exception.ExpiredLinkException;
 import com.viseo.apph.exception.InvalidTokenException;
 import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.service.UserService;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

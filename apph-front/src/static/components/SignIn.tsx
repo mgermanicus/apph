@@ -199,6 +199,7 @@ export const SignIn = () => {
                 <Input
                   type="text"
                   placeholder="Email"
+                  data-testid="emailReset"
                   onChange={handleChange}
                 />
                 <Button onClick={handleReset}>{t('user.resetPassword')}</Button>
