@@ -1,7 +1,13 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import AuthService from '../../services/AuthService';
-import { AlertColor, Button, Input, InputLabel } from '@mui/material';
+import {
+  AlertColor,
+  Button,
+  Input,
+  InputLabel,
+  Typography
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { AlertSnackbar } from './AlertSnackbar';
 import * as React from 'react';
@@ -61,7 +67,9 @@ export const PasswordReset = () => {
   }, []);
   const form = (
     <>
-      <h1>{t('user.resetPassword')}</h1>
+      <Typography variant="h4" component="h1">
+        {t('user.resetPassword')}
+      </Typography>
       <InputLabel htmlFor="newPassword">{t('user.newPassword')}</InputLabel>
       <Input
         id="newPassword"

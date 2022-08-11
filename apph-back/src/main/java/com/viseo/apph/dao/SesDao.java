@@ -76,4 +76,34 @@ public class SesDao {
             return new MessageResponse("email.error.sentWithAttachment");
         }
     }
+
+    public void sendEmail(String sender, String recipient, String subject, String bodyHTML) {
+        Destination destination = Destination.builder()
+                .toAddresses(recipient)
+                .build();
+        Content content = Content.builder()
+                .data(bodyHTML)
+                .build();
+        Content sub = Content.builder()
+                .data(subject)
+                .build();
+        Body body = Body.builder()
+                .html(content)
+                .build();
+        Message msg = Message.builder()
+                .subject(sub)
+                .body(body)
+                .build();
+
+        SendEmailRequest request = SendEmailRequest.builder()
+                .destination(destination)
+                .message(msg)
+                .source(sender)
+                .build();
+        try {
+            sesClient.sendEmail(request);
+        } catch (SesException e) {
+            logger.error(e.awsErrorDetails().errorMessage());
+        }
+    }
 }

@@ -52,9 +52,9 @@ public class AuthController {
         }
     }
     @PostMapping("/forgotPassword")
-    public ResponseEntity<String> forgotPassword(@RequestBody EmailRequest emailRequest){
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest){
         try{
-            userService.forgotPassword(emailRequest.getLogin(), emailRequest.getLanguage());
+            userService.forgotPassword(forgotPasswordRequest.getLogin(), forgotPasswordRequest.getLanguage());
             return ResponseEntity.ok().body("");
         }
         catch(NoResultException e){

@@ -80,7 +80,7 @@ describe('Tests du composant SignIn.tsx', () => {
 
   it('Resetting password with bad email', () => {
     //GIVEN
-    render(<SignIn />, { wrapper });
+    renderWithWrapper(<SignIn />);
     const linkButton = screen.getByText(/signin.forgottenPassword/);
     //WHEN
     fireEvent.click(linkButton, { button: 0 });
@@ -97,7 +97,7 @@ describe('Tests du composant SignIn.tsx', () => {
   it('Error during resetting', () => {
     //GIVEN
     triggerRequestFailure('Error during resetting');
-    render(<SignIn />, { wrapper });
+    renderWithWrapper(<SignIn />);
     const linkButton = screen.getByText(/signin.forgottenPassword/);
     //WHEN
     fireEvent.click(linkButton, { button: 0 });
@@ -116,7 +116,7 @@ describe('Tests du composant SignIn.tsx', () => {
   it('Resetting password with good email', () => {
     //GIVEN
     triggerRequestSuccess('');
-    render(<SignIn />, { wrapper });
+    renderWithWrapper(<SignIn />);
     const linkButton = screen.getByText(/signin.forgottenPassword/);
     //WHEN
     fireEvent.click(linkButton, { button: 0 });

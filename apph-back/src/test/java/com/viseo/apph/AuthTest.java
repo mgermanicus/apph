@@ -181,12 +181,12 @@ public class AuthTest {
         //GIVEN
         createAuthController();
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
-        EmailRequest emailRequest = new EmailRequest().setLogin(robert.getLogin()).setLanguage("fr");
+        ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest().setLogin(robert.getLogin()).setLanguage("fr");
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
         when(typedQueryUser.setParameter("login",robert.getLogin())).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(robert);
         //WHEN
-       ResponseEntity<String> response = authController.forgotPassword(emailRequest);
+       ResponseEntity<String> response = authController.forgotPassword(forgotPasswordRequest);
        //THEN
         Assert.assertTrue(response.getStatusCode().is2xxSuccessful());
     }
@@ -195,12 +195,12 @@ public class AuthTest {
         //GIVEN
         createAuthController();
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
-        EmailRequest emailRequest = new EmailRequest().setLogin(robert.getLogin()).setLanguage("fr");
+        ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest().setLogin(robert.getLogin()).setLanguage("fr");
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
         when(typedQueryUser.setParameter("login",robert.getLogin())).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenThrow(new NoResultException());
         //WHEN
-       ResponseEntity<String> response = authController.forgotPassword(emailRequest);
+       ResponseEntity<String> response = authController.forgotPassword(forgotPasswordRequest);
        //THEN
         Assert.assertTrue(response.getStatusCode().isError());
     }

@@ -3,11 +3,14 @@ import {
   clickButton,
   fillPassword,
   fillText,
+  renderWithWrapper,
   triggerRequestFailure,
   triggerRequestSuccess
 } from '../utils';
 import { PasswordReset } from '../../static/components/PasswordReset';
 import { wrapper } from '../utils/components/CustomWrapper';
+import { SignIn } from '../../static/components/SignIn';
+import * as React from 'react';
 jest.mock('react-i18next', () => ({
   // this mock makes sure any components using the translate hook can use it without a warning being shown
   useTranslation: () => {
@@ -27,7 +30,7 @@ describe('Test du composant PasswordReset.tsx', () => {
 
   it('resetting password ', () => {
     triggerRequestSuccess('');
-    render(<PasswordReset />, { wrapper });
+    renderWithWrapper(<PasswordReset />);
     const newPasswordInput = screen
       .getByTestId(/newPassword/)
       .querySelector('input');
@@ -46,7 +49,7 @@ describe('Test du composant PasswordReset.tsx', () => {
   });
   it('resetting password with not same password and password confirmation', () => {
     triggerRequestSuccess('');
-    render(<PasswordReset />, { wrapper });
+    renderWithWrapper(<PasswordReset />);
     const newPasswordInput = screen
       .getByTestId(/newPassword/)
       .querySelector('input');
