@@ -13,7 +13,7 @@ export const useUserTable = () => {
   useEffect(() => {
     setLoading(true);
     UserService.getUserList(handleSuccess, handleError);
-  }, [setRefresh]);
+  }, [refresh]);
 
   const handleError = (error: string) => {
     setErrorMessage(error);

@@ -8,6 +8,7 @@ import com.viseo.apph.domain.ERole;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Role;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.UserDeleteRequest;
 import com.viseo.apph.dto.LoginRequest;
 import com.viseo.apph.dto.UserListResponse;
 import com.viseo.apph.dto.UserRequest;
@@ -195,5 +196,11 @@ public class UserService {
             return "user.redirectionToLogin3s";
         }
         return "user.errorActivateUser";
+    }
+
+    @Transactional
+    public void delete(UserDeleteRequest deleteRequest) {
+        User user = userDao.getUserByLogin(deleteRequest.getEmail());
+        userDao.delete(user);
     }
 }

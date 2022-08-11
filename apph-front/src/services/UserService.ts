@@ -119,11 +119,11 @@ export default class UserService {
   }
 
   static deleteUser(
-    id: string,
+    email: string,
     handleSuccess: () => void,
     handleError: (errorMessage: string) => void
   ) {
-    const URL = '/user/delete';
+    const URL = '/admin/deleteUser';
     const userInfos = cookies.get('user');
     const requestOptions = {
       method: 'POST',
@@ -132,10 +132,10 @@ export default class UserService {
         Authorization: 'Bearer ' + userInfos?.token
       },
       body: JSON.stringify({
-        id
+        email
       })
     };
-    const successFunction = (val: string) => {
+    const successFunction = () => {
       handleSuccess();
     };
     const errorFunction = (errorMessage: string) => {

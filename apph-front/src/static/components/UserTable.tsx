@@ -49,7 +49,7 @@ export const UserTable = ({
       headerAlign: 'center',
       sortable: false,
       renderCell: (params) => (
-        <DeleteUser userId={params.row.id} setRefresh={setRefresh} />
+        <DeleteUser email={params.row.email} setRefresh={setRefresh} />
       )
     }
   ];

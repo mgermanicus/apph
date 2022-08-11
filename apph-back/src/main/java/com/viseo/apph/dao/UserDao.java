@@ -33,6 +33,10 @@ public class UserDao {
                 .getSingleResult();
         return !count.equals(0L);
     }
+
+    public void delete(User user) {
+        em.remove(user);
+    }
     public void resetPassword(String login, String newPassword){
         User user = getUserByLogin(login);
         user.setPassword(newPassword);

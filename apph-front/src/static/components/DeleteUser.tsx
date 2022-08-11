@@ -3,15 +3,15 @@ import { Delete } from '@mui/icons-material';
 import UserService from '../../services/UserService';
 
 export const DeleteUser = ({
-  userId,
+  email,
   setRefresh
 }: {
-  userId: string;
+  email: string;
   setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const handleClick = () => {
     UserService.deleteUser(
-      userId,
+      email,
       () => setRefresh((refresh) => !refresh),
       (error) => console.log(error)
     );
