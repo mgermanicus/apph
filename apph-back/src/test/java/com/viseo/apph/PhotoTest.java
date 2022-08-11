@@ -40,6 +40,7 @@ import software.amazon.awssdk.services.s3.model.*;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.io.InvalidObjectException;
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;

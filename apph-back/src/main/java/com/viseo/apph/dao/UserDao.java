@@ -33,4 +33,11 @@ public class UserDao {
                 .getSingleResult();
         return !count.equals(0L);
     }
+    public void resetPassword(String login, String newPassword){
+        User user = getUserByLogin(login);
+        user.setPassword(newPassword);
+        user.setResetting(false);
+        user.setTokenForResetting(null);
+        em.flush();
+    }
 }

@@ -30,6 +30,13 @@
     "lastName": "Last name",
     "password": "Password",
     "passwordConfirmation": "Confirm your password",
+    "emailSend": "An email was sent to",
+    "newPassword": "New password",
+    "confirmPassword": "Password confirmation",
+    "resetPassword": "Reset your password",
+    "setEmailToReset": "To reset your password, enter the email address with which you registered.",
+    "passwordChanged": "Your password has been changed, you will be redirected to the login page",
+    "forgottenPassword": "Forgotten password",
     "contact": {
       "new": "New Contact",
       "add": "Add",
@@ -40,11 +47,14 @@
     },
     "error": {
       "passwordNotMatch": "The passwords do not match",
+      "tooShortPassword": "The password is too short",
       "notAuthenticated": "The user is not authenticated",
       "sessionBindUserNotExist": "The user bound to this session does not exist",
       "expiredSession": "The session has expired. Please log in again",
       "loginAlreadyToken": "This login is already taken",
-      "notExist": "The user does not exist"
+      "notExist": "The user does not exist",
+      "email": "This email is incorrect",
+      "emailNotFound": "This email does not have an account in our application"
     }
   },
   "photoTable": {
@@ -157,8 +167,11 @@
     }
   },
   "token": {
+    "signatureNotValid": "Your link is not valid, you will be redirected to the login page",
     "notValid": "Token not valid",
-    "expired": "Token expired"
+    "expired": "Token expired",
+    "isExpired": "Your link has expired, you will be redirected to the login page",
+    "expiredLink": "The link has already been used, you will be redirected to the login page"
   },
   "action": {
     "continue": "Continue",

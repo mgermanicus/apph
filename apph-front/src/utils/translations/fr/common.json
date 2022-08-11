@@ -30,6 +30,13 @@
     "lastName": "Nom",
     "password": "Mot de passe",
     "passwordConfirmation": "Confirmation du mot de passe",
+    "emailSend": "Un email a été envoyé à l'adresse",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmation du mot de passe",
+    "resetPassword": "Reinitialisez votre mot de passe",
+    "setEmailToReset": "Pour réinitialiser votre mot de passe, renseignez l'adresse email avec laquelle vous vous êtes inscrit.",
+    "passwordChanged": "Votre mot de passe a été modifié, vous allez être redirigé vers la page de connexion",
+    "forgottenPassword": "Mot de passe oublié",
     "contact": {
       "new": "Nouveau Contact",
       "add": "Ajouter",
@@ -40,11 +47,14 @@
     },
     "error": {
       "passwordNotMatch": "Les mots de passe de correspondent pas",
+      "tooShortPassword": "Le mot de passe est trop court",
       "notAuthenticated": "L'utilisateur n'est pas connecté",
       "sessionBindUserNotExist": "L'utilisateur lié à cette session n'existe pas",
       "expiredSession": "La session a expiré. Veuillez vous reconnecter",
       "loginAlreadyToken": "Ce login est déjà utilisé",
-      "notExist": "L'utilisateur n'existe pas"
+      "notExist": "L'utilisateur n'existe pas",
+      "email": "Cette email est incorrecte",
+      "emailNotFound": "Cette email ne possède pas de compte dans notre application"
     }
   },
   "photoTable": {
@@ -158,7 +168,10 @@
   },
   "token": {
     "notValid": "Token non valide",
-    "expired": "Token expiré"
+    "expired": "Token expiré",
+    "signatureNotValid": "Votre lien n'est pas valide, vous allez être redirigé vers la page de connexion",
+    "isExpired": "Votre lien est expiré, vous allez être redirigé vers la page de connexion",
+    "expiredLink": "Le lien a déjà été utilisé, vous allez être redirigé vers la page de connexion"
   },
   "action": {
     "continue": "Continuer",

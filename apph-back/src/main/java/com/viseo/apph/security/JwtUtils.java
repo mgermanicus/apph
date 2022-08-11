@@ -33,8 +33,24 @@ public class JwtUtils {
                 .compact();
     }
 
+    public String generateJwtToken(String login, int expiration) {
+        return Jwts.builder()
+                .setSubject(login)
+                .claim("login", login)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(key)
+                .compact();
+    }
+
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     public boolean validateJwtToken(String authToken) {
@@ -53,6 +69,28 @@ public class JwtUtils {
             logger.error("JWT claims string is empty: {}", e.getMessage());
         }
         return false;
+    }
+
+    public boolean isSignatureValid(String authToken) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
+            return true;
+        } catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            return false;
+        } catch (ExpiredJwtException e){
+            return true;
+        }
+
+
+    }
+
+    public boolean isTokenNotExpired(String authToken) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
+            return true;
+        } catch (ExpiredJwtException e) {
+            return false;
+        }
     }
 
     public String setClaimOnToken(String token, Map<String, String> newClaims) {
