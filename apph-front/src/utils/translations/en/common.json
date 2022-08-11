@@ -76,7 +76,9 @@
   "userTable": {
     "firstname": "First name",
     "lastname": "Last name",
-    "email": "Email"
+    "email": "Email",
+    "actions": "Actions",
+    "confirmDelete": "Do you really want to delete this user ? All their data will be erased."
   },
   "field": {
     "photos": "My Pictures",
