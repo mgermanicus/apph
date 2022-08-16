@@ -33,6 +33,8 @@ public class AuthController {
 
     @PostMapping(value = "/signIn")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+        if (!userService.verifyUserVerified(loginRequest))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("signup.error.emailNotVerified");
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -51,36 +53,43 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(iae.getMessage());
         }
     }
+
     @PostMapping("/forgotPassword")
-    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest){
-        try{
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+        try {
             userService.forgotPassword(forgotPasswordRequest.getLogin(), forgotPasswordRequest.getLanguage());
             return ResponseEntity.ok().body("");
-        }
-        catch(NoResultException e){
+        } catch (NoResultException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user.error.emailNotFound");
         }
     }
+
     @PostMapping("/checkToken")
-    public ResponseEntity<String> checkToken(@RequestBody TokenRequest tokenRequest){
-        try{
+    public ResponseEntity<String> checkToken(@RequestBody TokenRequest tokenRequest) {
+        try {
             userService.checkToken(tokenRequest.getToken());
             return ResponseEntity.ok().body("");
-        }
-        catch(InvalidTokenException e){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
-        catch(ExpiredLinkException e){
+        } catch (InvalidTokenException | ExpiredLinkException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
+
     @PostMapping("/resetPassword")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
         try {
             userService.resetPassword(resetPasswordRequest.getToken(), resetPasswordRequest.getPassword());
             return ResponseEntity.ok().body("");
-        } catch(NoResultException e){
+        } catch (NoResultException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("user.error.emailNotFound");
+        }
+    }
+
+    @PostMapping("/activateUser")
+    public ResponseEntity<String> activateUser(@RequestBody TokenRequest tokenRequest) {
+        try {
+            return ResponseEntity.ok(userService.activeUser(tokenRequest.getToken()));
+        } catch (InvalidTokenException | ExpiredLinkException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 }

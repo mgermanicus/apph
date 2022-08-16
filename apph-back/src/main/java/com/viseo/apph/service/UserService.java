@@ -8,6 +8,7 @@ import com.viseo.apph.domain.ERole;
 import com.viseo.apph.domain.Folder;
 import com.viseo.apph.domain.Role;
 import com.viseo.apph.domain.User;
+import com.viseo.apph.dto.LoginRequest;
 import com.viseo.apph.dto.UserListResponse;
 import com.viseo.apph.dto.UserRequest;
 import com.viseo.apph.dto.UserResponse;
@@ -21,6 +22,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 import java.util.*;
@@ -36,6 +38,9 @@ public class UserService {
 
     @Autowired
     FolderDao folderDao;
+
+    @Autowired
+    SesService sesService;
 
     @Autowired
     JwtUtils jwtUtils;
@@ -57,7 +62,8 @@ public class UserService {
         Set<Role> set = new HashSet<>();
         Role roleUser = roleDao.getRole(ERole.ROLE_USER);
         set.add(roleUser);
-        User newUser = new User().setLogin(userRequest.getLogin()).setPassword(encoder.encode(userRequest.getPassword())).setFirstname(userRequest.getFirstName()).setLastname(userRequest.getLastName()).setRoles(set);
+        sesService.sendVerifyRegister(userRequest.getLogin());
+        User newUser = new User().setLogin(userRequest.getLogin()).setPassword(encoder.encode(userRequest.getPassword())).setFirstname(userRequest.getFirstName()).setLastname(userRequest.getLastName()).setRoles(set).setIsActive(false);
         userDao.createUser(newUser);
         Folder rootFolder = new Folder().setName(newUser.getFirstname() + " " + newUser.getLastname()).setParentFolderId(null).setUser(newUser);
         folderDao.createFolder(rootFolder);
@@ -66,36 +72,38 @@ public class UserService {
     @Transactional
     public void forgotPassword(String login, String language) throws NoResultException {
         User user = userDao.getUserByLogin(login);
-       String token = jwtUtils.generateJwtToken(login,1_800_000);
-       user.setResetting(true);
-       user.setTokenForResetting(token);
-       String bodyHTMLEn = "<html>" + "<head></head>" + "<body>" + "<h1>Password Forgotten APPH</h1>"
+        String token = jwtUtils.generateJwtToken(login, 1_800_000);
+        user.setResetting(true);
+        user.setTokenForResetting(token);
+        String bodyHTMLEn = "<html>" + "<head></head>" + "<body>" + "<h1>Password Forgotten APPH</h1>"
                 + "<p> Dear APPH Customer.</p><br>"
                 + "<p>Please click on the button to reset your password</p><br>"
-                + "<a href=\""+frontServer.getFrontServer()+"/resetPassword?token="+token+"\"><button>Reset your password</button></a>"
+                + "<a href=\"" + frontServer.getFrontServer() + "/resetPassword?token=" + token + "\"><button>Reset your password</button></a>"
                 + "<p>This link will be valid for 30 minutes</p><br>"
                 + "<p>If you did not make this request, please ignore the email</p><br>"
                 + "</body>" + "</html>";
         String bodyHTMLFr = "<html>" + "<head></head>" + "<body>" + "<h1>Mot de passe oublié APPH !</h1>"
                 + "<p>Chère client APPH</p><br>"
                 + "<p>Veuillez cliquer sur le bouton ci-dessous afin de réinitialiser votre mot de passe</p><br>"
-                + "<a href=\""+frontServer.getFrontServer()+"/resetPassword?token="+token+"\"><button>Reset your password</button></a><br>"
+                + "<a href=\"" + frontServer.getFrontServer() + "/resetPassword?token=" + token + "\"><button>Reset your password</button></a><br>"
                 + "<p>Ce lien sera valide 30 min</p><br>"
                 + "<p>Si vous n'êtes pas à l'origine de cette requête, veuillez ignorer l'email</p><br>"
                 + "</body>" + "</html>";
-        String bodyHTML = language.equals("fr")?bodyHTMLFr:bodyHTMLEn;
+        String bodyHTML = language.equals("fr") ? bodyHTMLFr : bodyHTMLEn;
         sesDao.sendEmail("wassim.bouhtout@viseo.com", user.getLogin(), "Reset your password", bodyHTML);
     }
 
-    public void checkToken(String token) throws InvalidTokenException, ExpiredLinkException {
-        if(!jwtUtils.isSignatureValid(token))
+    public User checkToken(String token) throws InvalidTokenException, ExpiredLinkException {
+        if (!jwtUtils.isSignatureValid(token))
             throw new InvalidTokenException("token.signatureNotValid");
-        if(!jwtUtils.isTokenNotExpired(token))
+        if (!jwtUtils.isTokenNotExpired(token))
             throw new InvalidTokenException("token.isExpired");
         String login = jwtUtils.getUserNameFromJwtToken(token);
         User user = userDao.getUserByLogin(login);
-        if(!user.isResetting() || !token.equals(user.getTokenForResetting()))
+        if (!user.getIsActive()) return user;
+        if (!user.isResetting() || !token.equals(user.getTokenForResetting()))
             throw new ExpiredLinkException();
+        return user;
     }
 
     @Transactional
@@ -143,8 +151,7 @@ public class UserService {
     @Transactional
     public void resetPassword(String token, String newPassword) throws NoResultException {
         String login = jwtUtils.getUserNameFromJwtToken(token);
-        User user = userDao.getUserByLogin(login);
-        userDao.resetPassword(login,encoder.encode(newPassword));
+        userDao.resetPassword(login, encoder.encode(newPassword));
     }
 
     @Transactional
@@ -169,5 +176,24 @@ public class UserService {
                 .setFirstname(userContact.getFirstname())
                 .setLastname(userContact.getLastname())).collect(Collectors.toList()));
         return response;
+    }
+
+    @Transactional
+    public boolean verifyUserVerified(LoginRequest loginRequest) {
+        if (!userDao.getUserByLogin(loginRequest.getLogin()).getIsActive()) {
+            sesService.sendVerifyRegister(loginRequest.getLogin());
+            return false;
+        }
+        return true;
+    }
+
+    @Transactional
+    public String activeUser(String token) throws InvalidTokenException, ExpiredLinkException {
+        User user = checkToken(token);
+        if (user != null) {
+            user.setIsActive(true);
+            return "user.redirectionToLogin3s";
+        }
+        return "user.errorActivateUser";
     }
 }

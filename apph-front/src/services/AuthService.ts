@@ -164,4 +164,27 @@ export default class AuthService {
   static getUserLoginByToken() {
     return jwtDecode(AuthService.getToken()) as IUser;
   }
+
+  static activeUser(
+    token: string,
+    handleSuccess: (successMessage: string) => void,
+    handleError: (errorMessage: string) => void
+  ) {
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        token
+      })
+    };
+
+    return Server.request(
+      `/auth/activateUser`,
+      requestOptions,
+      handleSuccess,
+      handleError
+    );
+  }
 }

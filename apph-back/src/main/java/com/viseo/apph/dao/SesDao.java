@@ -1,6 +1,7 @@
 package com.viseo.apph.dao;
 
 
+import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.IResponseDto;
 import com.viseo.apph.dto.MessageResponse;
 import org.slf4j.Logger;

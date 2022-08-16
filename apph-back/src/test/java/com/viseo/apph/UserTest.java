@@ -12,11 +12,13 @@ import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.security.UserDetailsImpl;
 import com.viseo.apph.service.SettingService;
 import com.viseo.apph.service.UserService;
+import io.jsonwebtoken.Jwts;
 import net.bytebuddy.utility.RandomString;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +29,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
+import java.security.Key;
+
 import static com.viseo.apph.utils.Utils.inject;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class UserTest {

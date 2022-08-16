@@ -1,4 +1,5 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import * as React from 'react';
 import { useEffect, useState } from 'react';
 import AuthService from '../../services/AuthService';
 import {
@@ -10,7 +11,6 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { AlertSnackbar } from './AlertSnackbar';
-import * as React from 'react';
 
 export const PasswordReset = () => {
   const [searchParams] = useSearchParams();

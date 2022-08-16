@@ -11,10 +11,13 @@ import com.viseo.apph.domain.User;
 import com.viseo.apph.dto.*;
 import com.viseo.apph.security.JwtUtils;
 import com.viseo.apph.security.UserDetailsImpl;
+import com.viseo.apph.service.SesService;
 import com.viseo.apph.service.UserService;
 import com.viseo.apph.utils.FrontServer;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import net.bytebuddy.utility.RandomString;
 import org.junit.Assert;
@@ -32,12 +35,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import software.amazon.awssdk.services.ses.SesClient;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import java.security.Key;
 import java.util.HashSet;
 import java.util.Set;
-import java.security.Key;
+
 import static com.viseo.apph.utils.Utils.inject;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,10 +60,11 @@ public class AuthTest {
     @Mock
     PasswordEncoder passwordEncoder;
     @Mock
-    AuthenticationManager authenticationManager;
-    AuthController authController;
+    SesClient sesClient;
     @Mock
-    SesDao sesDao;
+    AuthenticationManager authenticationManager;
+
+    AuthController authController;
 
     private void createAuthController() {
         Mockito.reset();
@@ -68,30 +75,43 @@ public class AuthTest {
         inject(folderDao, "em", em);
         inject(roleDao, "em", em);
         UserService userService = new UserService();
+        SesService sesService = new SesService();
+        SesDao sesDao = new SesDao();
+        sesClient = mock(SesClient.class, RETURNS_DEEP_STUBS);
+        inject(sesDao, "sesClient", sesClient);
+        inject(sesService, "sesDao", sesDao);
+        inject(sesService, "jwtUtils", new JwtUtils());
+        inject(sesService, "frontServer", new FrontServer());
         inject(userService, "encoder", passwordEncoder);
         inject(userService, "userDao", userDao);
         inject(userService, "folderDao", folderDao);
         inject(userService, "roleDao", roleDao);
+        inject(userService, "sesService", sesService);
         inject(userService, "sesDao", sesDao);
         inject(userService, "frontServer", new FrontServer());
+        inject(userService, "jwtUtils", new JwtUtils());
         authController = new AuthController();
         inject(authController, "userService", userService);
         inject(authController, "authenticationManager", authenticationManager);
         inject(authController, "jwtUtils", new JwtUtils());
-        inject(userService, "jwtUtils", new JwtUtils());
     }
 
     @Test
     public void testLoginUser() {
-        testLogin(ERole.ROLE_USER);
+        testLogin(ERole.ROLE_USER, true);
     }
 
     @Test
     public void testLoginAdmin() {
-        testLogin(ERole.ROLE_ADMIN);
+        testLogin(ERole.ROLE_ADMIN, true);
     }
 
-    public void testLogin(ERole role) {
+    @Test
+    public void testLoginNotActive() {
+        testLogin(ERole.ROLE_USER, false);
+    }
+
+    public void testLogin(ERole role, Boolean isActive) {
         //GIVEN
         createAuthController();
         Set<Role> set = new HashSet<>();
@@ -101,11 +121,15 @@ public class AuthTest {
                 .setLastname("test")
                 .setFirstname("test")
                 .setRoles(set)
+                .setIsActive(isActive)
                 .setId(1);
         UserDetailsImpl userDetails = UserDetailsImpl.build(user);
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", user.getLogin())).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(user);
         SecurityContext securityContext = mock(SecurityContext.class);
         MockedStatic<SecurityContextHolder> staticMock = mockStatic(SecurityContextHolder.class);
         staticMock.when(SecurityContextHolder::getContext).thenReturn(securityContext);
@@ -113,7 +137,11 @@ public class AuthTest {
         //WHEN
         ResponseEntity<String> responseEntity = authController.login(loginRequest);
         //THEN
-        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        if (isActive) {
+            Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        } else {
+            assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+        }
         staticMock.close();
     }
 
@@ -177,42 +205,43 @@ public class AuthTest {
     }
 
     @Test
-    public void testForgotPassword(){
+    public void testForgotPassword() {
         //GIVEN
         createAuthController();
-        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        User robert = (User) new User().setIsActive(true).setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest().setLogin(robert.getLogin()).setLanguage("fr");
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login",robert.getLogin())).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", robert.getLogin())).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(robert);
         //WHEN
-       ResponseEntity<String> response = authController.forgotPassword(forgotPasswordRequest);
-       //THEN
+        ResponseEntity<String> response = authController.forgotPassword(forgotPasswordRequest);
+        //THEN
         Assert.assertTrue(response.getStatusCode().is2xxSuccessful());
     }
+
     @Test
-    public void testForgotPasswordNoResult(){
+    public void testForgotPasswordNoResult() {
         //GIVEN
         createAuthController();
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest().setLogin(robert.getLogin()).setLanguage("fr");
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login",robert.getLogin())).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", robert.getLogin())).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenThrow(new NoResultException());
         //WHEN
-       ResponseEntity<String> response = authController.forgotPassword(forgotPasswordRequest);
-       //THEN
+        ResponseEntity<String> response = authController.forgotPassword(forgotPasswordRequest);
+        //THEN
         Assert.assertTrue(response.getStatusCode().isError());
     }
 
     @Test
-    public void testResetPassword(){
+    public void testResetPassword() {
         //GIVEN
         createAuthController();
         ResetPasswordRequest resetPasswordRequest = new ResetPasswordRequest().setToken("moke").setPassword("P@ssw0rd");
-        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
+        User robert = (User) new User().setIsActive(true).setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login",robert.getLogin())).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", robert.getLogin())).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(robert);
         MockedStatic<Jwts> JwtsMock = mockStatic(Jwts.class);
         io.jsonwebtoken.JwtParserBuilder parserMock = mock(io.jsonwebtoken.JwtParserBuilder.class, RETURNS_DEEP_STUBS);
@@ -232,13 +261,13 @@ public class AuthTest {
     }
 
     @Test
-    public void testResetPasswordNoResult(){
+    public void testResetPasswordNoResult() {
         //GIVEN
         createAuthController();
         ResetPasswordRequest resetPasswordRequest = new ResetPasswordRequest().setToken("moke").setPassword("P@ssw0rd");
         User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setId(1).setVersion(0);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login",robert.getLogin())).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", robert.getLogin())).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenThrow(new NoResultException());
         MockedStatic<Jwts> JwtsMock = mockStatic(Jwts.class);
         io.jsonwebtoken.JwtParserBuilder parserMock = mock(io.jsonwebtoken.JwtParserBuilder.class, RETURNS_DEEP_STUBS);
@@ -255,14 +284,15 @@ public class AuthTest {
         Assert.assertTrue(response.getStatusCode().isError());
         JwtsMock.close();
     }
+
     @Test
-    public void checkTokenTest(){
+    public void checkTokenTest() {
         //GIVEN
         createAuthController();
         TokenRequest tokenRequest = new TokenRequest().setToken("mock");
-        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setTokenForResetting("mock").setResetting(true).setId(1).setVersion(0);
+        User robert = (User) new User().setIsActive(true).setLogin("Robert").setPassword("P@ssw0rd").setTokenForResetting("mock").setResetting(true).setId(1).setVersion(0);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login",robert.getLogin())).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", robert.getLogin())).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(robert);
         MockedStatic<Jwts> JwtsMock = mockStatic(Jwts.class);
         io.jsonwebtoken.JwtParserBuilder parserMock = mock(io.jsonwebtoken.JwtParserBuilder.class, RETURNS_DEEP_STUBS);
@@ -280,14 +310,15 @@ public class AuthTest {
         JwtsMock.close();
 
     }
+
     @Test
-    public void checkTokenTestInvalidToken(){
+    public void checkTokenTestInvalidToken() {
         //GIVEN
         createAuthController();
         TokenRequest tokenRequest = new TokenRequest().setToken("mock");
-        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setTokenForResetting("moke").setResetting(true).setId(1).setVersion(0);
+        User robert = (User) new User().setIsActive(true).setLogin("Robert").setPassword("P@ssw0rd").setTokenForResetting("moke").setResetting(true).setId(1).setVersion(0);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login",robert.getLogin())).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", robert.getLogin())).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(robert);
         io.jsonwebtoken.JwtParser getBuildReturnMock = mock(io.jsonwebtoken.JwtParser.class);
         when(getBuildReturnMock.parseClaimsJws("mock")).thenThrow(new SignatureException(""));
@@ -296,35 +327,37 @@ public class AuthTest {
         //THEN
         Assert.assertTrue(response.getStatusCode().isError());
     }
+
     @Test
-    public void checkTokenTestExpiredToken(){
+    public void checkTokenTestExpiredToken() {
         //GIVEN
         createAuthController();
         TokenRequest tokenRequest = new TokenRequest().setToken("mock");
-        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setTokenForResetting("moke").setResetting(true).setId(1).setVersion(0);
+        User robert = (User) new User().setIsActive(true).setLogin("Robert").setPassword("P@ssw0rd").setTokenForResetting("moke").setResetting(true).setId(1).setVersion(0);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login",robert.getLogin())).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", robert.getLogin())).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(robert);
         MockedStatic<Jwts> JwtsMock = mockStatic(Jwts.class);
         io.jsonwebtoken.JwtParserBuilder parserMock = mock(io.jsonwebtoken.JwtParserBuilder.class, RETURNS_DEEP_STUBS);
         JwtsMock.when(Jwts::parserBuilder).thenReturn(parserMock);
         io.jsonwebtoken.JwtParser getBuildReturnMock = mock(io.jsonwebtoken.JwtParser.class);
         when(parserMock.setSigningKey(any(Key.class)).build()).thenReturn(getBuildReturnMock);
-        when(getBuildReturnMock.parseClaimsJws("mock")).thenThrow(new ExpiredJwtException(mock(Header.class),mock(Claims.class),""));
+        when(getBuildReturnMock.parseClaimsJws("mock")).thenThrow(new ExpiredJwtException(mock(Header.class), mock(Claims.class), ""));
         //WHEN
         ResponseEntity<String> response = authController.checkToken(tokenRequest);
         //THEN
         Assert.assertTrue(response.getStatusCode().isError());
         JwtsMock.close();
     }
+
     @Test
-    public void checkTokenTestExpiredLink(){
+    public void checkTokenTestExpiredLink() {
         //GIVEN
         createAuthController();
         TokenRequest tokenRequest = new TokenRequest().setToken("mock");
-        User robert = (User) new User().setLogin("Robert").setPassword("P@ssw0rd").setTokenForResetting("mock").setResetting(false).setId(1).setVersion(0);
+        User robert = (User) new User().setIsActive(true).setLogin("Robert").setPassword("P@ssw0rd").setTokenForResetting("mock").setResetting(false).setId(1).setVersion(0);
         when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("login",robert.getLogin())).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", robert.getLogin())).thenReturn(typedQueryUser);
         when(typedQueryUser.getSingleResult()).thenReturn(robert);
         MockedStatic<Jwts> JwtsMock = mockStatic(Jwts.class);
         io.jsonwebtoken.JwtParserBuilder parserMock = mock(io.jsonwebtoken.JwtParserBuilder.class, RETURNS_DEEP_STUBS);
@@ -339,6 +372,32 @@ public class AuthTest {
         ResponseEntity<String> response = authController.checkToken(tokenRequest);
         //THEN
         Assert.assertTrue(response.getStatusCode().isError());
+        JwtsMock.close();
+    }
+
+    @Test
+    public void testActivateUser() {
+        //GIVEN
+        createAuthController();
+        User robert = new User().setLogin("Robert").setIsActive(false);
+        TokenRequest tokenRequest = new TokenRequest().setToken("mokedToken");
+        when(em.createQuery("SELECT u FROM User u WHERE u.login=:login", User.class)).thenReturn(typedQueryUser);
+        when(typedQueryUser.setParameter("login", robert.getLogin())).thenReturn(typedQueryUser);
+        when(typedQueryUser.getSingleResult()).thenReturn(robert);
+        MockedStatic<Jwts> JwtsMock = mockStatic(Jwts.class);
+        io.jsonwebtoken.JwtParserBuilder parserMock = mock(io.jsonwebtoken.JwtParserBuilder.class, RETURNS_DEEP_STUBS);
+        io.jsonwebtoken.impl.DefaultClaims getbodyReturnMock = mock(io.jsonwebtoken.impl.DefaultClaims.class, RETURNS_DEEP_STUBS);
+        when(getbodyReturnMock.getSubject()).thenReturn("Robert");
+        when(parserMock.setSigningKey(any(Key.class))
+                .build()
+                .parseClaimsJws(any())
+                .getBody()).thenReturn(getbodyReturnMock);
+        JwtsMock.when(Jwts::parserBuilder).thenReturn(parserMock);
+        //WHEN
+        ResponseEntity<String> responseEntity = authController.activateUser(tokenRequest);
+        //THEN
+        Assert.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+        Assert.assertEquals(robert.getIsActive(), true);
         JwtsMock.close();
     }
 }

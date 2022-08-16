@@ -21,6 +21,7 @@ public class User extends BaseEntity {
     String lastname;
     String tokenForResetting;
     boolean isResetting;
+    Boolean isActive = false;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "users_id"),
@@ -105,6 +106,15 @@ public class User extends BaseEntity {
 
     public User setLastname(String lastName) {
         this.lastname = lastName;
+        return this;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public User setIsActive(Boolean isActive) {
+        this.isActive = isActive;
         return this;
     }
 
