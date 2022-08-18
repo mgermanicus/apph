@@ -1,6 +1,7 @@
 package com.viseo.apph.controller;
 
 import com.viseo.apph.dto.*;
+import com.viseo.apph.service.SesService;
 import com.viseo.apph.service.SettingService;
 import com.viseo.apph.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class AdminController {
     UserService userService;
 
     @Autowired
+    SesService sesService;
+
+    @Autowired
     SettingService settingService;
 
     @GetMapping("/users")
@@ -35,6 +39,7 @@ public class AdminController {
     @PostMapping("/deleteUser")
     public ResponseEntity<IResponseDto> deleteUser(@RequestBody UserDeleteRequest deleteRequest) {
         userService.delete(deleteRequest);
+        sesService.sendDeleteUser(deleteRequest.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("user.successDelete"));
     }
 }
