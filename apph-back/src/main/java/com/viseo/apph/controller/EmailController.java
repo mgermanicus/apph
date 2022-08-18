@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 
 @RestController
@@ -36,6 +37,8 @@ public class EmailController {
             return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(new MessageResponse(msee.getMessage()));
         } catch (UnauthorizedException | IOException ue) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(ue.getMessage()));
+        } catch (MessagingException me) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(me.getMessage()));
         }
     }
 }

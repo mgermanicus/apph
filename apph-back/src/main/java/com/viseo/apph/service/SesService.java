@@ -10,6 +10,7 @@ import com.viseo.apph.utils.FrontServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 
 @Service
@@ -29,7 +30,7 @@ public class SesService {
     @Autowired
     FrontServer frontServer;
 
-    public IResponseDto SendMessageAttachment(User user, EmailRequest emailRequest) throws MaxSizeExceededException, UnauthorizedException, IOException {
+    public IResponseDto SendMessageAttachment(User user, EmailRequest emailRequest) throws MaxSizeExceededException, UnauthorizedException, IOException, MessagingException {
         String bodyHTML = "<html>" + "<head></head>" + "<body>"
                 + "<h1>" + emailRequest.getSubject() + "</h1>"
                 + "<p>" + emailRequest.getContent() + "</p>"
