@@ -1,13 +1,7 @@
 package com.viseo.apph.service;
 
-import com.viseo.apph.dao.FolderDao;
-import com.viseo.apph.dao.RoleDao;
-import com.viseo.apph.dao.SesDao;
-import com.viseo.apph.dao.UserDao;
-import com.viseo.apph.domain.ERole;
-import com.viseo.apph.domain.Folder;
-import com.viseo.apph.domain.Role;
-import com.viseo.apph.domain.User;
+import com.viseo.apph.dao.*;
+import com.viseo.apph.domain.*;
 import com.viseo.apph.dto.*;
 import com.viseo.apph.exception.ExpiredLinkException;
 import com.viseo.apph.exception.InvalidTokenException;
@@ -35,6 +29,9 @@ public class UserService {
 
     @Autowired
     FolderDao folderDao;
+
+    @Autowired
+    S3Dao s3Dao;
 
     @Autowired
     SesService sesService;
@@ -197,6 +194,9 @@ public class UserService {
     @Transactional
     public void delete(UserDeleteRequest deleteRequest) {
         User user = userDao.getUserByLogin(deleteRequest.getEmail());
+        for (Photo photo : user.getPhotos()) {
+            s3Dao.delete(photo);
+        }
         userDao.delete(user);
     }
 }

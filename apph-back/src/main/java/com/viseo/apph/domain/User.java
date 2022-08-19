@@ -50,6 +50,11 @@ public class User extends BaseEntity {
         return login;
     }
 
+    public User setLogin(String login) {
+        this.login = login;
+        return this;
+    }
+
     public String getTokenForResetting() {
         return tokenForResetting;
     }
@@ -65,11 +70,6 @@ public class User extends BaseEntity {
 
     public User setResetting(boolean resetting) {
         isResetting = resetting;
-        return this;
-    }
-
-    public User setLogin(String login) {
-        this.login = login;
         return this;
     }
 
@@ -141,5 +141,9 @@ public class User extends BaseEntity {
             this.contacts.add(user);
         }
         return this;
+    }
+
+    public List<Photo> getPhotos() {
+        return this.photos;
     }
 }
