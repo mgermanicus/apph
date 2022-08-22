@@ -74,7 +74,7 @@ export const SendPhotosButton = ({
   return (
     <>
       <Box sx={{ m: 1 }}>
-        <Tooltip title={t('photo.sendPhotos')}>
+        <Tooltip title={t(isFolder ? 'folder.sendFolder' : 'photo.sendPhotos')}>
           <Button
             variant="outlined"
             onClick={handleOpenForm}

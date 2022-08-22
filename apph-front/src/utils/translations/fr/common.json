@@ -18,7 +18,7 @@
       "nameOverChar": "Le nom ou le prénom ne peuvent pas dépasser les 127 caractères.",
       "emailOverChar": "L'email ne peut pas dépasser les 255 caractères.",
       "loginOverChar": "Le login ne peut pas dépasser les 255 caractères.",
-      "emailNotVerified": "L'email n'est pas vérifié, un nouveau email de vérification viens vous être envoyé."
+      "emailNotVerified": "L'email n'est pas vérifié, un nouveau email de vérification viens de vous être envoyé."
     },
     "create": "Créer un compte",
     "exist": "Vous avez déjà un compte ? Se connecter",

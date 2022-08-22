@@ -33,7 +33,7 @@ public class SesDao {
     @Autowired
     SesClient sesClient;
 
-    public IResponseDto sendEmailWithAttachment(String sender, String recipient, String subject, String bodyHTML, byte[] file) {
+    public IResponseDto sendEmailWithAttachment(String sender, String recipient, String subject, String bodyHTML, byte[] file) throws MessagingException {
         try {
             Session session = Session.getDefaultInstance(new Properties());
             MimeMessage message = new MimeMessage(session);
@@ -72,9 +72,9 @@ public class SesDao {
                     .build();
             sesClient.sendRawEmail(rawEmailRequest);
             return new MessageResponse("email.success.sentWithAttachment");
-        } catch (MessagingException | IOException e) {
+        } catch (MessagingException | IOException | MessageRejectedException e) {
             logger.error(e.getMessage());
-            return new MessageResponse("email.error.sentWithAttachment");
+            throw new MessagingException("email.error.sentWithAttachment");
         }
     }
 
