@@ -1,11 +1,11 @@
 package com.viseo.apph.controller;
 
-import com.viseo.apph.dto.IResponseDto;
-import com.viseo.apph.dto.SettingRequest;
-import com.viseo.apph.dto.UserResponse;
+import com.viseo.apph.dto.*;
+import com.viseo.apph.service.SesService;
 import com.viseo.apph.service.SettingService;
 import com.viseo.apph.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +21,9 @@ public class AdminController {
     UserService userService;
 
     @Autowired
+    SesService sesService;
+
+    @Autowired
     SettingService settingService;
 
     @GetMapping("/users")
@@ -31,5 +34,12 @@ public class AdminController {
     @PostMapping("/updateSettings")
     public ResponseEntity<IResponseDto> updateSettings(@RequestBody SettingRequest settingRequest) {
         return ResponseEntity.ok(settingService.updateSettings(settingRequest));
+    }
+
+    @PostMapping("/deleteUser")
+    public ResponseEntity<IResponseDto> deleteUser(@RequestBody UserDeleteRequest deleteRequest) {
+        userService.delete(deleteRequest);
+        sesService.sendDeleteUser(deleteRequest.getEmail());
+        return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("user.successDelete"));
     }
 }

@@ -9,7 +9,7 @@ Object {
         style="height: 90vh; width: 100%;"
       >
         <div
-          aria-colcount="3"
+          aria-colcount="4"
           aria-multiselectable="false"
           aria-rowcount="0"
           class="MuiDataGrid-root MuiDataGrid-root--densityStandard css-r11z79-MuiDataGrid-root"
@@ -307,7 +307,7 @@ Object {
       style="height: 90vh; width: 100%;"
     >
       <div
-        aria-colcount="3"
+        aria-colcount="4"
         aria-multiselectable="false"
         aria-rowcount="0"
         class="MuiDataGrid-root MuiDataGrid-root--densityStandard css-r11z79-MuiDataGrid-root"

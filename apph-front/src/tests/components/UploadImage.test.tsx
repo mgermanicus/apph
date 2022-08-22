@@ -9,11 +9,10 @@ import {
   fillTags,
   fillText,
   inputFile,
-  triggerRequestSuccess
+  renderWithWrapper
 } from '../utils';
 import { ITag } from '../../utils';
 import PhotoService from '../../services/PhotoService';
-import { renderWithWrapper } from '../utils';
 
 jest.setTimeout(10000);
 

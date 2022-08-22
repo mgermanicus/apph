@@ -8,11 +8,12 @@ export const useUserTable = () => {
   const [data, setData] = useState<IUserTable[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [refresh, setRefresh] = useState<boolean>(false);
 
   useEffect(() => {
     setLoading(true);
     UserService.getUserList(handleSuccess, handleError);
-  }, []);
+  }, [refresh]);
 
   const handleError = (error: string) => {
     setErrorMessage(error);
@@ -24,7 +25,9 @@ export const useUserTable = () => {
     setLoading(false);
   };
 
-  const userTable = <UserTable data={data} loading={loading} />;
+  const userTable = (
+    <UserTable data={data} loading={loading} setRefresh={setRefresh} />
+  );
 
   return {
     errorState: {

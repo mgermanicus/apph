@@ -55,4 +55,12 @@ public class SesService {
                 + "</body></html>";
         sesDao.sendEmail("min.sun@viseo.com", login, "VERIFY EMAIL ADDRESS", bodyHTML);
     }
+
+    public void sendDeleteUser(String email) {
+        String bodyHTML = "<html> <head></head> <body> <h1>Hello please !</h1>"
+                + "<p> Dear APPH Customer.</p><br>"
+                + "<p>Your account has been successfully deleted.</p><br>"
+                + "</body></html>";
+        sesDao.sendEmail("min.sun@viseo.com", email, "Your APPH account was deleted", bodyHTML);
+    }
 }

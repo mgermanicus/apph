@@ -2,13 +2,19 @@ import { IUserTable } from '../../utils';
 import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
+import { DeleteUser } from './DeleteUser';
 
 interface userTableProps {
   data: IUserTable[];
+  setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
   loading: boolean;
 }
 
-export const UserTable = ({ data, loading = false }: userTableProps) => {
+export const UserTable = ({
+  data,
+  setRefresh,
+  loading = false
+}: userTableProps) => {
   const { t } = useTranslation();
   const columns: GridColDef[] = [
     {
@@ -34,6 +40,17 @@ export const UserTable = ({ data, loading = false }: userTableProps) => {
       align: 'center',
       headerAlign: 'center',
       sortable: false
+    },
+    {
+      field: 'actions',
+      headerName: t('userTable.actions'),
+      flex: 1,
+      align: 'center',
+      headerAlign: 'center',
+      sortable: false,
+      renderCell: (params) => (
+        <DeleteUser email={params.row.email} setRefresh={setRefresh} />
+      )
     }
   ];
 
